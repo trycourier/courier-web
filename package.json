@@ -1,0 +1,7 @@
+{
+  "name": "courier-js-workspace",
+  "private": true,
+  "scripts": {
+    "build-courier-js": "cd @trycourier/courier-js && npm run build"
+  }
+}

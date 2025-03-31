@@ -1,0 +1,7 @@
+tests/
+.github/
+.DS_Store
+*.log
+.gitignore
+jest.config.js
+tsconfig.json
