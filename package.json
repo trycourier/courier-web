@@ -2,6 +2,7 @@
   "name": "courier-js-workspace",
   "private": true,
   "scripts": {
-    "build-courier-js": "cd @trycourier/courier-js && npm run build"
+    "build-courier-js": "cd @trycourier/courier-js && npm run build",
+    "build-courier-ui-core": "cd @trycourier/courier-ui-core && npm run build"
   }
 }

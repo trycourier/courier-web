@@ -29,5 +29,17 @@
     "editor.detectIndentation": false,
     "editor.defaultFormatter": "vscode.json-language-features"
   },
+  "[html]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[css]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
   "editor.formatOnSave": true
 }

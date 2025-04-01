@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption } from 'vite';
+import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 
@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'CourierJS',
+      name: 'CourierUICore',
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
       formats: ['es', 'umd'],
     },
@@ -21,6 +21,6 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.ts'],
-    }) as PluginOption,
+    }),
   ],
 }); 
