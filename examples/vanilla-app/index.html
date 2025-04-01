@@ -10,12 +10,33 @@
 
 <body>
   <div id="app">
-    <h1>Courier Core UI Component Library</h1>
-    <courier-button>Click Me!</courier-button>
-    <courier-inbox
+    <h1>Courier UI Component Library</h1>
+    <h2>Core Components</h2>
+    <courier-button id="myButton" onclick="handleClick(event)">Click Me!</courier-button>
+    <h2>Inbox Component</h2>
+    <courier-inbox id="myInbox"
       items='["Item Example 1", "Item Example 2", "Item Example 3", "Item Example 4", "Item Example 5"]'></courier-inbox>
   </div>
-  <script type="module" src="main.js"></script>
+
+  <script type="module">
+    // Import the components
+    import { CourierButton } from '@trycourier/courier-ui-core';
+    import { CourierInbox } from '@trycourier/courier-ui-inbox';
+
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get references to components
+      const button = document.getElementById('myButton');
+      const inbox = document.getElementById('myInbox');
+    });
+
+  </script>
+
+  <script>
+    function handleClick(event) {
+      alert('Button clicked!');
+    }
+  </script>
 </body>
 
 </html>

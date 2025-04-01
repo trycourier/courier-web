@@ -25,6 +25,7 @@ export class CourierInbox extends HTMLElement {
         padding: 8px 16px;
         border-bottom: 1px solid var(--courier-list-border-color, #e5e7eb);
         font-family: inherit;
+        font-size: 16px;
       }
 
       li:last-child {

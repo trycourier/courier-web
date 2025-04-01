@@ -105,4 +105,4 @@ export class CourierButton extends HTMLElement {
 // Register the custom element
 if (!customElements.get('courier-button')) {
   customElements.define('courier-button', CourierButton);
-} 
+}

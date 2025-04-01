@@ -4,6 +4,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Vanilla App",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "run-vanilla-app"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Install Packages",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -53,18 +66,5 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Vanilla App",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "start"
-      ],
-      "cwd": "${workspaceFolder}/examples/vanilla-app",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    }
   ]
 }

@@ -1,11 +1,19 @@
 {
-  "name": "courier-js-workspace",
+  "name": "courier-web-workspace",
   "private": true,
   "scripts": {
     "install-all": "npm install && cd @trycourier/courier-js && npm install && cd ../courier-ui-core && npm install",
     "build-courier-js": "cd @trycourier/courier-js && npm run build",
     "build-courier-ui-core": "cd @trycourier/courier-ui-core && npm run build",
     "watch-courier-js": "cd @trycourier/courier-js && npm run watch",
-    "watch-courier-ui-core": "cd @trycourier/courier-ui-core && npm run watch"
+    "watch-courier-ui-core": "cd @trycourier/courier-ui-core && npm run watch",
+    "watch-courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm run watch",
+    "build-courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm run build",
+    "build-all": "npm run build-courier-js && npm run build-courier-ui-core && npm run build-courier-ui-inbox",
+    "watch-all": "concurrently \"npm run watch-courier-js\" \"npm run watch-courier-ui-core\" \"npm run watch-courier-ui-inbox\"",
+    "run-vanilla-app": "npm run install-all && concurrently \"npm run watch-all\" \"cd examples/vanilla-app && npm run start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
   }
 }
