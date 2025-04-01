@@ -1,7 +1,7 @@
 {
-  "name": "@trycourier/courier-ui-core",
+  "name": "@trycourier/courier-ui-inbox",
   "version": "1.0.0",
-  "description": "The core components for the Courier web UI",
+  "description": "Inbox components for the Courier web UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
   "keywords": [
     "courier",
     "ui",
-    "shared",
+    "inbox",
     "typescript",
     "browser"
   ],

@@ -12,7 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@trycourier/courier-ui-core": "file:../../@trycourier/courier-ui-core"
+    "@trycourier/courier-ui-core": "file:../../@trycourier/courier-ui-core",
+    "@trycourier/courier-ui-inbox": "file:../../@trycourier/courier-ui-inbox"
   },
   "devDependencies": {
     "vite": "^6.2.4"

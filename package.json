@@ -2,7 +2,10 @@
   "name": "courier-js-workspace",
   "private": true,
   "scripts": {
+    "install-all": "npm install && cd @trycourier/courier-js && npm install && cd ../courier-ui-core && npm install",
     "build-courier-js": "cd @trycourier/courier-js && npm run build",
-    "build-courier-ui-core": "cd @trycourier/courier-ui-core && npm run build"
+    "build-courier-ui-core": "cd @trycourier/courier-ui-core && npm run build",
+    "watch-courier-js": "cd @trycourier/courier-js && npm run watch",
+    "watch-courier-ui-core": "cd @trycourier/courier-ui-core && npm run watch"
   }
 }

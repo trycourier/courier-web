@@ -4,6 +4,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Install Packages",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "install-all"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "CourierJS Tests",
       "program": "${workspaceFolder}/@trycourier/courier-js/node_modules/.bin/jest",
       "args": [
@@ -17,7 +30,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Vanilla JS Example",
+      "name": "Vanilla JavaScript",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
@@ -30,13 +43,26 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Vanilla TS Example",
+      "name": "Vanilla TypeScript",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "start"
       ],
       "cwd": "${workspaceFolder}/examples/vanilla-ts",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Vanilla App",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
+      "cwd": "${workspaceFolder}/examples/vanilla-app",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }
