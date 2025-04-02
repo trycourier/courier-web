@@ -21,8 +21,8 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 */
 
 // Types
-import { CourierBrandResponse } from './types/brands';
 import { CourierApiUrls } from './types/courier-api-urls';
+import { CourierBrandResponse } from './types/brands';
 import {
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -31,6 +31,7 @@ import {
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
 } from './types/preference';
+import { CourierDevice, CourierToken } from './types/token';
 
 export type {
   CourierClientOptions,
@@ -42,6 +43,8 @@ export type {
   CourierUserPreferencesPaging,
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
+  CourierDevice,
+  CourierToken,
 };
 
 // Client
