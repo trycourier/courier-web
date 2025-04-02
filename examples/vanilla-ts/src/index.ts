@@ -2,19 +2,32 @@ import { CourierClient } from '@trycourier/courier-js';
 
 async function main() {
   const client = new CourierClient({
-    baseURL: 'https://api.example.com',
-    timeout: 5000
+    userId: 'mike',
+    jwt: '',
+    showLogs: true
   });
 
   try {
     // Example API call using the client
-    const response = await client.fetchWithTimeout('https://jsonplaceholder.typicode.com/posts/1', {
-      method: 'GET'
+    const response = await client.tokens.putUserToken({
+      token: 'test-token',
+      provider: 'test-provider',
+      device: {
+        appId: 'test-app-id',
+        adId: 'test-ad-id',
+        deviceId: 'test-device-id',
+        platform: 'test-platform',
+        manufacturer: 'test-manufacturer',
+        model: 'test-model',
+      },
     });
-    const data = await response.json();
-    console.log('Response:', data);
+    console.log(response);
+    const response2 = await client.tokens.deleteUserToken({
+      token: 'test-token',
+    });
+    console.log(response2);
   } catch (error) {
-    console.error('Error:', error);
+    console.error(error);
   }
 }
 
