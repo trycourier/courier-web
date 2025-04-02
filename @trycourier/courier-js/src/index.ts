@@ -23,18 +23,38 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 // Types
 import { CourierBrandResponse } from './types/brands';
 import { CourierApiUrls } from './types/courier-api-urls';
+import {
+  CourierUserPreferences,
+  CourierUserPreferencesStatus,
+  CourierUserPreferencesChannel,
+  CourierUserPreferencesPaging,
+  CourierUserPreferencesTopic,
+  CourierUserPreferencesTopicResponse,
+} from './types/preference';
+
 export type {
   CourierClientOptions,
   CourierBrandResponse,
-  CourierApiUrls
+  CourierApiUrls,
+  CourierUserPreferences,
+  CourierUserPreferencesStatus,
+  CourierUserPreferencesChannel,
+  CourierUserPreferencesPaging,
+  CourierUserPreferencesTopic,
+  CourierUserPreferencesTopicResponse,
 };
 
 // Client
 import { CourierClient, CourierClientOptions } from './client/courier-client';
 import { BrandClient } from './client/brand-client';
+import { TokenClient } from './client/token-client';
+import { PreferenceClient } from './client/preference-client';
+
 export {
   CourierClient,
-  BrandClient
+  BrandClient,
+  TokenClient,
+  PreferenceClient
 };
 
 // Default export

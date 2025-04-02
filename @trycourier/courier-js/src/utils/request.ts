@@ -1,13 +1,13 @@
 import { CourierClientOptions } from "../client/courier-client";
 
-export class CourierHttpError extends Error {
+export class CourierRequestError extends Error {
   constructor(
     public code: number,
     message: string,
     public type?: string
   ) {
     super(message);
-    this.name = 'CourierHttpError';
+    this.name = 'CourierRequestError';
   }
 }
 
@@ -74,7 +74,23 @@ export async function http(props: {
 
   // Perform request
   const response = await fetch(request);
-  const data = await response.json();
+
+  // Handle empty responses (like 204 No Content)
+  if (response.status === 204) {
+    return;
+  }
+
+  // Try to parse JSON response
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new CourierRequestError(
+      response.status,
+      'Failed to parse response as JSON',
+      'PARSE_ERROR'
+    );
+  }
 
   // Log response if enabled
   if (props.options.showLogs && uid) {
@@ -86,10 +102,10 @@ export async function http(props: {
 
   // Handle invalid status codes
   if (!validCodes.includes(response.status)) {
-    throw new CourierHttpError(
+    throw new CourierRequestError(
       response.status,
-      data.message || 'Unknown Error',
-      data.type
+      data?.message || 'Unknown Error',
+      data?.type
     );
   }
 
@@ -117,14 +133,27 @@ export async function graphql(props: {
 
   const response = await fetch(props.url, {
     method: 'POST',
-    headers: props.headers,
+    headers: {
+      'Content-Type': 'application/json',
+      ...props.headers
+    },
     body: JSON.stringify({
       query: props.query,
       variables: props.variables
     })
   });
 
-  const data = await response.json();
+  // Try to parse JSON response
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new CourierRequestError(
+      response.status,
+      'Failed to parse response as JSON',
+      'PARSE_ERROR'
+    );
+  }
 
   // Log response if enabled
   if (props.options.showLogs && uid) {
@@ -135,10 +164,10 @@ export async function graphql(props: {
   }
 
   if (!response.ok) {
-    throw new CourierHttpError(
+    throw new CourierRequestError(
       response.status,
-      data.message || 'Unknown Error',
-      data.type
+      data?.message || 'Unknown Error',
+      data?.type
     );
   }
 

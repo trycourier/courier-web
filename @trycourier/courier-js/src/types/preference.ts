@@ -27,12 +27,6 @@ export interface CourierUserPreferencesTopicResponse {
   topic: CourierUserPreferencesTopic;
 }
 
-export interface TopicDetails {
-  status: CourierUserPreferencesStatus;
-  hasCustomRouting: boolean;
-  customRouting: CourierUserPreferencesChannel[];
-}
-
 export class PreferenceTransformer {
   /**
    * Transforms a single API response item to the CourierUserPreferencesTopic type
