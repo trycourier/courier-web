@@ -1,18 +1,15 @@
-import { CourierBrandResponse } from '../types/brand';
-import { getCourierApiUrls } from '../types/courier-api-urls';
-import { CourierClientOptions } from './courier-client';
+import { CourierBrandResponse } from '../types/brands';
+import { graphql } from '../utils/request';
+import { Client } from './client';
 
-export class BrandClient {
-  private options: CourierClientOptions;
+export class BrandClient extends Client {
 
-  constructor(options: CourierClientOptions) {
-    this.options = options;
-  }
-
-  public async getBrand(brandId: string): Promise<CourierBrandResponse> {
+  public async getBrand(props: {
+    brandId: string;
+  }): Promise<CourierBrandResponse> {
     const query = `
       query GetBrand {
-        brand(brandId: "${brandId}") {
+        brand(brandId: "${props.brandId}") {
           settings {
             colors {
               primary
@@ -39,17 +36,13 @@ export class BrandClient {
       headers['x-courier-client-key'] = this.options.clientKey;
     }
 
-    const urls = getCourierApiUrls(this.options);
-    const response = await fetch(urls.courier.graphql, {
-      method: 'POST',
+    const json = await graphql({
+      url: this.urls.courier.graphql,
       headers,
-      body: JSON.stringify({ query }),
+      query,
+      options: this.options,
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch brand: ${response.statusText}`);
-    }
-
-    return response.json() as Promise<CourierBrandResponse>;
+    return json as CourierBrandResponse;
   }
 }

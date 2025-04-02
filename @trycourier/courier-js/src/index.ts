@@ -21,7 +21,7 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 */
 
 // Types
-import { CourierBrandResponse } from './types/brand';
+import { CourierBrandResponse } from './types/brands';
 import { CourierApiUrls } from './types/courier-api-urls';
 export type {
   CourierClientOptions,
