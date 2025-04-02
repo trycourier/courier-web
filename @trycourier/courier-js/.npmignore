@@ -4,4 +4,5 @@ tests/
 *.log
 .gitignore
 jest.config.js
+src/jest.setup.ts
 tsconfig.json

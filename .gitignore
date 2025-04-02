@@ -16,8 +16,8 @@ coverage/
 *.swo
 .DS_Store
 .env
-.env.local
-.env.*.local
+.env.test
+.env.*test
 
 # Logs
 logs
