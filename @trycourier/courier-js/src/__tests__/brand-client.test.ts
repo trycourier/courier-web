@@ -6,7 +6,7 @@ describe('BrandClient', () => {
   beforeEach(() => {
     courierClient = new CourierClient({
       userId: process.env.USER_ID!,
-      jwt: process.env.JWT!,
+      publicApiKey: process.env.PUBLIC_API_KEY!,
       apiUrls: {
         courier: {
           rest: process.env.COURIER_REST_URL!,
