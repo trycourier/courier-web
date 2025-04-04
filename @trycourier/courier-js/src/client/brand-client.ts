@@ -1,48 +1,40 @@
-import { CourierBrandResponse } from '../types/brands';
-import { graphql } from '../utils/request';
+import { CourierBrand, CourierBrandsResponse } from '../types/brands';
+import { http } from '../utils/request';
 import { Client } from './client';
 
 export class BrandClient extends Client {
 
-  public async getBrand(props: {
-    brandId: string;
-  }): Promise<CourierBrandResponse> {
-    const query = `
-      query GetBrand {
-        brand(brandId: "${props.brandId}") {
-          settings {
-            colors {
-              primary
-              secondary
-              tertiary
-            }
-            inapp {
-              borderRadius
-              disableCourierFooter
-            }
-          }
-        }
-      }
-    `;
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'x-courier-user-id': this.options.userId,
-    };
-
-    if (this.options.jwt) {
-      headers['Authorization'] = `Bearer ${this.options.jwt}`;
-    } else if (this.options.clientKey) {
-      headers['x-courier-client-key'] = this.options.clientKey;
-    }
-
-    const json = await graphql({
-      url: this.urls.courier.graphql,
-      headers,
-      query,
+  public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
+    const json = await http({
+      url: `${this.urls.courier.rest}/brands/${props.brandId}`,
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+      method: 'GET',
       options: this.options,
     });
 
-    return json as CourierBrandResponse;
+    return json as CourierBrand;
   }
+
+
+  public async getBrands(props?: { cursor?: string }): Promise<CourierBrandsResponse> {
+
+    let url = `${this.urls.courier.rest}/brands`;
+    if (props?.cursor) {
+      url += `?cursor=${props.cursor}`;
+    }
+
+    const json = await http({
+      url,
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+      method: 'GET',
+      options: this.options,
+    });
+
+    return json as CourierBrandsResponse;
+  }
+
 }

@@ -22,7 +22,7 @@ export class PreferenceClient extends Client {
       url,
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.options.jwt}`
+        'Authorization': `Bearer ${this.accessToken}`
       },
       options: this.options,
     });
@@ -47,7 +47,7 @@ export class PreferenceClient extends Client {
       url: `${this.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.options.jwt}`
+        'Authorization': `Bearer ${this.accessToken}`
       },
       options: this.options,
     });

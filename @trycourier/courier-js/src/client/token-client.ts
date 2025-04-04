@@ -27,15 +27,12 @@ export class TokenClient extends Client {
       })
     };
 
-    const headers: Record<string, string> = {};
-    if (this.options.jwt) {
-      headers['Authorization'] = `Bearer ${this.options.jwt}`;
-    }
-
     await http({
       url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'PUT',
-      headers,
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
       body: payload,
       options: this.options,
       validCodes: [200, 204]
@@ -48,15 +45,12 @@ export class TokenClient extends Client {
   public async deleteUserToken(props: {
     token: string;
   }): Promise<void> {
-    const headers: Record<string, string> = {};
-    if (this.options.jwt) {
-      headers['Authorization'] = `Bearer ${this.options.jwt}`;
-    }
-
     await http({
       url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'DELETE',
-      headers,
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
       options: this.options,
       validCodes: [200, 204]
     });

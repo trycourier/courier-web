@@ -6,7 +6,7 @@ describe('CourierClient', () => {
     const testClient = new CourierClient({
       userId: process.env.USER_ID!,
       jwt: process.env.JWT!,
-      clientKey: process.env.CLIENT_KEY,
+      publicApiKey: process.env.CLIENT_KEY,
       connectionId: 'test-connection',
       tenantId: process.env.TENANT_ID,
       showLogs: true,
@@ -24,7 +24,7 @@ describe('CourierClient', () => {
 
     expect(testClient.options.userId).toBe(process.env.USER_ID);
     expect(testClient.options.jwt).toBe(process.env.JWT);
-    expect(testClient.options.clientKey).toBe(process.env.CLIENT_KEY);
+    expect(testClient.options.publicApiKey).toBe(process.env.CLIENT_KEY);
     expect(testClient.options.connectionId).toBe('test-connection');
     expect(testClient.options.tenantId).toBe(process.env.TENANT_ID);
     expect(testClient.options.showLogs).toBe(true);
