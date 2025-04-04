@@ -28,13 +28,13 @@ export class TokenClient extends Client {
     };
 
     await http({
+      client: this,
       url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
       body: payload,
-      options: this.options,
       validCodes: [200, 204]
     });
   }
@@ -46,12 +46,12 @@ export class TokenClient extends Client {
     token: string;
   }): Promise<void> {
     await http({
+      client: this,
       url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
-      options: this.options,
       validCodes: [200, 204]
     });
   }

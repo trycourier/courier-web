@@ -1,4 +1,6 @@
+import { Client } from "../client/client";
 import { CourierClientOptions } from "../client/courier-client";
+import { Logger } from "./logger";
 
 export class CourierRequestError extends Error {
   constructor(
@@ -11,7 +13,7 @@ export class CourierRequestError extends Error {
   }
 }
 
-function logRequest(uid: string, type: 'HTTP' | 'GraphQL', data: {
+function logRequest(logger: Logger, uid: string, type: 'HTTP' | 'GraphQL', data: {
   url: string;
   method?: string;
   headers: Record<string, string>;
@@ -19,7 +21,7 @@ function logRequest(uid: string, type: 'HTTP' | 'GraphQL', data: {
   query?: string;
   variables?: Record<string, any>;
 }) {
-  console.log(`
+  logger.log(`
 📡 New Courier ${type} Request: ${uid}
 URL: ${data.url}
 ${data.method ? `Method: ${data.method}` : ''}
@@ -30,11 +32,11 @@ Body: ${data.body ? JSON.stringify(data.body, null, 2) : 'Empty'}
   `);
 }
 
-function logResponse(uid: string, type: 'HTTP' | 'GraphQL', data: {
+function logResponse(logger: Logger, uid: string, type: 'HTTP' | 'GraphQL', data: {
   status: number;
   response: any;
 }) {
-  console.log(`
+  logger.log(`
 📡 New Courier ${type} Response: ${uid}
 Status Code: ${data.status}
 Response JSON: ${JSON.stringify(data.response, null, 2)}
@@ -43,14 +45,14 @@ Response JSON: ${JSON.stringify(data.response, null, 2)}
 
 export async function http(props: {
   url: string,
-  options: CourierClientOptions,
+  client: Client,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
   headers: Record<string, string>,
   body?: any,
   validCodes?: number[]
 }): Promise<any> {
   const validCodes = props.validCodes ?? [200];
-  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.client.options.showLogs ? crypto.randomUUID() : undefined;
 
   // Create request
   const request = new Request(props.url, {
@@ -63,8 +65,8 @@ export async function http(props: {
   });
 
   // Log request if enabled
-  if (props.options.showLogs && uid) {
-    logRequest(uid, 'HTTP', {
+  if (uid) {
+    logRequest(props.client.logger, uid, 'HTTP', {
       url: props.url,
       method: props.method,
       headers: props.headers,
@@ -93,8 +95,8 @@ export async function http(props: {
   }
 
   // Log response if enabled
-  if (props.options.showLogs && uid) {
-    logResponse(uid, 'HTTP', {
+  if (uid) {
+    logResponse(props.client.logger, uid, 'HTTP', {
       status: response.status,
       response: data
     });
@@ -114,16 +116,16 @@ export async function http(props: {
 
 export async function graphql(props: {
   url: string,
-  options: CourierClientOptions,
+  client: Client,
   headers: Record<string, string>,
   query: string,
   variables?: Record<string, any>
 }): Promise<any> {
-  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.client.options.showLogs ? crypto.randomUUID() : undefined;
 
   // Log request if enabled
-  if (props.options.showLogs && uid) {
-    logRequest(uid, 'GraphQL', {
+  if (uid) {
+    logRequest(props.client.logger, uid, 'GraphQL', {
       url: props.url,
       headers: props.headers,
       query: props.query,
@@ -156,8 +158,8 @@ export async function graphql(props: {
   }
 
   // Log response if enabled
-  if (props.options.showLogs && uid) {
-    logResponse(uid, 'GraphQL', {
+  if (uid) {
+    logResponse(props.client.logger, uid, 'GraphQL', {
       status: response.status,
       response: data
     });

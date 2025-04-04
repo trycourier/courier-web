@@ -1,4 +1,5 @@
 import { getCourierApiUrls } from "../types/courier-api-urls";
+import { Logger } from "../utils/logger";
 import { CourierClientOptions } from "./courier-client";
 
 export class Client {
@@ -14,6 +15,10 @@ export class Client {
   // Will default to jwt if available, otherwise publicApiKey
   get accessToken() {
     return this.options.jwt ?? this.options.publicApiKey;
+  }
+
+  get logger() {
+    return new Logger(this.options);
   }
 
 }

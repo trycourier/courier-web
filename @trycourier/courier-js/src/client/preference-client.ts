@@ -19,12 +19,12 @@ export class PreferenceClient extends Client {
     }
 
     const json = await http({
+      client: this,
       url,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
-      options: this.options,
     });
 
     const data = json as CourierUserPreferences;
@@ -44,12 +44,12 @@ export class PreferenceClient extends Client {
   }): Promise<CourierUserPreferencesTopic> {
 
     const json = await http({
+      client: this,
       url: `${this.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
-      options: this.options,
     });
 
     const res = json as CourierUserPreferencesTopicResponse;
@@ -76,13 +76,13 @@ export class PreferenceClient extends Client {
     };
 
     await http({
+      client: this,
       url: `${this.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${this.options.jwt}`
       },
       body: payload,
-      options: this.options,
     });
   }
 }

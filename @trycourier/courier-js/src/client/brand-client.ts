@@ -4,20 +4,27 @@ import { Client } from './client';
 
 export class BrandClient extends Client {
 
+  /**
+   * Get a brand by ID
+   * @see https://www.courier.com/docs/reference/brands/get-a-brand
+   */
   public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
     const json = await http({
+      client: this,
       url: `${this.urls.courier.rest}/brands/${props.brandId}`,
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
       method: 'GET',
-      options: this.options,
     });
 
     return json as CourierBrand;
   }
 
-
+  /**
+   * Get all brands
+   * @see https://www.courier.com/docs/reference/brands/list-brands
+   */
   public async getBrands(props?: { cursor?: string }): Promise<CourierBrandsResponse> {
 
     let url = `${this.urls.courier.rest}/brands`;
@@ -26,12 +33,12 @@ export class BrandClient extends Client {
     }
 
     const json = await http({
+      client: this,
       url,
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       },
       method: 'GET',
-      options: this.options,
     });
 
     return json as CourierBrandsResponse;
