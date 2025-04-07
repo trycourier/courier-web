@@ -1,4 +1,4 @@
-import { CourierGetInboxMessagesResponse } from '../types/inbox';
+import { CourierGetInboxMessagesResponse, InboxMessage } from '../types/inbox';
 import { graphql } from '../utils/request';
 import { Client } from './client';
 
