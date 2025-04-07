@@ -1,8 +1,17 @@
-import { CourierGetInboxMessagesResponse, InboxMessage } from '../types/inbox';
+import { InboxSocket } from '../socket/inbox-socket';
+import { CourierGetInboxMessagesResponse } from '../types/inbox';
 import { graphql } from '../utils/request';
 import { Client } from './client';
+import { CourierClientOptions } from './courier-client';
 
 export class InboxClient extends Client {
+
+  readonly socket: InboxSocket;
+
+  constructor(options: CourierClientOptions) {
+    super(options);
+    this.socket = new InboxSocket(options);
+  }
 
   /**
    * Get paginated messages
@@ -47,13 +56,13 @@ export class InboxClient extends Client {
     `;
 
     return await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -100,13 +109,13 @@ export class InboxClient extends Client {
     `;
 
     return graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -121,13 +130,13 @@ export class InboxClient extends Client {
     `;
 
     const response = await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
 
     return response.data?.count ?? 0;
@@ -144,13 +153,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -165,13 +174,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -186,13 +195,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -207,13 +216,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -228,13 +237,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 
@@ -249,13 +258,13 @@ export class InboxClient extends Client {
     `;
 
     await graphql({
-      client: this,
+      options: this.options,
       query,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.urls.inbox.graphql,
+      url: this.options.urls.inbox.graphql,
     });
   }
 }

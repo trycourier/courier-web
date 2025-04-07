@@ -45,14 +45,14 @@ Response JSON: ${JSON.stringify(data.response, null, 2)}
 
 export async function http(props: {
   url: string,
-  client: Client,
+  options: CourierClientOptions,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
   headers: Record<string, string>,
   body?: any,
   validCodes?: number[]
 }): Promise<any> {
   const validCodes = props.validCodes ?? [200];
-  const uid = props.client.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
 
   // Create request
   const request = new Request(props.url, {
@@ -66,7 +66,7 @@ export async function http(props: {
 
   // Log request if enabled
   if (uid) {
-    logRequest(props.client.logger, uid, 'HTTP', {
+    logRequest(props.options.logger, uid, 'HTTP', {
       url: props.url,
       method: props.method,
       headers: props.headers,
@@ -96,7 +96,7 @@ export async function http(props: {
 
   // Log response if enabled
   if (uid) {
-    logResponse(props.client.logger, uid, 'HTTP', {
+    logResponse(props.options.logger, uid, 'HTTP', {
       status: response.status,
       response: data
     });
@@ -116,16 +116,16 @@ export async function http(props: {
 
 export async function graphql(props: {
   url: string,
-  client: Client,
+  options: CourierClientOptions,
   headers: Record<string, string>,
   query: string,
   variables?: Record<string, any>
 }): Promise<any> {
-  const uid = props.client.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
 
   // Log request if enabled
   if (uid) {
-    logRequest(props.client.logger, uid, 'GraphQL', {
+    logRequest(props.options.logger, uid, 'GraphQL', {
       url: props.url,
       headers: props.headers,
       query: props.query,
@@ -159,7 +159,7 @@ export async function graphql(props: {
 
   // Log response if enabled
   if (uid) {
-    logResponse(props.client.logger, uid, 'GraphQL', {
+    logResponse(props.options.logger, uid, 'GraphQL', {
       status: response.status,
       response: data
     });

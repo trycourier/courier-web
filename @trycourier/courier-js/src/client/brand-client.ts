@@ -10,10 +10,10 @@ export class BrandClient extends Client {
    */
   public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
     const json = await http({
-      client: this,
-      url: `${this.urls.courier.rest}/brands/${props.brandId}`,
+      options: this.options,
+      url: `${this.options.urls.courier.rest}/brands/${props.brandId}`,
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       method: 'GET',
     });
@@ -26,16 +26,16 @@ export class BrandClient extends Client {
    * @see https://www.courier.com/docs/reference/brands/list-brands
    */
   public async getBrands(props?: { cursor?: string }): Promise<CourierBrandsResponse> {
-    let url = `${this.urls.courier.rest}/brands`;
+    let url = `${this.options.urls.courier.rest}/brands`;
     if (props?.cursor) {
       url += `?cursor=${props.cursor}`;
     }
 
     const json = await http({
-      client: this,
+      options: this.options,
       url,
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       method: 'GET',
     });

@@ -1,4 +1,5 @@
 import { CourierClient } from '../client/courier-client';
+import { InboxSocket } from '../socket/inbox-socket';
 
 describe('InboxClient', () => {
   let courierClient: CourierClient;
@@ -78,4 +79,50 @@ describe('InboxClient', () => {
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
   });
+
+  it('Connect to inbox socket', async () => {
+    const socket = courierClient.inbox.socket;
+
+    socket.receivedMessage = (message) => {
+      expect(message).toBeDefined();
+    };
+
+    socket.receivedMessageEvent = (event) => {
+      expect(event).toBeDefined();
+    };
+
+    socket.onOpen = () => {
+      expect(socket.isConnected).toBe(true);
+    };
+
+    socket.onClose = () => {
+      expect(socket.isConnected).toBe(false);
+    };
+
+    socket.onError = (error) => {
+      expect(error).toBeInstanceOf(Error);
+    };
+
+    // Connect to the socket
+    await socket.connect();
+
+    // Subscribe to the socket  
+    await socket.sendSubscribe();
+
+    // Keep the socket alive
+    socket.keepAlive({ intervalInMillis: 100 });
+
+    // Wait for 1 second to allow keepAlive messages to be sent
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Disconnect from the socket
+    socket.disconnect();
+
+    // Wait for 1 second to ensure socket is fully disconnected
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    expect(socket.isConnected).toBe(false);
+
+  });
+
 });

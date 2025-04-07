@@ -1,5 +1,3 @@
-import { CourierClientOptions } from "../client/courier-client";
-
 export interface CourierApiUrls {
   courier: {
     rest: string;
@@ -11,13 +9,13 @@ export interface CourierApiUrls {
   }
 }
 
-export const getCourierApiUrls = (options?: CourierClientOptions): CourierApiUrls => ({
+export const getCourierApiUrls = (urls?: CourierApiUrls): CourierApiUrls => ({
   courier: {
-    rest: options?.apiUrls?.courier.rest || 'https://api.courier.com',
-    graphql: options?.apiUrls?.courier.graphql || 'https://api.courier.com/client/q',
+    rest: urls?.courier.rest || 'https://api.courier.com',
+    graphql: urls?.courier.graphql || 'https://api.courier.com/client/q',
   },
   inbox: {
-    graphql: options?.apiUrls?.inbox.graphql || 'https://inbox.courier.com/q',
-    webSocket: options?.apiUrls?.inbox.webSocket || 'wss://realtime.courier.com'
+    graphql: urls?.inbox.graphql || 'https://inbox.courier.com/q',
+    webSocket: urls?.inbox.webSocket || 'wss://realtime.courier.com'
   }
 });

@@ -12,18 +12,18 @@ export class PreferenceClient extends Client {
   public async getUserPreferences(params?: {
     paginationCursor?: string;
   }): Promise<CourierUserPreferences> {
-    let url = `${this.urls.courier.rest}/users/${this.options.userId}/preferences`;
+    let url = `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences`;
 
     if (params?.paginationCursor) {
       url += `?cursor=${params.paginationCursor}`;
     }
 
     const json = await http({
-      client: this,
+      options: this.options,
       url,
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
 
@@ -44,11 +44,11 @@ export class PreferenceClient extends Client {
   }): Promise<CourierUserPreferencesTopic> {
 
     const json = await http({
-      client: this,
-      url: `${this.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
+      options: this.options,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
 
@@ -76,11 +76,11 @@ export class PreferenceClient extends Client {
     };
 
     await http({
-      client: this,
-      url: `${this.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
+      options: this.options,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${this.options.jwt}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       body: payload,
     });

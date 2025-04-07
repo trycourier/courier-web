@@ -28,11 +28,11 @@ export class TokenClient extends Client {
     };
 
     await http({
-      client: this,
-      url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
+      options: this.options,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       body: payload,
       validCodes: [200, 204]
@@ -46,11 +46,11 @@ export class TokenClient extends Client {
     token: string;
   }): Promise<void> {
     await http({
-      client: this,
-      url: `${this.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
+      options: this.options,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${this.accessToken}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       validCodes: [200, 204]
     });

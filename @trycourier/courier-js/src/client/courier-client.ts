@@ -1,34 +1,52 @@
 import { CourierApiUrls, getCourierApiUrls } from '../types/courier-api-urls';
+import { Logger } from '../utils/logger';
 import { BrandClient } from './brand-client';
-import { Client } from './client';
 import { InboxClient } from './inbox-client';
 import { PreferenceClient } from './preference-client';
 import { TokenClient } from './token-client';
+import { Client } from './client';
 
 export interface CourierClientOptions {
-  jwt?: string;
-  publicApiKey?: string;
-  userId: string;
-  connectionId?: string;
-  tenantId?: string;
-  showLogs?: boolean;
-  apiUrls?: CourierApiUrls;
+  readonly jwt?: string;
+  readonly publicApiKey?: string;
+  readonly userId: string;
+  readonly connectionId?: string;
+  readonly tenantId?: string;
+  readonly showLogs?: boolean;
+  readonly apiUrls?: CourierApiUrls;
+  readonly accessToken?: string;
+  readonly logger: Logger;
+  readonly urls: CourierApiUrls;
 }
 
 export class CourierClient extends Client {
-
   public readonly tokens: TokenClient;
   public readonly brands: BrandClient;
   public readonly preferences: PreferenceClient;
   public readonly inbox: InboxClient;
 
-  constructor(options: CourierClientOptions) {
-
+  constructor(props: {
+    jwt?: string;
+    publicApiKey?: string;
+    userId: string;
+    connectionId?: string;
+    tenantId?: string;
+    showLogs?: boolean;
+    apiUrls?: CourierApiUrls;
+  }) {
     // Setup options with defaults
+    const baseOptions = {
+      ...props,
+      showLogs: props.showLogs || process.env.NODE_ENV === 'development',
+      apiUrls: props.apiUrls || getCourierApiUrls(),
+      accessToken: props.jwt ?? props.publicApiKey
+    };
+
+    // Attach logger and urls to options
     super({
-      ...options,
-      showLogs: options.showLogs || process.env.NODE_ENV === 'development',
-      apiUrls: options.apiUrls || getCourierApiUrls()
+      ...baseOptions,
+      logger: new Logger(baseOptions.showLogs),
+      urls: getCourierApiUrls(baseOptions.apiUrls)
     });
 
     // Create subclients
@@ -37,9 +55,13 @@ export class CourierClient extends Client {
     this.preferences = new PreferenceClient(this.options);
     this.inbox = new InboxClient(this.options);
 
+    if (!this.options.jwt && !this.options.publicApiKey) {
+      this.options.logger.warn('Courier Client initialized with no authentication method. Please provide a JWT or public API key.');
+    }
+
     // Warn about public key usage
     if (this.options.publicApiKey) {
-      this.logger.warn(
+      this.options.logger?.warn(
         'Courier Warning: Public API Keys are for testing only. Please use JWTs for production.\n' +
         'You can generate a JWT with this endpoint: https://www.courier.com/docs/reference/auth/issue-token\n' +
         'This endpoint should be called from your backend server, not the SDK.'
@@ -48,7 +70,7 @@ export class CourierClient extends Client {
 
     // Check for both keys
     if (this.options.jwt && this.options.publicApiKey) {
-      this.logger.warn(
+      this.options.logger?.warn(
         'Courier Warning: Both a JWT and a Public API Key were provided. The Public API Key will be ignored.'
       );
     }
