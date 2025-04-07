@@ -41,5 +41,6 @@
     "editor.detectIndentation": false,
     "editor.defaultFormatter": "vscode.css-language-features"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "jest.runMode": "on-demand"
 }

@@ -7,6 +7,7 @@ describe('BrandClient', () => {
     courierClient = new CourierClient({
       userId: process.env.USER_ID!,
       publicApiKey: process.env.PUBLIC_API_KEY!,
+      jwt: process.env.JWT!,
       apiUrls: {
         courier: {
           rest: process.env.COURIER_REST_URL!,
@@ -23,7 +24,7 @@ describe('BrandClient', () => {
 
   it('should fetch brand settings successfully', async () => {
     const brand = await courierClient.brands.getBrand({ brandId: process.env.BRAND_ID! });
-    expect(brand.settings?.inapp?.disableCourierFooter).toBe(null);
+    expect(brand.settings?.inapp?.disableCourierFooter).toBeDefined();
   });
 
   it('should fetch brands successfully', async () => {

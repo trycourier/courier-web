@@ -6,6 +6,7 @@ describe('TokenClient', () => {
   beforeEach(() => {
     courierClient = new CourierClient({
       userId: process.env.USER_ID!,
+      publicApiKey: process.env.PUBLIC_API_KEY!,
       jwt: process.env.JWT!,
       apiUrls: {
         courier: {

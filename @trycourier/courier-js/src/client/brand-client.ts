@@ -26,7 +26,6 @@ export class BrandClient extends Client {
    * @see https://www.courier.com/docs/reference/brands/list-brands
    */
   public async getBrands(props?: { cursor?: string }): Promise<CourierBrandsResponse> {
-
     let url = `${this.urls.courier.rest}/brands`;
     if (props?.cursor) {
       url += `?cursor=${props.cursor}`;

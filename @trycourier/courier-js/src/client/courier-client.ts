@@ -1,6 +1,7 @@
 import { CourierApiUrls, getCourierApiUrls } from '../types/courier-api-urls';
 import { BrandClient } from './brand-client';
 import { Client } from './client';
+import { InboxClient } from './inbox-client';
 import { PreferenceClient } from './preference-client';
 import { TokenClient } from './token-client';
 
@@ -19,6 +20,7 @@ export class CourierClient extends Client {
   public readonly tokens: TokenClient;
   public readonly brands: BrandClient;
   public readonly preferences: PreferenceClient;
+  public readonly inbox: InboxClient;
 
   constructor(options: CourierClientOptions) {
 
@@ -33,6 +35,7 @@ export class CourierClient extends Client {
     this.tokens = new TokenClient(this.options);
     this.brands = new BrandClient(this.options);
     this.preferences = new PreferenceClient(this.options);
+    this.inbox = new InboxClient(this.options);
 
     // Warn about public key usage
     if (this.options.publicApiKey) {

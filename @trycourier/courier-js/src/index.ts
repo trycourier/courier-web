@@ -32,6 +32,12 @@ import {
   CourierUserPreferencesTopicResponse,
 } from './types/preference';
 import { CourierDevice, CourierToken } from './types/token';
+import {
+  CourierGetInboxMessageResponse,
+  CourierGetInboxMessagesResponse,
+  InboxMessage,
+  InboxAction
+} from './types/inbox';
 
 export type {
   CourierClientOptions,
@@ -45,6 +51,10 @@ export type {
   CourierUserPreferencesTopicResponse,
   CourierDevice,
   CourierToken,
+  CourierGetInboxMessageResponse,
+  CourierGetInboxMessagesResponse,
+  InboxMessage,
+  InboxAction
 };
 
 // Client
@@ -52,12 +62,14 @@ import { CourierClient, CourierClientOptions } from './client/courier-client';
 import { BrandClient } from './client/brand-client';
 import { TokenClient } from './client/token-client';
 import { PreferenceClient } from './client/preference-client';
+import { InboxClient } from './client/inbox-client';
 
 export {
   CourierClient,
   BrandClient,
   TokenClient,
-  PreferenceClient
+  PreferenceClient,
+  InboxClient
 };
 
 // Default export
