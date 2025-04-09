@@ -105,4 +105,13 @@ describe('InboxClient', () => {
 
   });
 
+  it('should see tenant messages with new client', async () => {
+    const newClient = getClient(process.env.TENANT_ID!);
+    const result = await newClient.inbox.getMessages({
+      paginationLimit: 10,
+    });
+    expect(result.data?.messages?.nodes).toBeDefined();
+    expect(result.data?.messages?.pageInfo).toBeDefined();
+  });
+
 });
