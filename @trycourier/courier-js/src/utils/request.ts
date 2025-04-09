@@ -1,4 +1,3 @@
-import { Client } from "../client/client";
 import { CourierClientOptions } from "../client/courier-client";
 import { Logger } from "./logger";
 

@@ -1,5 +1,4 @@
 import { CourierClient } from '../client/courier-client';
-import { InboxSocket } from '../socket/inbox-socket';
 
 describe('InboxClient', () => {
   let courierClient: CourierClient;
@@ -23,7 +22,7 @@ describe('InboxClient', () => {
     });
   });
 
-  it('should fetch paginated messages', async () => {
+  it('should fetch messages', async () => {
     const result = await courierClient.inbox.getMessages({
       paginationLimit: 10,
     });

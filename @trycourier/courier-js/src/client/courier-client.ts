@@ -5,6 +5,7 @@ import { InboxClient } from './inbox-client';
 import { PreferenceClient } from './preference-client';
 import { TokenClient } from './token-client';
 import { Client } from './client';
+import { ListClient } from './list-client';
 
 export interface CourierClientOptions {
   readonly jwt?: string;
@@ -24,6 +25,7 @@ export class CourierClient extends Client {
   public readonly brands: BrandClient;
   public readonly preferences: PreferenceClient;
   public readonly inbox: InboxClient;
+  public readonly lists: ListClient;
 
   constructor(props: {
     jwt?: string;
@@ -54,6 +56,7 @@ export class CourierClient extends Client {
     this.brands = new BrandClient(this.options);
     this.preferences = new PreferenceClient(this.options);
     this.inbox = new InboxClient(this.options);
+    this.lists = new ListClient(this.options);
 
     if (!this.options.jwt && !this.options.publicApiKey) {
       this.options.logger.warn('Courier Client initialized with no authentication method. Please provide a JWT or public API key.');

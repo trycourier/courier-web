@@ -38,6 +38,7 @@ import {
   InboxMessage,
   InboxAction
 } from './types/inbox';
+import { CourierSocket } from './socket/courier-socket';
 
 export type {
   CourierClientOptions,
@@ -54,7 +55,8 @@ export type {
   CourierGetInboxMessageResponse,
   CourierGetInboxMessagesResponse,
   InboxMessage,
-  InboxAction
+  InboxAction,
+  CourierSocket
 };
 
 // Client
@@ -63,13 +65,15 @@ import { BrandClient } from './client/brand-client';
 import { TokenClient } from './client/token-client';
 import { PreferenceClient } from './client/preference-client';
 import { InboxClient } from './client/inbox-client';
+import { ListClient } from './client/list-client';
 
 export {
   CourierClient,
   BrandClient,
   TokenClient,
   PreferenceClient,
-  InboxClient
+  InboxClient,
+  ListClient
 };
 
 // Default export

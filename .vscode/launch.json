@@ -60,7 +60,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "start"
+        "dev"
       ],
       "cwd": "${workspaceFolder}/examples/vanilla-ts",
       "console": "integratedTerminal",
