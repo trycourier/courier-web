@@ -46,7 +46,7 @@ export async function http(props: {
   url: string,
   options: CourierClientOptions,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
-  headers: Record<string, string>,
+  headers?: Record<string, string>,
   body?: any,
   validCodes?: number[]
 }): Promise<any> {
@@ -86,6 +86,12 @@ export async function http(props: {
   try {
     data = await response.json();
   } catch (error) {
+
+    // Weird fallback for only tracking url events :facepalm:
+    if (response.status === 200) {
+      return;
+    }
+
     throw new CourierRequestError(
       response.status,
       'Failed to parse response as JSON',
