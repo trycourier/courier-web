@@ -3,6 +3,10 @@ import { Client } from './client';
 
 export class ListClient extends Client {
 
+  /**
+   * Subscribe a user to a list
+   * @see https://www.courier.com/docs/reference/lists/recipient-subscribe
+   */
   public async putSubscription(props: {
     listId: string;
   }): Promise<void> {
@@ -16,6 +20,10 @@ export class ListClient extends Client {
     });
   }
 
+  /**
+   * Unsubscribe a user from a list
+   * @see https://www.courier.com/docs/reference/lists/delete-subscription
+   */
   public async deleteSubscription(props: {
     listId: string;
   }): Promise<void> {

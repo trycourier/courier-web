@@ -66,9 +66,9 @@ export async function http(props: {
   // Log request if enabled
   if (uid) {
     logRequest(props.options.logger, uid, 'HTTP', {
-      url: props.url,
-      method: props.method,
-      headers: props.headers,
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
       body: props.body
     });
   }
