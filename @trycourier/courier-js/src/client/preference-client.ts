@@ -1,4 +1,5 @@
 import { CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, CourierUserPreferencesTopicResponse, PreferenceTransformer } from '../types/preference';
+import { decode, encode } from '../utils/coding';
 import { http } from '../utils/request';
 import { Client } from './client';
 
@@ -85,4 +86,18 @@ export class PreferenceClient extends Client {
       body: payload,
     });
   }
+
+  /**
+   * Get the notification center URL
+   * @param params 
+   * @returns 
+   */
+  public getNotificationCenterUrl(params: {
+    clientKey: string;
+  }): string {
+    const rootTenantId = decode(params.clientKey);
+    const url = encode(`${rootTenantId}#${this.options.userId}${this.options.tenantId ? `#${this.options.tenantId}` : ""}#${false}`);
+    return `https://view.notificationcenter.app/p/${url}`;
+  }
+
 }

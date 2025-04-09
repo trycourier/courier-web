@@ -28,4 +28,13 @@ describe('PreferenceClient', () => {
     });
     expect(result).toBeUndefined();
   });
+
+
+  it('should get notification center url successfully', () => {
+    const url = courierClient.preferences.getNotificationCenterUrl({
+      clientKey: 'ZDk0OWU2YzAtODVmOC00Mjg0LTk1Y2MtY2JmMzZjNGMyOWFi',
+    });
+    expect(url).toBeDefined();
+  });
+
 });
