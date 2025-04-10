@@ -9,6 +9,8 @@ async function main() {
 
   const preferences = await client.preferences.getUserPreferences();
   console.log(preferences);
+
+
 }
 
 main().catch(console.error);

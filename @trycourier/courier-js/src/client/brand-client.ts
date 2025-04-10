@@ -1,46 +1,43 @@
-import { CourierBrand, CourierBrandsResponse } from '../types/brands';
-import { http } from '../utils/request';
+import { CourierBrand } from '../types/brands';
+import { graphql } from '../utils/request';
 import { Client } from './client';
 
 export class BrandClient extends Client {
 
   /**
-   * Get a brand by ID
-   * @see https://www.courier.com/docs/reference/brands/get-a-brand
+   * Get a brand by ID using GraphQL
    */
   public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
-    const json = await http({
+    const query = `
+      query GetBrand {
+        brand(brandId: "${props.brandId}") {
+          settings {
+            colors {
+              primary
+              secondary
+              tertiary
+            }
+            inapp {
+              borderRadius
+              disableCourierFooter
+            }
+          }
+        }
+      }
+    `;
+
+    const json = await graphql({
       options: this.options,
-      url: `${this.options.urls.courier.rest}/brands/${props.brandId}`,
+      url: this.options.urls.courier.graphql,
       headers: {
-        'Authorization': `Bearer ${this.options.accessToken}`
+        'x-courier-user-id': this.options.userId,
+        'Authorization': `Bearer ${this.options.jwt}`
       },
-      method: 'GET',
+      query,
+      variables: { brandId: props.brandId }
     });
 
-    return json as CourierBrand;
-  }
-
-  /**
-   * Get all brands
-   * @see https://www.courier.com/docs/reference/brands/list-brands
-   */
-  public async getBrands(props?: { cursor?: string }): Promise<CourierBrandsResponse> {
-    let url = `${this.options.urls.courier.rest}/brands`;
-    if (props?.cursor) {
-      url += `?cursor=${props.cursor}`;
-    }
-
-    const json = await http({
-      options: this.options,
-      url,
-      headers: {
-        'Authorization': `Bearer ${this.options.accessToken}`
-      },
-      method: 'GET',
-    });
-
-    return json as CourierBrandsResponse;
+    return json.data.brand as CourierBrand;
   }
 
 }

@@ -1,5 +1,3 @@
-import { Paging } from "./pagination";
-
 export interface CourierBrand {
   id: string;
   name: string;
@@ -39,9 +37,4 @@ export interface CourierBrandInApp {
   disableMessageIcon?: boolean;
   placement?: string;
   disableCourierFooter?: boolean;
-}
-
-export interface CourierBrandsResponse {
-  paging: Paging;
-  results: CourierBrand[];
 }

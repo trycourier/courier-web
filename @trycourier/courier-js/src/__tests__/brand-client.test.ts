@@ -8,9 +8,4 @@ describe('BrandClient', () => {
     expect(brand.settings?.inapp?.disableCourierFooter).toBeDefined();
   });
 
-  it('should fetch brands successfully', async () => {
-    const brands = await courierClient.brands.getBrands();
-    expect(brands.results.length).toBeGreaterThan(0);
-  });
-
 });
