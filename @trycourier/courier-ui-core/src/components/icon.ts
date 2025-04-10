@@ -5,7 +5,8 @@ export enum IconName {
   Menu = 'menu',
   Search = 'search',
   Settings = 'settings',
-  User = 'user'
+  User = 'user',
+  ArrowRight = 'arrow-right'
 }
 
 export class CourierIcon extends HTMLElement {
@@ -38,6 +39,12 @@ export class CourierIcon extends HTMLElement {
         width: 24px;
         height: 24px;
       }
+
+      svg[data-size="small"] {
+        width: 16px;
+        height: 16px;
+      }
+      
     `;
 
     shadow.appendChild(style);
@@ -113,6 +120,9 @@ export class CourierIcon extends HTMLElement {
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         `;
+        break;
+      case IconName.ArrowRight:
+        this.svg.innerHTML = `<path d="M5 12h14M12 5l7 7-7 7"></path>`;
         break;
     }
   }

@@ -1,6 +1,18 @@
+import { theme } from "../utils/theme";
+
 export class CourierLink extends HTMLElement {
   private link: HTMLAnchorElement;
-  static observedAttributes = ['href', 'variant', 'size', 'disabled'];
+  static observedAttributes = [
+    'href',
+    'variant',
+    'disabled',
+    'color',
+    'underline',
+    'mode',
+    'target',
+    'font-family',
+    'font-size'
+  ];
 
   constructor() {
     super();
@@ -21,29 +33,21 @@ export class CourierLink extends HTMLElement {
         cursor: pointer;
         font-weight: 500;
         transition: all 0.2s ease;
-        font-family: inherit;
+        font-family: var(--courier-link-font-family, inherit);
+        font-size: var(--courier-link-font-size, inherit);
       }
 
       /* Variants */
-      a.primary {
-        color: var(--courier-link-primary-color, #2563eb);
+      a[data-variant="primary"][data-mode="light"] {
+        color: var(--courier-link-color, ${theme.light.colors.link});
       }
 
-      a.secondary {
-        color: var(--courier-link-secondary-color, #6b7280);
+      a[data-variant="primary"][data-mode="dark"] {
+        color: var(--courier-link-color, ${theme.dark.colors.link});
       }
 
-      /* Sizes */
-      a.small {
-        font-size: 14px;
-      }
-
-      a.medium {
-        font-size: 16px;
-      }
-
-      a.large {
-        font-size: 18px;
+      a[data-underline="true"] {
+        text-decoration: underline;
       }
 
       a:disabled {
@@ -57,7 +61,8 @@ export class CourierLink extends HTMLElement {
     shadow.appendChild(this.link);
 
     this.updateVariant();
-    this.updateSize();
+    this.updateUnderline();
+    this.updateMode();
   }
 
   connectedCallback() {
@@ -74,14 +79,27 @@ export class CourierLink extends HTMLElement {
         this.updateHref();
         break;
       case 'variant':
+      case 'mode':
         this.updateVariant();
-        break;
-      case 'size':
-        this.updateSize();
         break;
       case 'disabled':
         this.link.style.pointerEvents = this.hasAttribute('disabled') ? 'none' : 'auto';
         this.link.style.opacity = this.hasAttribute('disabled') ? '0.6' : '1';
+        break;
+      case 'color':
+        this.updateColor();
+        break;
+      case 'underline':
+        this.updateUnderline();
+        break;
+      case 'target':
+        this.updateTarget();
+        break;
+      case 'font-family':
+        this.updateFontFamily();
+        break;
+      case 'font-size':
+        this.updateFontSize();
         break;
     }
   }
@@ -95,12 +113,53 @@ export class CourierLink extends HTMLElement {
 
   private updateVariant() {
     const variant = this.getAttribute('variant') || 'primary';
-    this.link.className = `${variant} ${this.link.className.split(' ').filter(c => !['primary', 'secondary'].includes(c)).join(' ')}`;
+    const mode = this.getAttribute('mode') || 'light';
+    this.link.setAttribute('data-variant', variant);
+    this.link.setAttribute('data-mode', mode);
   }
 
-  private updateSize() {
-    const size = this.getAttribute('size') || 'medium';
-    this.link.className = `${this.link.className.split(' ').filter(c => !['small', 'medium', 'large'].includes(c)).join(' ')} ${size}`;
+  private updateColor() {
+    const color = this.getAttribute('color');
+    if (color) {
+      this.link.style.setProperty('--courier-link-color', color);
+    } else {
+      this.link.style.removeProperty('--courier-link-color');
+    }
+  }
+
+  private updateUnderline() {
+    const underline = this.getAttribute('underline') === 'true';
+    this.link.setAttribute('data-underline', underline.toString());
+  }
+
+  private updateMode() {
+    const mode = this.getAttribute('mode') || 'light';
+    this.link.setAttribute('data-mode', mode);
+  }
+
+  private updateTarget() {
+    const target = this.getAttribute('target');
+    if (target) {
+      this.link.target = target;
+    }
+  }
+
+  private updateFontFamily() {
+    const fontFamily = this.getAttribute('font-family');
+    if (fontFamily) {
+      this.link.style.setProperty('--courier-link-font-family', fontFamily);
+    } else {
+      this.link.style.removeProperty('--courier-link-font-family');
+    }
+  }
+
+  private updateFontSize() {
+    const fontSize = this.getAttribute('font-size');
+    if (fontSize) {
+      this.link.style.setProperty('--courier-link-font-size', fontSize);
+    } else {
+      this.link.style.removeProperty('--courier-link-font-size');
+    }
   }
 }
 
