@@ -31,7 +31,7 @@ export class BrandClient extends Client {
       url: this.options.urls.courier.graphql,
       headers: {
         'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.options.jwt}`
+        'Authorization': `Bearer ${this.options.accessToken}`
       },
       query,
       variables: { brandId: props.brandId }

@@ -1,61 +1,92 @@
-import { CourierInteractive } from "./interaction";
+import { theme } from "../utils/theme";
 
-export class CourierButton extends CourierInteractive {
+export class CourierButton extends HTMLElement {
   private button: HTMLButtonElement;
-  static observedAttributes = ['variant', 'size', 'disabled', 'color'];
+  static observedAttributes = [
+    'disabled',
+    'background-color',
+    'corner-radius',
+    'border-color',
+    'border-radius',
+    'font-family',
+    'font-size',
+    'font-weight',
+    'variant',
+    'mode',
+    'text-color'
+  ];
 
   constructor() {
     super();
-    const shadow = this.shadowRoot!;
+    const shadow = this.attachShadow({ mode: 'open' });
 
     this.button = document.createElement('button');
     this.button.setAttribute('part', 'button');
 
     const style = document.createElement('style');
     style.textContent = `
+      :host {
+        display: inline-block;
+      }
+
       button {
         border: none;
-        border-radius: 4px;
-        font-weight: 500;
-        font-family: inherit;
-        font-size: 14px;
-        padding: 2px;
+        border-radius: var(--courier-button-border-radius, var(--courier-button-corner-radius, ${theme.light.button.cornerRadius}));
+        font-weight: var(--courier-button-font-weight, 500);
+        font-family: var(--courier-button-font-family, inherit);
+        font-size: var(--courier-button-font-size, 14px);
+        padding: 6px 10px;
         cursor: pointer;
+        width: 100%;
+        height: 100%;
+        background-color: var(--courier-button-background-color, ${theme.light.colors.primary});
+        color: var(--courier-button-text-color, ${theme.light.colors.secondary});
+      }
+
+      button:hover {
+        filter: brightness(0.9);
+      }
+
+      button:active {
+        filter: brightness(0.8);
+      }
+
+      button[data-variant="primary"] {
+        background-color: var(--courier-button-background-color, ${theme.light.colors.primary});
+        color: var(--courier-button-text-color, ${theme.light.colors.secondary});
         box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
       }
 
-      /* Variants */
-      button.primary {
-        background-color: var(--courier-button-color, #0a0a0a);
-        color: white;
+      button[data-variant="secondary"] {
+        background-color: var(--courier-button-background-color, ${theme.light.colors.secondary});
+        color: var(--courier-button-text-color, ${theme.light.colors.primary});
+        border: 1px solid var(--courier-button-border-color, ${theme.light.colors.border});
       }
 
-      button.secondary {
-        background-color: white;
-        color: var(--courier-button-color, #0a0a0a);
-        border: 1px solid #e5e5e5;
-      }
-
-      button.tertiary {
-        background-color: #e5e5e5;
-        color: #171717;
+      button[data-variant="tertiary"] {
+        background-color: var(--courier-button-background-color, ${theme.light.colors.border});
+        color: var(--courier-button-text-color, ${theme.light.colors.primary});
+        border: none;
         box-shadow: none;
       }
 
-      /* Sizes */
-      button.small {
-        padding: 6px 12px;
-        font-size: 14px;
+      button[data-mode="dark"][data-variant="primary"] {
+        background-color: var(--courier-button-background-color, ${theme.dark.colors.primary});
+        color: var(--courier-button-text-color, ${theme.dark.colors.secondary});
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
       }
 
-      button.medium {
-        padding: 8px 16px;
-        font-size: 16px;
+      button[data-mode="dark"][data-variant="secondary"] {
+        background-color: var(--courier-button-background-color, ${theme.dark.colors.secondary});
+        color: var(--courier-button-text-color, ${theme.dark.colors.primary});
+        border: 1px solid var(--courier-button-border-color, ${theme.dark.colors.border});
       }
 
-      button.large {
-        padding: 12px 24px;
-        font-size: 18px;
+      button[data-mode="dark"][data-variant="tertiary"] {
+        background-color: var(--courier-button-background-color, ${theme.dark.colors.border});
+        color: var(--courier-button-text-color, ${theme.dark.colors.primary});
+        border: none;
+        box-shadow: none;
       }
 
       button:disabled {
@@ -67,26 +98,11 @@ export class CourierButton extends CourierInteractive {
     shadow.appendChild(style);
     shadow.appendChild(this.button);
 
+    this.updateCustomStyles();
     this.updateVariant();
-    this.updateSize();
-    this.updateColor();
-
-    // Add click handler to the button element
-    this.button.addEventListener('click', (event: MouseEvent) => {
-      // Prevent event from being captured by shadow DOM
-      event.stopPropagation();
-
-      // Dispatch both native click and custom courier-click events
-      this.dispatchEvent(new MouseEvent('click', {
-        bubbles: true,
-        composed: true,
-        cancelable: true
-      }));
-    });
   }
 
   connectedCallback() {
-    super.connectedCallback();
     const slot = document.createElement('slot');
     this.button.appendChild(slot);
   }
@@ -95,37 +111,95 @@ export class CourierButton extends CourierInteractive {
     if (oldValue === newValue) return;
 
     switch (name) {
-      case 'variant':
-        this.updateVariant();
-        break;
-      case 'size':
-        this.updateSize();
-        break;
       case 'disabled':
         this.button.disabled = this.hasAttribute('disabled');
         break;
-      case 'color':
-        this.updateColor();
+      case 'variant':
+      case 'mode':
+        this.updateVariant();
+        break;
+      case 'background-color':
+      case 'corner-radius':
+      case 'border-color':
+      case 'border-radius':
+      case 'font-family':
+      case 'font-size':
+      case 'font-weight':
+      case 'text-color':
+        this.updateCustomStyles();
         break;
     }
   }
 
   private updateVariant() {
-    const variant = this.getAttribute('variant') || 'primary';
-    this.button.className = `${variant} ${this.button.className.split(' ').filter(c => !['primary', 'secondary', 'tertiary'].includes(c)).join(' ')}`;
-  }
+    const variant = this.getAttribute('variant');
+    const mode = this.getAttribute('mode') || 'light';
 
-  private updateSize() {
-    const size = this.getAttribute('size') || 'medium';
-    this.button.className = `${this.button.className.split(' ').filter(c => !['small', 'medium', 'large'].includes(c)).join(' ')} ${size}`;
-  }
-
-  private updateColor() {
-    const color = this.getAttribute('color');
-    if (color) {
-      this.button.style.setProperty('--courier-button-color', color);
+    if (variant) {
+      this.button.setAttribute('data-variant', variant);
+      this.button.setAttribute('data-mode', mode);
     } else {
-      this.button.style.removeProperty('--courier-button-color');
+      this.button.removeAttribute('data-variant');
+      this.button.removeAttribute('data-mode');
+    }
+  }
+
+  private updateCustomStyles() {
+    const backgroundColor = this.getAttribute('background-color');
+    const cornerRadius = this.getAttribute('corner-radius');
+    const borderColor = this.getAttribute('border-color');
+    const borderRadius = this.getAttribute('border-radius');
+    const fontFamily = this.getAttribute('font-family');
+    const fontSize = this.getAttribute('font-size');
+    const fontWeight = this.getAttribute('font-weight');
+    const textColor = this.getAttribute('text-color');
+
+    if (backgroundColor) {
+      this.button.style.setProperty('--courier-button-background-color', backgroundColor);
+    } else {
+      this.button.style.removeProperty('--courier-button-background-color');
+    }
+
+    if (cornerRadius) {
+      this.button.style.setProperty('--courier-button-corner-radius', cornerRadius);
+    } else {
+      this.button.style.removeProperty('--courier-button-corner-radius');
+    }
+
+    if (borderColor) {
+      this.button.style.setProperty('--courier-button-border-color', borderColor);
+    } else {
+      this.button.style.removeProperty('--courier-button-border-color');
+    }
+
+    if (borderRadius) {
+      this.button.style.setProperty('--courier-button-border-radius', borderRadius);
+    } else {
+      this.button.style.removeProperty('--courier-button-border-radius');
+    }
+
+    if (fontFamily) {
+      this.button.style.setProperty('--courier-button-font-family', fontFamily);
+    } else {
+      this.button.style.removeProperty('--courier-button-font-family');
+    }
+
+    if (fontSize) {
+      this.button.style.setProperty('--courier-button-font-size', fontSize);
+    } else {
+      this.button.style.removeProperty('--courier-button-font-size');
+    }
+
+    if (fontWeight) {
+      this.button.style.setProperty('--courier-button-font-weight', fontWeight);
+    } else {
+      this.button.style.removeProperty('--courier-button-font-weight');
+    }
+
+    if (textColor) {
+      this.button.style.setProperty('--courier-button-text-color', textColor);
+    } else {
+      this.button.style.removeProperty('--courier-button-text-color');
     }
   }
 }

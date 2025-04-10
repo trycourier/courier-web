@@ -11,23 +11,98 @@
 <body>
   <div id="app">
     <h1>Courier UI Component Library</h1>
-    <h2>Buttons</h2>
-    <courier-button id="myButton" onclick="handleClick(event)">Click Me!</courier-button>
-    <courier-button id="myButton" onclick="handleClick(event)" variant="secondary">Click Me!</courier-button>
-    <courier-button id="myButton" onclick="handleClick(event)" variant="tertiary">Click Me!</courier-button>
-    <h2>Links</h2>
-    <courier-link id="myLink" href="https://www.courier.com">Link Example</courier-link>
-    <h2>Icons</h2>
-    <courier-icon id="bellIcon" name="bell"></courier-icon>
-    <courier-icon id="checkIcon" name="check"></courier-icon>
-    <courier-icon id="closeIcon" name="close"></courier-icon>
-    <courier-icon id="menuIcon" name="menu"></courier-icon>
-    <courier-icon id="searchIcon" name="search"></courier-icon>
-    <courier-icon id="settingsIcon" name="settings"></courier-icon>
-    <courier-icon id="userIcon" name="user"></courier-icon>
-    <h2>Inbox Component</h2>
-    <courier-inbox id="myInbox"
-      items='["Item Example 1", "Item Example 2", "Item Example 3", "Item Example 4", "Item Example 5"]'></courier-inbox>
+
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-button</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item">
+            <courier-button variant="primary" mode="light" id="primaryBtn">Primary</courier-button>
+          </div>
+          <div class="grid-item">
+            <courier-button variant="secondary" mode="light" id="secondaryBtn">Secondary</courier-button>
+          </div>
+          <div class="grid-item">
+            <courier-button variant="tertiary" mode="light" id="tertiaryBtn">Tertiary</courier-button>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item dark-mode">
+            <courier-button variant="primary" mode="dark" id="primaryDarkBtn">Primary</courier-button>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-button variant="secondary" mode="dark" id="secondaryDarkBtn">Secondary</courier-button>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-button variant="tertiary" mode="dark" id="tertiaryDarkBtn">Tertiary</courier-button>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item">
+            <courier-button variant="primary" background-color="#521e65" font-family="Verdana" border-radius="50px"
+              id="customPrimaryBtn">Primary</courier-button>
+          </div>
+          <div class="grid-item">
+            <courier-button variant="secondary" border-color="#521e65" text-color="#521e65" font-family="Verdana"
+              border-radius="50px" id="customSecondaryBtn">Secondary</courier-button>
+          </div>
+          <div class="grid-item">
+            <courier-button variant="tertiary" text-color="#521e65" font-family="Verdana" border-radius="50px"
+              id="customTertiaryBtn">Tertiary</courier-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-icon</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item">
+            <courier-icon name="bell"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="check"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="close"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="menu"></courier-icon>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item">
+            <courier-icon name="search"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="settings"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="user"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="bell"></courier-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">CourierInbox</p>
+        <p class="grid-description">A component that displays a list of items in an inbox format.</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item">
+          <courier-inbox items='["Item Example 1", "Item Example 2", "Item Example 3"]'></courier-inbox>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -36,19 +111,12 @@
     import { CourierInbox } from '@trycourier/courier-ui-inbox';
     import { CourierIcon } from '@trycourier/courier-ui-core';
 
-    // Wait for DOM to be ready
-    document.addEventListener('DOMContentLoaded', () => {
-      // Get references to components
-      const button = document.getElementById('myButton');
-      const inbox = document.getElementById('myInbox');
+    // Add click event listeners to all buttons
+    document.querySelectorAll('courier-button').forEach(button => {
+      button.addEventListener('click', () => {
+        alert('Button clicked!');
+      });
     });
-
-  </script>
-
-  <script>
-    function handleClick(event) {
-      alert('Button clicked!');
-    }
   </script>
 </body>
 

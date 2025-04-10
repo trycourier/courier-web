@@ -12,7 +12,7 @@ export * from './components/link';
 const components = [
   { name: 'courier-button', class: CourierButton },
   { name: 'courier-icon', class: CourierIcon },
-  { name: 'courier-link', class: CourierLink }
+  { name: 'courier-link', class: CourierLink },
 ] as const;
 
 // Register each component if not already registered

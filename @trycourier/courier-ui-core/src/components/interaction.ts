@@ -1,56 +1,30 @@
-export class CourierInteractive extends HTMLElement {
-  constructor() {
-    super();
-    const style = document.createElement('style');
-    style.textContent = `
-      :host {
-        display: inline-block;
-      }
-
-      :host(.interactive) {
-        transition: all 0.2s ease;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-      }
-
-      :host(.interactive:hover) {
-        filter: brightness(0.95);
-      }
-
-      :host(.interactive:active) {
-        filter: brightness(0.8);
-      }
-
-      :host(.interactive:disabled) {
-        cursor: not-allowed;
-        pointer-events: none;
-        opacity: 0.6;
-      }
-    `;
-    this.attachShadow({ mode: 'open' }).appendChild(style);
+export const interactiveStyles = `
+  .interactive {
+    display: inline-block;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
-  connectedCallback() {
-    this.classList.add('interactive');
+  .interactive:hover {
+    filter: brightness(0.95);
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'disabled') {
-      if (this.hasAttribute('disabled')) {
-        this.classList.add('disabled');
-      } else {
-        this.classList.remove('disabled');
-      }
-    }
+  .interactive:active {
+    filter: brightness(0.8);
   }
 
-  static get observedAttributes() {
-    return ['disabled'];
+  .interactive.disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
   }
-}
+`;
 
-if (!customElements.get('courier-interactive')) {
-  customElements.define('courier-interactive', CourierInteractive);
-}
+// Example usage in another component:
+// 1. Import the styles
+// 2. Add to your component's style element
+// 3. Add 'interactive' class to your element
+// 4. Add 'disabled' class when needed
