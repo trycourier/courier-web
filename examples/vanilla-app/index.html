@@ -11,8 +11,20 @@
 <body>
   <div id="app">
     <h1>Courier UI Component Library</h1>
-    <h2>Core Components</h2>
+    <h2>Buttons</h2>
     <courier-button id="myButton" onclick="handleClick(event)">Click Me!</courier-button>
+    <courier-button id="myButton" onclick="handleClick(event)" variant="secondary">Click Me!</courier-button>
+    <courier-button id="myButton" onclick="handleClick(event)" variant="tertiary">Click Me!</courier-button>
+    <h2>Links</h2>
+    <courier-link id="myLink" href="https://www.courier.com">Link Example</courier-link>
+    <h2>Icons</h2>
+    <courier-icon id="bellIcon" name="bell"></courier-icon>
+    <courier-icon id="checkIcon" name="check"></courier-icon>
+    <courier-icon id="closeIcon" name="close"></courier-icon>
+    <courier-icon id="menuIcon" name="menu"></courier-icon>
+    <courier-icon id="searchIcon" name="search"></courier-icon>
+    <courier-icon id="settingsIcon" name="settings"></courier-icon>
+    <courier-icon id="userIcon" name="user"></courier-icon>
     <h2>Inbox Component</h2>
     <courier-inbox id="myInbox"
       items='["Item Example 1", "Item Example 2", "Item Example 3", "Item Example 4", "Item Example 5"]'></courier-inbox>
@@ -22,6 +34,7 @@
     // Import the components
     import { CourierButton } from '@trycourier/courier-ui-core';
     import { CourierInbox } from '@trycourier/courier-ui-inbox';
+    import { CourierIcon } from '@trycourier/courier-ui-core';
 
     // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', () => {

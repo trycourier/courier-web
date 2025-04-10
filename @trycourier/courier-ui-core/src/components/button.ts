@@ -1,41 +1,45 @@
-export class CourierButton extends HTMLElement {
+import { CourierInteractive } from "./interaction";
+
+export class CourierButton extends CourierInteractive {
   private button: HTMLButtonElement;
-  static observedAttributes = ['variant', 'size', 'disabled'];
+  static observedAttributes = ['variant', 'size', 'disabled', 'color'];
 
   constructor() {
     super();
-    // Create a shadow root
-    const shadow = this.attachShadow({ mode: 'open' });
+    const shadow = this.shadowRoot!;
 
-    // Create button element
     this.button = document.createElement('button');
     this.button.setAttribute('part', 'button');
 
-    // Add styles
     const style = document.createElement('style');
     style.textContent = `
-      :host {
-        display: inline-block;
-      }
-
       button {
         border: none;
         border-radius: 4px;
-        cursor: pointer;
         font-weight: 500;
-        transition: all 0.2s ease;
         font-family: inherit;
+        font-size: 14px;
+        padding: 2px;
+        cursor: pointer;
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
       }
 
       /* Variants */
       button.primary {
-        background-color: var(--courier-button-primary-bg, #2563eb);
-        color: var(--courier-button-primary-color, white);
+        background-color: var(--courier-button-color, #0a0a0a);
+        color: white;
       }
 
       button.secondary {
-        background-color: var(--courier-button-secondary-bg, #e5e7eb);
-        color: var(--courier-button-secondary-color, #1f2937);
+        background-color: white;
+        color: var(--courier-button-color, #0a0a0a);
+        border: 1px solid #e5e5e5;
+      }
+
+      button.tertiary {
+        background-color: #e5e5e5;
+        color: #171717;
+        box-shadow: none;
       }
 
       /* Sizes */
@@ -60,17 +64,29 @@ export class CourierButton extends HTMLElement {
       }
     `;
 
-    // Append elements to shadow root
     shadow.appendChild(style);
     shadow.appendChild(this.button);
 
-    // Set initial attributes
     this.updateVariant();
     this.updateSize();
+    this.updateColor();
+
+    // Add click handler to the button element
+    this.button.addEventListener('click', (event: MouseEvent) => {
+      // Prevent event from being captured by shadow DOM
+      event.stopPropagation();
+
+      // Dispatch both native click and custom courier-click events
+      this.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        composed: true,
+        cancelable: true
+      }));
+    });
   }
 
   connectedCallback() {
-    // Move slot content into button
+    super.connectedCallback();
     const slot = document.createElement('slot');
     this.button.appendChild(slot);
   }
@@ -88,21 +104,32 @@ export class CourierButton extends HTMLElement {
       case 'disabled':
         this.button.disabled = this.hasAttribute('disabled');
         break;
+      case 'color':
+        this.updateColor();
+        break;
     }
   }
 
   private updateVariant() {
     const variant = this.getAttribute('variant') || 'primary';
-    this.button.className = `${variant} ${this.button.className.split(' ').filter(c => !['primary', 'secondary'].includes(c)).join(' ')}`;
+    this.button.className = `${variant} ${this.button.className.split(' ').filter(c => !['primary', 'secondary', 'tertiary'].includes(c)).join(' ')}`;
   }
 
   private updateSize() {
     const size = this.getAttribute('size') || 'medium';
     this.button.className = `${this.button.className.split(' ').filter(c => !['small', 'medium', 'large'].includes(c)).join(' ')} ${size}`;
   }
+
+  private updateColor() {
+    const color = this.getAttribute('color');
+    if (color) {
+      this.button.style.setProperty('--courier-button-color', color);
+    } else {
+      this.button.style.removeProperty('--courier-button-color');
+    }
+  }
 }
 
-// Register the custom element
 if (!customElements.get('courier-button')) {
   customElements.define('courier-button', CourierButton);
 }
