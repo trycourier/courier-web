@@ -1,3 +1,5 @@
+import { theme } from "../utils/theme";
+
 export enum IconName {
   Bell = 'bell',
   Check = 'check',
@@ -11,7 +13,7 @@ export enum IconName {
 
 export class CourierIcon extends HTMLElement {
   private svg: SVGElement;
-  static observedAttributes = ['name', 'color'];
+  static observedAttributes = ['name', 'color', 'mode'];
 
   constructor() {
     super();
@@ -38,13 +40,18 @@ export class CourierIcon extends HTMLElement {
       svg {
         width: 24px;
         height: 24px;
+        color: var(--courier-icon-color, ${theme.light.colors.icon});
       }
 
       svg[data-size="small"] {
         width: 16px;
         height: 16px;
       }
-      
+
+      svg[data-mode="dark"] {
+        color: var(--courier-icon-color, ${theme.dark.colors.icon});
+      }
+
     `;
 
     shadow.appendChild(style);
@@ -53,6 +60,7 @@ export class CourierIcon extends HTMLElement {
     // Set initial attributes
     this.updateIcon();
     this.updateColor();
+    this.updateMode();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -65,16 +73,24 @@ export class CourierIcon extends HTMLElement {
       case 'color':
         this.updateColor();
         break;
+      case 'mode':
+        this.updateMode();
+        break;
     }
   }
 
   private updateColor() {
     const color = this.getAttribute('color');
     if (color) {
-      this.svg.style.color = color;
+      this.svg.style.setProperty('--courier-icon-color', color);
     } else {
-      this.svg.style.color = 'currentColor';
+      this.svg.style.removeProperty('--courier-icon-color');
     }
+  }
+
+  private updateMode() {
+    const mode = this.getAttribute('mode') || 'light';
+    this.svg.setAttribute('data-mode', mode);
   }
 
   private updateIcon() {

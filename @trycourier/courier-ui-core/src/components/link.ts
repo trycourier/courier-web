@@ -42,8 +42,24 @@ export class CourierLink extends HTMLElement {
         color: var(--courier-link-color, ${theme.light.colors.link});
       }
 
+      a[data-variant="primary"][data-mode="light"]:hover {
+        opacity: 0.8;
+      }
+
+      a[data-variant="primary"][data-mode="light"]:active {
+        opacity: 0.6;
+      }
+
       a[data-variant="primary"][data-mode="dark"] {
         color: var(--courier-link-color, ${theme.dark.colors.link});
+      }
+
+      a[data-variant="primary"][data-mode="dark"]:hover {
+        opacity: 0.8;
+      }
+
+      a[data-variant="primary"][data-mode="dark"]:active {
+        opacity: 0.6;
       }
 
       a[data-underline="true"] {

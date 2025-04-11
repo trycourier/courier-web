@@ -10,7 +10,8 @@
 
 <body>
   <div id="app">
-    <h1>Courier UI Component Library</h1>
+
+    <p class="package-title">@trycourier/<span class="package-name">courier-ui-core</span></p>
 
     <div class="grid-section">
       <div class="grid-header">
@@ -113,35 +114,79 @@
             <courier-icon name="bell"></courier-icon>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="grid-section">
-      <div class="grid-header">
-        <p class="grid-title">CourierInbox</p>
-        <p class="grid-description">A component that displays a list of items in an inbox format.</p>
-      </div>
-      <div class="grid-container">
-        <div class="grid-item">
-          <courier-inbox items='["Item Example 1", "Item Example 2", "Item Example 3"]'></courier-inbox>
+        <div class="grid-row">
+          <div class="grid-item dark-mode">
+            <courier-icon name="bell" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="check" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="close" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="menu" mode="dark"></courier-icon>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item dark-mode">
+            <courier-icon name="search" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="settings" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="user" mode="dark"></courier-icon>
+          </div>
+          <div class="grid-item dark-mode">
+            <courier-icon name="bell" mode="dark"></courier-icon>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-item">
+            <courier-icon name="search" color="#521e65"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="settings" color="#521e65"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="user" color="#521e65"></courier-icon>
+          </div>
+          <div class="grid-item">
+            <courier-icon name="bell" color="#521e65"></courier-icon>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script type="module">
-    // Import the components
-    import { CourierButton } from '@trycourier/courier-ui-core';
-    import { CourierInbox } from '@trycourier/courier-ui-inbox';
-    import { CourierIcon } from '@trycourier/courier-ui-core';
+    <p class="package-title">@trycourier/<span class="package-name">courier-ui-inbox</span></p>
 
-    // Add click event listeners to all buttons
-    document.querySelectorAll('courier-button').forEach(button => {
-      button.addEventListener('click', () => {
-        alert('Button clicked!');
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item" style="width: 100%;">
+            <courier-inbox items='["Item Example 1", "Item Example 2", "Item Example 3"]'></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // Import the components
+      import { CourierButton } from '@trycourier/courier-ui-core';
+      import { CourierInbox } from '@trycourier/courier-ui-inbox';
+      import { CourierIcon } from '@trycourier/courier-ui-core';
+
+      // Add click event listeners to all buttons
+      document.querySelectorAll('courier-button').forEach(button => {
+        button.addEventListener('click', () => {
+          alert('Button clicked!');
+        });
       });
-    });
-  </script>
+    </script>
 </body>
 
 </html>

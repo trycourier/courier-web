@@ -1,17 +1,19 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px;
 }
 
 #app {
   max-width: 800px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px;
 }
 
 .grid-section {
   border-radius: 4px;
-  margin-bottom: 20px;
   background: #e5e5e5;
   flex-direction: column;
   border: 1px solid #e5e5e5;
@@ -72,4 +74,19 @@ body {
 
 .dark-mode {
   background: black;
+}
+
+.package-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.package-name {
+  color: #521e65;
 }

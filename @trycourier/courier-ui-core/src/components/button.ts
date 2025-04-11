@@ -50,7 +50,6 @@ export class CourierButton extends HTMLElement {
       button:active {
         filter: brightness(0.8);
       }
-
       button[data-variant="primary"] {
         background-color: var(--courier-button-background-color, ${theme.light.colors.primary});
         color: var(--courier-button-text-color, ${theme.light.colors.secondary});
@@ -61,6 +60,7 @@ export class CourierButton extends HTMLElement {
         background-color: var(--courier-button-background-color, ${theme.light.colors.secondary});
         color: var(--courier-button-text-color, ${theme.light.colors.primary});
         border: 1px solid var(--courier-button-border-color, ${theme.light.colors.border});
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
       }
 
       button[data-variant="tertiary"] {
@@ -73,13 +73,14 @@ export class CourierButton extends HTMLElement {
       button[data-mode="dark"][data-variant="primary"] {
         background-color: var(--courier-button-background-color, ${theme.dark.colors.primary});
         color: var(--courier-button-text-color, ${theme.dark.colors.secondary});
-        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+        box-shadow: 0px 1px 2px 0px rgba(255, 255, 255, 0.1);
       }
 
       button[data-mode="dark"][data-variant="secondary"] {
         background-color: var(--courier-button-background-color, ${theme.dark.colors.secondary});
         color: var(--courier-button-text-color, ${theme.dark.colors.primary});
         border: 1px solid var(--courier-button-border-color, ${theme.dark.colors.border});
+        box-shadow: 0px 1px 2px 0px rgba(255, 255, 255, 0.1);
       }
 
       button[data-mode="dark"][data-variant="tertiary"] {
