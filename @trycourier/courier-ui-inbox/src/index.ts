@@ -1,6 +1,6 @@
-import { CourierInbox } from './inbox/inbox';
+import { CourierInbox } from './components/inbox';
 
-export * from './inbox/inbox';
+export * from './components/inbox';
 
 // Register web components
 if (!customElements.get('courier-inbox')) {

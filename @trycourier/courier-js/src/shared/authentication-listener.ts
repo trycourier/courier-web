@@ -1,0 +1,1 @@
+export type AuthenticationListener = (props: { userId?: string }) => void;

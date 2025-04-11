@@ -8,6 +8,16 @@ import { Client } from './client';
 import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 
+export interface CourierProps {
+  jwt?: string;
+  publicApiKey?: string;
+  userId: string;
+  connectionId?: string;
+  tenantId?: string;
+  showLogs?: boolean;
+  apiUrls?: CourierApiUrls;
+}
+
 export interface CourierClientOptions {
   readonly jwt?: string;
   readonly publicApiKey?: string;
@@ -29,15 +39,7 @@ export class CourierClient extends Client {
   public readonly lists: ListClient;
   public readonly tracking: TrackingClient;
 
-  constructor(props: {
-    jwt?: string;
-    publicApiKey?: string;
-    userId: string;
-    connectionId?: string;
-    tenantId?: string;
-    showLogs?: boolean;
-    apiUrls?: CourierApiUrls;
-  }) {
+  constructor(props: CourierProps) {
     // Setup options with defaults
     const baseOptions = {
       ...props,

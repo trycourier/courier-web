@@ -40,7 +40,16 @@ import {
 } from './types/inbox';
 import { CourierSocket } from './socket/courier-socket';
 
+// Client
+import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';
+import { BrandClient } from './client/brand-client';
+import { TokenClient } from './client/token-client';
+import { PreferenceClient } from './client/preference-client';
+import { InboxClient } from './client/inbox-client';
+import { ListClient } from './client/list-client';
+
 export type {
+  CourierProps,
   CourierClientOptions,
   CourierBrand,
   CourierApiUrls,
@@ -56,16 +65,7 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  CourierSocket
 };
-
-// Client
-import { CourierClient, CourierClientOptions } from './client/courier-client';
-import { BrandClient } from './client/brand-client';
-import { TokenClient } from './client/token-client';
-import { PreferenceClient } from './client/preference-client';
-import { InboxClient } from './client/inbox-client';
-import { ListClient } from './client/list-client';
 
 export {
   CourierClient,
@@ -73,8 +73,14 @@ export {
   TokenClient,
   PreferenceClient,
   InboxClient,
-  ListClient
+  ListClient,
+  CourierSocket
 };
 
-// Default export
-export default CourierClient;
+// Listeners
+import { AuthenticationListener } from './shared/authentication-listener';
+export type { AuthenticationListener };
+
+// Shared
+import { Courier } from './shared/courier';
+export { Courier };

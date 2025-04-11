@@ -1,14 +1,27 @@
-import { CourierClient } from '@trycourier/courier-js';
+import { Courier, CourierClient } from '@trycourier/courier-js';
 
 async function main() {
 
-  const client = new CourierClient({
+  Courier.shared.addAuthenticationListener((props) => {
+    console.log('Authentication state changed:', props);
+  });
+
+  Courier.shared.signIn({
     userId: 'mike',
     showLogs: true,
   });
 
-  const preferences = await client.preferences.getUserPreferences();
-  console.log(preferences);
+  setTimeout(() => {
+    Courier.shared.signOut();
+  }, 1000);
+
+  // const client = new CourierClient({
+  //   userId: 'mike',
+  //   showLogs: true,
+  // });
+
+  // const preferences = await client.preferences.getUserPreferences();
+  // console.log(preferences);
 
 
 }
