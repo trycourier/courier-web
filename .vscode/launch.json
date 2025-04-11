@@ -17,26 +17,26 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Vanilla JS Example",
+      "name": "Run Vanilla JS",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "start"
+        "start:js"
       ],
-      "cwd": "${workspaceFolder}/examples/vanilla-js",
+      "cwd": "${workspaceFolder}/examples/vanilla",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Vanilla TS Example",
+      "name": "Run Vanilla TS",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "dev"
+        "start:ts"
       ],
-      "cwd": "${workspaceFolder}/examples/vanilla-ts",
+      "cwd": "${workspaceFolder}/examples/vanilla",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -46,8 +46,7 @@
       "name": "Install Packages",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "run",
-        "install-all"
+        "install"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
@@ -57,10 +56,10 @@
       "type": "node",
       "request": "launch",
       "name": "CourierJS Tests",
-      "program": "${workspaceFolder}/@trycourier/courier-js/node_modules/.bin/jest",
-      "args": [
-        "--config",
-        "${workspaceFolder}/@trycourier/courier-js/jest.config.js"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test"
       ],
       "cwd": "${workspaceFolder}/@trycourier/courier-js",
       "console": "integratedTerminal",

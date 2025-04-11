@@ -1,4 +1,4 @@
-import { Courier, CourierClient } from '@trycourier/courier-js';
+import { Courier } from '@trycourier/courier-js';
 
 async function main() {
 

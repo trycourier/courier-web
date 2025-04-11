@@ -4,9 +4,11 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start:js": "node src/index.js",
+    "start:ts": "ts-node src/index.ts",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn src/index.ts"
+    "dev:js": "nodemon src/index.js",
+    "dev:ts": "ts-node-dev --respawn src/index.ts"
   },
   "keywords": [],
   "author": "",
