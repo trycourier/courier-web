@@ -4,6 +4,7 @@ import { AuthenticationListener } from "./authentication-listener";
 /**
  * Courier is a singleton class that manages a shared Courier client instance and other resources.
  * UI components will automatically syncronize with this instance.
+ * If you only need to call the Courier api, you should consider using the CourierClient directly.
  */
 export class Courier {
 
