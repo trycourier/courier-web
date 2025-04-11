@@ -4,13 +4,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run UI Examples",
+      "name": "Run UI Components",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "start"
       ],
-      "cwd": "${workspaceFolder}/examples/vanilla-app",
+      "cwd": "${workspaceFolder}/examples/components",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
