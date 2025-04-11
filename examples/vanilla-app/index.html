@@ -179,6 +179,16 @@
       import { CourierButton } from '@trycourier/courier-ui-core';
       import { CourierInbox } from '@trycourier/courier-ui-inbox';
       import { CourierIcon } from '@trycourier/courier-ui-core';
+      import { Courier } from '@trycourier/courier-js';
+
+      Courier.shared.addAuthenticationListener((props) => {
+        console.log('Authentication state changed:', props);
+      });
+
+      Courier.shared.signIn({
+        userId: 'mike',
+        showLogs: true,
+      });
 
       // Add click event listeners to all buttons
       document.querySelectorAll('courier-button').forEach(button => {

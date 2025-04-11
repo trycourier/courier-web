@@ -4,13 +4,39 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Vanilla App",
+      "name": "Run UI Examples",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "run-vanilla-app"
+        "start"
       ],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/vanilla-app",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Vanilla JS Example",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
+      "cwd": "${workspaceFolder}/examples/vanilla-js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Vanilla TS Example",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/examples/vanilla-ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -37,32 +63,6 @@
         "${workspaceFolder}/@trycourier/courier-js/jest.config.js"
       ],
       "cwd": "${workspaceFolder}/@trycourier/courier-js",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Vanilla JavaScript",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "start"
-      ],
-      "cwd": "${workspaceFolder}/examples/vanilla-js",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Vanilla TypeScript",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}/examples/vanilla-ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },

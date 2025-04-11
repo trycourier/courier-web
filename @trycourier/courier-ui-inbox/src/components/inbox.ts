@@ -1,3 +1,5 @@
+import { Courier } from "@trycourier/courier-js";
+
 export class CourierInbox extends HTMLElement {
   private list: HTMLUListElement;
   static observedAttributes = ['items'];
@@ -5,6 +7,10 @@ export class CourierInbox extends HTMLElement {
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
+
+    Courier.shared.addAuthenticationListener((props) => {
+      console.log('Authentication state changed:', props);
+    });
 
     this.list = document.createElement('ul');
     this.list.setAttribute('part', 'list');

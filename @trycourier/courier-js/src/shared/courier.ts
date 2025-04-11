@@ -1,5 +1,5 @@
 import { CourierClient, CourierProps } from "../client/courier-client";
-import { AuthenticationListener } from "./authentication-listener";
+import { AuthenticationListener } from '../shared/authentication-listener';
 
 /**
  * Courier is a singleton class that manages a shared Courier client instance and other resources.

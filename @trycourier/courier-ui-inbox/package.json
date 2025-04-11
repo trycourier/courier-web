@@ -24,10 +24,8 @@
   "files": [
     "dist"
   ],
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vite-plugin-dts": "^3.0.0",
-    "@types/node": "^20.0.0"
+  "dependencies": {
+    "@trycourier/courier-js": "file:../@trycourier/courier-js",
+    "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core"
   }
 }

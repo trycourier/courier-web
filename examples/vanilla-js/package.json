@@ -10,6 +10,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@trycourier/courier-js": "file:../../@trycourier/courier-js"
+    "@trycourier/courier-js": "file:../@trycourier/courier-js"
   }
 }

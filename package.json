@@ -1,25 +1,25 @@
 {
   "name": "courier-web-workspace",
   "private": true,
+  "workspaces": [
+    "@trycourier/*",
+    "examples/*"
+  ],
   "scripts": {
-    "install-courier-js": "cd @trycourier/courier-js && npm install",
-    "install-courier-ui-core": "cd @trycourier/courier-ui-core && npm install",
-    "install-courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm install",
-    "install-vanilla-app": "cd examples/vanilla-app && npm install",
-    "install-vanilla-js": "cd examples/vanilla-js && npm install",
-    "install-vanilla-ts": "cd examples/vanilla-ts && npm install",
-    "install-all": "npm install && npm run install-courier-js && npm run install-courier-ui-core && npm run install-courier-ui-inbox && npm run install-vanilla-app && npm run install-vanilla-js && npm run install-vanilla-ts",
-    "build-courier-js": "cd @trycourier/courier-js && npm run build",
-    "build-courier-ui-core": "cd @trycourier/courier-ui-core && npm run build",
-    "watch-courier-js": "cd @trycourier/courier-js && npm run watch",
-    "watch-courier-ui-core": "cd @trycourier/courier-ui-core && npm run watch",
-    "watch-courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm run watch",
-    "build-courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm run build",
-    "build-all": "npm run build-courier-js && npm run build-courier-ui-core && npm run build-courier-ui-inbox",
-    "watch-all": "concurrently \"npm run watch-courier-js\" \"npm run watch-courier-ui-core\" \"npm run watch-courier-ui-inbox\"",
-    "run-vanilla-app": "npm run install-all && concurrently \"npm run watch-all\" \"cd examples/vanilla-app && npm run start\""
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present"
   },
   "devDependencies": {
-    "concurrently": "^8.0.0"
+    "@types/jest": "29.5.14",
+    "@types/node": "20.4.2",
+    "concurrently": "8.0.0",
+    "dotenv": "16.4.7",
+    "jest": "29.6.4",
+    "ts-jest": "29.1.1",
+    "typescript": "5.1.6",
+    "vite": "6.2.6",
+    "vite-plugin-dts": "4.5.3"
   }
 }
