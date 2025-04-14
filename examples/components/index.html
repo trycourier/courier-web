@@ -11,6 +11,21 @@
 <body>
   <div id="app">
 
+    <p class="package-title">@trycourier/<span class="package-name">courier-ui-inbox</span></p>
+
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding">
+            <courier-inbox></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p class="package-title">@trycourier/<span class="package-name">courier-ui-core</span></p>
 
     <div class="grid-section">
@@ -159,35 +174,20 @@
       </div>
     </div>
 
-    <p class="package-title">@trycourier/<span class="package-name">courier-ui-inbox</span></p>
-
-    <div class="grid-section">
-      <div class="grid-header">
-        <p class="grid-title">courier-inbox</p>
-      </div>
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-item" style="width: 100%;">
-            <courier-inbox items='["Item Example 1", "Item Example 2", "Item Example 3"]'></courier-inbox>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script type="module">
-      // Import the components
       import { CourierButton } from '@trycourier/courier-ui-core';
       import { CourierInbox } from '@trycourier/courier-ui-inbox';
       import { CourierIcon } from '@trycourier/courier-ui-core';
       import { Courier } from '@trycourier/courier-js';
 
-      Courier.shared.addAuthenticationListener((props) => {
-        console.log('Authentication state changed:', props);
+      const listener = Courier.shared.addAuthenticationListener((props) => {
+        console.log('Authentication state changed in index.html:', props);
       });
 
       Courier.shared.signIn({
-        userId: 'mike',
-        showLogs: true,
+        userId: import.meta.env.VITE_USER_ID,
+        jwt: import.meta.env.VITE_JWT,
+        showLogs: false
       });
 
       // Add click event listeners to all buttons

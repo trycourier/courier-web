@@ -16,12 +16,20 @@ export class Courier {
   /**
    * The Courier client instance
    */
-  private client?: CourierClient;
+  private instanceClient?: CourierClient;
+
+  /**
+   * Get the Courier client instance
+   * @returns The Courier client instance or undefined if not signed in
+   */
+  public get client(): CourierClient | undefined {
+    return this.instanceClient;
+  }
 
   /**
    * The authentication listeners
    */
-  private authenticationListeners: ((props: { userId?: string }) => void)[] = [];
+  private authenticationListeners: AuthenticationListener[] = [];
 
   /**
    * Get the shared Courier instance
@@ -39,7 +47,7 @@ export class Courier {
    * @param options - The options for the Courier client
    */
   public signIn(props: CourierProps) {
-    this.client = new CourierClient(props);
+    this.instanceClient = new CourierClient(props);
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 
@@ -47,39 +55,29 @@ export class Courier {
    * Sign out of Courier
    */
   public signOut() {
-    this.client = undefined;
+    this.instanceClient = undefined;
     this.notifyAuthenticationListeners({ userId: undefined });
   }
 
   /**
-   * Get the Courier client instance
-   * @returns The Courier client instance or undefined if not signed in
+   * Register a callback to be notified of authentication state changes
+   * @param callback - Function to be called when authentication state changes
+   * @returns AuthenticationListener instance that can be used to remove the listener
    */
-  public getClient(): CourierClient | undefined {
-    return this.client;
+  public addAuthenticationListener(callback: (props: { userId?: string }) => void): AuthenticationListener {
+    this.instanceClient?.options.logger.info('Adding authentication listener');
+    const listener = new AuthenticationListener(callback);
+    this.authenticationListeners.push(listener);
+    return listener;
   }
 
   /**
-   * Add an authentication listener
-   * @param listener - The listener to add
-   */
-  public addAuthenticationListener(callback: (props: { userId?: string }) => void) {
-    this.authenticationListeners.push(callback);
-  }
-
-  /**
-   * Remove an authentication listener
-   * @param listener - The listener to remove
+   * Unregister an authentication state change listener
+   * @param listener - The AuthenticationListener instance to remove
    */
   public removeAuthenticationListener(listener: AuthenticationListener) {
+    this.instanceClient?.options.logger.info('Removing authentication listener');
     this.authenticationListeners = this.authenticationListeners.filter(l => l !== listener);
-  }
-
-  /**
-   * Remove all authentication listeners
-   */
-  public removeAllAuthenticationListeners() {
-    this.authenticationListeners = [];
   }
 
   /**
@@ -87,7 +85,7 @@ export class Courier {
    * @param props - The props to notify the listeners with
    */
   private notifyAuthenticationListeners(props: { userId?: string }) {
-    this.authenticationListeners.forEach(listener => listener(props));
+    this.authenticationListeners.forEach(listener => listener.callback(props));
   }
 
 }

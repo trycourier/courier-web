@@ -64,6 +64,10 @@ body {
   background: white;
 }
 
+.no-padding {
+  padding: 0;
+}
+
 .grid-item-title {
   margin: 0;
   text-align: center;

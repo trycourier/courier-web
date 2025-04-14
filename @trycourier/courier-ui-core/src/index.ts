@@ -2,17 +2,26 @@
 import { CourierButton } from './components/button';
 import { CourierIcon } from './components/icon';
 import { CourierLink } from './components/link';
+import { CourierLoadingIndicator } from './components/loading-indicator';
+import { CourierLoadingState } from './components/loading-state';
+import { CourierInfoState } from './components/info-state';
 
 // Export all components for external use
 export * from './components/button';
 export * from './components/icon';
 export * from './components/link';
+export * from './components/loading-indicator';
+export * from './components/loading-state';
+export * from './components/info-state';
 
 // Define array of web components to register
 const components = [
   { name: 'courier-button', class: CourierButton },
   { name: 'courier-icon', class: CourierIcon },
   { name: 'courier-link', class: CourierLink },
+  { name: 'courier-loading-indicator', class: CourierLoadingIndicator },
+  { name: 'courier-loading-state', class: CourierLoadingState },
+  { name: 'courier-info-state', class: CourierInfoState },
 ] as const;
 
 // Register each component if not already registered

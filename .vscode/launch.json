@@ -43,10 +43,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Install Packages",
+      "name": "Refresh Packages",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "install"
+        "run",
+        "setup"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

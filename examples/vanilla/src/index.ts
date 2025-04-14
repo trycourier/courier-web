@@ -2,7 +2,7 @@ import { Courier } from '@trycourier/courier-js';
 
 async function main() {
 
-  Courier.shared.addAuthenticationListener((props) => {
+  const listener = Courier.shared.addAuthenticationListener((props) => {
     console.log('Authentication state changed:', props);
   });
 
@@ -13,6 +13,7 @@ async function main() {
 
   setTimeout(() => {
     Courier.shared.signOut();
+    listener.remove();
   }, 1000);
 
   // const client = new CourierClient({

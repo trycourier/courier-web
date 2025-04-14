@@ -16,6 +16,12 @@ export default defineConfig({
         globals: {},
       },
     },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+      },
+    },
   },
   plugins: [
     dts({
