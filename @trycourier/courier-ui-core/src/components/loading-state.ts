@@ -1,28 +1,27 @@
+import { CourierLoadingIndicator } from "./loading-indicator";
+
 export class CourierLoadingState extends HTMLElement {
-  private container: HTMLElement;
-  private loadingIndicator: HTMLElement;
+  private loadingIndicator: CourierLoadingIndicator;
 
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this.container = document.createElement('div');
-    this.loadingIndicator = document.createElement('courier-loading-indicator');
+    this.loadingIndicator = new CourierLoadingIndicator();
 
     const style = document.createElement('style');
     style.textContent = `
       :host {
         display: flex;
+        height: 100%;
+        width: 100%;
         align-items: center;
         justify-content: center;
-        min-height: 200px;
-        width: 100%;
       }
     `;
 
     shadow.appendChild(style);
-    shadow.appendChild(this.container);
-    this.container.appendChild(this.loadingIndicator);
+    shadow.appendChild(this.loadingIndicator);
   }
 }
 
@@ -30,4 +29,3 @@ export class CourierLoadingState extends HTMLElement {
 if (!customElements.get('courier-loading-state')) {
   customElements.define('courier-loading-state', CourierLoadingState);
 }
-

@@ -18,7 +18,7 @@ export class CourierInfoState extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 200px;
+        height: 100%;
         width: 100%;
       }
 
@@ -60,18 +60,34 @@ export class CourierInfoState extends HTMLElement {
 
     switch (name) {
       case 'title':
-        this.titleElement.textContent = newValue || '';
+        this.setTitle(newValue);
         break;
       case 'button-text':
-        this.button.textContent = newValue || '';
+        this.setButtonText(newValue);
         break;
       case 'button-variant':
-        this.button.setAttribute('variant', newValue || 'primary');
+        this.setButtonVariant(newValue);
         break;
       case 'button-size':
-        this.button.setAttribute('size', newValue || 'medium');
+        this.setButtonSize(newValue);
         break;
     }
+  }
+
+  setTitle(title: string) {
+    this.titleElement.textContent = title || '';
+  }
+
+  setButtonText(text: string) {
+    this.button.textContent = text || '';
+  }
+
+  setButtonVariant(variant: string) {
+    this.button.setAttribute('variant', variant || 'primary');
+  }
+
+  setButtonSize(size: string) {
+    this.button.setAttribute('size', size || 'medium');
   }
 
   setButtonClickCallback(callback: () => void) {

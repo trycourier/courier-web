@@ -1,6 +1,5 @@
 export class CourierLoadingIndicator extends HTMLElement {
   private spinner: HTMLElement;
-  private text: HTMLElement;
 
   constructor() {
     super();
@@ -10,10 +9,6 @@ export class CourierLoadingIndicator extends HTMLElement {
     this.spinner = document.createElement('div');
     this.spinner.className = 'spinner';
 
-    // Create text element
-    this.text = document.createElement('div');
-    this.text.className = 'text';
-
     // Add styles
     const style = document.createElement('style');
     style.textContent = `
@@ -22,7 +17,6 @@ export class CourierLoadingIndicator extends HTMLElement {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 16px;
       }
 
       .spinner {
@@ -34,12 +28,6 @@ export class CourierLoadingIndicator extends HTMLElement {
         animation: spin 1s linear infinite;
       }
 
-      .text {
-        margin-top: 8px;
-        color: var(--courier-text-secondary, #6b7280);
-        font-size: 14px;
-      }
-
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -49,17 +37,6 @@ export class CourierLoadingIndicator extends HTMLElement {
 
     shadow.appendChild(style);
     shadow.appendChild(this.spinner);
-    shadow.appendChild(this.text);
-  }
-
-  static get observedAttributes() {
-    return ['text'];
-  }
-
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'text' && oldValue !== newValue) {
-      this.text.textContent = newValue || 'Loading...';
-    }
   }
 }
 

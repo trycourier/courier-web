@@ -10,7 +10,8 @@ export class CourierInbox extends HTMLElement {
   private defaultProps = {
     title: 'Inbox',
     icon: '',
-    feedType: 'inbox' as const
+    feedType: 'inbox' as const,
+    minHeight: '768'
   };
 
   constructor() {
@@ -33,8 +34,10 @@ export class CourierInbox extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = `
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
         width: 100%;
+        min-height: ${this.defaultProps.minHeight}px;
       }
     `;
 
@@ -57,7 +60,7 @@ export class CourierInbox extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['title', 'icon', 'feed-type'];
+    return ['title', 'icon', 'feed-type', 'min-height'];
   }
 
   connectedCallback() {
@@ -83,6 +86,10 @@ export class CourierInbox extends HTMLElement {
       case 'feed-type':
         this.header.setAttribute('feed-type', newValue || this.defaultProps.feedType);
         this.list.setFeedType(newValue as any || this.defaultProps.feedType);
+        break;
+      case 'min-height':
+        const minHeight = newValue || this.defaultProps.minHeight;
+        this.style.minHeight = `${minHeight}px`;
         break;
     }
   }

@@ -22,7 +22,7 @@ export class CourierInboxList extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = `
       :host {
-        display: block;
+        flex: 1;
         width: 100%;
       }
 
@@ -30,6 +30,7 @@ export class CourierInboxList extends HTMLElement {
         list-style: none;
         padding: 0;
         margin: 0;
+        height: 100%;
       }
     `;
 
@@ -40,7 +41,6 @@ export class CourierInboxList extends HTMLElement {
   }
 
   async loadInbox(feedType: FeedType) {
-    console.log('CourierInboxList loadInbox', feedType, Courier.shared.client);
     if (!Courier.shared.client) {
       this.setErrorNoClient();
       return;
@@ -58,7 +58,6 @@ export class CourierInboxList extends HTMLElement {
   }
 
   setMessages(messages: InboxMessage[]) {
-    console.log('CourierInboxList setMessages', messages);
     this.messages = messages;
     this.error = null;
     this.isLoading = false;
@@ -110,9 +109,10 @@ export class CourierInboxList extends HTMLElement {
 
     if (this.error) {
       const errorElement = new CourierInfoState();
-      errorElement.setAttribute('title', this.error.message);
-      errorElement.setAttribute('button-text', 'Retry');
-      errorElement.setAttribute('button-action', 'retry');
+      errorElement.setButtonText('Retry');
+      errorElement.setButtonVariant('secondary');
+      errorElement.setButtonSize('small');
+      errorElement.setTitle(this.error.message);
       errorElement.setButtonClickCallback(() => this.handleRetry());
       this.list.appendChild(errorElement);
       return;
@@ -126,9 +126,10 @@ export class CourierInboxList extends HTMLElement {
 
     if (this.messages.length === 0) {
       const emptyElement = new CourierInfoState();
-      emptyElement.setAttribute('title', this.getEmptyText());
-      emptyElement.setAttribute('button-text', 'Refresh');
-      emptyElement.setAttribute('button-action', 'refresh');
+      emptyElement.setButtonText('Refresh');
+      emptyElement.setButtonVariant('secondary');
+      emptyElement.setButtonSize('small');
+      emptyElement.setTitle(this.getEmptyText());
       emptyElement.setButtonClickCallback(() => this.handleRefresh());
       this.list.appendChild(emptyElement);
       return;

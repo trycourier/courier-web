@@ -53,6 +53,15 @@ export class CourierInboxHeader extends HTMLElement {
         flex: 1;
       }
 
+      .title-section {
+        display: flex;
+        align-items: center;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
       h2[part="title"] {
         margin: 0;
         font-size: 20px;
@@ -61,7 +70,6 @@ export class CourierInboxHeader extends HTMLElement {
       }
 
       select[part="feed-type-select"] {
-        margin-left: 16px;
         padding: 4px 8px;
         border: 1px solid var(--courier-border, #e5e7eb);
         border-radius: 4px;
@@ -73,8 +81,17 @@ export class CourierInboxHeader extends HTMLElement {
 
     const headerContent = document.createElement('div');
     headerContent.className = 'header-content';
-    headerContent.appendChild(this.iconElement);
-    headerContent.appendChild(this.titleElement);
+
+    const titleSection = document.createElement('div');
+    titleSection.className = 'title-section';
+    titleSection.appendChild(this.iconElement);
+    titleSection.appendChild(this.titleElement);
+
+    const spacer = document.createElement('div');
+    spacer.className = 'spacer';
+
+    headerContent.appendChild(titleSection);
+    headerContent.appendChild(spacer);
     headerContent.appendChild(this.feedTypeSelect);
 
     shadow.appendChild(style);
