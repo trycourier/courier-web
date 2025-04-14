@@ -5,7 +5,6 @@ export class CourierInbox extends HTMLElement {
   private header: HTMLElement;
   private list: CourierInboxList;
   private authListener: AuthenticationListener | undefined;
-  private errorElement: HTMLElement | null = null;
 
   // Default props
   private defaultProps = {
@@ -30,25 +29,6 @@ export class CourierInbox extends HTMLElement {
     if (!(this.list instanceof CourierInboxList)) {
       throw new Error('Failed to create CourierInboxList instance');
     }
-    this.list.setFeedType(this.defaultProps.feedType);
-
-    // Create error element using courier-info-state
-    this.errorElement = document.createElement('courier-info-state');
-    this.errorElement.setAttribute('part', 'error');
-    this.errorElement.style.display = 'none';
-
-    // Listen for feed type changes from the header
-    this.header.addEventListener('feedTypeChange', (event: Event) => {
-      console.log('Feed type changed in inbox.ts:', (event as CustomEvent).detail);
-      const { feedType } = (event as CustomEvent).detail;
-      this.list.setFeedType(feedType);
-    });
-
-    this.authListener = Courier.shared.addAuthenticationListener((props) => {
-      console.log('Authentication state changed in inbox.ts:', props);
-      this.showError(props.userId ? null : 'User not signed in');
-      this.list.loadInbox(this.defaultProps.feedType);
-    });
 
     const style = document.createElement('style');
     style.textContent = `
@@ -60,20 +40,30 @@ export class CourierInbox extends HTMLElement {
 
     shadow.appendChild(style);
     shadow.appendChild(this.header);
-    shadow.appendChild(this.errorElement);
     shadow.appendChild(this.list);
-  }
 
-  private showError(message: string | null) {
-    if (this.errorElement && message) {
-      this.errorElement.setAttribute('title', message);
-      this.errorElement.style.display = 'block';
-      this.list.style.display = 'none';
-    }
+    // Listen for feed type changes from the header
+    this.header.addEventListener('feedTypeChange', (event: Event) => {
+      console.log('Feed type changed in inbox.ts:', (event as CustomEvent).detail);
+      const { feedType } = (event as CustomEvent).detail;
+      this.list.setFeedType(feedType);
+    });
+
+    this.authListener = Courier.shared.addAuthenticationListener((props) => {
+      console.log('Authentication state changed in inbox.ts:', props);
+      this.list.loadInbox(this.defaultProps.feedType);
+    });
+
   }
 
   static get observedAttributes() {
     return ['title', 'icon', 'feed-type'];
+  }
+
+  connectedCallback() {
+    console.log('CourierInbox connected');
+    console.log('CourierInbox client', Courier.shared.client);
+    this.list.loadInbox(this.defaultProps.feedType);
   }
 
   disconnectedCallback() {

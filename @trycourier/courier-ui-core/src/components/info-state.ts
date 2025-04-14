@@ -2,6 +2,7 @@ export class CourierInfoState extends HTMLElement {
   private container: HTMLElement;
   private titleElement: HTMLElement;
   private button: HTMLElement;
+  private buttonClickCallback: (() => void) | null = null;
 
   constructor() {
     super();
@@ -42,6 +43,12 @@ export class CourierInfoState extends HTMLElement {
     shadow.appendChild(this.container);
     this.container.appendChild(this.titleElement);
     this.container.appendChild(this.button);
+
+    this.button.addEventListener('click', () => {
+      if (this.buttonClickCallback) {
+        this.buttonClickCallback();
+      }
+    });
   }
 
   static get observedAttributes() {
@@ -66,9 +73,12 @@ export class CourierInfoState extends HTMLElement {
         break;
     }
   }
+
+  setButtonClickCallback(callback: () => void) {
+    this.buttonClickCallback = callback;
+  }
 }
 
-// Register the custom element
 if (!customElements.get('courier-info-state')) {
   customElements.define('courier-info-state', CourierInfoState);
 }

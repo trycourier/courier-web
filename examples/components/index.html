@@ -190,6 +190,8 @@
         showLogs: false
       });
 
+      listener.remove();
+
       // Add click event listeners to all buttons
       document.querySelectorAll('courier-button').forEach(button => {
         button.addEventListener('click', () => {

@@ -2,6 +2,7 @@ import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
 import { CourierInfoState } from "@trycourier/courier-ui-core";
 import { CourierLoadingState } from "@trycourier/courier-ui-core";
+import { CourierListItem } from "./courier-inbox-list-item";
 
 export class CourierInboxList extends HTMLElement {
   private list: HTMLUListElement;
@@ -9,13 +10,6 @@ export class CourierInboxList extends HTMLElement {
   private feedType: FeedType = 'inbox';
   private isLoading: boolean = true;
   private error: Error | null = null;
-  private hasLoaded: boolean = false;
-
-  // Default props
-  private defaultProps = {
-    loadingText: 'Loading messages...',
-    errorText: 'Error loading messages'
-  };
 
   constructor() {
     super();
@@ -41,53 +35,88 @@ export class CourierInboxList extends HTMLElement {
 
     shadow.appendChild(style);
     shadow.appendChild(this.list);
+
+    console.log('CourierInboxList constructor', Courier.shared.client);
   }
 
   async loadInbox(feedType: FeedType) {
+    console.log('CourierInboxList loadInbox', feedType, Courier.shared.client);
+    if (!Courier.shared.client) {
+      this.setErrorNoClient();
+      return;
+    }
+
     try {
       this.setLoading(true);
       const response = feedType === 'inbox' ? await Courier.shared.client?.inbox.getMessages() : await Courier.shared.client?.inbox.getArchivedMessages();
       this.setMessages(response?.data?.messages?.nodes || []);
-      this.hasLoaded = true;
     } catch (error) {
       this.setError(error as Error);
-      this.hasLoaded = true;
     } finally {
       this.setLoading(false);
     }
   }
 
   setMessages(messages: InboxMessage[]) {
+    console.log('CourierInboxList setMessages', messages);
     this.messages = messages;
+    this.error = null;
+    this.isLoading = false;
     this.updateItems();
   }
 
   setFeedType(feedType: FeedType) {
     this.feedType = feedType;
+    this.error = null;
+    this.isLoading = true;
+    this.messages = [];
     this.loadInbox(feedType);
   }
 
   setLoading(isLoading: boolean) {
+    this.error = null;
     this.isLoading = isLoading;
     this.updateItems();
   }
 
   setError(error: Error | null) {
+    console.log('CourierInboxList setError', error);
     this.error = error;
+    this.isLoading = false;
+    this.messages = [];
     this.updateItems();
+  }
+
+  setErrorNoClient() {
+    this.setError(new Error('No user signed in'));
   }
 
   private getEmptyText(): string {
     return `No ${this.feedType} messages yet`;
   }
 
+  private handleRetry() {
+    console.log('CourierInboxList handleRetry');
+    this.loadInbox(this.feedType);
+  }
+
+  private handleRefresh() {
+    console.log('CourierInboxList handleRefresh');
+    this.loadInbox(this.feedType);
+  }
+
   private updateItems() {
-    if (!this.list) {
-      console.error('List element not initialized');
+    this.list.innerHTML = '';
+
+    if (this.error) {
+      const errorElement = new CourierInfoState();
+      errorElement.setAttribute('title', this.error.message);
+      errorElement.setAttribute('button-text', 'Retry');
+      errorElement.setAttribute('button-action', 'retry');
+      errorElement.setButtonClickCallback(() => this.handleRetry());
+      this.list.appendChild(errorElement);
       return;
     }
-
-    this.list.innerHTML = '';
 
     if (this.isLoading) {
       const loadingElement = new CourierLoadingState();
@@ -95,32 +124,20 @@ export class CourierInboxList extends HTMLElement {
       return;
     }
 
-    if (this.error) {
-      const errorElement = new CourierInfoState();
-      errorElement.setAttribute('title', this.defaultProps.errorText);
-      errorElement.setAttribute('button-text', 'Retry');
-      errorElement.setAttribute('button-action', 'retry');
-      this.list.appendChild(errorElement);
-      return;
-    }
-
-    if (this.hasLoaded && this.messages.length === 0) {
+    if (this.messages.length === 0) {
       const emptyElement = new CourierInfoState();
       emptyElement.setAttribute('title', this.getEmptyText());
       emptyElement.setAttribute('button-text', 'Refresh');
       emptyElement.setAttribute('button-action', 'refresh');
+      emptyElement.setButtonClickCallback(() => this.handleRefresh());
       this.list.appendChild(emptyElement);
       return;
     }
 
     this.messages.forEach((message) => {
-      if (!message) {
-        console.warn('Skipping invalid message');
-        return;
-      }
-      const listItem = document.createElement('courier-list-item');
-      listItem.setAttribute('message', JSON.stringify(message));
-      listItem.setAttribute('feed-type', this.feedType);
+      const listItem = new CourierListItem();
+      listItem.setMessage(message);
+      listItem.setFeedType(this.feedType);
       this.list.appendChild(listItem);
     });
   }

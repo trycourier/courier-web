@@ -1,9 +1,11 @@
 import { InboxMessage } from "@trycourier/courier-js";
+import { FeedType } from "../types/feed-type";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;
   private subtitleElement: HTMLParagraphElement;
   private message: InboxMessage | null = null;
+  private feedType: FeedType = 'inbox';
 
   constructor() {
     super();
@@ -73,11 +75,17 @@ export class CourierListItem extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['message'];
+    return ['message', 'feed-type'];
   }
 
   connectedCallback() {
     const messageAttr = this.getAttribute('message');
+    const feedTypeAttr = this.getAttribute('feed-type');
+
+    if (feedTypeAttr) {
+      this.feedType = feedTypeAttr as FeedType;
+    }
+
     if (messageAttr) {
       try {
         this.message = JSON.parse(messageAttr) as InboxMessage;
@@ -96,7 +104,19 @@ export class CourierListItem extends HTMLElement {
       } catch (e) {
         console.error('Failed to parse message:', e);
       }
+    } else if (name === 'feed-type' && oldValue !== newValue) {
+      this.feedType = newValue as FeedType;
     }
+  }
+
+  setMessage(message: InboxMessage) {
+    this.message = message;
+    this.updateContent();
+  }
+
+  setFeedType(feedType: FeedType) {
+    this.feedType = feedType;
+    this.setAttribute('feed-type', feedType);
   }
 
   private updateContent() {
