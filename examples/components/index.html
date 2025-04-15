@@ -20,7 +20,7 @@
       <div class="grid-container">
         <div class="grid-row">
           <div class="grid-item no-padding">
-            <courier-inbox height="420px"></courier-inbox>
+            <courier-inbox height="420px" id="inbox"></courier-inbox>
           </div>
         </div>
       </div>
@@ -198,6 +198,13 @@
           alert('Button clicked!');
         });
       });
+
+      const inbox = document.getElementById('inbox');
+      inbox.addEventListener('message-click', (event) => {
+        const { message, index } = event.detail;
+        alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
+      });
+
     </script>
 </body>
 

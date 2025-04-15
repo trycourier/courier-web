@@ -5,6 +5,7 @@ export class CourierInbox extends HTMLElement {
   private header: HTMLElement;
   private list: CourierInboxList;
   private authListener: AuthenticationListener | undefined;
+  private onMessageClick?: (message: InboxMessage, index: number) => void;
 
   // Default props
   private defaultProps = {
@@ -15,7 +16,7 @@ export class CourierInbox extends HTMLElement {
   };
 
   static get observedAttributes() {
-    return ['title', 'icon', 'feed-type', 'height'];
+    return ['title', 'icon', 'feed-type', 'height', 'message-click'];
   }
 
   constructor() {
@@ -65,6 +66,19 @@ export class CourierInbox extends HTMLElement {
       console.log('Feed type changed in inbox.ts:', (event as CustomEvent).detail);
       const { feedType } = (event as CustomEvent).detail;
       this.list.setFeedType(feedType);
+    });
+
+    // Listen for message clicks from the list
+    this.list.setOnMessageClick((message, index) => {
+      if (this.onMessageClick) {
+        this.onMessageClick(message, index);
+      }
+      // Dispatch a custom event when a message is clicked
+      this.dispatchEvent(new CustomEvent('message-click', {
+        detail: { message, index },
+        bubbles: true,
+        composed: true
+      }));
     });
 
     this.authListener = Courier.shared.addAuthenticationListener((props) => {
@@ -142,6 +156,17 @@ export class CourierInbox extends HTMLElement {
       case 'height':
         const height = newValue || this.defaultProps.height;
         this.style.height = height;
+        break;
+      case 'message-click':
+        if (newValue) {
+          try {
+            this.onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
+          } catch (error) {
+            console.error('Failed to parse message-click handler:', error);
+          }
+        } else {
+          this.onMessageClick = undefined;
+        }
         break;
     }
   }

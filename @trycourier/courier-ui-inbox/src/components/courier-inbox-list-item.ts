@@ -6,6 +6,7 @@ export class CourierListItem extends HTMLElement {
   private subtitleElement: HTMLParagraphElement;
   private message: InboxMessage | null = null;
   private feedType: FeedType = 'inbox';
+  private onMessageClick: ((message: InboxMessage) => void) | null = null;
 
   constructor() {
     super();
@@ -69,13 +70,9 @@ export class CourierListItem extends HTMLElement {
     shadow.appendChild(this.subtitleElement);
 
     // Add click event listener
-    this.titleElement.addEventListener('click', () => {
-      if (this.message) {
-        this.dispatchEvent(new CustomEvent('messageClick', {
-          detail: { message: this.message },
-          bubbles: true,
-          composed: true
-        }));
+    this.addEventListener('click', () => {
+      if (this.message && this.onMessageClick) {
+        this.onMessageClick(this.message);
       }
     });
   }
@@ -123,6 +120,10 @@ export class CourierListItem extends HTMLElement {
   setFeedType(feedType: FeedType) {
     this.feedType = feedType;
     this.setAttribute('feed-type', feedType);
+  }
+
+  setOnMessageClick(callback: (message: InboxMessage) => void) {
+    this.onMessageClick = callback;
   }
 
   private updateContent() {

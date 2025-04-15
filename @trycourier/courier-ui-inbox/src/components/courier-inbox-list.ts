@@ -9,6 +9,7 @@ export class CourierInboxList extends HTMLElement {
   private feedType: FeedType = 'inbox';
   private isLoading = true;
   private error: Error | null = null;
+  private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
 
   constructor() {
     super();
@@ -41,6 +42,13 @@ export class CourierInboxList extends HTMLElement {
   }
 
   async loadInbox(feedType: FeedType): Promise<void> {
+
+    // Do not fetch if we cannot connect to the client
+    if (!Courier.shared.client) {
+      this.setErrorNoClient();
+      return;
+    }
+
     try {
       this.setLoading(true);
       const response = feedType === 'inbox'
@@ -70,7 +78,6 @@ export class CourierInboxList extends HTMLElement {
     this.feedType = feedType;
     this.error = null;
     this.isLoading = true;
-    this.messages = [];
     this.loadInbox(feedType);
   }
 
@@ -103,6 +110,10 @@ export class CourierInboxList extends HTMLElement {
     this.loadInbox(this.feedType);
   }
 
+  public setOnMessageClick(callback: (message: InboxMessage, index: number) => void): void {
+    this.onMessageClick = callback;
+  }
+
   private updateItems(): void {
     this.list.innerHTML = '';
 
@@ -133,10 +144,15 @@ export class CourierInboxList extends HTMLElement {
       return;
     }
 
-    this.messages.forEach(message => {
+    this.messages.forEach((message, index) => {
       const listItem = new CourierListItem();
       listItem.setMessage(message);
       listItem.setFeedType(this.feedType);
+      listItem.setOnMessageClick((message) => {
+        if (this.onMessageClick) {
+          this.onMessageClick(message, index);
+        }
+      });
       this.list.appendChild(listItem);
     });
   }
