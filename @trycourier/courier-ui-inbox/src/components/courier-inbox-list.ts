@@ -2,17 +2,23 @@ import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
 import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
+import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
+import { InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxDatastore } from "../datastore/courier-inbox-datastore";
 
 export class CourierInboxList extends HTMLElement {
-  private readonly list: HTMLUListElement;
+  private list: HTMLUListElement;
   private messages: InboxMessage[] = [];
   private feedType: FeedType = 'inbox';
   private isLoading = true;
   private error: Error | null = null;
   private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
+  private canPaginate = false;
+  private onRefresh: () => void;
 
-  constructor() {
+  constructor({ onRefresh }: { onRefresh: () => void }) {
     super();
+    this.onRefresh = onRefresh;
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.list = document.createElement('ul');
@@ -41,44 +47,42 @@ export class CourierInboxList extends HTMLElement {
     `;
   }
 
-  async loadInbox(feedType: FeedType): Promise<void> {
-
-    // Do not fetch if we cannot connect to the client
-    if (!Courier.shared.client) {
-      this.setErrorNoClient();
-      return;
-    }
-
-    try {
-      this.setLoading(true);
-      const response = feedType === 'inbox'
-        ? await Courier.shared.client?.inbox.getMessages()
-        : await Courier.shared.client?.inbox.getArchivedMessages();
-      this.setMessages(response?.data?.messages?.nodes || []);
-    } catch (error) {
-      this.setError(error as Error);
-    } finally {
-      this.setLoading(false);
+  public setDataSet(dataSet: InboxDataSet, feedType: FeedType): void {
+    if (feedType === this.feedType) {
+      this.messages = [...dataSet.messages]; // Create a new array to avoid reference issues
+      this.canPaginate = Boolean(dataSet.canPaginate); // Create a new boolean to avoid reference issues
+      this.error = null;
+      this.isLoading = false;
+      this.updateItems();
     }
   }
 
-  public addMessage(message: InboxMessage, index = 0): void {
-    this.messages.splice(index, 0, message);
-    this.updateItems();
+  public addMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
+    if (feedType === this.feedType) {
+      this.messages.splice(index, 0, message);
+      this.updateItems();
+    }
   }
 
-  public setMessages(messages: InboxMessage[]): void {
-    this.messages = messages;
-    this.error = null;
-    this.isLoading = false;
-    this.updateItems();
+  public removeMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
+    if (feedType === this.feedType) {
+      this.messages.splice(index, 1);
+      this.updateItems();
+    }
+  }
+
+  public updateMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
+    if (feedType === this.feedType) {
+      this.messages[index] = message;
+      this.updateItems();
+    }
   }
 
   public setFeedType(feedType: FeedType): void {
     this.feedType = feedType;
     this.error = null;
     this.isLoading = true;
-    this.loadInbox(feedType);
+    this.updateItems();
   }
 
   public setLoading(isLoading: boolean): void {
@@ -103,11 +107,11 @@ export class CourierInboxList extends HTMLElement {
   }
 
   private handleRetry(): void {
-    this.loadInbox(this.feedType);
+    this.onRefresh();
   }
 
   private handleRefresh(): void {
-    this.loadInbox(this.feedType);
+    this.onRefresh();
   }
 
   public setOnMessageClick(callback: (message: InboxMessage, index: number) => void): void {
@@ -153,9 +157,19 @@ export class CourierInboxList extends HTMLElement {
           this.onMessageClick(message, index);
         }
       });
+      listItem.setOnCloseClick((message) => {
+        CourierInboxDatastore.shared.archiveMessage(message, index);
+      });
       this.list.appendChild(listItem);
     });
+
+    if (this.canPaginate) {
+      const paginationItem = new CourierInboxPaginationListItem();
+      paginationItem.setAttribute('loading', 'true');
+      this.list.appendChild(paginationItem);
+    }
   }
+
 }
 
 if (!customElements.get('courier-inbox-list')) {

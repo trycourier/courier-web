@@ -26,6 +26,19 @@
       </div>
     </div>
 
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox(2)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding">
+            <courier-inbox height="420px" id="inbox"></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p class="package-title">@trycourier/<span class="package-name">courier-ui-core</span></p>
 
     <div class="grid-section">
@@ -180,17 +193,11 @@
       import { CourierIcon } from '@trycourier/courier-ui-core';
       import { Courier } from '@trycourier/courier-js';
 
-      const listener = Courier.shared.addAuthenticationListener((props) => {
-        console.log('Authentication state changed in index.html:', props);
-      });
-
       Courier.shared.signIn({
         userId: import.meta.env.VITE_USER_ID,
         jwt: import.meta.env.VITE_JWT,
         showLogs: false
       });
-
-      listener.remove();
 
       // Add click event listeners to all buttons
       document.querySelectorAll('courier-button').forEach(button => {

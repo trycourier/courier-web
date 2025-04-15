@@ -1,17 +1,26 @@
-import { AuthenticationListener, Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
+import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
+import { CourierInboxHeader } from "./courier-inbox-header";
+import { CourierIconName } from "@trycourier/courier-ui-core";
+import { InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxDataStoreListener } from "../datastore/courier-inbox-datastore-listener";
+import { CourierInboxDatastore } from "../datastore/courier-inbox-datastore";
+import { CourierInboxDataStoreEvents } from "../datastore/courier-inbox-datatore-events";
+import { FeedType } from "../types/feed-type";
 
-export class CourierInbox extends HTMLElement {
-  private header: HTMLElement;
+export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
+  private header: CourierInboxHeader;
   private list: CourierInboxList;
+  private datastoreListener: CourierInboxDataStoreListener | undefined;
   private authListener: AuthenticationListener | undefined;
   private onMessageClick?: (message: InboxMessage, index: number) => void;
+  private currentFeed: FeedType = 'inbox';
 
   // Default props
   private defaultProps = {
     title: 'Inbox',
-    icon: '',
-    feedType: 'inbox' as const,
+    icon: CourierIconName.Inbox,
+    feedType: this.currentFeed,
     height: '768px'
   };
 
@@ -25,16 +34,20 @@ export class CourierInbox extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' });
 
     // Create header with default props
-    this.header = document.createElement('courier-inbox-header');
-    this.header.setAttribute('title', this.defaultProps.title);
-    this.header.setAttribute('icon', this.defaultProps.icon);
-    this.header.setAttribute('feed-type', this.defaultProps.feedType);
+    this.header = new CourierInboxHeader();
+    this.header.setTitle(this.defaultProps.title);
+    this.header.setIcon(this.defaultProps.icon);
+    this.header.setFeedType(this.defaultProps.feedType, 0);
 
     // Create list and ensure it's properly initialized
-    this.list = document.createElement('courier-inbox-list') as CourierInboxList;
-    if (!(this.list instanceof CourierInboxList)) {
-      throw new Error('Failed to create CourierInboxList instance');
-    }
+    this.list = new CourierInboxList({
+      onRefresh: () => {
+        this.load({
+          feedType: this.currentFeed,
+          canUseCache: false
+        });
+      }
+    });
 
     const style = document.createElement('style');
     style.textContent = `
@@ -64,8 +77,13 @@ export class CourierInbox extends HTMLElement {
     // Listen for feed type changes from the header
     this.header.addEventListener('feedTypeChange', (event: Event) => {
       console.log('Feed type changed in inbox.ts:', (event as CustomEvent).detail);
-      const { feedType } = (event as CustomEvent).detail;
+      const { feedType } = (event as CustomEvent).detail as { feedType: FeedType };
+      this.currentFeed = feedType;
       this.list.setFeedType(feedType);
+      this.load({
+        feedType: this.currentFeed,
+        canUseCache: true
+      });
     });
 
     // Listen for message clicks from the list
@@ -81,61 +99,51 @@ export class CourierInbox extends HTMLElement {
       }));
     });
 
+    // Attach the datastore listener
+    this.datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
+
+    // Listen for authentication state changes
     this.authListener = Courier.shared.addAuthenticationListener((props) => {
-      console.log('Authentication state changed in inbox.ts:', props);
-      this.load();
+      this.load({ feedType: this.currentFeed, canUseCache: true });
     });
   }
 
-  private async load() {
-    try {
-      await this.list.loadInbox(this.defaultProps.feedType);
-      await this.connectSocket();
-    } catch (error) {
-      console.error('Failed to load inbox:', error);
-      throw error;
-    }
+  private async load(props: { feedType: FeedType, canUseCache: boolean }) {
+    await CourierInboxDatastore.shared.load(props);
   }
 
-  private async connectSocket() {
-    const socket = Courier.shared.client?.inbox.socket;
-
-    try {
-      // If the socket is not available, return early
-      if (!socket) {
-        console.log('CourierInbox socket not available');
-        return;
-      }
-
-      // If the socket is already connected, return early
-      if (socket.isConnected) {
-        console.log('CourierInbox socket already connected');
-        return;
-      }
-
-      // Handle messages
-      socket.receivedMessage = (message: InboxMessage) => this.list.addMessage(message);
-
-      // Handle message events
-      socket.receivedMessageEvent = (event: MessageEvent) => {
-        console.log('CourierInboxList message event', event);
-      };
-
-      // Connect and subscribe to socket
-      await socket.connect();
-      await socket.sendSubscribe();
-      socket.keepAlive();
-      console.log('CourierInbox socket connected');
-    } catch (error) {
-      console.error('Failed to connect socket:', error);
-    }
+  // Datastore event handlers
+  public onDataSetChange(dataSet: InboxDataSet, feedType: FeedType): void {
+    console.log('onDataSetChange', dataSet, feedType);
+    this.list.setDataSet(dataSet, feedType);
   }
 
+  public onMessageAdd(message: InboxMessage, index: number, feedType: FeedType): void {
+    console.log('onMessageAdd', message, index, feedType);
+    this.list.addMessage(message, index, feedType);
+  }
+
+  public onMessageRemove(message: InboxMessage, index: number, feedType: FeedType): void {
+    this.list.removeMessage(message, index, feedType);
+  }
+
+  public onMessageUpdate(message: InboxMessage, index: number, feedType: FeedType): void {
+    console.log('onMessageUpdate', message, index, feedType);
+    // this.list.updateMessage(message, index);
+  }
+
+  // Load the inbox when the component is connected
   connectedCallback() {
-    this.load();
+    this.load({
+      feedType: this.currentFeed,
+      canUseCache: false
+    });
   }
 
+  // Remove the datastore listener and authentication listener
   disconnectedCallback() {
+    this.datastoreListener?.remove();
     this.authListener?.remove();
   }
 

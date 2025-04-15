@@ -1,12 +1,15 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
+import { CourierIcon, CourierIconButton, CourierIconName } from "@trycourier/courier-ui-core";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;
   private subtitleElement: HTMLParagraphElement;
+  private closeButton: CourierIconButton | null = null;
   private message: InboxMessage | null = null;
   private feedType: FeedType = 'inbox';
   private onMessageClick: ((message: InboxMessage) => void) | null = null;
+  private onCloseClick: ((message: InboxMessage) => void) | null = null;
 
   constructor() {
     super();
@@ -21,7 +24,8 @@ export class CourierListItem extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = `
       :host {
-        display: block;
+        display: flex;
+        align-items: flex-start;
         padding: 16px;
         border-bottom: 1px solid var(--courier-list-border-color, #e5e7eb);
         font-family: inherit;
@@ -44,6 +48,11 @@ export class CourierListItem extends HTMLElement {
         border-bottom: none;
       }
 
+      .content {
+        flex: 1;
+        min-width: 0;
+      }
+
       p {
         margin: 0;
         overflow-wrap: break-word;
@@ -63,15 +72,25 @@ export class CourierListItem extends HTMLElement {
         padding-top: 4px;
         line-height: 1.4;
       }
+
+      courier-icon {
+        margin-left: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
     `;
 
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'content';
+    contentDiv.appendChild(this.titleElement);
+    contentDiv.appendChild(this.subtitleElement);
+
     shadow.appendChild(style);
-    shadow.appendChild(this.titleElement);
-    shadow.appendChild(this.subtitleElement);
+    shadow.appendChild(contentDiv);
 
     // Add click event listener
-    this.addEventListener('click', () => {
-      if (this.message && this.onMessageClick) {
+    this.addEventListener('click', (e) => {
+      if (this.message && this.onMessageClick && !(e.target instanceof CourierIcon)) {
         this.onMessageClick(this.message);
       }
     });
@@ -97,6 +116,8 @@ export class CourierListItem extends HTMLElement {
         console.error('Failed to parse message:', e);
       }
     }
+
+    this.updateCloseButton();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -109,6 +130,7 @@ export class CourierListItem extends HTMLElement {
       }
     } else if (name === 'feed-type' && oldValue !== newValue) {
       this.feedType = newValue as FeedType;
+      this.updateCloseButton();
     }
   }
 
@@ -120,10 +142,40 @@ export class CourierListItem extends HTMLElement {
   setFeedType(feedType: FeedType) {
     this.feedType = feedType;
     this.setAttribute('feed-type', feedType);
+    this.updateCloseButton();
   }
 
   setOnMessageClick(callback: (message: InboxMessage) => void) {
     this.onMessageClick = callback;
+  }
+
+  setOnCloseClick(callback: (message: InboxMessage) => void) {
+    this.onCloseClick = callback;
+  }
+
+  private updateCloseButton() {
+    const shadow = this.shadowRoot;
+    if (!shadow) return;
+
+    // Remove existing close button if any
+    if (this.closeButton) {
+      shadow.removeChild(this.closeButton);
+      this.closeButton = null;
+    }
+
+    // Add close button only for inbox feed type
+    if (this.feedType === 'inbox') {
+      this.closeButton = new CourierIconButton(CourierIconName.Close);
+      // Add click handler for close button
+      this.closeButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event from bubbling up
+        if (this.message && this.onCloseClick) {
+          this.onCloseClick(this.message);
+        }
+      });
+
+      shadow.appendChild(this.closeButton);
+    }
   }
 
   private updateContent() {

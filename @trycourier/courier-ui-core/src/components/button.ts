@@ -1,5 +1,7 @@
 import { theme } from "../utils/theme";
 
+export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary';
+
 export class CourierButton extends HTMLElement {
   private button: HTMLButtonElement;
   static observedAttributes = [
@@ -50,6 +52,7 @@ export class CourierButton extends HTMLElement {
       button:active {
         filter: brightness(0.8);
       }
+        
       button[data-variant="primary"] {
         background-color: var(--courier-button-background-color, ${theme.light.colors.primary});
         color: var(--courier-button-text-color, ${theme.light.colors.secondary});
@@ -133,7 +136,7 @@ export class CourierButton extends HTMLElement {
   }
 
   private updateVariant() {
-    const variant = this.getAttribute('variant');
+    const variant = this.getAttribute('variant') as CourierButtonVariant | null;
     const mode = this.getAttribute('mode') || 'light';
 
     if (variant) {
@@ -201,6 +204,59 @@ export class CourierButton extends HTMLElement {
       this.button.style.setProperty('--courier-button-text-color', textColor);
     } else {
       this.button.style.removeProperty('--courier-button-text-color');
+    }
+  }
+
+  public setAttributes(attributes: {
+    disabled?: boolean;
+    backgroundColor?: string;
+    cornerRadius?: string;
+    borderColor?: string;
+    borderRadius?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    variant?: CourierButtonVariant;
+    mode?: string;
+    textColor?: string;
+  }): void {
+    if (attributes.disabled !== undefined) {
+      if (attributes.disabled) {
+        this.setAttribute('disabled', '');
+      } else {
+        this.removeAttribute('disabled');
+      }
+    }
+
+    if (attributes.backgroundColor) {
+      this.setAttribute('background-color', attributes.backgroundColor);
+    }
+    if (attributes.cornerRadius) {
+      this.setAttribute('corner-radius', attributes.cornerRadius);
+    }
+    if (attributes.borderColor) {
+      this.setAttribute('border-color', attributes.borderColor);
+    }
+    if (attributes.borderRadius) {
+      this.setAttribute('border-radius', attributes.borderRadius);
+    }
+    if (attributes.fontFamily) {
+      this.setAttribute('font-family', attributes.fontFamily);
+    }
+    if (attributes.fontSize) {
+      this.setAttribute('font-size', attributes.fontSize);
+    }
+    if (attributes.fontWeight) {
+      this.setAttribute('font-weight', attributes.fontWeight);
+    }
+    if (attributes.variant) {
+      this.setAttribute('variant', attributes.variant);
+    }
+    if (attributes.mode) {
+      this.setAttribute('mode', attributes.mode);
+    }
+    if (attributes.textColor) {
+      this.setAttribute('text-color', attributes.textColor);
     }
   }
 }
