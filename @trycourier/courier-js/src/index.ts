@@ -36,8 +36,9 @@ import {
   CourierGetInboxMessageResponse,
   CourierGetInboxMessagesResponse,
   InboxMessage,
-  InboxAction
+  InboxAction,
 } from './types/inbox';
+import { MessageEvent } from './socket/inbox-socket';
 import { CourierSocket } from './socket/courier-socket';
 
 // Client
@@ -65,6 +66,7 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
+  MessageEvent
 };
 
 export {

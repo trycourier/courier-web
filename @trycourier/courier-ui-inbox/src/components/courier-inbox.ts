@@ -1,4 +1,4 @@
-import { AuthenticationListener, Courier } from "@trycourier/courier-js";
+import { AuthenticationListener, Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 
 export class CourierInbox extends HTMLElement {
@@ -11,8 +11,12 @@ export class CourierInbox extends HTMLElement {
     title: 'Inbox',
     icon: '',
     feedType: 'inbox' as const,
-    minHeight: '768'
+    height: '768px'
   };
+
+  static get observedAttributes() {
+    return ['title', 'icon', 'feed-type', 'height'];
+  }
 
   constructor() {
     super();
@@ -37,7 +41,18 @@ export class CourierInbox extends HTMLElement {
         display: flex;
         flex-direction: column;
         width: 100%;
-        min-height: ${this.defaultProps.minHeight}px;
+        height: ${this.defaultProps.height}px;
+        overflow: hidden;
+      }
+
+      courier-inbox-header {
+        flex-shrink: 0;
+      }
+
+      courier-inbox-list {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
     `;
 
@@ -54,19 +69,56 @@ export class CourierInbox extends HTMLElement {
 
     this.authListener = Courier.shared.addAuthenticationListener((props) => {
       console.log('Authentication state changed in inbox.ts:', props);
-      this.list.loadInbox(this.defaultProps.feedType);
+      this.load();
     });
-
   }
 
-  static get observedAttributes() {
-    return ['title', 'icon', 'feed-type', 'min-height'];
+  private async load() {
+    try {
+      await this.list.loadInbox(this.defaultProps.feedType);
+      await this.connectSocket();
+    } catch (error) {
+      console.error('Failed to load inbox:', error);
+      throw error;
+    }
+  }
+
+  private async connectSocket() {
+    const socket = Courier.shared.client?.inbox.socket;
+
+    try {
+      // If the socket is not available, return early
+      if (!socket) {
+        console.log('CourierInbox socket not available');
+        return;
+      }
+
+      // If the socket is already connected, return early
+      if (socket.isConnected) {
+        console.log('CourierInbox socket already connected');
+        return;
+      }
+
+      // Handle messages
+      socket.receivedMessage = (message: InboxMessage) => this.list.addMessage(message);
+
+      // Handle message events
+      socket.receivedMessageEvent = (event: MessageEvent) => {
+        console.log('CourierInboxList message event', event);
+      };
+
+      // Connect and subscribe to socket
+      await socket.connect();
+      await socket.sendSubscribe();
+      socket.keepAlive();
+      console.log('CourierInbox socket connected');
+    } catch (error) {
+      console.error('Failed to connect socket:', error);
+    }
   }
 
   connectedCallback() {
-    console.log('CourierInbox connected');
-    console.log('CourierInbox client', Courier.shared.client);
-    this.list.loadInbox(this.defaultProps.feedType);
+    this.load();
   }
 
   disconnectedCallback() {
@@ -87,9 +139,9 @@ export class CourierInbox extends HTMLElement {
         this.header.setAttribute('feed-type', newValue || this.defaultProps.feedType);
         this.list.setFeedType(newValue as any || this.defaultProps.feedType);
         break;
-      case 'min-height':
-        const minHeight = newValue || this.defaultProps.minHeight;
-        this.style.minHeight = `${minHeight}px`;
+      case 'height':
+        const height = newValue || this.defaultProps.height;
+        this.style.height = height;
         break;
     }
   }

@@ -27,8 +27,8 @@ export class CourierListItem extends HTMLElement {
         cursor: pointer;
         transition: background-color 0.2s ease;
         margin: 0;
-        display: block;
         width: 100%;
+        box-sizing: border-box;
       }
 
       :host(:hover) {
@@ -45,16 +45,22 @@ export class CourierListItem extends HTMLElement {
 
       p {
         margin: 0;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
       }
 
       p[part="title"] {
-        font-size: 16px;
+        font-size: 14px;
+        line-height: 1.4;
       }
 
       p[part="subtitle"] {
         font-size: 14px;
         color: var(--courier-text-secondary, #6b7280);
-        padding-top: 0;
+        padding-top: 4px;
+        line-height: 1.4;
       }
     `;
 

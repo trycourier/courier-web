@@ -23,7 +23,7 @@ interface SocketPayload {
   type: PayloadType;
 }
 
-interface MessageEvent {
+export interface MessageEvent {
   event: EventType;
   messageId?: string;
   type: string;
@@ -83,6 +83,8 @@ export class InboxSocket extends CourierSocket {
     if (this.options.tenantId) {
       data.data.accountId = this.options.tenantId;
     }
+
+    this.options.logger?.debug('Sending subscribe request', data);
 
     await this.send(data);
   }

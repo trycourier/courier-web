@@ -1,26 +1,31 @@
 import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
-import { CourierInfoState } from "@trycourier/courier-ui-core";
-import { CourierLoadingState } from "@trycourier/courier-ui-core";
+import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 
 export class CourierInboxList extends HTMLElement {
-  private list: HTMLUListElement;
+  private readonly list: HTMLUListElement;
   private messages: InboxMessage[] = [];
   private feedType: FeedType = 'inbox';
-  private isLoading: boolean = true;
+  private isLoading = true;
   private error: Error | null = null;
 
   constructor() {
     super();
-
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.list = document.createElement('ul');
     this.list.setAttribute('part', 'list');
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    shadow.appendChild(style);
+    shadow.appendChild(this.list);
+  }
+
+  private getStyles(): string {
+    return `
       :host {
         flex: 1;
         width: 100%;
@@ -33,22 +38,14 @@ export class CourierInboxList extends HTMLElement {
         height: 100%;
       }
     `;
-
-    shadow.appendChild(style);
-    shadow.appendChild(this.list);
-
-    console.log('CourierInboxList constructor', Courier.shared.client);
   }
 
-  async loadInbox(feedType: FeedType) {
-    if (!Courier.shared.client) {
-      this.setErrorNoClient();
-      return;
-    }
-
+  async loadInbox(feedType: FeedType): Promise<void> {
     try {
       this.setLoading(true);
-      const response = feedType === 'inbox' ? await Courier.shared.client?.inbox.getMessages() : await Courier.shared.client?.inbox.getArchivedMessages();
+      const response = feedType === 'inbox'
+        ? await Courier.shared.client?.inbox.getMessages()
+        : await Courier.shared.client?.inbox.getArchivedMessages();
       this.setMessages(response?.data?.messages?.nodes || []);
     } catch (error) {
       this.setError(error as Error);
@@ -57,14 +54,19 @@ export class CourierInboxList extends HTMLElement {
     }
   }
 
-  setMessages(messages: InboxMessage[]) {
+  public addMessage(message: InboxMessage, index = 0): void {
+    this.messages.splice(index, 0, message);
+    this.updateItems();
+  }
+
+  public setMessages(messages: InboxMessage[]): void {
     this.messages = messages;
     this.error = null;
     this.isLoading = false;
     this.updateItems();
   }
 
-  setFeedType(feedType: FeedType) {
+  public setFeedType(feedType: FeedType): void {
     this.feedType = feedType;
     this.error = null;
     this.isLoading = true;
@@ -72,21 +74,20 @@ export class CourierInboxList extends HTMLElement {
     this.loadInbox(feedType);
   }
 
-  setLoading(isLoading: boolean) {
+  public setLoading(isLoading: boolean): void {
     this.error = null;
     this.isLoading = isLoading;
     this.updateItems();
   }
 
-  setError(error: Error | null) {
-    console.log('CourierInboxList setError', error);
+  public setError(error: Error | null): void {
     this.error = error;
     this.isLoading = false;
     this.messages = [];
     this.updateItems();
   }
 
-  setErrorNoClient() {
+  public setErrorNoClient(): void {
     this.setError(new Error('No user signed in'));
   }
 
@@ -94,17 +95,15 @@ export class CourierInboxList extends HTMLElement {
     return `No ${this.feedType} messages yet`;
   }
 
-  private handleRetry() {
-    console.log('CourierInboxList handleRetry');
+  private handleRetry(): void {
     this.loadInbox(this.feedType);
   }
 
-  private handleRefresh() {
-    console.log('CourierInboxList handleRefresh');
+  private handleRefresh(): void {
     this.loadInbox(this.feedType);
   }
 
-  private updateItems() {
+  private updateItems(): void {
     this.list.innerHTML = '';
 
     if (this.error) {
@@ -119,8 +118,7 @@ export class CourierInboxList extends HTMLElement {
     }
 
     if (this.isLoading) {
-      const loadingElement = new CourierLoadingState();
-      this.list.appendChild(loadingElement);
+      this.list.appendChild(new CourierLoadingState());
       return;
     }
 
@@ -135,7 +133,7 @@ export class CourierInboxList extends HTMLElement {
       return;
     }
 
-    this.messages.forEach((message) => {
+    this.messages.forEach(message => {
       const listItem = new CourierListItem();
       listItem.setMessage(message);
       listItem.setFeedType(this.feedType);
