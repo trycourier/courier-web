@@ -1,6 +1,6 @@
 import { Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxDataStoreListener } from "./courier-inbox-datastore-listener";
+import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { FeedType } from "../types/feed-type";
 
 export class CourierInboxDatastore {

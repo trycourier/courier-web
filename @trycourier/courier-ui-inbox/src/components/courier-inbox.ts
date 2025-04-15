@@ -3,9 +3,9 @@ import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierIconName } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxDataStoreListener } from "../datastore/courier-inbox-datastore-listener";
-import { CourierInboxDatastore } from "../datastore/courier-inbox-datastore";
-import { CourierInboxDataStoreEvents } from "../datastore/courier-inbox-datatore-events";
+import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
+import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { FeedType } from "../types/feed-type";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
@@ -115,22 +115,31 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   // Datastore event handlers
   public onDataSetChange(dataSet: InboxDataSet, feedType: FeedType): void {
-    console.log('onDataSetChange', dataSet, feedType);
-    this.list.setDataSet(dataSet, feedType);
+    if (this.currentFeed === feedType) {
+      this.list.setDataSet(dataSet);
+      this.header.setFeedType(feedType, this.list.messages.length);
+    }
   }
 
   public onMessageAdd(message: InboxMessage, index: number, feedType: FeedType): void {
-    console.log('onMessageAdd', message, index, feedType);
-    this.list.addMessage(message, index, feedType);
+    if (this.currentFeed === feedType) {
+      this.list.addMessage(message, index);
+      this.header.setFeedType(feedType, this.list.messages.length);
+    }
   }
 
   public onMessageRemove(message: InboxMessage, index: number, feedType: FeedType): void {
-    this.list.removeMessage(message, index, feedType);
+    if (this.currentFeed === feedType) {
+      this.list.removeMessage(index);
+      this.header.setFeedType(feedType, this.list.messages.length);
+    }
   }
 
   public onMessageUpdate(message: InboxMessage, index: number, feedType: FeedType): void {
-    console.log('onMessageUpdate', message, index, feedType);
-    // this.list.updateMessage(message, index);
+    if (this.currentFeed === feedType) {
+      this.list.updateMessage(message, index);
+      this.header.setFeedType(feedType, this.list.messages.length);
+    }
   }
 
   // Load the inbox when the component is connected

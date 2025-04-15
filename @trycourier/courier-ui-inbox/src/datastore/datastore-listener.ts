@@ -1,5 +1,5 @@
-import { CourierInboxDatastore } from "./courier-inbox-datastore";
-import { CourierInboxDataStoreEvents } from "./courier-inbox-datatore-events";
+import { CourierInboxDatastore } from "./datastore";
+import { CourierInboxDataStoreEvents } from "./datatore-events";
 
 export class CourierInboxDataStoreListener {
   readonly events: CourierInboxDataStoreEvents;

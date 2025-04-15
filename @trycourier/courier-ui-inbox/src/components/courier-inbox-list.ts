@@ -1,20 +1,24 @@
-import { Courier, InboxMessage } from "@trycourier/courier-js";
+import { InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
 import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxDatastore } from "../datastore/courier-inbox-datastore";
+import { CourierInboxDatastore } from "../datastore/datastore";
 
 export class CourierInboxList extends HTMLElement {
   private list: HTMLUListElement;
-  private messages: InboxMessage[] = [];
+  private _messages: InboxMessage[] = [];
   private feedType: FeedType = 'inbox';
   private isLoading = true;
   private error: Error | null = null;
   private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
   private canPaginate = false;
   private onRefresh: () => void;
+
+  public get messages(): InboxMessage[] {
+    return this._messages;
+  }
 
   constructor({ onRefresh }: { onRefresh: () => void }) {
     super();
@@ -47,35 +51,27 @@ export class CourierInboxList extends HTMLElement {
     `;
   }
 
-  public setDataSet(dataSet: InboxDataSet, feedType: FeedType): void {
-    if (feedType === this.feedType) {
-      this.messages = [...dataSet.messages]; // Create a new array to avoid reference issues
-      this.canPaginate = Boolean(dataSet.canPaginate); // Create a new boolean to avoid reference issues
-      this.error = null;
-      this.isLoading = false;
-      this.updateItems();
-    }
+  public setDataSet(dataSet: InboxDataSet): void {
+    this._messages = [...dataSet.messages]; // Create a new array to avoid reference issues
+    this.canPaginate = Boolean(dataSet.canPaginate); // Create a new boolean to avoid reference issues
+    this.error = null;
+    this.isLoading = false;
+    this.updateItems();
   }
 
-  public addMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
-    if (feedType === this.feedType) {
-      this.messages.splice(index, 0, message);
-      this.updateItems();
-    }
+  public addMessage(message: InboxMessage, index = 0): void {
+    this._messages.splice(index, 0, message);
+    this.updateItems();
   }
 
-  public removeMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
-    if (feedType === this.feedType) {
-      this.messages.splice(index, 1);
-      this.updateItems();
-    }
+  public removeMessage(index = 0): void {
+    this._messages.splice(index, 1);
+    this.updateItems();
   }
 
-  public updateMessage(message: InboxMessage, index = 0, feedType: FeedType): void {
-    if (feedType === this.feedType) {
-      this.messages[index] = message;
-      this.updateItems();
-    }
+  public updateMessage(message: InboxMessage, index = 0): void {
+    this._messages[index] = message;
+    this.updateItems();
   }
 
   public setFeedType(feedType: FeedType): void {
@@ -94,7 +90,7 @@ export class CourierInboxList extends HTMLElement {
   public setError(error: Error | null): void {
     this.error = error;
     this.isLoading = false;
-    this.messages = [];
+    this._messages = [];
     this.updateItems();
   }
 
@@ -137,7 +133,7 @@ export class CourierInboxList extends HTMLElement {
       return;
     }
 
-    if (this.messages.length === 0) {
+    if (this._messages.length === 0) {
       const emptyElement = new CourierInfoState();
       emptyElement.setButtonText('Refresh');
       emptyElement.setButtonVariant('secondary');
@@ -148,7 +144,7 @@ export class CourierInboxList extends HTMLElement {
       return;
     }
 
-    this.messages.forEach((message, index) => {
+    this._messages.forEach((message, index) => {
       const listItem = new CourierListItem();
       listItem.setMessage(message);
       listItem.setFeedType(this.feedType);
