@@ -66,5 +66,18 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Prepare CourierJS",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "prepare"
+      ],
+      "cwd": "${workspaceFolder}/@trycourier/courier-js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
   ]
 }

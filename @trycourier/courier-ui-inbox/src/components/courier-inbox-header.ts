@@ -1,11 +1,11 @@
 import { FeedType } from "../types/feed-type";
 import { CourierButton, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxMenu } from "./courier-inbox-menu";
+import { CourierInboxFilterMenu } from "./courier-inbox-filter-menu";
 
 export class CourierInboxHeader extends HTMLElement {
   private titleElement: HTMLHeadingElement;
   private iconElement: HTMLElement;
-  private optionMenu: CourierInboxMenu;
+  private optionMenu: CourierInboxFilterMenu;
   private feedType: FeedType = 'inbox';
   protected _title: string = this.getContentForFeedType(this.feedType).title;
   private icon: string = this.getContentForFeedType(this.feedType).icon;
@@ -24,7 +24,7 @@ export class CourierInboxHeader extends HTMLElement {
     this.titleElement = document.createElement('h2');
     this.titleElement.setAttribute('part', 'title');
 
-    this.optionMenu = new CourierInboxMenu([
+    this.optionMenu = new CourierInboxFilterMenu([
       {
         label: 'Inbox',
         icon: CourierIconSource.inbox,
@@ -47,7 +47,7 @@ export class CourierInboxHeader extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px;
+        padding: 12px 16px;
         background-color: var(--courier-header-bg, #ffffff);
         border-bottom: 1px solid var(--courier-header-border, #e5e7eb);
       }
@@ -78,15 +78,6 @@ export class CourierInboxHeader extends HTMLElement {
         font-size: 18px;
         font-weight: 50;
         color: var(--courier-text-primary, #111827);
-      }
-
-      select[part="feed-type-select"] {
-        padding: 4px 8px;
-        border: 1px solid var(--courier-border, #e5e7eb);
-        border-radius: 4px;
-        background-color: var(--courier-bg, #ffffff);
-        color: var(--courier-text-primary, #111827);
-        font-size: 14px;
       }
 
       .actions {

@@ -1,188 +1,163 @@
-import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierInbox } from "./courier-inbox";
 
-export type CourierInboxMenuOption = {
-  label: string;
-  icon: string;
-  onClick: () => void;
-};
-
-class CourierInboxMenuItem extends HTMLElement {
-  private option: CourierInboxMenuOption;
-  private isSelected: boolean;
-  private content: HTMLDivElement;
-  private itemIcon: CourierIcon;
-  private _title: HTMLParagraphElement;
-  private checkIcon: CourierIcon;
-
-  constructor(option: CourierInboxMenuOption, isSelected: boolean) {
-    super();
-
-    this.option = option;
-    this.isSelected = isSelected;
-
-    const shadow = this.attachShadow({ mode: 'open' });
-
-    const style = document.createElement('style');
-    style.textContent = `
-      :host {
-        display: flex;
-        flex-direction: row;
-        height: 36px;
-        padding: 0 12px;
-        cursor: pointer;
-      }
-
-      :host(:hover) {
-        background-color: var(--courier-list-hover-color, #f3f4f6);
-      }
-
-      :host(:active) {
-        background-color: var(--courier-list-active-color, #e5e7eb);
-      }
-
-      .menu-item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        gap: 12px;
-      }
-
-      .spacer {
-        flex: 1;
-      }
-
-      p {
-        margin: 0;
-        font-size: 14px;
-        color: var(--courier-text-primary, #111827);
-      }
-
-      .check-icon {
-        display: none;
-      }
-    `;
-
-    this.content = document.createElement('div');
-    this.content.className = 'menu-item';
-
-    this.itemIcon = new CourierIcon();
-    this.itemIcon.setAttribute('svg', this.option.icon);
-    this.itemIcon.setAttribute('size', '16');
-
-    this._title = document.createElement('p');
-    this._title.textContent = this.option.label;
-
-    const spacer = document.createElement('div');
-    spacer.className = 'spacer';
-
-    this.checkIcon = new CourierIcon();
-    this.checkIcon.setAttribute('icon', 'check');
-
-    this.content.appendChild(this.itemIcon);
-    this.content.appendChild(this._title);
-    this.content.appendChild(spacer);
-    this.content.appendChild(this.checkIcon);
-
-    shadow.appendChild(style);
-    shadow.appendChild(this.content);
-
-    this.checkIcon.style.display = this.isSelected ? 'block' : 'none';
-  }
-}
+export type CourierInboxMenuPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
 
 export class CourierInboxMenu extends HTMLElement {
-  private menuButton: CourierIconButton;
-  private menu: HTMLDivElement;
-  private options: CourierInboxMenuOption[];
-  private selectedIndex: number = 0;
+  private triggerButton: CourierIconButton;
+  private popup: HTMLDivElement;
+  private inbox: CourierInbox;
+  private width: string = '400px';
+  private height: string = '400px';
+  private top: CourierInboxMenuPosition = 'bottom';
+  private left: CourierInboxMenuPosition = 'right';
 
-  constructor(options: CourierInboxMenuOption[]) {
+  static get observedAttributes() {
+    return ['top', 'left'];
+  }
+
+  constructor() {
     super();
-
-    this.options = options;
-    this.selectedIndex = 0;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this.menuButton = new CourierIconButton('filter');
-    this.menu = document.createElement('div');
-    this.menu.className = 'menu';
+    // Create trigger button
+    this.triggerButton = new CourierIconButton('inbox');
+
+    // Create popup container
+    this.popup = document.createElement('div');
+    this.popup.className = 'popup';
+
+    // Create content container
+    this.inbox = new CourierInbox();
+    this.inbox.setAttribute('height', '100%');
 
     const style = document.createElement('style');
     style.textContent = `
       :host {
-        position: relative;
         display: inline-block;
+        position: relative;
       }
 
-      .menu {
+      .popup {
         display: none;
         position: absolute;
-        top: 40px;
-        right: -10px;
+        background: var(--Background-Default-Primary, #FFF);
         border-radius: var(--Radius-md, 6px);
         border: 1px solid var(--Stroke-Subtle-Primary, #E5E5E5);
-        background: var(--Background-Default-Primary, #FFF);
         box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
         z-index: 1000;
-        min-width: 200px;
+        width: ${this.width};
+        height: ${this.height};
         overflow: hidden;
-        padding: 4px 0;
+        transform: translateZ(0);
+        will-change: transform;
+      }
+
+      courier-inbox {
+        height: 100%;
       }
     `;
 
     shadow.appendChild(style);
-    shadow.appendChild(this.menuButton);
-    shadow.appendChild(this.menu);
+    shadow.appendChild(this.triggerButton);
+    shadow.appendChild(this.popup);
+    this.popup.appendChild(this.inbox);
 
-    this.menuButton.addEventListener('click', this.toggleMenu.bind(this));
+    // Add event listeners
+    this.triggerButton.addEventListener('click', this.togglePopup.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
-    this.setOptions(options);
+    // Initialize popup position
+    this.updatePopupPosition();
   }
 
-  public setOptions(options: CourierInboxMenuOption[]) {
-    this.options = options;
-    this.renderMenu();
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (oldValue === newValue) return;
+
+    if (name === 'top' && this.isValidPosition(newValue)) {
+      this.top = newValue as CourierInboxMenuPosition;
+      this.updatePopupPosition();
+    } else if (name === 'left' && this.isValidPosition(newValue)) {
+      this.left = newValue as CourierInboxMenuPosition;
+      this.updatePopupPosition();
+    }
   }
 
-  private renderMenu() {
-    this.menu.innerHTML = '';
-
-    this.options.forEach((option, index) => {
-      const menuItem = new CourierInboxMenuItem(option, this.selectedIndex === index);
-
-      menuItem.addEventListener('click', () => {
-        this.selectedIndex = index;
-        option.onClick();
-        this.renderMenu();
-        this.menu.style.display = 'none';
-      });
-
-      this.menu.appendChild(menuItem);
-    });
+  private isValidPosition(value: string): value is CourierInboxMenuPosition {
+    return ['top', 'bottom', 'left', 'right', 'center'].includes(value);
   }
 
-  private toggleMenu(event: Event) {
+  private updatePopupPosition() {
+    const margin = '8px';
+
+    // Reset all positions
+    this.popup.style.top = '';
+    this.popup.style.bottom = '';
+    this.popup.style.left = '';
+    this.popup.style.right = '';
+    this.popup.style.margin = '';
+
+    // Set vertical position
+    if (this.top === 'top') {
+      this.popup.style.bottom = '100%';
+      this.popup.style.marginBottom = margin;
+    } else if (this.top === 'bottom') {
+      this.popup.style.top = '100%';
+      this.popup.style.marginTop = margin;
+    } else if (this.top === 'center') {
+      this.popup.style.top = '50%';
+      this.popup.style.transform = 'translateY(-50%)';
+    }
+
+    // Set horizontal position
+    if (this.left === 'left') {
+      this.popup.style.left = '0';
+    } else if (this.left === 'right') {
+      this.popup.style.right = '0';
+    } else if (this.left === 'center') {
+      this.popup.style.left = '50%';
+      this.popup.style.transform = this.popup.style.transform
+        ? `${this.popup.style.transform} translateX(-50%)`
+        : 'translateX(-50%)';
+    }
+  }
+
+  private togglePopup(event: Event) {
     event.stopPropagation();
-    this.menu.style.display = this.menu.style.display === 'block' ? 'none' : 'block';
+    const isVisible = this.popup.style.display === 'block';
+
+    if (!isVisible) {
+      this.popup.style.display = 'block';
+    } else {
+      this.popup.style.display = 'none';
+    }
   }
 
   private handleOutsideClick(event: MouseEvent) {
     if (!this.contains(event.target as Node)) {
-      this.menu.style.display = 'none';
+      this.popup.style.display = 'none';
     }
   }
 
-  public getSelectedOption(): CourierInboxMenuOption | null {
-    return this.options[this.selectedIndex];
+  public setContent(element: HTMLElement) {
+    this.inbox.innerHTML = '';
+    this.inbox.appendChild(element);
+  }
+
+  public setSize(width: string, height: string) {
+    this.width = width;
+    this.height = height;
+    this.popup.style.width = width;
+    this.popup.style.height = height;
+  }
+
+  public setPosition(top: CourierInboxMenuPosition, left: CourierInboxMenuPosition) {
+    this.setAttribute('top', top);
+    this.setAttribute('left', left);
   }
 }
 
 if (!customElements.get('courier-inbox-menu')) {
   customElements.define('courier-inbox-menu', CourierInboxMenu);
-}
-
-if (!customElements.get('courier-inbox-menu-item')) {
-  customElements.define('courier-inbox-menu-item', CourierInboxMenuItem);
 }
