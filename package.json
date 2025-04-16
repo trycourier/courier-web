@@ -10,9 +10,12 @@
     "dev": "npm run dev --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
-    "setup": "npm install && cd @trycourier/courier-js && npm run build",
-    "boot": "npm install",
-    "courier-js": "cd @trycourier/courier-js && npm install"
+    "reload": "npm run clear && npm run remove-cache && npm run courier-js && npm run courier-ui-core && npm run courier-ui-inbox",
+    "courier-js": "cd @trycourier/courier-js && npm install && npm run prepare && cd ..",
+    "courier-ui-core": "cd @trycourier/courier-ui-core && npm install && cd ..",
+    "courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm install && cd ..",
+    "clear": "rm -rf node_modules package-lock.json",
+    "remove-cache": "npm cache clean --force"
   },
   "devDependencies": {
     "@types/node": "20.4.2",
