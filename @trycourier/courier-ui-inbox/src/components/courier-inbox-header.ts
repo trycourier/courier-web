@@ -1,10 +1,11 @@
 import { FeedType } from "../types/feed-type";
-import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
+import { CourierButton, CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
 
 export class CourierInboxHeader extends HTMLElement {
   private titleElement: HTMLHeadingElement;
   private iconElement: HTMLElement;
   private feedTypeSelect: HTMLSelectElement;
+  private filterButton: CourierIconButton;
   private feedType: FeedType = 'inbox';
   protected _title: string = this.getContentForFeedType(this.feedType).title;
   private icon: string = this.getContentForFeedType(this.feedType).icon;
@@ -20,6 +21,8 @@ export class CourierInboxHeader extends HTMLElement {
 
     this.titleElement = document.createElement('h2');
     this.titleElement.setAttribute('part', 'title');
+
+    this.filterButton = new CourierIconButton('filter');
 
     this.feedTypeSelect = document.createElement('select');
     this.feedTypeSelect.setAttribute('part', 'feed-type-select');
@@ -81,7 +84,7 @@ export class CourierInboxHeader extends HTMLElement {
       .actions {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
       }
     `;
 
@@ -111,6 +114,7 @@ export class CourierInboxHeader extends HTMLElement {
     this.archiveButton.textContent = 'Archive All';
     this.archiveButton.addEventListener('click', this.handleArchiveClick.bind(this));
     actions.appendChild(this.archiveButton);
+    actions.appendChild(this.filterButton);
     actions.appendChild(this.feedTypeSelect);
 
     // Assemble header content
