@@ -1,5 +1,5 @@
 import { FeedType } from "../types/feed-type";
-import { CourierButton, CourierIcon, CourierIconName } from "@trycourier/courier-ui-core";
+import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
 
 export class CourierInboxHeader extends HTMLElement {
   private titleElement: HTMLHeadingElement;
@@ -7,7 +7,7 @@ export class CourierInboxHeader extends HTMLElement {
   private feedTypeSelect: HTMLSelectElement;
   private feedType: FeedType = 'inbox';
   protected _title: string = this.getContentForFeedType(this.feedType).title;
-  private icon: string | CourierIconName = this.getContentForFeedType(this.feedType).icon;
+  private icon: string = this.getContentForFeedType(this.feedType).icon;
   private archiveButton: CourierButton;
 
   constructor() {
@@ -15,7 +15,8 @@ export class CourierInboxHeader extends HTMLElement {
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this.iconElement = new CourierIcon(this.icon as CourierIconName);
+    this.iconElement = new CourierIcon();
+    this.iconElement.setAttribute('part', 'icon');
 
     this.titleElement = document.createElement('h2');
     this.titleElement.setAttribute('part', 'title');
@@ -149,12 +150,12 @@ export class CourierInboxHeader extends HTMLElement {
     if (feedType === 'inbox') {
       return {
         title: 'Inbox',
-        icon: CourierIconName.Inbox
+        icon: 'inbox'
       };
     } else {
       return {
         title: 'Archive',
-        icon: CourierIconName.Archive
+        icon: 'archive'
       };
     }
   }
@@ -169,9 +170,9 @@ export class CourierInboxHeader extends HTMLElement {
 
   private updateIcon() {
     if (this.icon) {
-      this.iconElement.setAttribute('name', this.icon);
+      this.iconElement.setAttribute('icon', this.icon);
     } else {
-      this.iconElement.removeAttribute('name');
+      this.iconElement.removeAttribute('icon');
     }
   }
 
@@ -204,7 +205,6 @@ export class CourierInboxHeader extends HTMLElement {
     this.updateTitleFromFeedType();
     this.updateArchiveButton(feedType === 'inbox' && messageCount > 0);
   }
-
 }
 
 if (!customElements.get('courier-inbox-header')) {

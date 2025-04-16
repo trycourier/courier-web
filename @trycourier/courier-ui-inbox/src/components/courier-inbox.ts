@@ -1,7 +1,7 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { CourierIconName } from "@trycourier/courier-ui-core";
+import { CourierIconSource } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -19,7 +19,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   // Default props
   private defaultProps = {
     title: 'Inbox',
-    icon: CourierIconName.Inbox,
+    icon: CourierIconSource.inbox,
     feedType: this.currentFeed,
     height: '768px'
   };

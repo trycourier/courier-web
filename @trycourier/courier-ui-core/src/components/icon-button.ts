@@ -1,5 +1,5 @@
 import { theme } from "../utils/theme";
-import { CourierIcon, CourierIconName } from "./icon";
+import { CourierIcon } from "./icon";
 
 export class CourierIconButton extends HTMLElement {
   private button: HTMLButtonElement;
@@ -19,20 +19,16 @@ export class CourierIconButton extends HTMLElement {
     'icon'
   ];
 
-  constructor(icon: CourierIconName) {
+  constructor(icon: string) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.button = document.createElement('button');
     this.button.setAttribute('part', 'button');
 
-    if (typeof icon === 'string' && icon.startsWith('http')) {
-      this.icon = document.createElement('img');
-      this.icon.setAttribute('src', icon);
-      this.icon.setAttribute('alt', 'icon');
-    } else {
-      this.icon = new CourierIcon(icon as CourierIconName);
-    }
+    this.icon = new CourierIcon();
+    this.icon.setAttribute('part', 'icon');
+    this.icon.setAttribute('icon', icon);
 
     const style = document.createElement('style');
     style.textContent = `
@@ -71,8 +67,8 @@ export class CourierIconButton extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 16px;
-        height: 16px;
+        width: 24px;
+        height: 24px;
       }
     `;
 

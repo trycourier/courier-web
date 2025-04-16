@@ -1,6 +1,6 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
-import { CourierIcon, CourierIconButton, CourierIconName } from "@trycourier/courier-ui-core";
+import { CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;
@@ -165,7 +165,7 @@ export class CourierListItem extends HTMLElement {
 
     // Add close button only for inbox feed type
     if (this.feedType === 'inbox') {
-      this.closeButton = new CourierIconButton(CourierIconName.Close);
+      this.closeButton = new CourierIconButton('remove');
       // Add click handler for close button
       this.closeButton.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent event from bubbling up
