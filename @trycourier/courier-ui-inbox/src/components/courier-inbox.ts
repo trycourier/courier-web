@@ -104,7 +104,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
 
     // Listen for authentication state changes
-    this.authListener = Courier.shared.addAuthenticationListener((props) => {
+    this.authListener = Courier.shared.addAuthenticationListener((_) => {
       this.load({ feedType: this.currentFeed, canUseCache: true });
     });
   }
@@ -128,7 +128,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     }
   }
 
-  public onMessageRemove(message: InboxMessage, index: number, feedType: FeedType): void {
+  public onMessageRemove(_: InboxMessage, index: number, feedType: FeedType): void {
     if (this.currentFeed === feedType) {
       this.list.removeMessage(index);
       this.header.setFeedType(feedType, this.list.messages.length);

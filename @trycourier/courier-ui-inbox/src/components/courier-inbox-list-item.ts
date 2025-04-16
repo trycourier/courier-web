@@ -1,6 +1,6 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { FeedType } from "../types/feed-type";
-import { CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;

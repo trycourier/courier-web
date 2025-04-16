@@ -22,19 +22,14 @@ export const CourierIconSource = {
 };
 
 export class CourierIcon extends HTMLElement {
-  private svg: SVGElement;
+  private iconContainer: HTMLElement;
   static observedAttributes = ['color', 'mode', 'size', 'icon', 'svg'];
 
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
-
-    // Create SVG element
-    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.svg.setAttribute('width', '24');
-    this.svg.setAttribute('height', '24');
-    this.svg.setAttribute('viewBox', '0 0 24 24');
-    this.svg.setAttribute('fill', 'none');
+    this.iconContainer = document.createElement('div');
+    shadow.appendChild(this.iconContainer);
 
     // Add styles
     const style = document.createElement('style');
@@ -56,13 +51,11 @@ export class CourierIcon extends HTMLElement {
     `;
 
     shadow.appendChild(style);
-    shadow.appendChild(this.svg);
 
     // Set initial attributes and icon
     this.updateIcon();
     this.updateColor();
     this.updateMode();
-    this.updateSize();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -75,14 +68,11 @@ export class CourierIcon extends HTMLElement {
       case 'mode':
         this.updateMode();
         break;
-      case 'size':
-        this.updateSize();
-        break;
       case 'icon':
         this.updateIcon();
         break;
       case 'svg':
-        this.updateSvg();
+        this.updateIconElement(newValue);
         break;
     }
   }
@@ -90,23 +80,20 @@ export class CourierIcon extends HTMLElement {
   private updateIcon() {
     const iconName = this.getAttribute('icon')?.toLowerCase();
     if (iconName && iconName in CourierIconSource) {
-      this.svg.innerHTML = CourierIconSource[iconName as keyof typeof CourierIconSource];
+      this.updateIconElement(CourierIconSource[iconName as keyof typeof CourierIconSource]);
     }
   }
 
-  private updateSvg() {
-    const svg = this.getAttribute('svg');
-    if (svg) {
-      this.svg.innerHTML = svg;
-    }
+  private updateIconElement(iconElement: string) {
+    this.iconContainer.innerHTML = iconElement;
   }
 
   private updateColor() {
     const color = this.getAttribute('color');
     if (color) {
-      this.svg.style.setProperty('--courier-icon-color', color);
+      this.iconContainer.style.setProperty('--courier-icon-color', color);
     } else {
-      this.svg.style.removeProperty('--courier-icon-color');
+      this.iconContainer.style.removeProperty('--courier-icon-color');
     }
   }
 
@@ -115,10 +102,6 @@ export class CourierIcon extends HTMLElement {
     this.setAttribute('mode', mode);
   }
 
-  private updateSize() {
-    const size = this.getAttribute('size') || 'medium';
-    this.svg.setAttribute('data-size', size);
-  }
 }
 
 // Register the custom element

@@ -163,6 +163,7 @@ export class CourierInboxDatastore {
       // Find index to insert archived message and add to archive
       if (this.archiveDataSet?.messages) {
         const insertIndex = this.findInsertIndex(message, this.archiveDataSet.messages);
+        message.archived = new Date().toISOString();
         this.addMessage(message, insertIndex, 'archive');
       }
 
@@ -171,6 +172,7 @@ export class CourierInboxDatastore {
 
     } catch (error) {
       this.addMessage(originalMessage, originalIndex, 'inbox');
+      message.archived = undefined;
       this.removeMessage(message, index, 'archive');
     }
   }

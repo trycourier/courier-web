@@ -55,7 +55,7 @@ export class CourierInboxHeader extends HTMLElement {
       .title-section {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
       }
 
       .spacer {
