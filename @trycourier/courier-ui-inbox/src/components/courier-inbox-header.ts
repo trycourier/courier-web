@@ -1,18 +1,20 @@
 import { FeedType } from "../types/feed-type";
-import { CourierButton, CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierButton, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierInboxMenu } from "./courier-inbox-menu";
 
 export class CourierInboxHeader extends HTMLElement {
   private titleElement: HTMLHeadingElement;
   private iconElement: HTMLElement;
-  private feedTypeSelect: HTMLSelectElement;
-  private filterButton: CourierIconButton;
+  private optionMenu: CourierInboxMenu;
   private feedType: FeedType = 'inbox';
   protected _title: string = this.getContentForFeedType(this.feedType).title;
   private icon: string = this.getContentForFeedType(this.feedType).icon;
   private archiveButton: CourierButton;
+  private onFeedTypeChange: (feedType: FeedType) => void;
 
-  constructor() {
+  constructor(props: { onFeedTypeChange: (feedType: FeedType) => void }) {
     super();
+    this.onFeedTypeChange = props.onFeedTypeChange;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
@@ -22,16 +24,22 @@ export class CourierInboxHeader extends HTMLElement {
     this.titleElement = document.createElement('h2');
     this.titleElement.setAttribute('part', 'title');
 
-    this.filterButton = new CourierIconButton('filter');
-
-    this.feedTypeSelect = document.createElement('select');
-    this.feedTypeSelect.setAttribute('part', 'feed-type-select');
-    this.feedTypeSelect.innerHTML = `
-      <option value="inbox">Inbox</option>
-      <option value="archive">Archive</option>
-    `;
-    this.feedTypeSelect.value = this.feedType;
-    this.feedTypeSelect.addEventListener('change', this.handleFeedTypeChange.bind(this));
+    this.optionMenu = new CourierInboxMenu([
+      {
+        label: 'Inbox',
+        icon: CourierIconSource.inbox,
+        onClick: () => {
+          this.handleOptionMenuClick('inbox');
+        }
+      },
+      {
+        label: 'Archive',
+        icon: CourierIconSource.archive,
+        onClick: () => {
+          this.handleOptionMenuClick('archive');
+        }
+      }
+    ]);
 
     const style = document.createElement('style');
     style.textContent = `
@@ -114,8 +122,7 @@ export class CourierInboxHeader extends HTMLElement {
     this.archiveButton.textContent = 'Archive All';
     this.archiveButton.addEventListener('click', this.handleArchiveClick.bind(this));
     actions.appendChild(this.archiveButton);
-    actions.appendChild(this.filterButton);
-    actions.appendChild(this.feedTypeSelect);
+    actions.appendChild(this.optionMenu);
 
     // Assemble header content
     headerContent.appendChild(titleSection);
@@ -131,23 +138,14 @@ export class CourierInboxHeader extends HTMLElement {
     return ['icon', 'title', 'feed-type'];
   }
 
-  private handleFeedTypeChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const newFeedType = select.value as FeedType;
-    this.feedType = newFeedType;
-    this.updateTitleFromFeedType();
-
-    // Dispatch custom event for feed type change
-    const feedTypeChangeEvent = new CustomEvent('feedTypeChange', {
-      detail: { feedType: newFeedType },
-      bubbles: true,
-      composed: true
-    });
-    this.dispatchEvent(feedTypeChangeEvent);
-  }
-
   private handleArchiveClick() {
     alert('We need to implement this');
+  }
+
+  private handleOptionMenuClick(feedType: FeedType) {
+    this.feedType = feedType;
+    this.updateTitleFromFeedType();
+    this.onFeedTypeChange(feedType);
   }
 
   private getContentForFeedType(feedType: FeedType) {
@@ -205,7 +203,6 @@ export class CourierInboxHeader extends HTMLElement {
 
   public setFeedType(feedType: FeedType, messageCount: number): void {
     this.feedType = feedType;
-    this.feedTypeSelect.value = feedType;
     this.updateTitleFromFeedType();
     this.updateArchiveButton(feedType === 'inbox' && messageCount > 0);
   }

@@ -34,7 +34,16 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     const shadow = this.attachShadow({ mode: 'open' });
 
     // Create header with default props
-    this.header = new CourierInboxHeader();
+    this.header = new CourierInboxHeader({
+      onFeedTypeChange: (feedType: FeedType) => {
+        this.currentFeed = feedType;
+        this.list.setFeedType(feedType);
+        this.load({
+          feedType: this.currentFeed,
+          canUseCache: true
+        });
+      }
+    });
     this.header.setTitle(this.defaultProps.title);
     this.header.setIcon(this.defaultProps.icon);
     this.header.setFeedType(this.defaultProps.feedType, 0);
