@@ -39,6 +39,19 @@
       </div>
     </div>
 
+    <div class="grid-section">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox (custom list item)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding">
+            <courier-inbox height="420px" id="inbox-custom"></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p class="package-title">@trycourier/<span class="package-name">courier-ui-core</span></p>
 
     <div class="grid-section">
@@ -201,8 +214,29 @@
         alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
       };
 
+      // Inbox list item click handler
       document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
       document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
+
+      // Custom inbox list item
+      const customInbox = document.getElementById('inbox-custom');
+
+      customInbox.setListItem((message, index) => {
+        const listItem = document.createElement('div');
+        listItem.style.cssText = 'width: 100%; box-sizing: border-box; padding: 12px; border-bottom: 1px solid #e0e0e0; overflow-x: auto; cursor: pointer;';
+        listItem.innerHTML = `
+          <p style="font-family: monospace; white-space: pre-wrap; word-break: break-word; line-height: 1.6;">${JSON.stringify({
+          messageId: message.messageId,
+          title: message.title,
+          preview: message.preview,
+        }, null, 2)}</p>`;
+
+        listItem.addEventListener('click', () => {
+          alert(`You clicked message ${index}`);
+        });
+
+        return listItem;
+      });
 
     </script>
 </body>

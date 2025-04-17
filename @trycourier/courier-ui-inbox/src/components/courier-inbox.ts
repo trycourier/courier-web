@@ -15,6 +15,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   private authListener: AuthenticationListener | undefined;
   private onMessageClick?: (message: InboxMessage, index: number) => void;
   private currentFeed: FeedType = 'inbox';
+  private customHeader?: HTMLElement;
 
   // Default props
   private defaultProps = {
@@ -145,6 +146,14 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this.header.setUnreadCount(CourierInboxDatastore.shared.unreadCount);
   }
 
+  setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
+    this.list.setListItemFactory(factory);
+  }
+
+  setHeader(header: HTMLElement) {
+    // this.header.setCustomHeader(header);
+  }
+
   setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
     this.onMessageClick = handler;
   }
@@ -189,11 +198,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     }
   }
 
-  public onUnreadCountChange(unreadCount: number): void {
+  public onUnreadCountChange(_: number): void {
     this.refreshUnreadCount();
   }
 
-  // Load the inbox when the component is connected
   connectedCallback() {
     this.load({
       feedType: this.currentFeed,
@@ -201,7 +209,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
   }
 
-  // Remove the datastore listener and authentication listener
   disconnectedCallback() {
     this.datastoreListener?.remove();
     this.authListener?.remove();
@@ -219,7 +226,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         break;
       case 'feed-type':
         this.header.setAttribute('feed-type', newValue || this.defaultProps.feedType);
-        this.list.setFeedType(newValue as any || this.defaultProps.feedType);
+        this.list.setFeedType((newValue as FeedType) || this.defaultProps.feedType);
         break;
       case 'height':
         const height = newValue || this.defaultProps.height;

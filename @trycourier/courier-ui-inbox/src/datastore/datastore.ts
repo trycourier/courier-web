@@ -211,7 +211,7 @@ export class CourierInboxDatastore {
     return null;
   }
 
-  async clickMessage(message: InboxMessage, index: number): Promise<void> {
+  async clickMessage(message: InboxMessage, _: number): Promise<void> {
 
     if (!Courier.shared.client) {
       return;

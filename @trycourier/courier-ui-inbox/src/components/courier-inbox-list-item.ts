@@ -8,7 +8,7 @@ export class CourierListItem extends HTMLElement {
   private closeButton: CourierIconButton | null = null;
   private message: InboxMessage | null = null;
   private feedType: FeedType = 'inbox';
-  private onMessageClick: ((message: InboxMessage) => void) | null = null;
+  private onItemClick: ((message: InboxMessage) => void) | null = null;
   private onCloseClick: ((message: InboxMessage) => void) | null = null;
 
   constructor() {
@@ -90,8 +90,8 @@ export class CourierListItem extends HTMLElement {
 
     // Add click event listener
     this.addEventListener('click', (e) => {
-      if (this.message && this.onMessageClick && !(e.target instanceof CourierIcon)) {
-        this.onMessageClick(this.message);
+      if (this.message && this.onItemClick && !(e.target instanceof CourierIcon)) {
+        this.onItemClick(this.message);
       }
     });
   }
@@ -134,19 +134,14 @@ export class CourierListItem extends HTMLElement {
     }
   }
 
-  setMessage(message: InboxMessage) {
+  setMessage(message: InboxMessage, feedType: FeedType) {
     this.message = message;
+    this.feedType = feedType;
     this.updateContent();
   }
 
-  setFeedType(feedType: FeedType) {
-    this.feedType = feedType;
-    this.setAttribute('feed-type', feedType);
-    this.updateCloseButton();
-  }
-
-  setOnMessageClick(callback: (message: InboxMessage) => void) {
-    this.onMessageClick = callback;
+  setOnItemClick(callback: (message: InboxMessage) => void) {
+    this.onItemClick = callback;
   }
 
   setOnCloseClick(callback: (message: InboxMessage) => void) {

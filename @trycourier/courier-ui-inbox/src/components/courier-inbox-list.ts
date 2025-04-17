@@ -16,15 +16,21 @@ export class CourierInboxList extends HTMLElement {
   private onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
   private onRefresh: () => void;
   private onPaginationTrigger?: (feedType: FeedType) => void;
+  private listItemFactory?: (message: InboxMessage, index: number) => HTMLElement;
 
   public get messages(): InboxMessage[] {
     return this._messages;
   }
 
-  constructor(props: { onRefresh: () => void, onPaginationTrigger: (feedType: FeedType) => void, onMessageClick: (message: InboxMessage, index: number) => void, onArchiveMessage: (message: InboxMessage, index: number) => void }) {
+  constructor(props: {
+    onRefresh: () => void,
+    onPaginationTrigger: (feedType: FeedType) => void,
+    onMessageClick: (message: InboxMessage, index: number) => void,
+    onArchiveMessage: (message: InboxMessage, index: number) => void
+  }) {
     super();
 
-    // Initialize the onRefresh and onPaginationTrigger callbacks
+    // Initialize the callbacks
     this.onRefresh = props.onRefresh;
     this.onPaginationTrigger = props.onPaginationTrigger;
     this.onMessageClick = props.onMessageClick;
@@ -56,6 +62,11 @@ export class CourierInboxList extends HTMLElement {
         height: 100%;
       }
     `;
+  }
+
+  public setListItemFactory(factory: (message: InboxMessage, index: number) => HTMLElement): void {
+    this.listItemFactory = factory;
+    this.updateItems();
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
@@ -157,16 +168,20 @@ export class CourierInboxList extends HTMLElement {
     }
 
     this._messages.forEach((message, index) => {
+
+      // Use the custom list item if it is set
+      if (this.listItemFactory) {
+        this.list.appendChild(this.listItemFactory(message, index));
+        return;
+      }
+
+      // Use the default list item if no custom list item is set
       const listItem = new CourierListItem();
-      listItem.setMessage(message);
-      listItem.setFeedType(this.feedType);
-      listItem.setOnMessageClick((message) => {
-        this.onMessageClick?.(message, index);
-      });
-      listItem.setOnCloseClick((message) => {
-        this.onArchiveMessage?.(message, index);
-      });
+      listItem.setMessage(message, this.feedType);
+      listItem.setOnItemClick((message) => this.onMessageClick?.(message, index));
+      listItem.setOnCloseClick((message) => this.onArchiveMessage?.(message, index));
       this.list.appendChild(listItem);
+
     });
 
     if (this.canPaginate) {
