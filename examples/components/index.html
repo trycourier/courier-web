@@ -20,8 +20,7 @@
       <div class="grid-container">
         <div class="grid-row">
           <div class="grid-item no-padding" style="height: 100px;">
-            <!-- <courier-inbox-menu id="inbox3" top="bottom" left="center"></courier-inbox-menu> -->
-            <courier-inbox-menu id="inbox3"></courier-inbox-menu>
+            <courier-inbox-menu id="inbox-menu" popup-alignment="top-center"></courier-inbox-menu>
           </div>
         </div>
       </div>
@@ -34,7 +33,7 @@
       <div class="grid-container">
         <div class="grid-row">
           <div class="grid-item no-padding">
-            <courier-inbox height="420px" id="inbox1"></courier-inbox>
+            <courier-inbox height="420px" id="inbox"></courier-inbox>
           </div>
         </div>
       </div>
@@ -202,8 +201,8 @@
         alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
       };
 
-      document.getElementById('inbox1').addEventListener('message-click', handleMessageClick);
-      document.getElementById('inbox2').addEventListener('message-click', handleMessageClick);
+      document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
+      document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
 
     </script>
 </body>

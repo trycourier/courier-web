@@ -1,7 +1,8 @@
 import { CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInbox } from "./courier-inbox";
+import { InboxMessage } from "@trycourier/courier-js";
 
-export type CourierInboxMenuPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
+export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
 export class CourierInboxMenu extends HTMLElement {
   private triggerButton: CourierIconButton;
@@ -9,11 +10,11 @@ export class CourierInboxMenu extends HTMLElement {
   private inbox: CourierInbox;
   private width: string = '440px';
   private height: string = '440px';
-  private top: CourierInboxMenuPosition = 'bottom';
-  private left: CourierInboxMenuPosition = 'right';
+  private popupAlignment: CourierInboxPopupAlignment = 'top-right';
+  private onMessageClick?: (message: InboxMessage, index: number) => void;
 
   static get observedAttributes() {
-    return ['top', 'left'];
+    return ['popup-alignment', 'message-click'];
   }
 
   constructor() {
@@ -63,6 +64,7 @@ export class CourierInboxMenu extends HTMLElement {
     shadow.appendChild(this.triggerButton);
     shadow.appendChild(this.popup);
     this.popup.appendChild(this.inbox);
+    this.inbox.setMessageClick(this.onMessageClick);
 
     // Add event listeners
     this.triggerButton.addEventListener('click', this.togglePopup.bind(this));
@@ -75,21 +77,27 @@ export class CourierInboxMenu extends HTMLElement {
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (oldValue === newValue) return;
 
-    if (name === 'top' && this.isValidPosition(newValue)) {
-      this.top = newValue as CourierInboxMenuPosition;
+    if (name === 'popup-alignment' && this.isValidPosition(newValue)) {
+      this.popupAlignment = newValue as CourierInboxPopupAlignment;
       this.updatePopupPosition();
-    } else if (name === 'left' && this.isValidPosition(newValue)) {
-      this.left = newValue as CourierInboxMenuPosition;
-      this.updatePopupPosition();
+    } else if (name === 'message-click') {
+      if (newValue) {
+        try {
+          this.onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
+        } catch (error) {
+          console.error('Failed to parse message-click handler:', error);
+        }
+      } else {
+        this.onMessageClick = undefined;
+      }
     }
   }
 
-  private isValidPosition(value: string): value is CourierInboxMenuPosition {
-    return ['top', 'bottom', 'left', 'right', 'center'].includes(value);
+  private isValidPosition(value: string): value is CourierInboxPopupAlignment {
+    return ['top-right', 'top-left', 'top-center', 'bottom-right', 'bottom-left', 'bottom-center', 'center-right', 'center-left', 'center-center'].includes(value);
   }
 
   private updatePopupPosition() {
-    const margin = '8px';
 
     // Reset all positions
     this.popup.style.top = '';
@@ -97,29 +105,50 @@ export class CourierInboxMenu extends HTMLElement {
     this.popup.style.left = '';
     this.popup.style.right = '';
     this.popup.style.margin = '';
+    this.popup.style.transform = '';
 
-    // Set vertical position
-    if (this.top === 'top') {
-      this.popup.style.bottom = '100%';
-      this.popup.style.marginBottom = margin;
-    } else if (this.top === 'bottom') {
-      this.popup.style.top = '100%';
-      this.popup.style.marginTop = margin;
-    } else if (this.top === 'center') {
-      this.popup.style.top = '50%';
-      this.popup.style.transform = 'translateY(-50%)';
-    }
-
-    // Set horizontal position
-    if (this.left === 'left') {
-      this.popup.style.left = '0';
-    } else if (this.left === 'right') {
-      this.popup.style.right = '0';
-    } else if (this.left === 'center') {
-      this.popup.style.left = '50%';
-      this.popup.style.transform = this.popup.style.transform
-        ? `${this.popup.style.transform} translateX(-50%)`
-        : 'translateX(-50%)';
+    switch (this.popupAlignment) {
+      case 'top-right':
+        this.popup.style.top = '40px';
+        this.popup.style.right = '0';
+        break;
+      case 'top-left':
+        this.popup.style.top = '40px';
+        this.popup.style.left = '0';
+        break;
+      case 'top-center':
+        this.popup.style.top = '40px';
+        this.popup.style.left = '50%';
+        this.popup.style.transform = 'translateX(-50%)';
+        break;
+      case 'bottom-right':
+        this.popup.style.bottom = '40px';
+        this.popup.style.right = '0';
+        break;
+      case 'bottom-left':
+        this.popup.style.bottom = '40px';
+        this.popup.style.left = '0';
+        break;
+      case 'bottom-center':
+        this.popup.style.bottom = '40px';
+        this.popup.style.left = '50%';
+        this.popup.style.transform = 'translateX(-50%)';
+        break;
+      case 'center-right':
+        this.popup.style.top = '50%';
+        this.popup.style.right = '40px';
+        this.popup.style.transform = 'translateY(-50%)';
+        break;
+      case 'center-left':
+        this.popup.style.top = '50%';
+        this.popup.style.left = '40px';
+        this.popup.style.transform = 'translateY(-50%)';
+        break;
+      case 'center-center':
+        this.popup.style.top = '50%';
+        this.popup.style.left = '50%';
+        this.popup.style.transform = 'translate(-50%, -50%)';
+        break;
     }
   }
 
@@ -152,9 +181,8 @@ export class CourierInboxMenu extends HTMLElement {
     this.popup.style.height = height;
   }
 
-  public setPosition(top: CourierInboxMenuPosition, left: CourierInboxMenuPosition) {
-    this.setAttribute('top', top);
-    this.setAttribute('left', left);
+  public setPosition(position: CourierInboxPopupAlignment) {
+    this.setAttribute('popup-alignment', position);
   }
 }
 

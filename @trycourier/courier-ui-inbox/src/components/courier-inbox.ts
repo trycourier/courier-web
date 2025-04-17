@@ -139,6 +139,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
   }
 
+  setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
+    this.onMessageClick = handler;
+  }
+
   private async load(props: { feedType: FeedType, canUseCache: boolean }) {
     await CourierInboxDatastore.shared.load(props);
   }
