@@ -47,7 +47,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "reload"
+        "refresh"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

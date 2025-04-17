@@ -52,8 +52,9 @@ export class CourierInboxList extends HTMLElement {
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
-    this._messages = [...dataSet.messages]; // Create a new array to avoid reference issues
-    this.canPaginate = Boolean(dataSet.canPaginate); // Create a new boolean to avoid reference issues
+    // New objects are created to avoid reference issues
+    this._messages = [...dataSet.messages];
+    this.canPaginate = Boolean(dataSet.canPaginate);
     this.error = null;
     this.isLoading = false;
     this.updateItems();
