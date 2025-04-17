@@ -1,10 +1,13 @@
 import { CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInbox } from "./courier-inbox";
 import { InboxMessage } from "@trycourier/courier-js";
-
+import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
+import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
+import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
+import { CourierInboxDatastore } from "../datastore/datastore";
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends HTMLElement {
+export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
   private triggerButton: CourierIconButton;
   private popup: HTMLDivElement;
   private inbox: CourierInbox;
@@ -12,6 +15,9 @@ export class CourierInboxMenu extends HTMLElement {
   private height: string = '440px';
   private popupAlignment: CourierInboxPopupAlignment = 'top-right';
   private onMessageClick?: (message: InboxMessage, index: number) => void;
+  private unreadCountBadge: CourierUnreadCountBadge;
+  private menuButtonContainer: HTMLDivElement;
+  private datastoreListener?: CourierInboxDataStoreListener;
 
   static get observedAttributes() {
     return ['popup-alignment', 'message-click'];
@@ -22,9 +28,16 @@ export class CourierInboxMenu extends HTMLElement {
 
     const shadow = this.attachShadow({ mode: 'open' });
 
+    // Create trigger button container
+    this.menuButtonContainer = document.createElement('div');
+    this.menuButtonContainer.className = 'menu-button-container';
+
     // Create trigger button
     this.triggerButton = new CourierIconButton('inbox');
 
+    // Create unread count badge
+    this.unreadCountBadge = new CourierUnreadCountBadge();
+    this.unreadCountBadge.id = 'unread-badge';
     // Create popup container
     this.popup = document.createElement('div');
     this.popup.className = 'popup';
@@ -38,6 +51,11 @@ export class CourierInboxMenu extends HTMLElement {
       :host {
         display: inline-block;
         position: relative;
+      }
+
+      .menu-button-container {
+        position: relative;
+        display: inline-block;
       }
 
       .popup {
@@ -54,6 +72,13 @@ export class CourierInboxMenu extends HTMLElement {
         transform: translateZ(0);
         will-change: transform;
       }
+        
+      #unread-badge {
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        pointer-events: none;
+      }
 
       courier-inbox {
         height: 100%;
@@ -61,7 +86,9 @@ export class CourierInboxMenu extends HTMLElement {
     `;
 
     shadow.appendChild(style);
-    shadow.appendChild(this.triggerButton);
+    this.menuButtonContainer.appendChild(this.triggerButton);
+    this.menuButtonContainer.appendChild(this.unreadCountBadge);
+    shadow.appendChild(this.menuButtonContainer);
     shadow.appendChild(this.popup);
     this.popup.appendChild(this.inbox);
     this.inbox.setMessageClick(this.onMessageClick);
@@ -72,33 +99,28 @@ export class CourierInboxMenu extends HTMLElement {
 
     // Initialize popup position
     this.updatePopupPosition();
+
+    // Attach the datastore listener
+    this.datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
+
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (oldValue === newValue) return;
-
-    if (name === 'popup-alignment' && this.isValidPosition(newValue)) {
-      this.popupAlignment = newValue as CourierInboxPopupAlignment;
-      this.updatePopupPosition();
-    } else if (name === 'message-click') {
-      if (newValue) {
-        try {
-          this.onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
-        } catch (error) {
-          console.error('Failed to parse message-click handler:', error);
-        }
-      } else {
-        this.onMessageClick = undefined;
-      }
-    }
+  public onUnreadCountChange(unreadCount: number): void {
+    console.log('unreadCount', unreadCount);
+    this.unreadCountBadge.setCount(unreadCount);
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
-    return ['top-right', 'top-left', 'top-center', 'bottom-right', 'bottom-left', 'bottom-center', 'center-right', 'center-left', 'center-center'].includes(value);
+    const validPositions: CourierInboxPopupAlignment[] = [
+      'top-right', 'top-left', 'top-center',
+      'bottom-right', 'bottom-left', 'bottom-center',
+      'center-right', 'center-left', 'center-center'
+    ];
+    return validPositions.includes(value as CourierInboxPopupAlignment);
   }
 
   private updatePopupPosition() {
-
     // Reset all positions
     this.popup.style.top = '';
     this.popup.style.bottom = '';
@@ -182,7 +204,16 @@ export class CourierInboxMenu extends HTMLElement {
   }
 
   public setPosition(position: CourierInboxPopupAlignment) {
-    this.setAttribute('popup-alignment', position);
+    if (this.isValidPosition(position)) {
+      this.popupAlignment = position;
+      this.updatePopupPosition();
+    } else {
+      console.error(`Invalid position: ${position}`);
+    }
+  }
+
+  disconnectedCallback() {
+    this.datastoreListener?.remove();
   }
 }
 

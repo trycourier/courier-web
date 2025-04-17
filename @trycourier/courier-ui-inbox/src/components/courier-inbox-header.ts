@@ -1,15 +1,18 @@
 import { FeedType } from "../types/feed-type";
 import { CourierButton, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxFilterMenu } from "./courier-inbox-filter-menu";
+import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
 export class CourierInboxHeader extends HTMLElement {
   private titleElement: HTMLHeadingElement;
   private iconElement: HTMLElement;
   private optionMenu: CourierInboxFilterMenu;
   private feedType: FeedType = 'inbox';
-  protected _title: string = this.getContentForFeedType(this.feedType).title;
+  private _title: string = this.getContentForFeedType(this.feedType).title;
   private icon: string = this.getContentForFeedType(this.feedType).icon;
   private archiveButton: CourierButton;
+  private unreadCount: number = 0;
+  private unreadBadge: CourierUnreadCountBadge;
   private onFeedTypeChange: (feedType: FeedType) => void;
 
   constructor(props: { onFeedTypeChange: (feedType: FeedType) => void }) {
@@ -23,6 +26,8 @@ export class CourierInboxHeader extends HTMLElement {
 
     this.titleElement = document.createElement('h2');
     this.titleElement.setAttribute('part', 'title');
+
+    this.unreadBadge = new CourierUnreadCountBadge();
 
     this.optionMenu = new CourierInboxFilterMenu([
       {
@@ -67,6 +72,7 @@ export class CourierInboxHeader extends HTMLElement {
         display: flex;
         align-items: center;
         gap: 8px;
+        position: relative;
       }
 
       .spacer {
@@ -96,6 +102,7 @@ export class CourierInboxHeader extends HTMLElement {
     titleSection.className = 'title-section';
     titleSection.appendChild(this.iconElement);
     titleSection.appendChild(this.titleElement);
+    titleSection.appendChild(this.unreadBadge);
 
     // Create flexible spacer
     const spacer = document.createElement('div');
@@ -131,6 +138,18 @@ export class CourierInboxHeader extends HTMLElement {
 
   private handleArchiveClick() {
     alert('We need to implement this');
+  }
+
+  public setUnreadCount(unreadCount: number) {
+    this.unreadCount = unreadCount;
+    switch (this.feedType) {
+      case 'inbox':
+        this.unreadBadge.setCount(this.unreadCount);
+        break;
+      case 'archive':
+        this.unreadBadge.setCount(0);
+        break;
+    }
   }
 
   private handleOptionMenuClick(feedType: FeedType) {

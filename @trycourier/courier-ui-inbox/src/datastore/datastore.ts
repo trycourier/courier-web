@@ -8,7 +8,7 @@ export class CourierInboxDatastore {
   private inboxDataSet?: InboxDataSet;
   private archiveDataSet?: InboxDataSet;
   private dataStoreListeners: CourierInboxDataStoreListener[] = [];
-
+  private _unreadCount: number = 0;
   private isPaginatingInbox: boolean = false;
   private isPaginatingArchive: boolean = false;
 
@@ -17,6 +17,10 @@ export class CourierInboxDatastore {
       CourierInboxDatastore.instance = new CourierInboxDatastore();
     }
     return CourierInboxDatastore.instance;
+  }
+
+  public get unreadCount(): number {
+    return this._unreadCount;
   }
 
   public addDataStoreListener(listener: CourierInboxDataStoreListener) {
@@ -65,10 +69,12 @@ export class CourierInboxDatastore {
 
     try {
 
-      // Fetch the data set
-      const dataSet = await this.fetchDataSet(props);
+      // Fetch and update the data set and unread count in parallel
+      const [dataSet, unreadCount] = await Promise.all([
+        this.fetchDataSet(props),
+        Courier.shared.client?.inbox.getUnreadMessageCount()
+      ]);
 
-      // Update the data set
       switch (props.feedType) {
         case 'inbox':
           this.inboxDataSet = dataSet;
@@ -78,10 +84,14 @@ export class CourierInboxDatastore {
           break;
       }
 
+      // Update the unread count
+      this._unreadCount = unreadCount;
+
       // Notify the listeners
-      this.dataStoreListeners.forEach(listener =>
-        listener.events.onDataSetChange(dataSet, props.feedType)
-      );
+      this.dataStoreListeners.forEach(listener => {
+        listener.events.onDataSetChange?.(dataSet, props.feedType);
+        listener.events.onUnreadCountChange?.(this._unreadCount);
+      });
 
       // Connect to the socket
       await this.connectSocket();
@@ -290,36 +300,44 @@ export class CourierInboxDatastore {
         break;
     }
     this.dataStoreListeners.forEach(listener =>
-      listener.events.onPageAdded(dataSet, feedType)
+      listener.events.onPageAdded?.(dataSet, feedType)
     );
   }
 
   private addMessage(message: InboxMessage, index: number, feedType: FeedType) {
     switch (feedType) {
       case 'inbox':
+        if (!message.read) {
+          this._unreadCount += 1;
+        }
         this.inboxDataSet?.messages.splice(index, 0, message);
         break;
       case 'archive':
         this.archiveDataSet?.messages.splice(index, 0, message);
         break;
     }
-    this.dataStoreListeners.forEach(listener =>
-      listener.events.onMessageAdd(message, index, feedType)
-    );
+    this.dataStoreListeners.forEach(listener => {
+      listener.events.onMessageAdd?.(message, index, feedType);
+      listener.events.onUnreadCountChange?.(this._unreadCount);
+    });
   }
 
   private removeMessage(message: InboxMessage, index: number, feedType: FeedType) {
     switch (feedType) {
       case 'inbox':
+        if (!message.read) {
+          this._unreadCount -= 1;
+        }
         this.inboxDataSet?.messages.splice(index, 1);
         break;
       case 'archive':
         this.archiveDataSet?.messages.splice(index, 1);
         break;
     }
-    this.dataStoreListeners.forEach(listener =>
-      listener.events.onMessageRemove(message, index, feedType)
-    );
+    this.dataStoreListeners.forEach(listener => {
+      listener.events.onMessageRemove?.(message, index, feedType);
+      listener.events.onUnreadCountChange?.(this._unreadCount);
+    });
   }
 
   private updateMessage(message: InboxMessage, index: number, feedType: FeedType) {

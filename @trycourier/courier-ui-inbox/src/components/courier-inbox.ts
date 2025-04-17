@@ -38,6 +38,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       onFeedTypeChange: (feedType: FeedType) => {
         this.currentFeed = feedType;
         this.list.setFeedType(feedType);
+        this.refreshUnreadCount();
         this.load({
           feedType: this.currentFeed,
           canUseCache: true
@@ -47,6 +48,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this.header.setTitle(this.defaultProps.title);
     this.header.setIcon(this.defaultProps.icon);
     this.header.setFeedType(this.defaultProps.feedType, 0);
+    this.refreshUnreadCount();
 
     // Create list and ensure it's properly initialized
     this.list = new CourierInboxList({
@@ -139,6 +141,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
   }
 
+  private refreshUnreadCount() {
+    this.header.setUnreadCount(CourierInboxDatastore.shared.unreadCount);
+  }
+
   setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
     this.onMessageClick = handler;
   }
@@ -181,6 +187,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       this.list.updateMessage(message, index);
       this.header.setFeedType(feedType, this.list.messages.length);
     }
+  }
+
+  public onUnreadCountChange(unreadCount: number): void {
+    this.refreshUnreadCount();
   }
 
   // Load the inbox when the component is connected
