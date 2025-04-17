@@ -19,6 +19,19 @@ export class Courier {
   private instanceClient?: CourierClient;
 
   /**
+   * The pagination limit (min: 1, max: 100)
+   */
+  private _paginationLimit = 24;
+
+  public get paginationLimit(): number {
+    return this._paginationLimit;
+  }
+
+  public set paginationLimit(value: number) {
+    this._paginationLimit = Math.min(Math.max(value, 1), 100);
+  }
+
+  /**
    * Get the Courier client instance
    * @returns The Courier client instance or undefined if not signed in
    */

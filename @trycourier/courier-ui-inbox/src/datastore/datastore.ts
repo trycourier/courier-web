@@ -9,6 +9,9 @@ export class CourierInboxDatastore {
   private archiveDataSet?: InboxDataSet;
   private dataStoreListeners: CourierInboxDataStoreListener[] = [];
 
+  private isPaginatingInbox: boolean = false;
+  private isPaginatingArchive: boolean = false;
+
   public static get shared(): CourierInboxDatastore {
     if (!CourierInboxDatastore.instance) {
       CourierInboxDatastore.instance = new CourierInboxDatastore();
@@ -26,29 +29,21 @@ export class CourierInboxDatastore {
 
   private async fetchDataSet(props: { feedType: FeedType, canUseCache: boolean }): Promise<InboxDataSet> {
 
-    console.log('CourierInboxDatastore fetchDataSet', props);
-
     // Return existing dataset if available
     if (props.canUseCache) {
       switch (props.feedType) {
         case 'inbox':
           if (this.inboxDataSet) {
-            console.log('CourierInboxDatastore inboxDataSet', this.inboxDataSet);
             return this.inboxDataSet;
           }
           break;
         case 'archive':
           if (this.archiveDataSet) {
-            console.log('CourierInboxDatastore archiveDataSet', this.archiveDataSet);
             return this.archiveDataSet;
           }
           break;
       }
     }
-
-    console.log('CourierInboxDatastore fetchDataSet canUseCache', this.inboxDataSet, this.archiveDataSet);
-
-    console.log('CourierInboxDatastore fetchDataSet fetching new dataset', props);
 
     // Otherwise fetch new dataset
     const response = props.feedType === 'inbox'
@@ -64,8 +59,6 @@ export class CourierInboxDatastore {
 
   public async load(props: { feedType: FeedType, canUseCache: boolean }) {
 
-    console.log('CourierInboxDatastore load', props);
-
     if (!Courier.shared.client) {
       return;
     }
@@ -75,15 +68,12 @@ export class CourierInboxDatastore {
       // Fetch the data set
       const dataSet = await this.fetchDataSet(props);
 
-      console.log('CourierInboxDatastore load dataSet', dataSet, props);
-
       // Update the data set
       switch (props.feedType) {
         case 'inbox':
           this.inboxDataSet = dataSet;
           break;
         case 'archive':
-          console.log('CourierInboxDatastore load archiveDataSet', dataSet);
           this.archiveDataSet = dataSet;
           break;
       }
@@ -145,6 +135,90 @@ export class CourierInboxDatastore {
     }
   }
 
+  async fetchNextPageOfMessages(props: { feedType: FeedType }): Promise<InboxDataSet | null> {
+
+    switch (props.feedType) {
+      case 'inbox':
+
+        if (this.isPaginatingInbox) {
+          return null;
+        }
+
+        if (this.inboxDataSet?.canPaginate && this.inboxDataSet.paginationCursor) {
+          try {
+            this.isPaginatingInbox = true;
+            const response = await Courier.shared.client?.inbox.getMessages({
+              paginationLimit: Courier.shared.paginationLimit,
+              startCursor: this.inboxDataSet.paginationCursor
+            });
+            const dataSet = {
+              messages: response?.data?.messages?.nodes ?? [],
+              canPaginate: response?.data?.messages?.pageInfo?.hasNextPage ?? false,
+              paginationCursor: response?.data?.messages?.pageInfo?.startCursor ?? null
+            };
+            this.addPage(dataSet, 'inbox');
+            return dataSet;
+          } catch (error) {
+            console.error('Error fetching next page of inbox messages:', error);
+            return null;
+          } finally {
+            this.isPaginatingInbox = false;
+          }
+        }
+
+        break;
+      case 'archive':
+
+        if (this.isPaginatingArchive) {
+          return null;
+        }
+
+        if (this.archiveDataSet?.canPaginate && this.archiveDataSet.paginationCursor) {
+          try {
+            this.isPaginatingArchive = true;
+            const response = await Courier.shared.client?.inbox.getArchivedMessages({
+              paginationLimit: Courier.shared.paginationLimit,
+              startCursor: this.archiveDataSet.paginationCursor
+            });
+            const dataSet = {
+              messages: response?.data?.messages?.nodes ?? [],
+              canPaginate: response?.data?.messages?.pageInfo?.hasNextPage ?? false,
+              paginationCursor: response?.data?.messages?.pageInfo?.startCursor ?? null
+            };
+            this.addPage(dataSet, 'archive');
+            return dataSet;
+          } catch (error) {
+            console.error('Error fetching next page of archived messages:', error);
+            return null;
+          } finally {
+            this.isPaginatingArchive = false;
+          }
+        }
+
+        break;
+    }
+
+    return null;
+  }
+
+  async clickMessage(message: InboxMessage, index: number): Promise<void> {
+
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    try {
+      if (message.trackingIds?.clickTrackingId) {
+        await Courier.shared.client.inbox.click({
+          messageId: message.messageId,
+          trackingId: message.trackingIds?.clickTrackingId
+        });
+      }
+    } catch (error) {
+      console.error('Error clicking message:', error);
+    }
+  }
+
   async archiveMessage(message: InboxMessage, index: number): Promise<void> {
 
     if (!Courier.shared.client) {
@@ -196,6 +270,28 @@ export class CourierInboxDatastore {
 
     // Return max of (index-1) or 0 to prevent negative index
     return Math.max(index - 1, 0);
+  }
+
+  private addPage(dataSet: InboxDataSet, feedType: FeedType) {
+    switch (feedType) {
+      case 'inbox':
+        if (this.inboxDataSet) {
+          this.inboxDataSet.canPaginate = dataSet.canPaginate;
+          this.inboxDataSet.paginationCursor = dataSet.paginationCursor;
+          this.inboxDataSet.messages = [...this.inboxDataSet.messages, ...dataSet.messages];
+        }
+        break;
+      case 'archive':
+        if (this.archiveDataSet) {
+          this.archiveDataSet.canPaginate = dataSet.canPaginate;
+          this.archiveDataSet.paginationCursor = dataSet.paginationCursor;
+          this.archiveDataSet.messages = [...this.archiveDataSet.messages, ...dataSet.messages];
+        }
+        break;
+    }
+    this.dataStoreListeners.forEach(listener =>
+      listener.events.onPageAdded(dataSet, feedType)
+    );
   }
 
   private addMessage(message: InboxMessage, index: number, feedType: FeedType) {

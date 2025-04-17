@@ -1,10 +1,9 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { FeedType } from "../types/feed-type";
 import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { FeedType } from "../types/feed-type";
 
 export class CourierInboxList extends HTMLElement {
   private list: HTMLUListElement;
@@ -12,17 +11,25 @@ export class CourierInboxList extends HTMLElement {
   private feedType: FeedType = 'inbox';
   private isLoading = true;
   private error: Error | null = null;
-  private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
   private canPaginate = false;
+  private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
+  private onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
   private onRefresh: () => void;
+  private onPaginationTrigger?: (feedType: FeedType) => void;
 
   public get messages(): InboxMessage[] {
     return this._messages;
   }
 
-  constructor({ onRefresh }: { onRefresh: () => void }) {
+  constructor(props: { onRefresh: () => void, onPaginationTrigger: (feedType: FeedType) => void, onMessageClick: (message: InboxMessage, index: number) => void, onArchiveMessage: (message: InboxMessage, index: number) => void }) {
     super();
-    this.onRefresh = onRefresh;
+
+    // Initialize the onRefresh and onPaginationTrigger callbacks
+    this.onRefresh = props.onRefresh;
+    this.onPaginationTrigger = props.onPaginationTrigger;
+    this.onMessageClick = props.onMessageClick;
+    this.onArchiveMessage = props.onArchiveMessage;
+
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.list = document.createElement('ul');
@@ -54,6 +61,14 @@ export class CourierInboxList extends HTMLElement {
   public setDataSet(dataSet: InboxDataSet): void {
     // New objects are created to avoid reference issues
     this._messages = [...dataSet.messages];
+    this.canPaginate = Boolean(dataSet.canPaginate);
+    this.error = null;
+    this.isLoading = false;
+    this.updateItems();
+  }
+
+  public addPage(dataSet: InboxDataSet): void {
+    this._messages = [...this._messages, ...dataSet.messages];
     this.canPaginate = Boolean(dataSet.canPaginate);
     this.error = null;
     this.isLoading = false;
@@ -111,10 +126,6 @@ export class CourierInboxList extends HTMLElement {
     this.onRefresh();
   }
 
-  public setOnMessageClick(callback: (message: InboxMessage, index: number) => void): void {
-    this.onMessageClick = callback;
-  }
-
   private updateItems(): void {
     this.list.innerHTML = '';
 
@@ -150,23 +161,23 @@ export class CourierInboxList extends HTMLElement {
       listItem.setMessage(message);
       listItem.setFeedType(this.feedType);
       listItem.setOnMessageClick((message) => {
-        if (this.onMessageClick) {
-          this.onMessageClick(message, index);
-        }
+        this.onMessageClick?.(message, index);
       });
       listItem.setOnCloseClick((message) => {
-        CourierInboxDatastore.shared.archiveMessage(message, index);
+        this.onArchiveMessage?.(message, index);
       });
       this.list.appendChild(listItem);
     });
 
     if (this.canPaginate) {
-      const paginationItem = new CourierInboxPaginationListItem();
-      paginationItem.setAttribute('loading', 'true');
+      const paginationItem = new CourierInboxPaginationListItem({
+        onPaginationTrigger: () => {
+          this.onPaginationTrigger?.(this.feedType);
+        },
+      });
       this.list.appendChild(paginationItem);
     }
   }
-
 }
 
 if (!customElements.get('courier-inbox-list')) {

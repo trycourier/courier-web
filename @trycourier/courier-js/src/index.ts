@@ -66,7 +66,7 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  MessageEvent
+  MessageEvent,
 };
 
 export {

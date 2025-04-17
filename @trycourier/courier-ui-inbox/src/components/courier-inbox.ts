@@ -55,6 +55,40 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           feedType: this.currentFeed,
           canUseCache: false
         });
+      },
+      onPaginationTrigger: async (feedType: FeedType) => {
+
+        // Fetch the next page of messages for the given feed type
+        // The event will propagate the data set change to the list
+        // Pagination will not trigger if the feed is already paginating
+        try {
+          await CourierInboxDatastore.shared.fetchNextPageOfMessages({
+            feedType: feedType
+          });
+        } catch (error) {
+          console.error('Failed to fetch next page of messages:', error);
+        }
+
+      },
+      onMessageClick: (message, index) => {
+
+        // Click the message
+        CourierInboxDatastore.shared.clickMessage(message, index)
+
+        // Dispatch a custom event when a message is clicked
+        this.dispatchEvent(new CustomEvent('message-click', {
+          detail: { message, index },
+          bubbles: true,
+          composed: true
+        }));
+
+        // Call the onMessageClick callback if it exists
+        this.onMessageClick?.(message, index);
+      },
+      onArchiveMessage: (message, index) => {
+
+        // Archive the message
+        CourierInboxDatastore.shared.archiveMessage(message, index);
       }
     });
 
@@ -95,19 +129,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       });
     });
 
-    // Listen for message clicks from the list
-    this.list.setOnMessageClick((message, index) => {
-      if (this.onMessageClick) {
-        this.onMessageClick(message, index);
-      }
-      // Dispatch a custom event when a message is clicked
-      this.dispatchEvent(new CustomEvent('message-click', {
-        detail: { message, index },
-        bubbles: true,
-        composed: true
-      }));
-    });
-
     // Attach the datastore listener
     this.datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
@@ -126,6 +147,13 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   public onDataSetChange(dataSet: InboxDataSet, feedType: FeedType): void {
     if (this.currentFeed === feedType) {
       this.list.setDataSet(dataSet);
+      this.header.setFeedType(feedType, this.list.messages.length);
+    }
+  }
+
+  public onPageAdded(dataSet: InboxDataSet, feedType: FeedType): void {
+    if (this.currentFeed === feedType) {
+      this.list.addPage(dataSet);
       this.header.setFeedType(feedType, this.list.messages.length);
     }
   }
