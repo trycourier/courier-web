@@ -120,7 +120,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
         position: absolute;
         top: 40px;
         right: -10px;
-        border-radius: var(--Radius-md, 6px);
+        border-radius: 6px;
         border: 1px solid var(--Stroke-Subtle-Primary, #E5E5E5);
         background: var(--Background-Default-Primary, #FFF);
         box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
