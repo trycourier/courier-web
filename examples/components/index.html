@@ -237,6 +237,13 @@
       // customInbox.setFeedType('archive');
       // customInbox.setHeader((feedType, unreadCount) => null);
 
+      customInbox.setExampleItemFactory(() => {
+        const element = document.createElement('div');
+        element.textContent = 'Example What up?';
+        element.style.backgroundColor = 'green';
+        return element;
+      });
+
       customInbox.setHeader((feedType, unreadCount) => {
         console.log('Setting header for feed type:', feedType, 'with unread count:', unreadCount);
 

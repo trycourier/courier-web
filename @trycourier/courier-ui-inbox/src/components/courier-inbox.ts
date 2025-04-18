@@ -7,6 +7,7 @@ import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { FeedType } from "../types/feed-type";
+import { ExampleElementFactory } from "../base/base-factory";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
   private shadow: ShadowRoot;
@@ -33,10 +34,17 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     return ['title', 'icon', 'feed-type', 'height', 'message-click'];
   }
 
-  constructor() {
+  private exampleItemFactory: ExampleElementFactory;
+
+  constructor(exampleItemFactory?: () => HTMLElement) {
     super();
 
     this.shadow = this.attachShadow({ mode: 'open' });
+
+    // TODO: Remove this once we have a proper way to handle the example item factory
+    this.exampleItemFactory = new ExampleElementFactory();
+    const element = this.exampleItemFactory.build('example-item-factory', exampleItemFactory);
+    this.shadow.appendChild(element);
 
     // Create header with default props
     this.header = new CourierInboxHeader({
@@ -122,6 +130,19 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this.authListener = Courier.shared.addAuthenticationListener((_) => {
       this.load({ feedType: this.currentFeed, canUseCache: true });
     });
+  }
+
+  public setExampleItemFactory(factory?: () => HTMLElement) {
+    const existingElement = this.shadow.getElementById('example-item-factory');
+    if (existingElement) {
+      const index = Array.from(this.shadow.children).indexOf(existingElement);
+      this.shadow.removeChild(existingElement);
+      const element = this.exampleItemFactory.build('example-item-factory', factory);
+      this.shadow.insertBefore(element, this.shadow.children[index] || null);
+    } else {
+      const element = this.exampleItemFactory.build('example-item-factory', factory);
+      this.shadow.appendChild(element);
+    }
   }
 
   private updateHeader(feedType: FeedType, unreadCount: number) {
