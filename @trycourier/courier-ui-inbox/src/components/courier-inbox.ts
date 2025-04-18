@@ -7,61 +7,61 @@ import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { FeedType } from "../types/feed-type";
-import { ExampleElementFactory } from "../base/base-factory";
+import { CourierInboxHeaderFactory } from "../types/factories";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
-  private shadow: ShadowRoot;
-  private header?: CourierInboxHeader;
-  private list: CourierInboxList;
-  private datastoreListener: CourierInboxDataStoreListener | undefined;
-  private authListener: AuthenticationListener | undefined;
-  private onMessageClick?: (message: InboxMessage, index: number) => void;
-  private currentFeed: FeedType = 'inbox';
 
-  // Custom header
-  private headerFactory: ((feedType: FeedType, unreadCount: number) => HTMLElement) | undefined;
-  private customHeader?: HTMLElement;
+  // State
+  private _currentFeed: FeedType = 'inbox';
+
+  // Components
+  private _shadow: ShadowRoot;
+  private _list: CourierInboxList;
+  private _datastoreListener: CourierInboxDataStoreListener | undefined;
+  private _authListener: AuthenticationListener | undefined;
+
+  // Header
+  private _header: CourierInboxHeader;
+  private _headerFactory: CourierInboxHeaderFactory | undefined | null = undefined;
+
+  // List
+  private _onMessageClick?: (message: InboxMessage, index: number) => void;
 
   // Default props
   private defaultProps = {
     title: 'Inbox',
     icon: CourierIconSource.inbox,
-    feedType: this.currentFeed,
+    feedType: this._currentFeed,
     height: '768px'
   };
 
   static get observedAttributes() {
-    return ['title', 'icon', 'feed-type', 'height', 'message-click'];
+    return ['height', 'message-click'];
   }
 
-  private exampleItemFactory: ExampleElementFactory;
+  private get unreadCount() {
+    return CourierInboxDatastore.shared.unreadCount;
+  }
 
-  constructor(exampleItemFactory?: () => HTMLElement) {
+  constructor() {
     super();
 
-    this.shadow = this.attachShadow({ mode: 'open' });
+    this._shadow = this.attachShadow({ mode: 'open' });
 
-    // TODO: Remove this once we have a proper way to handle the example item factory
-    this.exampleItemFactory = new ExampleElementFactory();
-    const element = this.exampleItemFactory.build('example-item-factory', exampleItemFactory);
-    this.shadow.appendChild(element);
-
-    // Create header with default props
-    this.header = new CourierInboxHeader({
+    // Header
+    this._header = new CourierInboxHeader({
       onFeedTypeChange: (feedType: FeedType) => {
         this.setFeedType(feedType);
       }
     });
-    this.header.setTitle(this.defaultProps.title);
-    this.header.setIcon(this.defaultProps.icon);
-    this.header.setFeedType(this.defaultProps.feedType, 0);
-    this.header.setUnreadCount(CourierInboxDatastore.shared.unreadCount);
+    this._header.build(undefined);
+    this._shadow.appendChild(this._header);
 
     // Create list and ensure it's properly initialized
-    this.list = new CourierInboxList({
+    this._list = new CourierInboxList({
       onRefresh: () => {
         this.load({
-          feedType: this.currentFeed,
+          feedType: this._currentFeed,
           canUseCache: false
         });
       },
@@ -83,7 +83,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           composed: true
         }));
 
-        this.onMessageClick?.(message, index);
+        this._onMessageClick?.(message, index);
       },
       onArchiveMessage: (message, index) => {
         CourierInboxDatastore.shared.archiveMessage(message, index);
@@ -111,91 +111,76 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       }
     `;
 
-    this.shadow.appendChild(style);
-    this.shadow.appendChild(this.header);
-    this.shadow.appendChild(this.list);
-
-    // Listen for feed type changes from the header
-    this.header.addEventListener('feedTypeChange', (event: Event) => {
-      console.log('Feed type changed in inbox.ts:', (event as CustomEvent).detail);
-      const { feedType } = (event as CustomEvent).detail as { feedType: FeedType };
-      this.setFeedType(feedType);
-    });
+    this._shadow.appendChild(style);
+    this._shadow.appendChild(this._list);
 
     // Attach the datastore listener
-    this.datastoreListener = new CourierInboxDataStoreListener(this);
-    CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
+    this._datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
     // Listen for authentication state changes
-    this.authListener = Courier.shared.addAuthenticationListener((_) => {
-      this.load({ feedType: this.currentFeed, canUseCache: true });
+    this._authListener = Courier.shared.addAuthenticationListener((_) => {
+      this.load({ feedType: this._currentFeed, canUseCache: true });
     });
   }
 
-  public setExampleItemFactory(factory?: () => HTMLElement) {
-    const existingElement = this.shadow.getElementById('example-item-factory');
-    if (existingElement) {
-      const index = Array.from(this.shadow.children).indexOf(existingElement);
-      this.shadow.removeChild(existingElement);
-      const element = this.exampleItemFactory.build('example-item-factory', factory);
-      this.shadow.insertBefore(element, this.shadow.children[index] || null);
-    } else {
-      const element = this.exampleItemFactory.build('example-item-factory', factory);
-      this.shadow.appendChild(element);
-    }
+  setHeader(factory: CourierInboxHeaderFactory | undefined | null) {
+    console.log('Setting header', factory);
+    this._headerFactory = factory;
+    this.updateHeader();
   }
 
-  private updateHeader(feedType: FeedType, unreadCount: number) {
-    if (!this.shadow) return;
+  setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
+    this._list.setListItemFactory(factory);
+  }
 
-    // Remove existing custom header
-    if (this.customHeader) {
-      this.shadow.removeChild(this.customHeader);
-      this.customHeader = undefined;
-    }
+  setPaginationItem(factory: (feedType: FeedType) => HTMLElement) {
+    this._list.setPaginationItemFactory(factory);
+  }
 
-    // Create and add new header
-    if (this.headerFactory) {
-      this.customHeader = this.headerFactory(feedType, unreadCount);
-      this.shadow.insertBefore(this.customHeader, this.shadow.children[1]);
-    }
-
-    // Remove existing headers
-    if (this.header && this.customHeader) {
-      this.shadow.removeChild(this.header);
-      this.header = undefined;
-    }
-
+  setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
+    this._onMessageClick = handler;
   }
 
   setFeedType(feedType: FeedType) {
-    this.currentFeed = feedType;
-    this.list.setFeedType(feedType);
-    const unreadCount = CourierInboxDatastore.shared.unreadCount;
-    this.header?.setUnreadCount(unreadCount);
-    this.updateHeader(feedType, unreadCount);
-    console.log('Feed type changed in inbox.ts:', feedType, unreadCount);
+
+    // Update state 
+    this._currentFeed = feedType;
+
+    // Update components
+    this._list.setFeedType(feedType);
+    this.updateHeader();
+
+    // Load data
     this.load({
-      feedType: this.currentFeed,
+      feedType: this._currentFeed,
       canUseCache: true
     });
   }
 
-  setHeader(factory: (feedType: FeedType, unreadCount: number) => HTMLElement) {
-    this.headerFactory = factory;
-    this.updateHeader(this.currentFeed, CourierInboxDatastore.shared.unreadCount);
-  }
+  private updateHeader() {
 
-  setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
-    this.list.setListItemFactory(factory);
-  }
+    const props = {
+      feedType: this._currentFeed,
+      unreadCount: this.unreadCount,
+      messageCount: this._list.messages.length
+    };
 
-  setPaginationItem(factory: (feedType: FeedType) => HTMLElement) {
-    this.list.setPaginationItemFactory(factory);
-  }
+    console.log('Updating header', this._headerFactory);
 
-  setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
-    this.onMessageClick = handler;
+    switch (this._headerFactory) {
+      case undefined:
+        this._header.refresh(props);
+        break;
+      case null:
+        this._header.build(null);
+        break;
+      default:
+        const headerElement = this._headerFactory(props);
+        this._header.build(headerElement);
+        break;
+    }
+
   }
 
   private async load(props: { feedType: FeedType, canUseCache: boolean }) {
@@ -204,71 +189,59 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   // Datastore event handlers
   public onDataSetChange(dataSet: InboxDataSet, feedType: FeedType): void {
-    if (this.currentFeed === feedType) {
-      this.list.setDataSet(dataSet);
-      this.header?.setFeedType(feedType, this.list.messages.length);
+    if (this._currentFeed === feedType) {
+      this._list.setDataSet(dataSet);
+      this.updateHeader();
     }
   }
 
   public onPageAdded(dataSet: InboxDataSet, feedType: FeedType): void {
-    if (this.currentFeed === feedType) {
-      this.list.addPage(dataSet);
-      this.header?.setFeedType(feedType, this.list.messages.length);
+    if (this._currentFeed === feedType) {
+      this._list.addPage(dataSet);
+      this.updateHeader();
     }
   }
 
   public onMessageAdd(message: InboxMessage, index: number, feedType: FeedType): void {
-    if (this.currentFeed === feedType) {
-      this.list.addMessage(message, index);
-      this.header?.setFeedType(feedType, this.list.messages.length);
+    if (this._currentFeed === feedType) {
+      this._list.addMessage(message, index);
+      this.updateHeader();
     }
   }
 
   public onMessageRemove(_: InboxMessage, index: number, feedType: FeedType): void {
-    if (this.currentFeed === feedType) {
-      this.list.removeMessage(index);
-      this.header?.setFeedType(feedType, this.list.messages.length);
+    if (this._currentFeed === feedType) {
+      this._list.removeMessage(index);
+      this.updateHeader();
     }
   }
 
   public onMessageUpdate(message: InboxMessage, index: number, feedType: FeedType): void {
-    if (this.currentFeed === feedType) {
-      this.list.updateMessage(message, index);
-      this.header?.setFeedType(feedType, this.list.messages.length);
+    if (this._currentFeed === feedType) {
+      this._list.updateMessage(message, index);
+      this.updateHeader();
     }
   }
 
-  public onUnreadCountChange(unreadCount: number): void {
-    this.header?.setUnreadCount(unreadCount);
-    this.updateHeader(this.currentFeed, unreadCount);
+  public onUnreadCountChange(_: number): void {
+    this.updateHeader();
   }
 
   connectedCallback() {
     this.load({
-      feedType: this.currentFeed,
+      feedType: this._currentFeed,
       canUseCache: false
     });
   }
 
   disconnectedCallback() {
-    this.datastoreListener?.remove();
-    this.authListener?.remove();
+    this._datastoreListener?.remove();
+    this._authListener?.remove();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (oldValue === newValue) return;
-
     switch (name) {
-      case 'title':
-        this.header?.setAttribute('title', newValue || this.defaultProps.title);
-        break;
-      case 'icon':
-        this.header?.setAttribute('icon', newValue || this.defaultProps.icon);
-        break;
-      case 'feed-type':
-        this.header?.setAttribute('feed-type', newValue || this.defaultProps.feedType);
-        this.setFeedType((newValue as FeedType) || this.defaultProps.feedType);
-        break;
       case 'height':
         const height = newValue || this.defaultProps.height;
         this.style.height = height;
@@ -276,12 +249,12 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       case 'message-click':
         if (newValue) {
           try {
-            this.onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
+            this._onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
           } catch (error) {
             console.error('Failed to parse message-click handler:', error);
           }
         } else {
-          this.onMessageClick = undefined;
+          this._onMessageClick = undefined;
         }
         break;
     }

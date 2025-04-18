@@ -228,8 +228,8 @@
       };
 
       // Inbox list item click handler
-      document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
-      document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
+      // document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
+      // document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
 
       // Custom inbox list item
       const customInbox = document.getElementById('inbox-custom');
@@ -237,40 +237,36 @@
       // customInbox.setFeedType('archive');
       // customInbox.setHeader((feedType, unreadCount) => null);
 
-      customInbox.setExampleItemFactory(() => {
-        const element = document.createElement('div');
-        element.textContent = 'Example What up?';
-        element.style.backgroundColor = 'green';
-        return element;
-      });
+      customInbox.setHeader(props => {
 
-      customInbox.setHeader((feedType, unreadCount) => {
-        console.log('Setting header for feed type:', feedType, 'with unread count:', unreadCount);
+        console.log('Setting header', props);
 
         const header = document.createElement('div');
-        header.style.cssText = 'display: flex; width: 100%; box-sizing: border-box; overflow-x: auto;';
+        header.style.cssText = 'display: flex; gap: 12px; padding: 12px; width: 100%; box-sizing: border-box; overflow-x: auto; border-bottom: 1px solid #e0e0e0;';
 
         const createTab = (text, type) => {
           const tab = document.createElement('button');
           const baseStyles = `
             flex: 1;
-            padding: 16px;
+            padding: 12px;
             cursor: pointer;
             border: none;
             font-size: 14px;
-            border-bottom: 1px solid #e0e0e0;
             background: transparent;
             font-weight: normal;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 2px solid #f5f5f5;
           `;
 
           const selectedStyles = `
-            background: #f5f5f5;
-            border-bottom: 2px solid #521e65;
+            background: #e8e8e8;
             font-weight: bold;
+            border: none;
           `;
 
-          tab.style.cssText = baseStyles + (feedType === type ? selectedStyles : '');
-          tab.textContent = text + (type === 'inbox' ? ` ${unreadCount > 0 ? `(${unreadCount})` : ''}` : '');
+          tab.style.cssText = baseStyles + (props.feedType === type ? selectedStyles : '');
+          tab.textContent = type === 'inbox' ? `Inbox (${props.unreadCount})` : `Archive`;
           tab.onclick = () => customInbox.setFeedType(type);
 
           return tab;

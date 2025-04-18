@@ -3,22 +3,22 @@ import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
 export type CourierInboxMenuOption = {
   label: string;
   icon: string;
-  onClick: () => void;
+  onClick: (option: CourierInboxMenuOption) => void;
 };
 
 class CourierInboxMenuItem extends HTMLElement {
-  private option: CourierInboxMenuOption;
-  private isSelected: boolean;
-  private content: HTMLDivElement;
-  private itemIcon: CourierIcon;
+  private _option: CourierInboxMenuOption;
+  private _isSelected: boolean;
+  private _content: HTMLDivElement;
+  private _itemIcon: CourierIcon;
   private _title: HTMLParagraphElement;
-  private checkIcon: CourierIcon;
+  private _checkIcon: CourierIcon;
 
-  constructor(option: CourierInboxMenuOption, isSelected: boolean) {
+  constructor(props: { option: CourierInboxMenuOption, isSelected: boolean }) {
     super();
 
-    this.option = option;
-    this.isSelected = isSelected;
+    this._option = props.option;
+    this._isSelected = props.isSelected;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
@@ -62,51 +62,51 @@ class CourierInboxMenuItem extends HTMLElement {
       }
     `;
 
-    this.content = document.createElement('div');
-    this.content.className = 'menu-item';
+    this._content = document.createElement('div');
+    this._content.className = 'menu-item';
 
-    this.itemIcon = new CourierIcon();
-    this.itemIcon.setAttribute('svg', this.option.icon);
-    this.itemIcon.setAttribute('size', '16');
+    this._itemIcon = new CourierIcon();
+    this._itemIcon.setAttribute('svg', this._option.icon);
+    this._itemIcon.setAttribute('size', '16');
 
     this._title = document.createElement('p');
-    this._title.textContent = this.option.label;
+    this._title.textContent = this._option.label;
 
     const spacer = document.createElement('div');
     spacer.className = 'spacer';
 
-    this.checkIcon = new CourierIcon();
-    this.checkIcon.setAttribute('icon', 'check');
+    this._checkIcon = new CourierIcon();
+    this._checkIcon.setAttribute('icon', 'check');
 
-    this.content.appendChild(this.itemIcon);
-    this.content.appendChild(this._title);
-    this.content.appendChild(spacer);
-    this.content.appendChild(this.checkIcon);
+    this._content.appendChild(this._itemIcon);
+    this._content.appendChild(this._title);
+    this._content.appendChild(spacer);
+    this._content.appendChild(this._checkIcon);
 
     shadow.appendChild(style);
-    shadow.appendChild(this.content);
+    shadow.appendChild(this._content);
 
-    this.checkIcon.style.display = this.isSelected ? 'block' : 'none';
+    this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
   }
 }
 
 export class CourierInboxFilterMenu extends HTMLElement {
-  private menuButton: CourierIconButton;
-  private menu: HTMLDivElement;
-  private options: CourierInboxMenuOption[];
-  private selectedIndex: number = 0;
+  private _menuButton: CourierIconButton;
+  private _menu: HTMLDivElement;
+  private _options: CourierInboxMenuOption[];
+  private _selectedIndex: number = 0;
 
-  constructor(options: CourierInboxMenuOption[]) {
+  constructor(props: { options: CourierInboxMenuOption[] }) {
     super();
 
-    this.options = options;
-    this.selectedIndex = 0;
+    this._options = props.options;
+    this._selectedIndex = 0;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this.menuButton = new CourierIconButton('filter');
-    this.menu = document.createElement('div');
-    this.menu.className = 'menu';
+    this._menuButton = new CourierIconButton('filter');
+    this._menu = document.createElement('div');
+    this._menu.className = 'menu';
 
     const style = document.createElement('style');
     style.textContent = `
@@ -132,57 +132,48 @@ export class CourierInboxFilterMenu extends HTMLElement {
     `;
 
     shadow.appendChild(style);
-    shadow.appendChild(this.menuButton);
-    shadow.appendChild(this.menu);
+    shadow.appendChild(this._menuButton);
+    shadow.appendChild(this._menu);
 
-    this.menuButton.addEventListener('click', this.toggleMenu.bind(this));
+    this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
-    this.setOptions(options);
+    this.setOptions(props.options);
   }
 
   public setOptions(options: CourierInboxMenuOption[]) {
-    this.options = options;
+    this._options = options;
     this.renderMenu();
   }
 
   private renderMenu() {
-    this.menu.innerHTML = '';
+    this._menu.innerHTML = '';
 
-    this.options.forEach((option, index) => {
-      const menuItem = new CourierInboxMenuItem(option, this.selectedIndex === index);
+    this._options.forEach((option, index) => {
+      const menuItem = new CourierInboxMenuItem({ option, isSelected: this._selectedIndex === index });
 
       menuItem.addEventListener('click', () => {
-        this.selectedIndex = index;
-        option.onClick();
+        this._selectedIndex = index;
+        option.onClick(option);
         this.renderMenu();
-        this.menu.style.display = 'none';
+        this._menu.style.display = 'none';
       });
 
-      this.menu.appendChild(menuItem);
+      this._menu.appendChild(menuItem);
     });
   }
 
   private toggleMenu(event: Event) {
     event.stopPropagation();
-    this.menu.style.display = this.menu.style.display === 'block' ? 'none' : 'block';
+    this._menu.style.display = this._menu.style.display === 'block' ? 'none' : 'block';
   }
 
   private handleOutsideClick(event: MouseEvent) {
     if (!this.contains(event.target as Node)) {
-      this.menu.style.display = 'none';
+      this._menu.style.display = 'none';
     }
   }
-
-  public getSelectedOption(): CourierInboxMenuOption | null {
-    return this.options[this.selectedIndex];
-  }
 }
 
-if (!customElements.get('courier-inbox-filter-menu')) {
-  customElements.define('courier-inbox-filter-menu', CourierInboxFilterMenu);
-}
-
-if (!customElements.get('courier-inbox-menu-item')) {
-  customElements.define('courier-inbox-menu-item', CourierInboxMenuItem);
-}
+customElements.define('courier-inbox-filter-menu', CourierInboxFilterMenu);
+customElements.define('courier-inbox-menu-item', CourierInboxMenuItem);

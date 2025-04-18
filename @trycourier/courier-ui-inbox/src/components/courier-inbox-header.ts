@@ -1,135 +1,43 @@
 import { FeedType } from "../types/feed-type";
-import { CourierButton, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxFilterMenu } from "./courier-inbox-filter-menu";
-import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
+import { CourierButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-filter-menu";
+import { CourierElement } from "../base/base-factory";
+import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
+import { CourierInboxHeaderFactoryProps } from "../types/factories";
 
-export class CourierInboxHeader extends HTMLElement {
-  private titleElement: HTMLHeadingElement;
-  private iconElement: HTMLElement;
-  private optionMenu: CourierInboxFilterMenu;
-  private feedType: FeedType = 'inbox';
-  private _title: string = this.getContentForFeedType(this.feedType).title;
-  private icon: string = this.getContentForFeedType(this.feedType).icon;
-  private archiveButton: CourierButton;
-  private unreadCount: number = 0;
-  private unreadBadge: CourierUnreadCountBadge;
-  private onFeedTypeChange: (feedType: FeedType) => void;
+export class CourierInboxHeader extends CourierElement {
+
+  // State
+  private _feedType: FeedType = 'inbox';
+  private _unreadCount: number = 0;
+
+  // Menu options
+  private _menuOptions: CourierInboxMenuOption[] = [
+    {
+      label: 'Inbox',
+      icon: CourierIconSource.inbox,
+      onClick: (option: CourierInboxMenuOption) => {
+        this.handleOptionMenuClick('inbox', option);
+      }
+    },
+    {
+      label: 'Archive',
+      icon: CourierIconSource.archive,
+      onClick: (option: CourierInboxMenuOption) => {
+        this.handleOptionMenuClick('archive', option);
+      }
+    }
+  ];
+
+  // Components
+  private _titleSection?: CourierInboxHeaderTitle;
+  private _optionMenu?: CourierInboxFilterMenu;
+  private _archiveButton?: CourierButton;
+  private _onFeedTypeChange: (feedType: FeedType) => void;
 
   constructor(props: { onFeedTypeChange: (feedType: FeedType) => void }) {
     super();
-    this.onFeedTypeChange = props.onFeedTypeChange;
-
-    const shadow = this.attachShadow({ mode: 'open' });
-
-    this.iconElement = new CourierIcon();
-    this.iconElement.setAttribute('part', 'icon');
-
-    this.titleElement = document.createElement('h2');
-    this.titleElement.setAttribute('part', 'title');
-
-    this.unreadBadge = new CourierUnreadCountBadge();
-
-    this.optionMenu = new CourierInboxFilterMenu([
-      {
-        label: 'Inbox',
-        icon: CourierIconSource.inbox,
-        onClick: () => {
-          this.handleOptionMenuClick('inbox');
-        }
-      },
-      {
-        label: 'Archive',
-        icon: CourierIconSource.archive,
-        onClick: () => {
-          this.handleOptionMenuClick('archive');
-        }
-      }
-    ]);
-
-    const style = document.createElement('style');
-    style.textContent = `
-      :host {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        background-color: var(--courier-header-bg, #ffffff);
-        border-bottom: 1px solid var(--courier-header-border, #e5e7eb);
-      }
-
-      courier-icon[part="icon"] {
-        display: flex;
-        align-items: center;
-      }
-
-      .header-content {
-        display: flex;
-        align-items: center;
-        flex: 1;
-      }
-
-      .title-section {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        position: relative;
-      }
-
-      .spacer {
-        flex: 1;
-      }
-
-      h2[part="title"] {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 50;
-        color: var(--courier-text-primary, #111827);
-      }
-
-      .actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-    `;
-
-    // Create main header container
-    const headerContent = document.createElement('div');
-    headerContent.className = 'header-content';
-
-    // Create and setup title section with icon and title
-    const titleSection = document.createElement('div');
-    titleSection.className = 'title-section';
-    titleSection.appendChild(this.iconElement);
-    titleSection.appendChild(this.titleElement);
-    titleSection.appendChild(this.unreadBadge);
-
-    // Create flexible spacer
-    const spacer = document.createElement('div');
-    spacer.className = 'spacer';
-
-    // Create and setup actions section
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    // Create and setup archive button
-    this.archiveButton = new CourierButton();
-    this.archiveButton.setAttributes({
-      variant: 'tertiary',
-    });
-    this.archiveButton.textContent = 'Archive All';
-    this.archiveButton.addEventListener('click', this.handleArchiveClick.bind(this));
-    actions.appendChild(this.archiveButton);
-    actions.appendChild(this.optionMenu);
-
-    // Assemble header content
-    headerContent.appendChild(titleSection);
-    headerContent.appendChild(spacer);
-    headerContent.appendChild(actions);
-
-    // Add elements to shadow DOM
-    shadow.appendChild(style);
-    shadow.appendChild(headerContent);
+    this._onFeedTypeChange = props.onFeedTypeChange;
   }
 
   static get observedAttributes() {
@@ -140,81 +48,109 @@ export class CourierInboxHeader extends HTMLElement {
     alert('We need to implement this');
   }
 
-  public setUnreadCount(unreadCount: number) {
-    this.unreadCount = unreadCount;
-    switch (this.feedType) {
-      case 'inbox':
-        this.unreadBadge.setCount(this.unreadCount);
-        break;
-      case 'archive':
-        this.unreadBadge.setCount(0);
-        break;
+  // public setUnreadCount(unreadCount: number) {
+  //   this._unreadCount = unreadCount;
+  //   console.log('Unread count set to:', this._unreadCount);
+  //   // if (this._titleSection) {
+  //   //   const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
+  //   //   if (option) {
+  //   //     this._titleSection.update(option, this._feedType === 'inbox' ? unreadCount : 0);
+  //   //   }
+  //   // }
+  // }
+
+  private handleOptionMenuClick(feedType: FeedType, option: CourierInboxMenuOption) {
+    this._feedType = feedType;
+    if (this._titleSection) {
+      this._titleSection.update(option, this._feedType === 'inbox' ? this._unreadCount : 0);
     }
-  }
-
-  private handleOptionMenuClick(feedType: FeedType) {
-    this.feedType = feedType;
-    this.updateTitleFromFeedType();
-    this.onFeedTypeChange(feedType);
-  }
-
-  private getContentForFeedType(feedType: FeedType) {
-    if (feedType === 'inbox') {
-      return {
-        title: 'Inbox',
-        icon: 'inbox'
-      };
-    } else {
-      return {
-        title: 'Archive',
-        icon: 'archive'
-      };
-    }
-  }
-
-  private updateTitleFromFeedType() {
-    const content = this.getContentForFeedType(this.feedType);
-    this._title = content.title;
-    this.icon = content.icon;
-    this.updateTitle();
-    this.updateIcon();
-  }
-
-  private updateIcon() {
-    if (this.icon) {
-      this.iconElement.setAttribute('icon', this.icon);
-    } else {
-      this.iconElement.removeAttribute('icon');
-    }
-  }
-
-  private updateTitle() {
-    this.titleElement.textContent = this._title;
+    this._onFeedTypeChange(feedType);
   }
 
   private updateArchiveButton(show: boolean) {
-    this.archiveButton.style.display = show ? 'block' : 'none';
+    if (this._archiveButton) {
+      this._archiveButton.style.display = show ? 'block' : 'none';
+    }
   }
 
-  connectedCallback() {
-    this.updateIcon();
-    this.updateTitle();
+  public refresh(props: CourierInboxHeaderFactoryProps): void {
+    console.log('Refreshing header', props);
+
+    // Update state 
+    this._feedType = props.feedType;
+    this._unreadCount = props.unreadCount;
+
+    // Update archive button
+    this.updateArchiveButton(props.feedType === 'inbox' && props.messageCount > 0);
+
+    // Update title section
+    const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
+    if (option) {
+      this._titleSection?.update(option, props.feedType === 'inbox' ? props.unreadCount : 0);
+    }
   }
 
-  public setIcon(icon: string): void {
-    this.icon = icon;
-    this.updateIcon();
-  }
+  defaultElement(): HTMLElement {
+    const style = document.createElement('style');
+    style.textContent = `
+      .courier-inbox-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background-color: var(--courier-header-bg, #ffffff);
+        border-bottom: 1px solid var(--courier-header-border, #e5e7eb);
+      }
 
-  public setTitle(title: string): void {
-    this._title = title;
-    this.updateTitle();
-  }
+      .header-content {
+        display: flex;
+        align-items: center;
+        flex: 1;
+      }
 
-  public setFeedType(feedType: FeedType, messageCount: number): void {
-    this.feedType = feedType;
-    this.updateTitleFromFeedType();
-    this.updateArchiveButton(feedType === 'inbox' && messageCount > 0);
+      .spacer {
+        flex: 1;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+    `;
+
+    this._titleSection = new CourierInboxHeaderTitle({ option: this._menuOptions[0] });
+    this._optionMenu = new CourierInboxFilterMenu({ options: this._menuOptions });
+
+    // Create flexible spacer
+    const spacer = document.createElement('div');
+    spacer.className = 'spacer';
+
+    // Create and setup actions section
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    // Create and setup archive button
+    this._archiveButton = new CourierButton();
+    this._archiveButton.setAttributes({
+      variant: 'tertiary',
+    });
+    this._archiveButton.textContent = 'Archive All';
+    this._archiveButton.addEventListener('click', this.handleArchiveClick.bind(this));
+    actions.appendChild(this._archiveButton);
+    actions.appendChild(this._optionMenu);
+
+    const container = document.createElement('div');
+    container.className = 'courier-inbox-header';
+    container.appendChild(style);
+    container.appendChild(this._titleSection);
+    container.appendChild(spacer);
+    container.appendChild(actions);
+
+    // Initialize title section with first menu option
+    this._titleSection.update(this._menuOptions[0], this._unreadCount);
+
+    return container;
   }
 }
 
