@@ -317,7 +317,7 @@ export class CourierInboxDatastore {
   private addMessage(message: InboxMessage, index: number, feedType: FeedType) {
     switch (feedType) {
       case 'inbox':
-        if (!message.read && this._unreadCount) {
+        if (!message.read && this._unreadCount !== undefined) {
           this._unreadCount = this._unreadCount + 1;
         }
         this.inboxDataSet?.messages.splice(index, 0, message);
@@ -335,7 +335,7 @@ export class CourierInboxDatastore {
   private removeMessage(message: InboxMessage, index: number, feedType: FeedType) {
     switch (feedType) {
       case 'inbox':
-        if (!message.read && this._unreadCount) {
+        if (!message.read && this._unreadCount !== undefined) {
           this._unreadCount = this._unreadCount - 1;
         }
         this.inboxDataSet?.messages.splice(index, 1);
