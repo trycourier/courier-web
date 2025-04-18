@@ -17,6 +17,7 @@ export class CourierInboxList extends HTMLElement {
   private onRefresh: () => void;
   private onPaginationTrigger?: (feedType: FeedType) => void;
   private listItemFactory?: (message: InboxMessage, index: number) => HTMLElement;
+  private paginationItemFactory?: (feedType: FeedType) => HTMLElement;
 
   public get messages(): InboxMessage[] {
     return this._messages;
@@ -66,6 +67,12 @@ export class CourierInboxList extends HTMLElement {
 
   public setListItemFactory(factory: (message: InboxMessage, index: number) => HTMLElement): void {
     this.listItemFactory = factory;
+    this.updateItems();
+  }
+
+  public setPaginationItemFactory(factory: (feedType: FeedType) => HTMLElement): void {
+    console.log('setting pagination item factory', factory);
+    this.paginationItemFactory = factory;
     this.updateItems();
   }
 
@@ -185,10 +192,12 @@ export class CourierInboxList extends HTMLElement {
     });
 
     if (this.canPaginate) {
+
+      console.log('this.paginationItemFactory', this.paginationItemFactory);
+
       const paginationItem = new CourierInboxPaginationListItem({
-        onPaginationTrigger: () => {
-          this.onPaginationTrigger?.(this.feedType);
-        },
+        customItem: this.paginationItemFactory?.(this.feedType),
+        onPaginationTrigger: () => this.onPaginationTrigger?.(this.feedType),
       });
       this.list.appendChild(paginationItem);
     }

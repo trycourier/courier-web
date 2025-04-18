@@ -103,7 +103,13 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     // Attach the datastore listener
     this.datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
+  }
 
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === 'popup-alignment' && this.isValidPosition(newValue)) {
+      this.popupAlignment = newValue as CourierInboxPopupAlignment;
+      this.updatePopupPosition();
+    }
   }
 
   public onUnreadCountChange(unreadCount: number): void {

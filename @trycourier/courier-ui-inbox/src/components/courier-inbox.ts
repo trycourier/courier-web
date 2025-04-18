@@ -16,6 +16,8 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   private authListener: AuthenticationListener | undefined;
   private onMessageClick?: (message: InboxMessage, index: number) => void;
   private currentFeed: FeedType = 'inbox';
+
+  // Custom header
   private headerFactory: ((feedType: FeedType, unreadCount: number) => HTMLElement) | undefined;
   private customHeader?: HTMLElement;
 
@@ -165,6 +167,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
     this.list.setListItemFactory(factory);
+  }
+
+  setPaginationItem(factory: (feedType: FeedType) => HTMLElement) {
+    this.list.setPaginationItemFactory(factory);
   }
 
   setMessageClick(handler?: (message: InboxMessage, index: number) => void) {

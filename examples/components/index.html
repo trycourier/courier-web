@@ -39,9 +39,22 @@
       </div>
     </div>
 
+    <div class="grid-section allow-overflow">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox-menu (custom)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding" style="height: 100px;">
+            <courier-inbox-menu id="inbox-menu" popup-alignment="top-center"></courier-inbox-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="grid-section">
       <div class="grid-header">
-        <p class="grid-title">courier-inbox (custom list item)</p>
+        <p class="grid-title">courier-inbox (custom)</p>
       </div>
       <div class="grid-container">
         <div class="grid-row">
@@ -279,6 +292,13 @@
           alert(`You clicked message ${index}`);
         });
 
+        return listItem;
+      });
+
+      customInbox.setPaginationItem((feedType) => {
+        const listItem = document.createElement('div');
+        listItem.style.cssText = 'width: 100%; padding: 16px; display: flex; justify-content: center; align-items: center;';
+        listItem.innerHTML = '<p>Loading...</p>';
         return listItem;
       });
 
