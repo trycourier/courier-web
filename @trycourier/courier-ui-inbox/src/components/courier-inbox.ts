@@ -7,7 +7,7 @@ import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxHeaderFactory, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
 
@@ -22,7 +22,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   // Header
   private _header: CourierInboxHeader;
-  private _headerFactory: CourierInboxHeaderFactory | undefined | null = undefined;
+  private _headerFactory: ((props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) | undefined | null = undefined;
 
   // List
   private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -34,10 +34,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     feedType: this._currentFeed,
     height: '768px'
   };
-
-  private get _unreadCount() {
-    return CourierInboxDatastore.shared.unreadCount;
-  }
 
   static get observedAttributes() {
     return ['height', 'message-click'];
@@ -120,11 +116,11 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
     // Listen for authentication state changes
     this._authListener = Courier.shared.addAuthenticationListener((_) => {
-      this.load({ feedType: this._currentFeed, canUseCache: true });
+      this.refresh();
     });
   }
 
-  public setHeader(factory: CourierInboxHeaderFactory | undefined | null) {
+  public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
     this._headerFactory = factory;
     this.updateHeader();
   }
@@ -178,7 +174,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
     const props = {
       feedType: this._currentFeed,
-      unreadCount: this._unreadCount,
+      unreadCount: CourierInboxDatastore.shared.unreadCount,
       messageCount: this._list.messages.length
     };
 
@@ -249,10 +245,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   }
 
   connectedCallback() {
-    this.load({
-      feedType: this._currentFeed,
-      canUseCache: false
-    });
+    this.refresh();
   }
 
   disconnectedCallback() {

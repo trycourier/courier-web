@@ -1,11 +1,11 @@
-import { CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInbox } from "./courier-inbox";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxHeaderFactory, CourierInboxListItemFactory, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
 export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
@@ -14,10 +14,13 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _width: string = '440px';
   private _height: string = '440px';
   private _popupAlignment: CourierInboxPopupAlignment = 'top-right';
+  private _top: string = '40px';
+  private _right: string = '0';
+  private _bottom: string = '40px';
+  private _left: string = '0';
 
   // Components
-  private _menuButtonContainer: HTMLDivElement;
-  private _triggerButton: CourierIconButton;
+  private _triggerButton: CourierInboxMenuButton;
   private _popup: HTMLDivElement;
   private _inbox: CourierInbox;
   private _unreadCountBadge: CourierUnreadCountBadge;
@@ -28,8 +31,11 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
+  // Factories
+  private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
+
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height'];
+    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left'];
   }
 
   constructor() {
@@ -37,12 +43,9 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // Create trigger button container
-    this._menuButtonContainer = document.createElement('div');
-    this._menuButtonContainer.className = 'menu-button-container';
-
     // Create trigger button
-    this._triggerButton = new CourierIconButton('inbox');
+    this._triggerButton = new CourierInboxMenuButton();
+    this._triggerButton.build(undefined);
 
     // Create unread count badge
     this._unreadCountBadge = new CourierUnreadCountBadge();
@@ -96,9 +99,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     `;
 
     shadow.appendChild(style);
-    this._menuButtonContainer.appendChild(this._triggerButton);
-    this._menuButtonContainer.appendChild(this._unreadCountBadge);
-    shadow.appendChild(this._menuButtonContainer);
+    shadow.appendChild(this._triggerButton);
     shadow.appendChild(this._popup);
     this._popup.appendChild(this._inbox);
     this._inbox.setMessageClick(this._onMessageClick);
@@ -131,11 +132,27 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
         this._height = newValue;
         this.setSize(this._width, newValue);
         break;
+      case 'top':
+        this._top = newValue;
+        this.updatePopupPosition();
+        break;
+      case 'right':
+        this._right = newValue;
+        this.updatePopupPosition();
+        break;
+      case 'bottom':
+        this._bottom = newValue;
+        this.updatePopupPosition();
+        break;
+      case 'left':
+        this._left = newValue;
+        this.updatePopupPosition();
+        break;
     }
   }
 
-  public onUnreadCountChange(unreadCount: number): void {
-    this._unreadCountBadge.setCount(unreadCount);
+  public onUnreadCountChange(_: number): void {
+    this.refreshButton();
   }
 
   public onMessageClick(props: CourierInboxListItemFactoryProps): void {
@@ -162,39 +179,39 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
 
     switch (this._popupAlignment) {
       case 'top-right':
-        this._popup.style.top = '40px';
-        this._popup.style.right = '0';
+        this._popup.style.top = this._top;
+        this._popup.style.right = this._right;
         break;
       case 'top-left':
-        this._popup.style.top = '40px';
-        this._popup.style.left = '0';
+        this._popup.style.top = this._top;
+        this._popup.style.left = this._left;
         break;
       case 'top-center':
-        this._popup.style.top = '40px';
+        this._popup.style.top = this._top;
         this._popup.style.left = '50%';
         this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'bottom-right':
-        this._popup.style.bottom = '40px';
-        this._popup.style.right = '0';
+        this._popup.style.bottom = this._bottom;
+        this._popup.style.right = this._right;
         break;
       case 'bottom-left':
-        this._popup.style.bottom = '40px';
-        this._popup.style.left = '0';
+        this._popup.style.bottom = this._bottom;
+        this._popup.style.left = this._left;
         break;
       case 'bottom-center':
-        this._popup.style.bottom = '40px';
+        this._popup.style.bottom = this._bottom;
         this._popup.style.left = '50%';
         this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'center-right':
         this._popup.style.top = '50%';
-        this._popup.style.right = '40px';
+        this._popup.style.right = this._right;
         this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-left':
         this._popup.style.top = '50%';
-        this._popup.style.left = '40px';
+        this._popup.style.left = this._left;
         this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-center':
@@ -248,7 +265,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   }
 
   // Factory methods
-  public setPopupHeader(factory: CourierInboxHeaderFactory | undefined | null) {
+  public setPopupHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
     this._inbox.setHeader(factory);
   }
 
@@ -274,6 +291,26 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
 
   public setPopupPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._inbox.setPaginationItem(factory);
+  }
+
+  public setPopupMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
+    this._popupMenuButtonFactory = factory;
+    this.refreshButton();
+  }
+
+  private refreshButton() {
+    const unreadCount = CourierInboxDatastore.shared.unreadCount;
+    switch (this._popupMenuButtonFactory) {
+      case undefined:
+      case null:
+        this._triggerButton.build(undefined);
+        this._triggerButton.onUnreadCountChange(unreadCount);
+        break;
+      default:
+        const customButton = this._popupMenuButtonFactory({ unreadCount });
+        this._triggerButton.build(customButton);
+        break;
+    }
   }
 
   disconnectedCallback() {

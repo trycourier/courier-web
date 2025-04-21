@@ -1,5 +1,6 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
+import { InboxDataSet } from "./inbox-data-set";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
@@ -7,8 +8,6 @@ export type CourierInboxHeaderFactoryProps = {
   unreadCount: number;
   messageCount: number;
 }
-
-export type CourierInboxHeaderFactory = (props: CourierInboxHeaderFactoryProps) => HTMLElement;
 
 // States
 export type CourierInboxStateLoadingFactoryProps = {
@@ -24,21 +23,18 @@ export type CourierInboxStateErrorFactoryProps = {
   error: Error;
 }
 
-export type CourierInboxLoadingStateFactory = (props: CourierInboxStateLoadingFactoryProps) => HTMLElement;
-export type CourierInboxEmptyStateFactory = (props: CourierInboxStateEmptyFactoryProps) => HTMLElement;
-export type CourierInboxErrorStateFactory = (props: CourierInboxStateErrorFactoryProps) => HTMLElement;
-
 // List Item
 export type CourierInboxListItemFactoryProps = {
   message: InboxMessage;
   index: number;
 }
 
-export type CourierInboxListItemFactory = (props: CourierInboxListItemFactoryProps) => HTMLElement;
-
 // Pagination Item
 export type CourierInboxPaginationItemFactoryProps = {
   feedType: CourierInboxFeedType;
 }
 
-export type CourierInboxPaginationItemFactory = (props: CourierInboxPaginationItemFactoryProps) => HTMLElement;
+// Menu Button
+export type CourierInboxMenuButtonFactoryProps = {
+  unreadCount: number;
+}

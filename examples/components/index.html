@@ -59,8 +59,8 @@
       <div class="grid-container">
         <div class="grid-row">
           <div class="grid-item no-padding" style="height: 100px;">
-            <courier-inbox-menu id="inbox-menu" popup-alignment="center-left" popup-width="500px"
-              popup-height="620px"></courier-inbox-menu>
+            <courier-inbox-menu id="inbox-menu" popup-alignment="bottom-left" left="120px" bottom="-100px"
+              popup-width="500px" popup-height="620px"></courier-inbox-menu>
           </div>
         </div>
       </div>
@@ -326,6 +326,12 @@
         const pagination = document.createElement('custom-pagination-item');
         pagination.setAttribute('data-props', JSON.stringify(props));
         return pagination;
+      });
+
+      customInboxMenu.setPopupMenuButton(props => {
+        const menuButton = document.createElement('custom-menu-button');
+        menuButton.setAttribute('data-props', JSON.stringify(props));
+        return menuButton;
       });
 
     </script>

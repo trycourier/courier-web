@@ -5,9 +5,9 @@ import { CourierInboxFeedType } from "../types/feed-type";
 
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
-  private inboxDataSet?: InboxDataSet;
-  private archiveDataSet?: InboxDataSet;
-  private dataStoreListeners: CourierInboxDataStoreListener[] = [];
+  private _inboxDataSet?: InboxDataSet;
+  private _archiveDataSet?: InboxDataSet;
+  private _dataStoreListeners: CourierInboxDataStoreListener[] = [];
   private _unreadCount?: number;
   private isPaginatingInbox: boolean = false;
   private isPaginatingArchive: boolean = false;
@@ -23,12 +23,20 @@ export class CourierInboxDatastore {
     return this._unreadCount ?? 0;
   }
 
+  public get inboxDataSet(): InboxDataSet {
+    return this._inboxDataSet ?? { messages: [], canPaginate: false, paginationCursor: null };
+  }
+
+  public get archiveDataSet(): InboxDataSet {
+    return this._archiveDataSet ?? { messages: [], canPaginate: false, paginationCursor: null };
+  }
+
   public addDataStoreListener(listener: CourierInboxDataStoreListener) {
-    this.dataStoreListeners.push(listener);
+    this._dataStoreListeners.push(listener);
   }
 
   public removeDataStoreListener(listener: CourierInboxDataStoreListener) {
-    this.dataStoreListeners = this.dataStoreListeners.filter(l => l !== listener);
+    this._dataStoreListeners = this._dataStoreListeners.filter(l => l !== listener);
   }
 
   private async fetchDataSet(props: { feedType: CourierInboxFeedType, canUseCache: boolean }): Promise<InboxDataSet> {
@@ -37,13 +45,13 @@ export class CourierInboxDatastore {
     if (props.canUseCache) {
       switch (props.feedType) {
         case 'inbox':
-          if (this.inboxDataSet) {
-            return this.inboxDataSet;
+          if (this._inboxDataSet) {
+            return this._inboxDataSet;
           }
           break;
         case 'archive':
-          if (this.archiveDataSet) {
-            return this.archiveDataSet;
+          if (this._archiveDataSet) {
+            return this._archiveDataSet;
           }
           break;
       }
@@ -87,10 +95,10 @@ export class CourierInboxDatastore {
 
       switch (props.feedType) {
         case 'inbox':
-          this.inboxDataSet = dataSet;
+          this._inboxDataSet = dataSet;
           break;
         case 'archive':
-          this.archiveDataSet = dataSet;
+          this._archiveDataSet = dataSet;
           break;
       }
 
@@ -98,7 +106,7 @@ export class CourierInboxDatastore {
       this._unreadCount = unreadCount;
 
       // Notify the listeners
-      this.dataStoreListeners.forEach(listener => {
+      this._dataStoreListeners.forEach(listener => {
         listener.events.onDataSetChange?.(dataSet, props.feedType);
         listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
       });
@@ -309,7 +317,7 @@ export class CourierInboxDatastore {
         }
         break;
     }
-    this.dataStoreListeners.forEach(listener =>
+    this._dataStoreListeners.forEach(listener =>
       listener.events.onPageAdded?.(dataSet, feedType)
     );
   }
@@ -326,7 +334,7 @@ export class CourierInboxDatastore {
         this.archiveDataSet?.messages.splice(index, 0, message);
         break;
     }
-    this.dataStoreListeners.forEach(listener => {
+    this._dataStoreListeners.forEach(listener => {
       listener.events.onMessageAdd?.(message, index, feedType);
       listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
     });
@@ -344,7 +352,7 @@ export class CourierInboxDatastore {
         this.archiveDataSet?.messages.splice(index, 1);
         break;
     }
-    this.dataStoreListeners.forEach(listener => {
+    this._dataStoreListeners.forEach(listener => {
       listener.events.onMessageRemove?.(message, index, feedType);
       listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
     });

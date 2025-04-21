@@ -211,7 +211,6 @@ class CustomLoadingState extends HTMLElement {
           margin: 0;
           color: #521e65;
           font-size: 14px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
       </style>
 
@@ -257,7 +256,6 @@ class CustomEmptyState extends HTMLElement {
           margin: 0;
           color: #666;
           font-size: 14px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
       </style>
 
@@ -303,7 +301,6 @@ class CustomErrorState extends HTMLElement {
           margin: 0;
           color: #dc3545;
           font-size: 14px;
-          box-shadow: 0 2px 8px rgba(220, 53, 69, 0.1);
         }
       </style>
 
@@ -355,6 +352,66 @@ class CustomPaginationItem extends HTMLElement {
   }
 }
 
+class CustomMenuButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const props = JSON.parse(this.getAttribute('data-props'));
+    this.render(props);
+  }
+
+  render(props) {
+    this.shadowRoot.innerHTML = `
+      <style>
+        .menu-button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          background: #521e65;
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .menu-button:hover {
+          background: #6a257f;
+        }
+
+        .menu-button:active {
+          transform: translateY(0);
+        }
+
+        .notification-badge {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 20px;
+          height: 20px;
+          padding: 0 6px;
+          background: #ff4d4d;
+          border-radius: 10px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+      </style>
+
+      <button class="menu-button">
+        Inbox
+        ${props.unreadCount > 0 ? `<span class="notification-badge">${props.unreadCount}</span>` : ''}
+      </button>
+    `;
+  }
+}
+
 // Register the custom elements
 customElements.define('custom-list-item', CustomListItem);
 customElements.define('custom-header', CustomHeader);
@@ -362,3 +419,4 @@ customElements.define('custom-loading-state', CustomLoadingState);
 customElements.define('custom-empty-state', CustomEmptyState);
 customElements.define('custom-error-state', CustomErrorState);
 customElements.define('custom-pagination-item', CustomPaginationItem);
+customElements.define('custom-menu-button', CustomMenuButton);
