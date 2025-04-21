@@ -4,25 +4,31 @@ import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxEmptyStateFactory, CourierInboxErrorStateFactory, CourierInboxLoadingStateFactory, CourierInboxStateErrorFactoryProps, CourierInboxStateFactoryProps } from "../types/factories";
+import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 
 export class CourierInboxList extends HTMLElement {
-  private _list?: HTMLUListElement;
+
+  // State
   private _messages: InboxMessage[] = [];
   private _feedType: CourierInboxFeedType = 'inbox';
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
+
+  // Callbacks
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
   private _onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
   private _onRefresh: () => void;
+
+  // Factories
   private _onPaginationTrigger?: (feedType: CourierInboxFeedType) => void;
-  private _listItemFactory?: (message: InboxMessage, index: number) => HTMLElement;
-  private _paginationItemFactory?: (feedType: CourierInboxFeedType) => HTMLElement;
-  private _loadingStateFactory?: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement;
-  private _emptyStateFactory?: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement;
+  private _listItemFactory?: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement;
+  private _paginationItemFactory?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement;
+  private _loadingStateFactory?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement;
+  private _emptyStateFactory?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement;
   private _errorStateFactory?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement;
 
+  // Getters
   public get messages(): InboxMessage[] {
     return this._messages;
   }
@@ -74,31 +80,6 @@ export class CourierInboxList extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = this.getStyles();
     this.shadowRoot?.appendChild(style);
-  }
-
-  public setLoadingStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
-    this._loadingStateFactory = factory;
-    this.render();
-  }
-
-  public setEmptyStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
-    this._emptyStateFactory = factory;
-    this.render();
-  }
-
-  public setErrorStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
-    this._errorStateFactory = factory;
-    this.render();
-  }
-
-  public setListItemFactory(factory: (message: InboxMessage, index: number) => HTMLElement): void {
-    this._listItemFactory = factory;
-    this.render();
-  }
-
-  public setPaginationItemFactory(factory: (feedType: CourierInboxFeedType) => HTMLElement): void {
-    this._paginationItemFactory = factory;
-    this.render();
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
@@ -204,13 +185,13 @@ export class CourierInboxList extends HTMLElement {
     }
 
     // Create list before adding messages
-    this._list = document.createElement('ul');
-    this.shadowRoot?.appendChild(this._list);
+    const list = document.createElement('ul');
+    this.shadowRoot?.appendChild(list);
 
     // Add messages to the list
     this._messages.forEach((message, index) => {
       if (this._listItemFactory) {
-        this._list?.appendChild(this._listItemFactory(message, index));
+        list.appendChild(this._listItemFactory({ message, index }));
         return;
       }
 
@@ -218,18 +199,45 @@ export class CourierInboxList extends HTMLElement {
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
-      this._list?.appendChild(listItem);
+      list.appendChild(listItem);
     });
 
     // Add pagination item if can paginate
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
-        customItem: this._paginationItemFactory?.(this._feedType),
+        customItem: this._paginationItemFactory?.({ feedType: this._feedType }),
         onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
       });
-      this._list?.appendChild(paginationItem);
+      list.appendChild(paginationItem);
     }
   }
+
+  // Factories
+  public setLoadingStateFactory(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement): void {
+    this._loadingStateFactory = factory;
+    this.render();
+  }
+
+  public setEmptyStateFactory(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement): void {
+    this._emptyStateFactory = factory;
+    this.render();
+  }
+
+  public setErrorStateFactory(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement): void {
+    this._errorStateFactory = factory;
+    this.render();
+  }
+
+  public setListItemFactory(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement): void {
+    this._listItemFactory = factory;
+    this.render();
+  }
+
+  public setPaginationItemFactory(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void {
+    this._paginationItemFactory = factory;
+    this.render();
+  }
+
 }
 
 if (!customElements.get('courier-inbox-list')) {

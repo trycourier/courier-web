@@ -7,7 +7,7 @@ import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxHeaderFactory, CourierInboxLoadingStateFactory, CourierInboxStateFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactory, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
 
@@ -28,19 +28,19 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   private _onMessageClick?: (message: InboxMessage, index: number) => void;
 
   // Default props
-  private defaultProps = {
+  private _defaultProps = {
     title: 'Inbox',
     icon: CourierIconSource.inbox,
     feedType: this._currentFeed,
     height: '768px'
   };
 
-  static get observedAttributes() {
-    return ['height', 'message-click'];
+  private get _unreadCount() {
+    return CourierInboxDatastore.shared.unreadCount;
   }
 
-  private get unreadCount() {
-    return CourierInboxDatastore.shared.unreadCount;
+  static get observedAttributes() {
+    return ['height', 'message-click'];
   }
 
   constructor() {
@@ -96,7 +96,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: ${this.defaultProps.height}px;
+        height: ${this._defaultProps.height}px;
         overflow: hidden;
       }
 
@@ -129,23 +129,23 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this.updateHeader();
   }
 
-  setLoadingState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+  setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
     this._list.setLoadingStateFactory(factory);
   }
 
-  setEmptyState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+  setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
     this._list.setEmptyStateFactory(factory);
   }
 
-  setErrorState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+  setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
     this._list.setErrorStateFactory(factory);
   }
 
-  setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
+  setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
     this._list.setListItemFactory(factory);
   }
 
-  setPaginationItem(factory: (feedType: CourierInboxFeedType) => HTMLElement) {
+  setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._list.setPaginationItemFactory(factory);
   }
 
@@ -173,7 +173,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
     const props = {
       feedType: this._currentFeed,
-      unreadCount: this.unreadCount,
+      unreadCount: this._unreadCount,
       messageCount: this._list.messages.length
     };
 
@@ -259,7 +259,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     if (oldValue === newValue) return;
     switch (name) {
       case 'height':
-        const height = newValue || this.defaultProps.height;
+        const height = newValue || this._defaultProps.height;
         this.style.height = height;
         break;
       case 'message-click':

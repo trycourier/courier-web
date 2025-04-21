@@ -1,3 +1,4 @@
+import { InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
 
 // Header
@@ -10,7 +11,11 @@ export type CourierInboxHeaderFactoryProps = {
 export type CourierInboxHeaderFactory = (props: CourierInboxHeaderFactoryProps) => HTMLElement;
 
 // States
-export type CourierInboxStateFactoryProps = {
+export type CourierInboxStateLoadingFactoryProps = {
+  feedType: CourierInboxFeedType;
+}
+
+export type CourierInboxStateEmptyFactoryProps = {
   feedType: CourierInboxFeedType;
 }
 
@@ -19,6 +24,21 @@ export type CourierInboxStateErrorFactoryProps = {
   error: Error;
 }
 
-export type CourierInboxLoadingStateFactory = (props: CourierInboxStateFactoryProps) => HTMLElement;
-export type CourierInboxEmptyStateFactory = (props: CourierInboxStateFactoryProps) => HTMLElement;
+export type CourierInboxLoadingStateFactory = (props: CourierInboxStateLoadingFactoryProps) => HTMLElement;
+export type CourierInboxEmptyStateFactory = (props: CourierInboxStateEmptyFactoryProps) => HTMLElement;
 export type CourierInboxErrorStateFactory = (props: CourierInboxStateErrorFactoryProps) => HTMLElement;
+
+// List Item
+export type CourierInboxListItemFactoryProps = {
+  message: InboxMessage;
+  index: number;
+}
+
+export type CourierInboxListItemFactory = (props: CourierInboxListItemFactoryProps) => HTMLElement;
+
+// Pagination Item
+export type CourierInboxPaginationItemFactoryProps = {
+  feedType: CourierInboxFeedType;
+}
+
+export type CourierInboxPaginationItemFactory = (props: CourierInboxPaginationItemFactoryProps) => HTMLElement;

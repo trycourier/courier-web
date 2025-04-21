@@ -302,27 +302,28 @@
         return error;
       });
 
-      customInbox.setListItem((message, index) => {
+      customInbox.setListItem(props => {
         const listItem = document.createElement('div');
         listItem.style.cssText = 'width: 100%; box-sizing: border-box; padding: 12px; border-bottom: 1px solid #e0e0e0; overflow-x: auto; cursor: pointer;';
         listItem.innerHTML = `
           <p style="font-family: monospace; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 0;">${JSON.stringify({
-          messageId: message.messageId,
-          title: message.title,
-          preview: message.preview,
+          messageId: props.message.messageId,
+          title: props.message.title,
+          preview: props.message.preview,
+          index: props.index
         }, null, 2)}</p>`;
 
         listItem.addEventListener('click', () => {
-          alert(`You clicked message ${index}`);
+          alert(`You clicked message ${props.index}`);
         });
 
         return listItem;
       });
 
-      customInbox.setPaginationItem((feedType) => {
+      customInbox.setPaginationItem(props => {
         const listItem = document.createElement('div');
         listItem.style.cssText = 'width: 100%; padding: 16px; display: flex; justify-content: center; align-items: center;';
-        listItem.innerHTML = '<p>Loading...</p>';
+        listItem.innerHTML = `<p>Loading more messages from ${props.feedType}...</p>`;
         return listItem;
       });
 
