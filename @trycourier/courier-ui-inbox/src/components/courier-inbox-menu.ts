@@ -1,11 +1,11 @@
 import { CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInbox } from "./courier-inbox";
-import { InboxMessage } from "@trycourier/courier-js";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxListItemFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactory, CourierInboxListItemFactory, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxFeedType } from "../types/feed-type";
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
 export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
@@ -29,7 +29,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _datastoreListener?: CourierInboxDataStoreListener;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click'];
+    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height'];
   }
 
   constructor() {
@@ -116,9 +116,21 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'popup-alignment' && this.isValidPosition(newValue)) {
-      this._popupAlignment = newValue as CourierInboxPopupAlignment;
-      this.updatePopupPosition();
+    switch (name) {
+      case 'popup-alignment':
+        if (this.isValidPosition(newValue)) {
+          this._popupAlignment = newValue as CourierInboxPopupAlignment;
+          this.updatePopupPosition();
+        }
+        break;
+      case 'popup-width':
+        this._width = newValue;
+        this.setSize(newValue, this._height);
+        break;
+      case 'popup-height':
+        this._height = newValue;
+        this.setSize(this._width, newValue);
+        break;
     }
   }
 
@@ -229,6 +241,39 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     } else {
       console.error(`Invalid position: ${position}`);
     }
+  }
+
+  public setFeedType(feedType: CourierInboxFeedType) {
+    this._inbox.setFeedType(feedType);
+  }
+
+  // Factory methods
+  public setPopupHeader(factory: CourierInboxHeaderFactory | undefined | null) {
+    this._inbox.setHeader(factory);
+  }
+
+  public removePopupHeader() {
+    this._inbox.removeHeader();
+  }
+
+  public setPopupLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
+    this._inbox.setLoadingState(factory);
+  }
+
+  public setPopupEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
+    this._inbox.setEmptyState(factory);
+  }
+
+  public setPopupErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
+    this._inbox.setErrorState(factory);
+  }
+
+  public setPopupListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
+    this._inbox.setListItem(factory);
+  }
+
+  public setPopupPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
+    this._inbox.setPaginationItem(factory);
   }
 
   disconnectedCallback() {
