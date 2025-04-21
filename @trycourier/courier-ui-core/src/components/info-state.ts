@@ -1,16 +1,14 @@
-export class CourierInfoState extends HTMLElement {
-  private container: HTMLElement;
-  private titleElement: HTMLElement;
-  private button: HTMLElement;
-  private buttonClickCallback: (() => void) | null = null;
+import { CourierElement } from "./courier-element";
 
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: 'open' });
+export class CourierInfoState extends CourierElement {
+  private _title?: HTMLElement;
+  private _button?: HTMLElement;
+  private _buttonClickCallback: (() => void) | null = null;
 
-    this.container = document.createElement('div');
-    this.titleElement = document.createElement('h2');
-    this.button = document.createElement('courier-button');
+  defaultElement(): HTMLElement {
+    const container = document.createElement('div');
+    this._title = document.createElement('h2');
+    this._button = document.createElement('courier-button');
 
     const style = document.createElement('style');
     style.textContent = `
@@ -26,11 +24,12 @@ export class CourierInfoState extends HTMLElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: 16px;
         text-align: center;
       }
 
-      h2 {
+      .container h2 {
         margin: 0;
         color: var(--courier-text-primary, #111827);
         font-size: 16px;
@@ -38,60 +37,41 @@ export class CourierInfoState extends HTMLElement {
       }
     `;
 
-    this.container.className = 'container';
-    shadow.appendChild(style);
-    shadow.appendChild(this.container);
-    this.container.appendChild(this.titleElement);
-    this.container.appendChild(this.button);
+    container.className = 'container';
+    container.appendChild(style);
+    container.appendChild(this._title);
+    container.appendChild(this._button);
+    this.shadow.appendChild(container);
 
-    this.button.addEventListener('click', () => {
-      if (this.buttonClickCallback) {
-        this.buttonClickCallback();
+    this._button?.addEventListener('click', () => {
+      if (this._buttonClickCallback) {
+        this._buttonClickCallback();
       }
     });
-  }
 
-  static get observedAttributes() {
-    return ['title', 'button-text', 'button-variant', 'button-size'];
-  }
-
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (oldValue === newValue) return;
-
-    switch (name) {
-      case 'title':
-        this.setTitle(newValue);
-        break;
-      case 'button-text':
-        this.setButtonText(newValue);
-        break;
-      case 'button-variant':
-        this.setButtonVariant(newValue);
-        break;
-      case 'button-size':
-        this.setButtonSize(newValue);
-        break;
-    }
+    return container;
   }
 
   setTitle(title: string) {
-    this.titleElement.textContent = title || '';
+    if (this._title) {
+      this._title.textContent = title;
+    }
   }
 
   setButtonText(text: string) {
-    this.button.textContent = text || '';
+    if (this._button) {
+      this._button.textContent = text;
+    }
   }
 
   setButtonVariant(variant: string) {
-    this.button.setAttribute('variant', variant || 'primary');
-  }
-
-  setButtonSize(size: string) {
-    this.button.setAttribute('size', size || 'medium');
+    if (this._button) {
+      this._button.setAttribute('variant', variant || 'primary');
+    }
   }
 
   setButtonClickCallback(callback: () => void) {
-    this.buttonClickCallback = callback;
+    this._buttonClickCallback = callback;
   }
 }
 

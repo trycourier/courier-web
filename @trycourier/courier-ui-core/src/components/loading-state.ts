@@ -1,13 +1,13 @@
 import { CourierLoadingIndicator } from "./loading-indicator";
+import { CourierElement } from "./courier-element";
 
-export class CourierLoadingState extends HTMLElement {
-  private loadingIndicator: CourierLoadingIndicator;
+export class CourierLoadingState extends CourierElement {
+  private _loadingIndicator?: CourierLoadingIndicator;
 
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: 'open' });
+  defaultElement(): HTMLElement {
+    this._loadingIndicator = new CourierLoadingIndicator();
 
-    this.loadingIndicator = new CourierLoadingIndicator();
+    const container = document.createElement('div');
 
     const style = document.createElement('style');
     style.textContent = `
@@ -18,10 +18,20 @@ export class CourierLoadingState extends HTMLElement {
         align-items: center;
         justify-content: center;
       }
+
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     `;
 
-    shadow.appendChild(style);
-    shadow.appendChild(this.loadingIndicator);
+    container.className = 'container';
+    container.appendChild(style);
+    container.appendChild(this._loadingIndicator);
+    this.shadow.appendChild(container);
+
+    return container;
   }
 }
 

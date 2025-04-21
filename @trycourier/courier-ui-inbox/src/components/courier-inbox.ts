@@ -6,13 +6,13 @@ import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
-import { FeedType } from "../types/feed-type";
-import { CourierInboxHeaderFactory } from "../types/factories";
+import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxHeaderFactory, CourierInboxLoadingStateFactory, CourierInboxStateFactoryProps } from "../types/factories";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
 
   // State
-  private _currentFeed: FeedType = 'inbox';
+  private _currentFeed: CourierInboxFeedType = 'inbox';
 
   // Components
   private _shadow: ShadowRoot;
@@ -50,7 +50,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
     // Header
     this._header = new CourierInboxHeader({
-      onFeedTypeChange: (feedType: FeedType) => {
+      onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
       }
     });
@@ -65,7 +65,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           canUseCache: false
         });
       },
-      onPaginationTrigger: async (feedType: FeedType) => {
+      onPaginationTrigger: async (feedType: CourierInboxFeedType) => {
         try {
           await CourierInboxDatastore.shared.fetchNextPageOfMessages({
             feedType: feedType
@@ -125,16 +125,27 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   }
 
   setHeader(factory: CourierInboxHeaderFactory | undefined | null) {
-    console.log('Setting header', factory);
     this._headerFactory = factory;
     this.updateHeader();
+  }
+
+  setLoadingState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+    this._list.setLoadingStateFactory(factory);
+  }
+
+  setEmptyState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+    this._list.setEmptyStateFactory(factory);
+  }
+
+  setErrorState(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement) {
+    this._list.setErrorStateFactory(factory);
   }
 
   setListItem(factory: (message: InboxMessage, index: number) => HTMLElement) {
     this._list.setListItemFactory(factory);
   }
 
-  setPaginationItem(factory: (feedType: FeedType) => HTMLElement) {
+  setPaginationItem(factory: (feedType: CourierInboxFeedType) => HTMLElement) {
     this._list.setPaginationItemFactory(factory);
   }
 
@@ -142,7 +153,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this._onMessageClick = handler;
   }
 
-  setFeedType(feedType: FeedType) {
+  setFeedType(feedType: CourierInboxFeedType) {
 
     // Update state 
     this._currentFeed = feedType;
@@ -166,8 +177,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       messageCount: this._list.messages.length
     };
 
-    console.log('Updating header', this._headerFactory);
-
     switch (this._headerFactory) {
       case undefined:
         this._header.refresh(props);
@@ -183,40 +192,47 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   }
 
-  private async load(props: { feedType: FeedType, canUseCache: boolean }) {
+  private async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
     await CourierInboxDatastore.shared.load(props);
   }
 
+  public refresh() {
+    this.load({
+      feedType: this._currentFeed,
+      canUseCache: false
+    });
+  }
+
   // Datastore event handlers
-  public onDataSetChange(dataSet: InboxDataSet, feedType: FeedType): void {
+  public onDataSetChange(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.setDataSet(dataSet);
       this.updateHeader();
     }
   }
 
-  public onPageAdded(dataSet: InboxDataSet, feedType: FeedType): void {
+  public onPageAdded(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.addPage(dataSet);
       this.updateHeader();
     }
   }
 
-  public onMessageAdd(message: InboxMessage, index: number, feedType: FeedType): void {
+  public onMessageAdd(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.addMessage(message, index);
       this.updateHeader();
     }
   }
 
-  public onMessageRemove(_: InboxMessage, index: number, feedType: FeedType): void {
+  public onMessageRemove(_: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.removeMessage(index);
       this.updateHeader();
     }
   }
 
-  public onMessageUpdate(message: InboxMessage, index: number, feedType: FeedType): void {
+  public onMessageUpdate(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.updateMessage(message, index);
       this.updateHeader();

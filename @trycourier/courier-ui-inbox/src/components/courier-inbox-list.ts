@@ -3,21 +3,25 @@ import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-co
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { FeedType } from "../types/feed-type";
+import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxEmptyStateFactory, CourierInboxErrorStateFactory, CourierInboxLoadingStateFactory, CourierInboxStateErrorFactoryProps, CourierInboxStateFactoryProps } from "../types/factories";
 
 export class CourierInboxList extends HTMLElement {
-  private list: HTMLUListElement;
+  private _list?: HTMLUListElement;
   private _messages: InboxMessage[] = [];
-  private feedType: FeedType = 'inbox';
-  private isLoading = true;
-  private error: Error | null = null;
-  private canPaginate = false;
-  private onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
-  private onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
-  private onRefresh: () => void;
-  private onPaginationTrigger?: (feedType: FeedType) => void;
-  private listItemFactory?: (message: InboxMessage, index: number) => HTMLElement;
-  private paginationItemFactory?: (feedType: FeedType) => HTMLElement;
+  private _feedType: CourierInboxFeedType = 'inbox';
+  private _isLoading = true;
+  private _error: Error | null = null;
+  private _canPaginate = false;
+  private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
+  private _onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
+  private _onRefresh: () => void;
+  private _onPaginationTrigger?: (feedType: CourierInboxFeedType) => void;
+  private _listItemFactory?: (message: InboxMessage, index: number) => HTMLElement;
+  private _paginationItemFactory?: (feedType: CourierInboxFeedType) => HTMLElement;
+  private _loadingStateFactory?: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement;
+  private _emptyStateFactory?: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement;
+  private _errorStateFactory?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement;
 
   public get messages(): InboxMessage[] {
     return this._messages;
@@ -25,28 +29,23 @@ export class CourierInboxList extends HTMLElement {
 
   constructor(props: {
     onRefresh: () => void,
-    onPaginationTrigger: (feedType: FeedType) => void,
+    onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onArchiveMessage: (message: InboxMessage, index: number) => void
   }) {
     super();
 
     // Initialize the callbacks
-    this.onRefresh = props.onRefresh;
-    this.onPaginationTrigger = props.onPaginationTrigger;
-    this.onMessageClick = props.onMessageClick;
-    this.onArchiveMessage = props.onArchiveMessage;
+    this._onRefresh = props.onRefresh;
+    this._onPaginationTrigger = props.onPaginationTrigger;
+    this._onMessageClick = props.onMessageClick;
+    this._onArchiveMessage = props.onArchiveMessage;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this.list = document.createElement('ul');
-    this.list.setAttribute('part', 'list');
-
     const style = document.createElement('style');
     style.textContent = this.getStyles();
-
     shadow.appendChild(style);
-    shadow.appendChild(this.list);
   }
 
   private getStyles(): string {
@@ -65,67 +64,92 @@ export class CourierInboxList extends HTMLElement {
     `;
   }
 
-  public setListItemFactory(factory: (message: InboxMessage, index: number) => HTMLElement): void {
-    this.listItemFactory = factory;
-    this.updateItems();
+  private reset(): void {
+    // Remove any existing elements from the shadow root
+    while (this.shadowRoot?.firstChild) {
+      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
+    }
+
+    // Re-add the style element
+    const style = document.createElement('style');
+    style.textContent = this.getStyles();
+    this.shadowRoot?.appendChild(style);
   }
 
-  public setPaginationItemFactory(factory: (feedType: FeedType) => HTMLElement): void {
-    console.log('setting pagination item factory', factory);
-    this.paginationItemFactory = factory;
-    this.updateItems();
+  public setLoadingStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
+    this._loadingStateFactory = factory;
+    this.render();
+  }
+
+  public setEmptyStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
+    this._emptyStateFactory = factory;
+    this.render();
+  }
+
+  public setErrorStateFactory(factory: (props: CourierInboxStateFactoryProps | undefined | null) => HTMLElement): void {
+    this._errorStateFactory = factory;
+    this.render();
+  }
+
+  public setListItemFactory(factory: (message: InboxMessage, index: number) => HTMLElement): void {
+    this._listItemFactory = factory;
+    this.render();
+  }
+
+  public setPaginationItemFactory(factory: (feedType: CourierInboxFeedType) => HTMLElement): void {
+    this._paginationItemFactory = factory;
+    this.render();
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
-    // New objects are created to avoid reference issues
     this._messages = [...dataSet.messages];
-    this.canPaginate = Boolean(dataSet.canPaginate);
-    this.error = null;
-    this.isLoading = false;
-    this.updateItems();
+    this._canPaginate = Boolean(dataSet.canPaginate);
+    this._error = null;
+    this._isLoading = false;
+    this.render();
   }
 
   public addPage(dataSet: InboxDataSet): void {
     this._messages = [...this._messages, ...dataSet.messages];
-    this.canPaginate = Boolean(dataSet.canPaginate);
-    this.error = null;
-    this.isLoading = false;
-    this.updateItems();
+    this._canPaginate = Boolean(dataSet.canPaginate);
+    this._error = null;
+    this._isLoading = false;
+    this.render();
   }
 
   public addMessage(message: InboxMessage, index = 0): void {
     this._messages.splice(index, 0, message);
-    this.updateItems();
+    this.render();
   }
 
   public removeMessage(index = 0): void {
     this._messages.splice(index, 1);
-    this.updateItems();
+    this.render();
   }
 
   public updateMessage(message: InboxMessage, index = 0): void {
     this._messages[index] = message;
-    this.updateItems();
+    this.render();
   }
 
-  public setFeedType(feedType: FeedType): void {
-    this.feedType = feedType;
-    this.error = null;
-    this.isLoading = true;
-    this.updateItems();
+  public setFeedType(feedType: CourierInboxFeedType): void {
+    this._feedType = feedType;
+    this._error = null;
+    this._isLoading = true;
+    this.render();
   }
 
   public setLoading(isLoading: boolean): void {
-    this.error = null;
-    this.isLoading = isLoading;
-    this.updateItems();
+    this._error = null;
+    this._isLoading = isLoading;
+    this.render();
   }
 
   public setError(error: Error | null): void {
-    this.error = error;
-    this.isLoading = false;
+    this._error = error;
+    this._isLoading = false;
     this._messages = [];
-    this.updateItems();
+    this.render();
   }
 
   public setErrorNoClient(): void {
@@ -133,73 +157,77 @@ export class CourierInboxList extends HTMLElement {
   }
 
   private getEmptyText(): string {
-    return `No ${this.feedType} messages yet`;
+    return `No ${this._feedType} messages yet`;
   }
 
   private handleRetry(): void {
-    this.onRefresh();
+    this._onRefresh();
   }
 
   private handleRefresh(): void {
-    this.onRefresh();
+    this._onRefresh();
   }
 
-  private updateItems(): void {
-    this.list.innerHTML = '';
+  private render(): void {
+    this.reset();
 
-    if (this.error) {
+    // Error state
+    if (this._error) {
       const errorElement = new CourierInfoState();
+      errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
       errorElement.setButtonText('Retry');
       errorElement.setButtonVariant('secondary');
-      errorElement.setButtonSize('small');
-      errorElement.setTitle(this.error.message);
+      errorElement.setTitle(this._error.message);
       errorElement.setButtonClickCallback(() => this.handleRetry());
-      this.list.appendChild(errorElement);
+      this.shadowRoot?.appendChild(errorElement);
       return;
     }
 
-    if (this.isLoading) {
-      this.list.appendChild(new CourierLoadingState());
+    // Loading state
+    if (this._isLoading) {
+      const loadingElement = new CourierLoadingState();
+      loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
+      this.shadowRoot?.appendChild(loadingElement);
       return;
     }
 
+    // Empty state
     if (this._messages.length === 0) {
       const emptyElement = new CourierInfoState();
+      emptyElement.build(this._emptyStateFactory?.({ feedType: this._feedType }));
       emptyElement.setButtonText('Refresh');
       emptyElement.setButtonVariant('secondary');
-      emptyElement.setButtonSize('small');
       emptyElement.setTitle(this.getEmptyText());
       emptyElement.setButtonClickCallback(() => this.handleRefresh());
-      this.list.appendChild(emptyElement);
+      this.shadowRoot?.appendChild(emptyElement);
       return;
     }
 
-    this._messages.forEach((message, index) => {
+    // Create list before adding messages
+    this._list = document.createElement('ul');
+    this.shadowRoot?.appendChild(this._list);
 
-      // Use the custom list item if it is set
-      if (this.listItemFactory) {
-        this.list.appendChild(this.listItemFactory(message, index));
+    // Add messages to the list
+    this._messages.forEach((message, index) => {
+      if (this._listItemFactory) {
+        this._list?.appendChild(this._listItemFactory(message, index));
         return;
       }
 
-      // Use the default list item if no custom list item is set
       const listItem = new CourierListItem();
-      listItem.setMessage(message, this.feedType);
-      listItem.setOnItemClick((message) => this.onMessageClick?.(message, index));
-      listItem.setOnCloseClick((message) => this.onArchiveMessage?.(message, index));
-      this.list.appendChild(listItem);
-
+      listItem.setMessage(message, this._feedType);
+      listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
+      listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
+      this._list?.appendChild(listItem);
     });
 
-    if (this.canPaginate) {
-
-      console.log('this.paginationItemFactory', this.paginationItemFactory);
-
+    // Add pagination item if can paginate
+    if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
-        customItem: this.paginationItemFactory?.(this.feedType),
-        onPaginationTrigger: () => this.onPaginationTrigger?.(this.feedType),
+        customItem: this._paginationItemFactory?.(this._feedType),
+        onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
       });
-      this.list.appendChild(paginationItem);
+      this._list?.appendChild(paginationItem);
     }
   }
 }

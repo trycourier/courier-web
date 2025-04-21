@@ -1,7 +1,7 @@
 import { Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
-import { FeedType } from "../types/feed-type";
+import { CourierInboxFeedType } from "../types/feed-type";
 
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
@@ -31,7 +31,7 @@ export class CourierInboxDatastore {
     this.dataStoreListeners = this.dataStoreListeners.filter(l => l !== listener);
   }
 
-  private async fetchDataSet(props: { feedType: FeedType, canUseCache: boolean }): Promise<InboxDataSet> {
+  private async fetchDataSet(props: { feedType: CourierInboxFeedType, canUseCache: boolean }): Promise<InboxDataSet> {
 
     // Return existing dataset if available
     if (props.canUseCache) {
@@ -71,7 +71,7 @@ export class CourierInboxDatastore {
     return unreadCount ?? 0;
   }
 
-  public async load(props: { feedType: FeedType, canUseCache: boolean }) {
+  public async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
 
     if (!Courier.shared.client) {
       return;
@@ -155,7 +155,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async fetchNextPageOfMessages(props: { feedType: FeedType }): Promise<InboxDataSet | null> {
+  async fetchNextPageOfMessages(props: { feedType: CourierInboxFeedType }): Promise<InboxDataSet | null> {
 
     switch (props.feedType) {
       case 'inbox':
@@ -292,7 +292,7 @@ export class CourierInboxDatastore {
     return Math.max(index - 1, 0);
   }
 
-  private addPage(dataSet: InboxDataSet, feedType: FeedType) {
+  private addPage(dataSet: InboxDataSet, feedType: CourierInboxFeedType) {
     switch (feedType) {
       case 'inbox':
         if (this.inboxDataSet) {
@@ -314,7 +314,7 @@ export class CourierInboxDatastore {
     );
   }
 
-  private addMessage(message: InboxMessage, index: number, feedType: FeedType) {
+  private addMessage(message: InboxMessage, index: number, feedType: CourierInboxFeedType) {
     switch (feedType) {
       case 'inbox':
         if (!message.read && this._unreadCount !== undefined) {
@@ -332,7 +332,7 @@ export class CourierInboxDatastore {
     });
   }
 
-  private removeMessage(message: InboxMessage, index: number, feedType: FeedType) {
+  private removeMessage(message: InboxMessage, index: number, feedType: CourierInboxFeedType) {
     switch (feedType) {
       case 'inbox':
         if (!message.read && this._unreadCount !== undefined) {
@@ -350,7 +350,7 @@ export class CourierInboxDatastore {
     });
   }
 
-  private updateMessage(message: InboxMessage, index: number, feedType: FeedType) {
+  private updateMessage(message: InboxMessage, index: number, feedType: CourierInboxFeedType) {
     // this.inboxDataSet?.messages[index] = message;
     // this.dataStoreListeners.forEach(listener =>
     //   listener.events.onMessageUpdate(message, index, feedType)

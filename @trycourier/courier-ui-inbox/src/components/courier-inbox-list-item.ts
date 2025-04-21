@@ -1,13 +1,13 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
-import { FeedType } from "../types/feed-type";
+import { CourierInboxFeedType } from "../types/feed-type";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;
   private subtitleElement: HTMLParagraphElement;
   private closeButton: CourierIconButton | null = null;
   private message: InboxMessage | null = null;
-  private feedType: FeedType = 'inbox';
+  private feedType: CourierInboxFeedType = 'inbox';
   private onItemClick: ((message: InboxMessage) => void) | null = null;
   private onCloseClick: ((message: InboxMessage) => void) | null = null;
 
@@ -105,7 +105,7 @@ export class CourierListItem extends HTMLElement {
     const feedTypeAttr = this.getAttribute('feed-type');
 
     if (feedTypeAttr) {
-      this.feedType = feedTypeAttr as FeedType;
+      this.feedType = feedTypeAttr as CourierInboxFeedType;
     }
 
     if (messageAttr) {
@@ -129,12 +129,12 @@ export class CourierListItem extends HTMLElement {
         console.error('Failed to parse message:', e);
       }
     } else if (name === 'feed-type' && oldValue !== newValue) {
-      this.feedType = newValue as FeedType;
+      this.feedType = newValue as CourierInboxFeedType;
       this.updateCloseButton();
     }
   }
 
-  setMessage(message: InboxMessage, feedType: FeedType) {
+  setMessage(message: InboxMessage, feedType: CourierInboxFeedType) {
     this.message = message;
     this.feedType = feedType;
     this.updateContent();

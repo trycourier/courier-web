@@ -1,1 +1,1 @@
-export type FeedType = 'inbox' | 'archive';
+export type CourierInboxFeedType = 'inbox' | 'archive';

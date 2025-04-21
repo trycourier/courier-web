@@ -1,5 +1,5 @@
 export class CourierElement extends HTMLElement {
-  private shadow: ShadowRoot;
+  public readonly shadow: ShadowRoot;
 
   constructor() {
     super();

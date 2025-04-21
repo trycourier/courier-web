@@ -13,19 +13,6 @@
 
     <p class="package-title">@trycourier/<span class="package-name">courier-ui-inbox</span></p>
 
-    <div class="grid-section allow-overflow">
-      <div class="grid-header">
-        <p class="grid-title">courier-inbox-menu</p>
-      </div>
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-item no-padding" style="height: 100px;">
-            <courier-inbox-menu id="inbox-menu" popup-alignment="top-center"></courier-inbox-menu>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="grid-section">
       <div class="grid-header">
         <p class="grid-title">courier-inbox</p>
@@ -41,7 +28,7 @@
 
     <div class="grid-section allow-overflow">
       <div class="grid-header">
-        <p class="grid-title">courier-inbox-menu (custom)</p>
+        <p class="grid-title">courier-inbox-menu</p>
       </div>
       <div class="grid-container">
         <div class="grid-row">
@@ -60,6 +47,19 @@
         <div class="grid-row">
           <div class="grid-item no-padding">
             <courier-inbox height="420px" id="inbox-custom"></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-section allow-overflow">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox-menu (custom)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding" style="height: 100px;">
+            <courier-inbox-menu id="inbox-menu" popup-alignment="top-center"></courier-inbox-menu>
           </div>
         </div>
       </div>
@@ -279,6 +279,27 @@
         header.appendChild(archiveTab);
 
         return header;
+      });
+
+      customInbox.setLoadingState(props => {
+        const loading = document.createElement('div');
+        loading.style.cssText = 'width: 100%; height: 100%; padding: 12px; display: flex; justify-content: center; align-items: center; box-sizing: border-box;';
+        loading.innerHTML = `<p style="font-family: monospace; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 0;">Loading ${props.feedType}...</p>`;
+        return loading;
+      });
+
+      customInbox.setEmptyState(props => {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'width: 100%; height: 100%; padding: 12px; display: flex; justify-content: center; align-items: center; box-sizing: border-box;';
+        empty.innerHTML = `<p style="font-family: monospace; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 0;">No ${props.feedType} messages yet</p>`;
+        return empty;
+      });
+
+      customInbox.setErrorState(props => {
+        const error = document.createElement('div');
+        error.style.cssText = 'width: 100%; height: 100%; padding: 12px; display: flex; justify-content: center; align-items: center; box-sizing: border-box;';
+        error.innerHTML = `<p style="font-family: monospace; white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 0;">Error loading ${props.feedType} messages: ${props.error.message}</p>`;
+        return error;
       });
 
       customInbox.setListItem((message, index) => {

@@ -1,14 +1,13 @@
-import { FeedType } from "../types/feed-type";
-import { CourierButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierButton, CourierIconSource, CourierElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-filter-menu";
-import { CourierElement } from "../base/base-factory";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 
 export class CourierInboxHeader extends CourierElement {
 
   // State
-  private _feedType: FeedType = 'inbox';
+  private _feedType: CourierInboxFeedType = 'inbox';
   private _unreadCount: number = 0;
 
   // Menu options
@@ -33,9 +32,9 @@ export class CourierInboxHeader extends CourierElement {
   private _titleSection?: CourierInboxHeaderTitle;
   private _optionMenu?: CourierInboxFilterMenu;
   private _archiveButton?: CourierButton;
-  private _onFeedTypeChange: (feedType: FeedType) => void;
+  private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
 
-  constructor(props: { onFeedTypeChange: (feedType: FeedType) => void }) {
+  constructor(props: { onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
     this._onFeedTypeChange = props.onFeedTypeChange;
   }
@@ -48,18 +47,7 @@ export class CourierInboxHeader extends CourierElement {
     alert('We need to implement this');
   }
 
-  // public setUnreadCount(unreadCount: number) {
-  //   this._unreadCount = unreadCount;
-  //   console.log('Unread count set to:', this._unreadCount);
-  //   // if (this._titleSection) {
-  //   //   const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
-  //   //   if (option) {
-  //   //     this._titleSection.update(option, this._feedType === 'inbox' ? unreadCount : 0);
-  //   //   }
-  //   // }
-  // }
-
-  private handleOptionMenuClick(feedType: FeedType, option: CourierInboxMenuOption) {
+  private handleOptionMenuClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
     this._feedType = feedType;
     if (this._titleSection) {
       this._titleSection.update(option, this._feedType === 'inbox' ? this._unreadCount : 0);
@@ -146,6 +134,9 @@ export class CourierInboxHeader extends CourierElement {
     container.appendChild(this._titleSection);
     container.appendChild(spacer);
     container.appendChild(actions);
+
+    // Hide archive button by default
+    this.updateArchiveButton(false);
 
     // Initialize title section with first menu option
     this._titleSection.update(this._menuOptions[0], this._unreadCount);

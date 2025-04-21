@@ -15,6 +15,7 @@ export * from './components/loading-indicator';
 export * from './components/loading-state';
 export * from './components/info-state';
 export * from './components/icon-button';
+export * from './components/courier-element';
 
 // Define array of web components to register
 const components = [
