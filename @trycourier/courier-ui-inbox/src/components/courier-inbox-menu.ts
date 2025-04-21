@@ -5,19 +5,28 @@ import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxListItemFactoryProps } from "../types/factories";
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
 export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
-  private triggerButton: CourierIconButton;
-  private popup: HTMLDivElement;
-  private inbox: CourierInbox;
-  private width: string = '440px';
-  private height: string = '440px';
-  private popupAlignment: CourierInboxPopupAlignment = 'top-right';
-  private onMessageClick?: (message: InboxMessage, index: number) => void;
-  private unreadCountBadge: CourierUnreadCountBadge;
-  private menuButtonContainer: HTMLDivElement;
-  private datastoreListener?: CourierInboxDataStoreListener;
+
+  // State
+  private _width: string = '440px';
+  private _height: string = '440px';
+  private _popupAlignment: CourierInboxPopupAlignment = 'top-right';
+
+  // Components
+  private _menuButtonContainer: HTMLDivElement;
+  private _triggerButton: CourierIconButton;
+  private _popup: HTMLDivElement;
+  private _inbox: CourierInbox;
+  private _unreadCountBadge: CourierUnreadCountBadge;
+
+  // Callbacks
+  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
+
+  // Listeners
+  private _datastoreListener?: CourierInboxDataStoreListener;
 
   static get observedAttributes() {
     return ['popup-alignment', 'message-click'];
@@ -29,22 +38,23 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     const shadow = this.attachShadow({ mode: 'open' });
 
     // Create trigger button container
-    this.menuButtonContainer = document.createElement('div');
-    this.menuButtonContainer.className = 'menu-button-container';
+    this._menuButtonContainer = document.createElement('div');
+    this._menuButtonContainer.className = 'menu-button-container';
 
     // Create trigger button
-    this.triggerButton = new CourierIconButton('inbox');
+    this._triggerButton = new CourierIconButton('inbox');
 
     // Create unread count badge
-    this.unreadCountBadge = new CourierUnreadCountBadge();
-    this.unreadCountBadge.id = 'unread-badge';
+    this._unreadCountBadge = new CourierUnreadCountBadge();
+    this._unreadCountBadge.id = 'unread-badge';
+
     // Create popup container
-    this.popup = document.createElement('div');
-    this.popup.className = 'popup';
+    this._popup = document.createElement('div');
+    this._popup.className = 'popup';
 
     // Create content container
-    this.inbox = new CourierInbox();
-    this.inbox.setAttribute('height', '100%');
+    this._inbox = new CourierInbox();
+    this._inbox.setAttribute('height', '100%');
 
     const style = document.createElement('style');
     style.textContent = `
@@ -66,8 +76,8 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
         border: 1px solid var(--Stroke-Subtle-Primary, #E5E5E5);
         box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
         z-index: 1000;
-        width: ${this.width};
-        height: ${this.height};
+        width: ${this._width};
+        height: ${this._height};
         overflow: hidden;
         transform: translateZ(0);
         will-change: transform;
@@ -86,35 +96,38 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     `;
 
     shadow.appendChild(style);
-    this.menuButtonContainer.appendChild(this.triggerButton);
-    this.menuButtonContainer.appendChild(this.unreadCountBadge);
-    shadow.appendChild(this.menuButtonContainer);
-    shadow.appendChild(this.popup);
-    this.popup.appendChild(this.inbox);
-    this.inbox.setMessageClick(this.onMessageClick);
+    this._menuButtonContainer.appendChild(this._triggerButton);
+    this._menuButtonContainer.appendChild(this._unreadCountBadge);
+    shadow.appendChild(this._menuButtonContainer);
+    shadow.appendChild(this._popup);
+    this._popup.appendChild(this._inbox);
+    this._inbox.setMessageClick(this._onMessageClick);
 
     // Add event listeners
-    this.triggerButton.addEventListener('click', this.togglePopup.bind(this));
+    this._triggerButton.addEventListener('click', this.togglePopup.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
     // Initialize popup position
     this.updatePopupPosition();
 
     // Attach the datastore listener
-    this.datastoreListener = new CourierInboxDataStoreListener(this);
-    CourierInboxDatastore.shared.addDataStoreListener(this.datastoreListener);
+    this._datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === 'popup-alignment' && this.isValidPosition(newValue)) {
-      this.popupAlignment = newValue as CourierInboxPopupAlignment;
+      this._popupAlignment = newValue as CourierInboxPopupAlignment;
       this.updatePopupPosition();
     }
   }
 
   public onUnreadCountChange(unreadCount: number): void {
-    console.log('unreadCount', unreadCount);
-    this.unreadCountBadge.setCount(unreadCount);
+    this._unreadCountBadge.setCount(unreadCount);
+  }
+
+  public onMessageClick(props: CourierInboxListItemFactoryProps): void {
+    this._onMessageClick?.(props);
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
@@ -128,90 +141,90 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
 
   private updatePopupPosition() {
     // Reset all positions
-    this.popup.style.top = '';
-    this.popup.style.bottom = '';
-    this.popup.style.left = '';
-    this.popup.style.right = '';
-    this.popup.style.margin = '';
-    this.popup.style.transform = '';
+    this._popup.style.top = '';
+    this._popup.style.bottom = '';
+    this._popup.style.left = '';
+    this._popup.style.right = '';
+    this._popup.style.margin = '';
+    this._popup.style.transform = '';
 
-    switch (this.popupAlignment) {
+    switch (this._popupAlignment) {
       case 'top-right':
-        this.popup.style.top = '40px';
-        this.popup.style.right = '0';
+        this._popup.style.top = '40px';
+        this._popup.style.right = '0';
         break;
       case 'top-left':
-        this.popup.style.top = '40px';
-        this.popup.style.left = '0';
+        this._popup.style.top = '40px';
+        this._popup.style.left = '0';
         break;
       case 'top-center':
-        this.popup.style.top = '40px';
-        this.popup.style.left = '50%';
-        this.popup.style.transform = 'translateX(-50%)';
+        this._popup.style.top = '40px';
+        this._popup.style.left = '50%';
+        this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'bottom-right':
-        this.popup.style.bottom = '40px';
-        this.popup.style.right = '0';
+        this._popup.style.bottom = '40px';
+        this._popup.style.right = '0';
         break;
       case 'bottom-left':
-        this.popup.style.bottom = '40px';
-        this.popup.style.left = '0';
+        this._popup.style.bottom = '40px';
+        this._popup.style.left = '0';
         break;
       case 'bottom-center':
-        this.popup.style.bottom = '40px';
-        this.popup.style.left = '50%';
-        this.popup.style.transform = 'translateX(-50%)';
+        this._popup.style.bottom = '40px';
+        this._popup.style.left = '50%';
+        this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'center-right':
-        this.popup.style.top = '50%';
-        this.popup.style.right = '40px';
-        this.popup.style.transform = 'translateY(-50%)';
+        this._popup.style.top = '50%';
+        this._popup.style.right = '40px';
+        this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-left':
-        this.popup.style.top = '50%';
-        this.popup.style.left = '40px';
-        this.popup.style.transform = 'translateY(-50%)';
+        this._popup.style.top = '50%';
+        this._popup.style.left = '40px';
+        this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-center':
-        this.popup.style.top = '50%';
-        this.popup.style.left = '50%';
-        this.popup.style.transform = 'translate(-50%, -50%)';
+        this._popup.style.top = '50%';
+        this._popup.style.left = '50%';
+        this._popup.style.transform = 'translate(-50%, -50%)';
         break;
     }
   }
 
   private togglePopup(event: Event) {
     event.stopPropagation();
-    const isVisible = this.popup.style.display === 'block';
+    const isVisible = this._popup.style.display === 'block';
 
     if (!isVisible) {
-      this.popup.style.display = 'block';
+      this._popup.style.display = 'block';
     } else {
-      this.popup.style.display = 'none';
+      this._popup.style.display = 'none';
     }
   }
 
   private handleOutsideClick(event: MouseEvent) {
     if (!this.contains(event.target as Node)) {
-      this.popup.style.display = 'none';
+      this._popup.style.display = 'none';
     }
   }
 
   public setContent(element: HTMLElement) {
-    this.inbox.innerHTML = '';
-    this.inbox.appendChild(element);
+    this._inbox.innerHTML = '';
+    this._inbox.appendChild(element);
   }
 
   public setSize(width: string, height: string) {
-    this.width = width;
-    this.height = height;
-    this.popup.style.width = width;
-    this.popup.style.height = height;
+    this._width = width;
+    this._height = height;
+    this._popup.style.width = width;
+    this._popup.style.height = height;
   }
 
   public setPosition(position: CourierInboxPopupAlignment) {
     if (this.isValidPosition(position)) {
-      this.popupAlignment = position;
+      this._popupAlignment = position;
       this.updatePopupPosition();
     } else {
       console.error(`Invalid position: ${position}`);
@@ -219,7 +232,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   }
 
   disconnectedCallback() {
-    this.datastoreListener?.remove();
+    this._datastoreListener?.remove();
   }
 }
 

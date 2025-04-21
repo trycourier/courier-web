@@ -25,7 +25,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   private _headerFactory: CourierInboxHeaderFactory | undefined | null = undefined;
 
   // List
-  private _onMessageClick?: (message: InboxMessage, index: number) => void;
+  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
 
   // Default props
   private _defaultProps = {
@@ -83,7 +83,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           composed: true
         }));
 
-        this._onMessageClick?.(message, index);
+        this._onMessageClick?.({ message, index });
       },
       onArchiveMessage: (message, index) => {
         CourierInboxDatastore.shared.archiveMessage(message, index);
@@ -124,36 +124,41 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
   }
 
-  setHeader(factory: CourierInboxHeaderFactory | undefined | null) {
+  public setHeader(factory: CourierInboxHeaderFactory | undefined | null) {
     this._headerFactory = factory;
     this.updateHeader();
   }
 
-  setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
+  public removeHeader() {
+    this._headerFactory = null;
+    this.updateHeader();
+  }
+
+  public setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
     this._list.setLoadingStateFactory(factory);
   }
 
-  setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
+  public setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
     this._list.setEmptyStateFactory(factory);
   }
 
-  setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
+  public setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
     this._list.setErrorStateFactory(factory);
   }
 
-  setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
+  public setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
     this._list.setListItemFactory(factory);
   }
 
-  setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
+  public setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._list.setPaginationItemFactory(factory);
   }
 
-  setMessageClick(handler?: (message: InboxMessage, index: number) => void) {
+  public setMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageClick = handler;
   }
 
-  setFeedType(feedType: CourierInboxFeedType) {
+  public setFeedType(feedType: CourierInboxFeedType) {
 
     // Update state 
     this._currentFeed = feedType;
@@ -265,7 +270,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
       case 'message-click':
         if (newValue) {
           try {
-            this._onMessageClick = new Function('message', 'index', newValue) as (message: InboxMessage, index: number) => void;
+            this._onMessageClick = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
           } catch (error) {
             console.error('Failed to parse message-click handler:', error);
           }

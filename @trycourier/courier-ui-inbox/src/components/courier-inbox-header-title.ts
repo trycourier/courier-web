@@ -3,10 +3,14 @@ import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
 export class CourierInboxHeaderTitle extends HTMLElement {
+
+  // Components
   private _titleElement: HTMLHeadingElement;
   private _iconElement: CourierIcon;
   private _unreadBadge: CourierUnreadCountBadge;
   private _container: HTMLDivElement;
+
+  // State
   private _option: CourierInboxMenuOption;
 
   constructor(props: { option: CourierInboxMenuOption }) {
@@ -61,6 +65,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     this._titleElement.textContent = option.label;
     this._unreadBadge.setCount(unreadCount);
   }
+
 }
 
 if (!customElements.get('courier-inbox-header-title')) {

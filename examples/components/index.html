@@ -228,14 +228,14 @@
       };
 
       // Inbox list item click handler
-      // document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
-      // document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
+      document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
+      document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
 
       // Custom inbox list item
       const customInbox = document.getElementById('inbox-custom');
 
+      // customInbox.removeHeader();
       // customInbox.setFeedType('archive');
-      // customInbox.setHeader((feedType, unreadCount) => null);
 
       customInbox.setHeader(props => {
 

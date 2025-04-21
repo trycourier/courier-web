@@ -7,8 +7,12 @@ export type CourierInboxMenuOption = {
 };
 
 class CourierInboxMenuItem extends HTMLElement {
+
+  // State
   private _option: CourierInboxMenuOption;
   private _isSelected: boolean;
+
+  // Components
   private _content: HTMLDivElement;
   private _itemIcon: CourierIcon;
   private _title: HTMLParagraphElement;
@@ -91,10 +95,14 @@ class CourierInboxMenuItem extends HTMLElement {
 }
 
 export class CourierInboxFilterMenu extends HTMLElement {
-  private _menuButton: CourierIconButton;
-  private _menu: HTMLDivElement;
+
+  // State
   private _options: CourierInboxMenuOption[];
   private _selectedIndex: number = 0;
+
+  // Components
+  private _menuButton: CourierIconButton;
+  private _menu: HTMLDivElement;
 
   constructor(props: { options: CourierInboxMenuOption[] }) {
     super();
@@ -173,6 +181,12 @@ export class CourierInboxFilterMenu extends HTMLElement {
       this._menu.style.display = 'none';
     }
   }
+
+  public selectOption(option: CourierInboxMenuOption) {
+    this._selectedIndex = this._options.findIndex(o => o.label === option.label);
+    this.renderMenu();
+  }
+
 }
 
 customElements.define('courier-inbox-filter-menu', CourierInboxFilterMenu);

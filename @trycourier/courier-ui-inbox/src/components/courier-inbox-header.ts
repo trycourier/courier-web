@@ -55,27 +55,30 @@ export class CourierInboxHeader extends CourierElement {
     this._onFeedTypeChange(feedType);
   }
 
-  private updateArchiveButton(show: boolean) {
+  private showArchiveButton(show: boolean) {
     if (this._archiveButton) {
       this._archiveButton.style.display = show ? 'block' : 'none';
     }
   }
 
   public refresh(props: CourierInboxHeaderFactoryProps): void {
-    console.log('Refreshing header', props);
 
     // Update state 
     this._feedType = props.feedType;
     this._unreadCount = props.unreadCount;
 
     // Update archive button
-    this.updateArchiveButton(props.feedType === 'inbox' && props.messageCount > 0);
+    const isInbox = props.feedType === 'inbox';
+    const hasMessages = props.messageCount > 0;
+    this.showArchiveButton(isInbox && hasMessages);
 
     // Update title section
     const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
     if (option) {
-      this._titleSection?.update(option, props.feedType === 'inbox' ? props.unreadCount : 0);
+      this._titleSection?.update(option, isInbox ? props.unreadCount : 0);
+      this._optionMenu?.selectOption(option);
     }
+
   }
 
   defaultElement(): HTMLElement {
@@ -136,7 +139,7 @@ export class CourierInboxHeader extends CourierElement {
     container.appendChild(actions);
 
     // Hide archive button by default
-    this.updateArchiveButton(false);
+    this.showArchiveButton(false);
 
     // Initialize title section with first menu option
     this._titleSection.update(this._menuOptions[0], this._unreadCount);
