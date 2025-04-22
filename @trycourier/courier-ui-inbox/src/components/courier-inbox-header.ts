@@ -81,6 +81,20 @@ export class CourierInboxHeader extends CourierElement {
 
   }
 
+  build(newElement: HTMLElement | undefined | null) {
+    super.build(newElement);
+
+    // This will put the header above the rest of the elements
+    const style = document.createElement('style');
+    style.textContent = `
+      :host {
+        z-index: 100;
+      }
+    `;
+    this.shadow?.appendChild(style);
+
+  }
+
   defaultElement(): HTMLElement {
     const style = document.createElement('style');
     style.textContent = `

@@ -22,9 +22,8 @@ class CustomListItem extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         .message-item {
-          padding: 20px;
-          border-bottom: 1px solid #e0e0e0;
-          transition: all 0.2s ease;
+          padding: 16px 32px;
+          border-bottom: 1px dashed #e0e0e0;
           background: white;
           position: relative;
           overflow: hidden;
@@ -33,63 +32,55 @@ class CustomListItem extends HTMLElement {
         .message-item:hover {
           cursor: pointer;
           background: #f8f9fa;
-          transform: translateX(4px);
         }
 
-        .message-item::before {
+        .unread::before {
           content: '';
           position: absolute;
           left: 0;
           top: 0;
           height: 100%;
-          width: 4px;
-          background: #521e65;
-          opacity: 0;
-          transition: opacity 0.2s ease;
-        }
-
-        .message-item:hover::before {
-          opacity: 1;
+          width: 2px;
+          background: green;
         }
 
         .message-header {
           display: flex;
           align-items: center;
-          margin-bottom: 12px;
+          justify-content: space-between;
+          margin-bottom: 4px;
         }
 
         .message-title {
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 16px;
-          font-weight: 600;
-          color: #1a1a1a;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 14px;
         }
 
         .message-id {
-          margin-left: 12px;
-          font-family: 'SF Mono', 'Consolas', monospace;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           font-size: 12px;
-          color: #666;
-          background: #f5f5f5;
-          padding: 2px 6px;
+          background: gray;
+          padding: 4px 8px;
           border-radius: 4px;
+          text-align: right;
+          color: white;
         }
 
         .message-preview {
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 24px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 14px;
           line-height: 1.4;
-          color: #4a4a4a;
+          color: darkgray;
           font-weight: 400;
         }
       </style>
 
-      <div class="message-item">
+      <div class="message-item ${!message.read && !message.archived ? 'unread' : ''}">
         <div class="message-header">
-          <h2 class="message-title">${message.title || 'No Title'}</h2>
-          <span class="message-id">${message.messageId}</span>
+          <p class="message-title">${message.title || 'No Title'}</p>
+          <span class="message-id">${message.messageId.slice(0, 8)}...${message.messageId.slice(-8)}</span>
         </div>
         <p class="message-preview">${message.preview || 'No Content'}</p>
       </div>
@@ -128,45 +119,39 @@ class CustomHeader extends HTMLElement {
       <style>
         .header {
           display: flex;
-          gap: 12px;
-          padding: 16px;
           width: 100%;
           box-sizing: border-box;
-          overflow-x: auto;
-          border-bottom: 1px solid #e0e0e0;
+          padding: 0px 16px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
           background: white;
+          align-items: center;
         }
 
         .tab {
-          flex: 1;
-          padding: 12px 24px;
+          padding: 16px;
           cursor: pointer;
           border: none;
           font-size: 14px;
           background: transparent;
           font-weight: normal;
-          border-radius: 8px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          border: 2px solid #f5f5f5;
-          transition: all 0.2s ease;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          position: relative;
         }
 
         .tab:hover {
-          background: #f8f9fa;
-          border-color: #e0e0e0;
+          background: lightgray;
         }
 
         .tab.selected {
-          background: #521e65;
-          color: white;
-          font-weight: 600;
-          border: none;
+          color: green;
+          box-shadow: inset 0 -2px 0 green;
         }
+
       </style>
 
       <div class="header">
         <button class="tab ${props.feedType === 'inbox' ? 'selected' : ''}" data-feed-type="inbox">
-          Inbox (${props.unreadCount})
+          Inbox
         </button>
         <button class="tab ${props.feedType === 'archive' ? 'selected' : ''}" data-feed-type="archive">
           Archive
@@ -201,16 +186,14 @@ class CustomLoadingState extends HTMLElement {
         }
 
         .loading-content {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           white-space: pre-wrap;
           word-break: break-word;
           line-height: 1.6;
-          background: #f8f9fa;
           padding: 16px 24px;
-          border-radius: 8px;
           margin: 0;
-          color: #521e65;
           font-size: 14px;
+          border: 2px dashed lightgray;
         }
       </style>
 
@@ -246,16 +229,14 @@ class CustomEmptyState extends HTMLElement {
         }
 
         .empty-content {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           white-space: pre-wrap;
           word-break: break-word;
           line-height: 1.6;
-          background: #f8f9fa;
           padding: 16px 24px;
-          border-radius: 8px;
           margin: 0;
-          color: #666;
           font-size: 14px;
+          border: 2px dashed lightgray;
         }
       </style>
 
@@ -327,21 +308,24 @@ class CustomPaginationItem extends HTMLElement {
       <style>
         .pagination-item {
           width: 100%;
-          padding: 16px;
+          height: 200%;
+          padding: 24px;
           display: flex;
           justify-content: center;
-          align-items: center;
-          background: white;
+          align-items: flex-start;
+          box-sizing: border-box;
+          padding-top: 48px;
         }
 
         .pagination-content {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 14px;
-          color: #666;
-          background: #f8f9fa;
-          padding: 12px 20px;
-          border-radius: 8px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          white-space: pre-wrap;
+          word-break: break-word;
+          line-height: 1.6;
+          padding: 16px 24px;
           margin: 0;
+          font-size: 14px;
+          border: 2px dashed lightgray;
         }
       </style>
 
@@ -367,27 +351,23 @@ class CustomMenuButton extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         .menu-button {
+          width: 160px;
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: 8px;
-          padding: 8px 16px;
-          background: #521e65;
-          border: none;
-          border-radius: 8px;
-          color: white;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          padding: 10px 16px;
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+          color: #333;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           font-size: 14px;
-          font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
         }
-
         .menu-button:hover {
-          background: #6a257f;
-        }
-
-        .menu-button:active {
-          transform: translateY(0);
+          background: #f5f5f5;
         }
 
         .notification-badge {
@@ -396,17 +376,25 @@ class CustomMenuButton extends HTMLElement {
           justify-content: center;
           min-width: 20px;
           height: 20px;
-          padding: 0 6px;
-          background: #ff4d4d;
-          border-radius: 10px;
+          padding: 6px;
+          border-radius: 4px;
           font-size: 12px;
-          font-weight: 600;
+          color: white;
         }
+
+        .notification-badge.has-count {
+          background: green;
+        }
+
+        .notification-badge.no-count {
+          background: gray;
+        }
+          
       </style>
 
       <button class="menu-button">
-        Inbox
-        ${props.unreadCount > 0 ? `<span class="notification-badge">${props.unreadCount}</span>` : ''}
+        Alerts
+        <span class="notification-badge ${props.unreadCount > 0 ? 'has-count' : 'no-count'}">${props.unreadCount}</span>
       </button>
     `;
   }
