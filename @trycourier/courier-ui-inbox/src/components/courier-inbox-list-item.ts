@@ -48,6 +48,10 @@ export class CourierListItem extends HTMLElement {
         border-bottom: none;
       }
 
+      :host(.unread) {
+        box-shadow: inset 2px 0 0 var(--courier-primary, #0070f3);
+      }
+
       .content {
         flex: 1;
         min-width: 0;
@@ -174,6 +178,11 @@ export class CourierListItem extends HTMLElement {
   }
 
   private updateContent() {
+    if (this.message && !this.message.read) {
+      this.classList.add('unread');
+    } else {
+      this.classList.remove('unread');
+    }
     if (!this.message) {
       this.titleElement.textContent = '';
       this.subtitleElement.textContent = '';

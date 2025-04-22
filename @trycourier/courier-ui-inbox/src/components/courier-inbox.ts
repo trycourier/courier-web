@@ -71,7 +71,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         }
       },
       onMessageClick: (message, index) => {
-        CourierInboxDatastore.shared.clickMessage(message, index)
+        CourierInboxDatastore.shared.clickMessage(message);
 
         this.dispatchEvent(new CustomEvent('message-click', {
           detail: { message, index },
@@ -81,8 +81,8 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
         this._onMessageClick?.({ message, index });
       },
-      onArchiveMessage: (message, index) => {
-        CourierInboxDatastore.shared.archiveMessage(message, index);
+      onArchiveMessage: (message, _) => {
+        CourierInboxDatastore.shared.archiveMessage(message);
       }
     });
 

@@ -1,3 +1,5 @@
+import { Courier } from "../shared/courier";
+
 export interface CourierGetInboxMessagesResponse {
   data?: {
     count?: number;

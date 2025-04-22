@@ -172,12 +172,12 @@ export class CourierInboxDatastore {
           return null;
         }
 
-        if (this.inboxDataSet?.canPaginate && this.inboxDataSet.paginationCursor) {
+        if (this._inboxDataSet?.canPaginate && this._inboxDataSet.paginationCursor) {
           try {
             this.isPaginatingInbox = true;
             const response = await Courier.shared.client?.inbox.getMessages({
               paginationLimit: Courier.shared.paginationLimit,
-              startCursor: this.inboxDataSet.paginationCursor
+              startCursor: this._inboxDataSet.paginationCursor
             });
             const dataSet = {
               messages: response?.data?.messages?.nodes ?? [],
@@ -201,12 +201,12 @@ export class CourierInboxDatastore {
           return null;
         }
 
-        if (this.archiveDataSet?.canPaginate && this.archiveDataSet.paginationCursor) {
+        if (this._archiveDataSet?.canPaginate && this._archiveDataSet.paginationCursor) {
           try {
             this.isPaginatingArchive = true;
             const response = await Courier.shared.client?.inbox.getArchivedMessages({
               paginationLimit: Courier.shared.paginationLimit,
-              startCursor: this.archiveDataSet.paginationCursor
+              startCursor: this._archiveDataSet.paginationCursor
             });
             const dataSet = {
               messages: response?.data?.messages?.nodes ?? [],
@@ -229,8 +229,118 @@ export class CourierInboxDatastore {
     return null;
   }
 
-  async clickMessage(message: InboxMessage, _: number): Promise<void> {
+  async readMessage(message: InboxMessage): Promise<void> {
 
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    // Save original message and index
+    const originalMessage = message;
+
+    // If the message is already read, return
+    if (originalMessage.read) {
+      return;
+    }
+
+    const messageIndices = {
+      inbox: this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId),
+      archive: this._archiveDataSet?.messages.findIndex(m => m.messageId === message.messageId)
+    };
+
+    try {
+      message.read = new Date().toISOString();
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(message, index, feedType as CourierInboxFeedType);
+        }
+      }
+      await Courier.shared.client.inbox.read({ messageId: message.messageId });
+    } catch (error) {
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
+        }
+      }
+      console.error('Error reading message:', error);
+    }
+  }
+
+  async unreadMessage(message: InboxMessage): Promise<void> {
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    // Save original message and index
+    const originalMessage = message;
+
+    // If the message is already unread, return
+    if (!originalMessage.read) {
+      return;
+    }
+
+    const messageIndices = {
+      inbox: this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId),
+      archive: this._archiveDataSet?.messages.findIndex(m => m.messageId === message.messageId)
+    };
+
+    try {
+      message.read = null;
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(message, index, feedType as CourierInboxFeedType);
+        }
+      }
+      await Courier.shared.client.inbox.unread({ messageId: message.messageId });
+    } catch (error) {
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
+        }
+      }
+      console.error('Error unreading message:', error);
+    }
+  }
+
+  async openMessage(message: InboxMessage): Promise<void> {
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    // Save original message and index
+    const originalMessage = message;
+    const messageIndices = {
+      inbox: this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId),
+      archive: this._archiveDataSet?.messages.findIndex(m => m.messageId === message.messageId)
+    };
+
+    if (!messageIndices.inbox && !messageIndices.archive) {
+      return;
+    }
+
+    if (originalMessage.opened) {
+      return;
+    }
+
+    try {
+      message.opened = new Date().toISOString();
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(message, index, feedType as CourierInboxFeedType);
+        }
+      }
+      await Courier.shared.client.inbox.open({ messageId: message.messageId });
+    } catch (error) {
+      for (const [feedType, index] of Object.entries(messageIndices)) {
+        if (index !== undefined) {
+          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
+        }
+      }
+      console.error('Error opening message:', error);
+    }
+  }
+
+  async clickMessage(message: InboxMessage): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -247,35 +357,36 @@ export class CourierInboxDatastore {
     }
   }
 
-  async archiveMessage(message: InboxMessage, index: number): Promise<void> {
-
+  async archiveMessage(message: InboxMessage): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
 
     // Save original message and index
     const originalMessage = message;
-    const originalIndex = index;
+    const originalIndex = this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId);
+
+    if (originalIndex === undefined) {
+      return;
+    }
 
     try {
-
       // Remove message from local state
-      this.removeMessage(message, index, 'inbox');
+      this.removeMessage(message, originalIndex, 'inbox');
 
       // Find index to insert archived message and add to archive
-      if (this.archiveDataSet?.messages) {
-        const insertIndex = this.findInsertIndex(message, this.archiveDataSet.messages);
+      if (this._archiveDataSet?.messages) {
+        const insertIndex = this.findInsertIndex(message, this._archiveDataSet.messages);
         message.archived = new Date().toISOString();
         this.addMessage(message, insertIndex, 'archive');
       }
 
       // Call API to archive message
       await Courier.shared.client.inbox.archive({ messageId: message.messageId });
-
     } catch (error) {
       this.addMessage(originalMessage, originalIndex, 'inbox');
       message.archived = undefined;
-      this.removeMessage(message, index, 'archive');
+      this.removeMessage(message, originalIndex, 'archive');
     }
   }
 
@@ -303,17 +414,17 @@ export class CourierInboxDatastore {
   private addPage(dataSet: InboxDataSet, feedType: CourierInboxFeedType) {
     switch (feedType) {
       case 'inbox':
-        if (this.inboxDataSet) {
-          this.inboxDataSet.canPaginate = dataSet.canPaginate;
-          this.inboxDataSet.paginationCursor = dataSet.paginationCursor;
-          this.inboxDataSet.messages = [...this.inboxDataSet.messages, ...dataSet.messages];
+        if (this._inboxDataSet) {
+          this._inboxDataSet.canPaginate = dataSet.canPaginate;
+          this._inboxDataSet.paginationCursor = dataSet.paginationCursor;
+          this._inboxDataSet.messages = [...this._inboxDataSet.messages, ...dataSet.messages];
         }
         break;
       case 'archive':
-        if (this.archiveDataSet) {
-          this.archiveDataSet.canPaginate = dataSet.canPaginate;
-          this.archiveDataSet.paginationCursor = dataSet.paginationCursor;
-          this.archiveDataSet.messages = [...this.archiveDataSet.messages, ...dataSet.messages];
+        if (this._archiveDataSet) {
+          this._archiveDataSet.canPaginate = dataSet.canPaginate;
+          this._archiveDataSet.paginationCursor = dataSet.paginationCursor;
+          this._archiveDataSet.messages = [...this._archiveDataSet.messages, ...dataSet.messages];
         }
         break;
     }
@@ -328,10 +439,10 @@ export class CourierInboxDatastore {
         if (!message.read && this._unreadCount !== undefined) {
           this._unreadCount = this._unreadCount + 1;
         }
-        this.inboxDataSet?.messages.splice(index, 0, message);
+        this._inboxDataSet?.messages.splice(index, 0, message);
         break;
       case 'archive':
-        this.archiveDataSet?.messages.splice(index, 0, message);
+        this._archiveDataSet?.messages.splice(index, 0, message);
         break;
     }
     this._dataStoreListeners.forEach(listener => {
@@ -346,10 +457,10 @@ export class CourierInboxDatastore {
         if (!message.read && this._unreadCount !== undefined) {
           this._unreadCount = this._unreadCount - 1;
         }
-        this.inboxDataSet?.messages.splice(index, 1);
+        this._inboxDataSet?.messages.splice(index, 1);
         break;
       case 'archive':
-        this.archiveDataSet?.messages.splice(index, 1);
+        this._archiveDataSet?.messages.splice(index, 1);
         break;
     }
     this._dataStoreListeners.forEach(listener => {
@@ -359,10 +470,30 @@ export class CourierInboxDatastore {
   }
 
   private updateMessage(message: InboxMessage, index: number, feedType: CourierInboxFeedType) {
-    // this.inboxDataSet?.messages[index] = message;
-    // this.dataStoreListeners.forEach(listener =>
-    //   listener.events.onMessageUpdate(message, index, feedType)
-    // );
+    switch (feedType) {
+      case 'inbox':
+        if (this._unreadCount !== undefined && !message.archived) {
+          if (message.read) {
+            this._unreadCount = Math.max(0, this._unreadCount - 1);
+          }
+          if (!message.read) {
+            this._unreadCount = this._unreadCount + 1;
+          }
+        }
+        if (this._inboxDataSet) {
+          this._inboxDataSet.messages[index] = message;
+        }
+        break;
+      case 'archive':
+        if (this._archiveDataSet) {
+          this._archiveDataSet.messages[index] = message;
+        }
+        break;
+    }
+    this._dataStoreListeners.forEach(listener => {
+      listener.events.onMessageUpdate?.(message, index, feedType);
+      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
+    });
   }
 
 }

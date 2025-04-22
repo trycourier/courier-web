@@ -210,6 +210,7 @@
       import { CourierInbox } from '@trycourier/courier-ui-inbox';
       import { CourierIcon } from '@trycourier/courier-ui-core';
       import { Courier } from '@trycourier/courier-js';
+      import { markAsRead, markAsUnread } from '@trycourier/courier-ui-inbox';
 
       Courier.shared.signIn({
         userId: import.meta.env.VITE_USER_ID,
@@ -226,6 +227,7 @@
 
       const handleMessageClick = (event) => {
         const { message, index } = event.detail;
+        message.read ? markAsUnread(message) : markAsRead(message);
         alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
       };
 

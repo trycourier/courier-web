@@ -1,5 +1,6 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { Logger } from "./logger";
+import { UUID } from "./uuid";
 
 export class CourierRequestError extends Error {
   constructor(
@@ -51,7 +52,7 @@ export async function http(props: {
   validCodes?: number[]
 }): Promise<any> {
   const validCodes = props.validCodes ?? [200];
-  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.options.showLogs ? UUID.generate() : undefined;
 
   // Create request
   const request = new Request(props.url, {
@@ -126,7 +127,7 @@ export async function graphql(props: {
   query: string,
   variables?: Record<string, any>
 }): Promise<any> {
-  const uid = props.options.showLogs ? crypto.randomUUID() : undefined;
+  const uid = props.options.showLogs ? UUID.generate() : undefined;
 
   // Log request if enabled
   if (uid) {

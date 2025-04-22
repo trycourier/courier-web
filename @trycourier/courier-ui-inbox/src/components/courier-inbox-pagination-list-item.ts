@@ -35,7 +35,7 @@ export class CourierInboxPaginationListItem extends HTMLElement {
         padding: 32px;
         background-color: var(--courier-bg, #ffffff);
         min-height: 100%;
-        height: 100%;
+        height: 150%;
         box-sizing: border-box;
       `;
 
