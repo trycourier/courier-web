@@ -27,11 +27,14 @@ class CustomListItem extends HTMLElement {
           background: white;
           position: relative;
           overflow: hidden;
+          transition: padding-left 0.2s ease, padding-right 0.2s ease;
         }
 
         .message-item:hover {
           cursor: pointer;
           background: #f8f9fa;
+          padding-left: 24px;
+          padding-right: 24px;
         }
 
         .unread::before {
@@ -139,7 +142,7 @@ class CustomHeader extends HTMLElement {
         }
 
         .tab:hover {
-          background: lightgray;
+          background: #f8f9fa;
         }
 
         .tab.selected {
@@ -356,18 +359,19 @@ class CustomMenuButton extends HTMLElement {
           align-items: center;
           justify-content: space-between;
           gap: 8px;
-          padding: 10px 16px;
+          padding: 10px 24px;
           background: white;
           border: 1px solid #e0e0e0;
           border-radius: 4px;
-          color: #333;
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
           font-size: 14px;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         .menu-button:hover {
-          background: #f5f5f5;
+          background: #f8f9fa;
+          padding-left: 16px;
+          padding-right: 16px;
         }
 
         .notification-badge {
