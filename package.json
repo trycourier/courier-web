@@ -13,7 +13,8 @@
     "courier-ui-core": "cd @trycourier/courier-ui-core && npm install && cd ..",
     "courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm install && cd ..",
     "clear": "rm -rf node_modules package-lock.json",
-    "remove-cache": "npm cache clean --force"
+    "remove-cache": "npm cache clean --force",
+    "ipqr": "sh ipqr.sh"
   },
   "devDependencies": {
     "@types/node": "20.4.2",

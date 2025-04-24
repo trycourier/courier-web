@@ -1,5 +1,6 @@
 import { CourierClient, CourierProps } from "../client/courier-client";
 import { AuthenticationListener } from '../shared/authentication-listener';
+import { UUID } from "../utils/uuid";
 
 /**
  * Courier is a singleton class that manages a shared Courier client instance and other resources.
@@ -60,7 +61,8 @@ export class Courier {
    * @param options - The options for the Courier client
    */
   public signIn(props: CourierProps) {
-    this.instanceClient = new CourierClient(props);
+    const connectionId = props.connectionId ?? UUID.generate();
+    this.instanceClient = new CourierClient({ ...props, connectionId });
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 

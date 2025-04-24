@@ -66,5 +66,17 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Localhost QR",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "ipqr"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+    }
   ]
 }

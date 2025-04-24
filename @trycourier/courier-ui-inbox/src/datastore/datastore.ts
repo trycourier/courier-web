@@ -129,6 +129,8 @@ export class CourierInboxDatastore {
         return;
       }
 
+      console.log('CourierInbox socket', Courier.shared.client?.options.connectionId);
+
       // If the socket is already connected, return early
       if (socket.isConnected) {
         console.log('CourierInbox socket already connected');
@@ -142,15 +144,48 @@ export class CourierInboxDatastore {
 
       // Handle message events
       socket.receivedMessageEvent = (event: MessageEvent) => {
-        console.log('CourierInbox socket received message event', event);
-        // switch (event.event) {
-        //   case EventType.READ:
-        //     this.addMessage(event.message, 0, 'inbox');
-        //     break;
-        //   case 'message.updated':
-        //     this.updateMessage(event.message, 0, 'inbox');
-        //     break;
-        // }
+
+        let message: InboxMessage | undefined;
+
+        // Get the original message if possible
+        if (event.messageId) {
+          message = this.getMessage({ messageId: event.messageId });
+        }
+
+        switch (event.event) {
+          case 'mark-all-read':
+            this.readAllMessages();
+            break;
+          case 'read':
+            if (message) {
+              this.readMessage(message, false);
+            }
+            break;
+          case 'unread':
+            if (message) {
+              this.unreadMessage(message, false);
+            }
+            break;
+          case 'opened':
+            if (message) {
+              this.openMessage(message, false);
+            }
+            break;
+          case 'archive':
+            if (message) {
+              this.archiveMessage(message, false);
+            }
+            break;
+          case 'click':
+            if (message) {
+              this.clickMessage(message, false);
+            }
+            break;
+          case 'unopened':
+          case 'unarchive':
+          case 'unclick':
+            break;
+        }
       };
 
       // Connect and subscribe to socket
@@ -161,6 +196,11 @@ export class CourierInboxDatastore {
     } catch (error) {
       console.error('Failed to connect socket:', error);
     }
+  }
+
+  private getMessage(props: { messageId: string }): InboxMessage | undefined {
+    return this._inboxDataSet?.messages.find(m => m.messageId === props.messageId) ??
+      this._archiveDataSet?.messages.find(m => m.messageId === props.messageId);
   }
 
   async fetchNextPageOfMessages(props: { feedType: CourierInboxFeedType }): Promise<InboxDataSet | null> {
@@ -229,7 +269,7 @@ export class CourierInboxDatastore {
     return null;
   }
 
-  async readMessage(message: InboxMessage): Promise<void> {
+  async readMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
 
     if (!Courier.shared.client) {
       return;
@@ -255,7 +295,9 @@ export class CourierInboxDatastore {
           this.updateMessage(message, index, feedType as CourierInboxFeedType);
         }
       }
-      await Courier.shared.client.inbox.read({ messageId: message.messageId });
+      if (canCallApi) {
+        await Courier.shared.client.inbox.read({ messageId: message.messageId });
+      }
     } catch (error) {
       for (const [feedType, index] of Object.entries(messageIndices)) {
         if (index !== undefined) {
@@ -266,7 +308,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async unreadMessage(message: InboxMessage): Promise<void> {
+  async unreadMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -285,13 +327,15 @@ export class CourierInboxDatastore {
     };
 
     try {
-      message.read = null;
+      message.read = undefined;
       for (const [feedType, index] of Object.entries(messageIndices)) {
         if (index !== undefined) {
           this.updateMessage(message, index, feedType as CourierInboxFeedType);
         }
       }
-      await Courier.shared.client.inbox.unread({ messageId: message.messageId });
+      if (canCallApi) {
+        await Courier.shared.client.inbox.unread({ messageId: message.messageId });
+      }
     } catch (error) {
       for (const [feedType, index] of Object.entries(messageIndices)) {
         if (index !== undefined) {
@@ -302,7 +346,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async openMessage(message: InboxMessage): Promise<void> {
+  async openMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -329,7 +373,9 @@ export class CourierInboxDatastore {
           this.updateMessage(message, index, feedType as CourierInboxFeedType);
         }
       }
-      await Courier.shared.client.inbox.open({ messageId: message.messageId });
+      if (canCallApi) {
+        await Courier.shared.client.inbox.open({ messageId: message.messageId });
+      }
     } catch (error) {
       for (const [feedType, index] of Object.entries(messageIndices)) {
         if (index !== undefined) {
@@ -340,13 +386,13 @@ export class CourierInboxDatastore {
     }
   }
 
-  async clickMessage(message: InboxMessage): Promise<void> {
+  async clickMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
 
     try {
-      if (message.trackingIds?.clickTrackingId) {
+      if (message.trackingIds?.clickTrackingId && canCallApi) {
         await Courier.shared.client.inbox.click({
           messageId: message.messageId,
           trackingId: message.trackingIds?.clickTrackingId
@@ -357,7 +403,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async archiveMessage(message: InboxMessage): Promise<void> {
+  async archiveMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -382,11 +428,81 @@ export class CourierInboxDatastore {
       }
 
       // Call API to archive message
-      await Courier.shared.client.inbox.archive({ messageId: message.messageId });
+      if (canCallApi) {
+        await Courier.shared.client.inbox.archive({ messageId: message.messageId });
+      }
     } catch (error) {
       this.addMessage(originalMessage, originalIndex, 'inbox');
       message.archived = undefined;
       this.removeMessage(message, originalIndex, 'archive');
+    }
+  }
+
+  async readAllMessages(canCallApi: boolean = true): Promise<void> {
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    // Store original state for potential rollback
+    const originalInboxMessageData = this._inboxDataSet;
+    const originalArchiveMessageData = this._archiveDataSet;
+    const originalUnreadCount = this._unreadCount;
+
+    try {
+      // Read all messages
+      this._inboxDataSet?.messages.forEach(message => {
+        if (!message.read) {
+          message.read = new Date().toISOString();
+        }
+      });
+
+      // Read all archived messages
+      this._archiveDataSet?.messages.forEach(message => {
+        if (!message.read) {
+          message.read = new Date().toISOString();
+        }
+      });
+
+      // Update unread count
+      this._unreadCount = 0;
+
+      // Notify listeners
+      this._dataStoreListeners.forEach(listener => {
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
+        listener.events.onUnreadCountChange?.(this._unreadCount!);
+      });
+
+      if (canCallApi) {
+        await Courier.shared.client.inbox.readAll();
+      }
+
+    } catch (error) {
+      console.error('Error reading all messages:', error);
+
+      // Reset to original state on error
+      if (this._inboxDataSet && originalInboxMessageData) {
+        this._inboxDataSet.messages = originalInboxMessageData.messages;
+      }
+      if (this._archiveDataSet && originalArchiveMessageData) {
+        this._archiveDataSet.messages = originalArchiveMessageData.messages;
+      }
+      this._unreadCount = originalUnreadCount;
+
+      // Notify listeners of the reset
+      this._dataStoreListeners.forEach(listener => {
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
+        listener.events.onUnreadCountChange?.(this._unreadCount!);
+      });
     }
   }
 

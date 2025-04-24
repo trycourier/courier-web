@@ -2,25 +2,19 @@ import { CourierSocket } from './courier-socket';
 import { CourierClientOptions } from '../client/courier-client';
 import { InboxMessage } from '../types/inbox';
 
-enum PayloadType {
-  EVENT = 'event',
-  MESSAGE = 'message'
-}
-
-enum EventType {
-  READ = 'read',
-  UNREAD = 'unread',
-  MARK_ALL_READ = 'mark-all-read',
-  OPENED = 'opened',
-  UNOPENED = 'unopened',
-  ARCHIVE = 'archive',
-  UNARCHIVE = 'unarchive',
-  CLICK = 'click',
-  UNCLICK = 'unclick'
-}
+export type EventType =
+  | 'read'
+  | 'unread'
+  | 'mark-all-read'
+  | 'opened'
+  | 'unopened'
+  | 'archive'
+  | 'unarchive'
+  | 'click'
+  | 'unclick';
 
 interface SocketPayload {
-  type: PayloadType;
+  type: 'event' | 'message';
 }
 
 export interface MessageEvent {
@@ -43,17 +37,18 @@ export class InboxSocket extends CourierSocket {
       const payload = JSON.parse(data) as SocketPayload;
 
       switch (payload.type) {
-        case PayloadType.EVENT:
+        case 'event':
           const messageEvent = JSON.parse(data) as MessageEvent;
           this.receivedMessageEvent?.(messageEvent);
           break;
 
-        case PayloadType.MESSAGE:
+        case 'message':
           const message = JSON.parse(data) as InboxMessage;
           this.receivedMessage?.(message);
           break;
       }
     } catch (error) {
+      this.options.logger?.error('Error parsing socket message', error);
       if (error instanceof Error) {
         this.onError?.(error);
       }
@@ -63,7 +58,7 @@ export class InboxSocket extends CourierSocket {
   public async sendSubscribe(props?: {
     version?: number;
   }): Promise<void> {
-    const data: Record<string, any> = {
+    const subscription: Record<string, any> = {
       action: 'subscribe',
       data: {
         userAgent: 'courier-js', // TODO: Equivalent to Courier.agent.value()
@@ -75,18 +70,15 @@ export class InboxSocket extends CourierSocket {
 
     // Add optional parameters
     if (this.options.connectionId) {
-      data.data.clientSourceId = this.options.connectionId;
-    }
-    if (this.options.publicApiKey) {
-      data.data.clientKey = this.options.publicApiKey;
+      subscription.data.clientSourceId = this.options.connectionId;
     }
     if (this.options.tenantId) {
-      data.data.accountId = this.options.tenantId;
+      subscription.data.accountId = this.options.tenantId;
     }
 
-    this.options.logger?.debug('Sending subscribe request', data);
+    this.options.logger?.debug('Sending subscribe request', subscription);
 
-    await this.send(data);
+    await this.send(subscription);
   }
 
   private static buildUrl(options: CourierClientOptions): string {
