@@ -1,7 +1,7 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierIconSource, CourierSystemThemeElement, SystemThemeMode } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -9,10 +9,17 @@ import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 
-export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
+export class CourierInbox extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
+
+  // Themes
+  private _lightTheme: string = 'default-light-theme';
+  private _darkTheme: string = 'default-dark-theme';
+  public set theme(value: string) {
+    console.log('CourierInbox set theme: ', value);
+  }
 
   // Components
   private _shadow: ShadowRoot;
@@ -36,12 +43,13 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   };
 
   static get observedAttributes() {
-    return ['height', 'message-click'];
+    return ['height', 'message-click', 'light-theme', 'dark-theme'];
   }
 
   constructor() {
     super();
 
+    // Attach the shadow DOM
     this._shadow = this.attachShadow({ mode: 'open' });
 
     // Header
@@ -56,10 +64,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
       onRefresh: () => {
-        this.load({
-          feedType: this._currentFeed,
-          canUseCache: false
-        });
+        this.refresh();
       },
       onPaginationTrigger: async (feedType: CourierInboxFeedType) => {
         try {
@@ -118,6 +123,10 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this._authListener = Courier.shared.addAuthenticationListener((_) => {
       this.refresh();
     });
+
+    // Refresh the theme
+    this.updateTheme(this.currentSystemTheme);
+
   }
 
   public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
@@ -271,8 +280,40 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           this._onMessageClick = undefined;
         }
         break;
+      case 'light-theme':
+        if (newValue) {
+          this._lightTheme = newValue;
+          if (this.currentSystemTheme === 'light') {
+            this.updateTheme(this.currentSystemTheme);
+          }
+        }
+        break;
+      case 'dark-theme':
+        if (newValue) {
+          this._darkTheme = newValue;
+          if (this.currentSystemTheme === 'dark') {
+            this.updateTheme(this.currentSystemTheme);
+          }
+        }
+        break;
     }
   }
+
+  protected onSystemThemeChange(theme: SystemThemeMode) {
+    this.updateTheme(theme);
+  }
+
+  private updateTheme(theme: SystemThemeMode) {
+    switch (theme) {
+      case 'light':
+        this.theme = this._lightTheme;
+        break;
+      case 'dark':
+        this.theme = this._darkTheme;
+        break;
+    }
+  }
+
 }
 
 // Register the custom element

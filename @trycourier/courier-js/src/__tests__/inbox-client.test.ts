@@ -127,8 +127,8 @@ describe('InboxClient', () => {
     await socket.connect();
     await socket.sendSubscribe();
 
-    await new Promise(resolve => setTimeout(resolve, 60000));
+    await new Promise(resolve => setTimeout(resolve, 45000));
 
     socket.disconnect();
-  });
+  }, 60000);
 });
