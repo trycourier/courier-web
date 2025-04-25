@@ -8,6 +8,7 @@ import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 
 export class CourierInbox extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
 
@@ -15,10 +16,11 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
   // Themes
-  private _lightTheme: string = 'default-light-theme';
-  private _darkTheme: string = 'default-dark-theme';
-  public set theme(value: string) {
-    console.log('CourierInbox set theme: ', value);
+  private _lightTheme: CourierInboxTheme = defaultLightTheme;
+  private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+
+  public set theme(value: CourierInboxTheme) {
+    this._list.setTheme(value);
   }
 
   // Components
@@ -282,7 +284,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
         break;
       case 'light-theme':
         if (newValue) {
-          this._lightTheme = newValue;
+          this._lightTheme = JSON.parse(newValue);
           if (this.currentSystemTheme === 'light') {
             this.updateTheme(this.currentSystemTheme);
           }
@@ -290,7 +292,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
         break;
       case 'dark-theme':
         if (newValue) {
-          this._darkTheme = newValue;
+          this._darkTheme = JSON.parse(newValue);
           if (this.currentSystemTheme === 'dark') {
             this.updateTheme(this.currentSystemTheme);
           }

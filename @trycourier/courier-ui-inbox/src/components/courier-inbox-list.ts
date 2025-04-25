@@ -5,8 +5,12 @@ import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
+import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 
 export class CourierInboxList extends HTMLElement {
+
+  // Theme
+  private _theme: CourierInboxTheme = defaultLightTheme;
 
   // State
   private _messages: InboxMessage[] = [];
@@ -195,7 +199,7 @@ export class CourierInboxList extends HTMLElement {
         return;
       }
 
-      const listItem = new CourierListItem();
+      const listItem = new CourierListItem(this._theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
@@ -235,6 +239,11 @@ export class CourierInboxList extends HTMLElement {
 
   public setPaginationItemFactory(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void {
     this._paginationItemFactory = factory;
+    this.render();
+  }
+
+  public setTheme(theme: CourierInboxTheme): void {
+    this._theme = theme;
     this.render();
   }
 

@@ -1,6 +1,7 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export class CourierListItem extends HTMLElement {
   private titleElement: HTMLParagraphElement;
@@ -11,7 +12,10 @@ export class CourierListItem extends HTMLElement {
   private onItemClick: ((message: InboxMessage) => void) | null = null;
   private onCloseClick: ((message: InboxMessage) => void) | null = null;
 
-  constructor() {
+  constructor(theme: CourierInboxTheme) {
+
+    console.log('theme', theme.indicatorColor);
+
     super();
     const shadow = this.attachShadow({ mode: 'open' });
 
@@ -49,7 +53,7 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(.unread) {
-        box-shadow: inset 2px 0 0 var(--courier-primary, #0070f3);
+        box-shadow: inset 2px 0 0 ${theme.indicatorColor ?? '#0070f3'};
       }
 
       .content {
