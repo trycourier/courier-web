@@ -42,6 +42,7 @@ export class InboxClient extends Client {
             title
             preview
             data
+            tags
             trackingIds {
               clickTrackingId
             }
@@ -95,6 +96,7 @@ export class InboxClient extends Client {
             title
             preview
             data
+            tags
             trackingIds {
               clickTrackingId
             }

@@ -183,7 +183,6 @@ export class CourierInboxDatastore {
             break;
           case 'unopened':
           case 'unarchive':
-          case 'unclick':
             break;
         }
       };

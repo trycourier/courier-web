@@ -1,5 +1,3 @@
-import { Courier } from "../shared/courier";
-
 export interface CourierGetInboxMessagesResponse {
   data?: {
     count?: number;
@@ -32,6 +30,7 @@ export interface InboxMessage {
   archived?: string;
   read?: string;
   opened?: string;
+  tags?: string[];
   trackingIds?: {
     archiveTrackingId?: string;
     openTrackingId?: string;

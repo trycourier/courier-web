@@ -2,17 +2,6 @@ import { CourierSocket } from './courier-socket';
 import { CourierClientOptions } from '../client/courier-client';
 import { InboxMessage } from '../types/inbox';
 
-export type EventType =
-  | 'read'
-  | 'unread'
-  | 'mark-all-read'
-  | 'opened'
-  | 'unopened'
-  | 'archive'
-  | 'unarchive'
-  | 'click'
-  | 'unclick';
-
 interface SocketPayload {
   type: 'event' | 'message';
 }
@@ -22,6 +11,16 @@ export interface MessageEvent {
   messageId?: string;
   type: string;
 }
+
+export type EventType =
+  | 'read'
+  | 'unread'
+  | 'mark-all-read'
+  | 'opened'
+  | 'unopened'
+  | 'archive'
+  | 'unarchive'
+  | 'click';
 
 export class InboxSocket extends CourierSocket {
   public receivedMessage?: (message: InboxMessage) => void;
