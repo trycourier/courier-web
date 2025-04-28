@@ -15,26 +15,49 @@
 
     <div class="grid-section">
       <div class="grid-header">
-        <p class="grid-title">courier-inbox</p>
+        <p class="grid-title">courier-inbox (default)</p>
       </div>
       <div class="grid-container">
         <div class="grid-row">
           <div class="grid-item no-padding">
-            <courier-inbox id="inbox" height="420px" dark-theme='{ "indicatorColor": "#521e65" }'>
+            <courier-inbox id="inbox" height="420px">
             </courier-inbox>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="grid-section allow-overflow">
+    <div class="grid-section">
       <div class="grid-header">
-        <p class="grid-title">courier-inbox-menu</p>
+        <p class="grid-title">courier-inbox (styled)</p>
       </div>
       <div class="grid-container">
         <div class="grid-row">
-          <div class="grid-item no-padding" style="height: 100px;">
-            <courier-inbox-menu></courier-inbox-menu>
+          <div class="grid-item no-padding">
+            <courier-inbox height="420px" id="inbox-styled" light-theme='{
+                "backgroundColor": "#f2f2f2",
+                "listItem": {
+                  "unreadIndicatorColor": "#521e65",
+                  "hoverColor": "#e5e7eb",
+                  "activeColor": "#9ca3af",
+                  "titleColor": "#111827",
+                  "subtitleColor": "#6b7280",
+                  "timeColor": "#6b7280",
+                  "archiveIconColor": "#6b7280"
+                }
+              }' dark-theme='{
+                "backgroundColor": "#0a0a0a",
+                "listItem": {
+                  "unreadIndicatorColor": "#fff",
+                  "hoverColor": "#374151",
+                  "activeColor": "#4b5563",
+                  "titleColor": "#f9fafb",
+                  "subtitleColor": "#9ca3af",
+                  "timeColor": "#9ca3af",
+                  "archiveIconColor": "#fff"
+                }
+              }'>
+            </courier-inbox>
           </div>
         </div>
       </div>
@@ -48,6 +71,32 @@
         <div class="grid-row">
           <div class="grid-item no-padding">
             <courier-inbox height="420px" id="inbox-custom"></courier-inbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-section allow-overflow">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox-menu (default)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding" style="height: 100px;">
+            <courier-inbox-menu></courier-inbox-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-section allow-overflow">
+      <div class="grid-header">
+        <p class="grid-title">courier-inbox-menu (styled)</p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-item no-padding" style="height: 100px;">
+            <courier-inbox-menu></courier-inbox-menu>
           </div>
         </div>
       </div>

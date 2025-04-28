@@ -1,5 +1,5 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
@@ -63,6 +63,7 @@ export class CourierInboxList extends HTMLElement {
       :host {
         flex: 1;
         width: 100%;
+        background-color: ${this._theme.backgroundColor ?? CourierColors.white[500]};
       }
 
       ul {

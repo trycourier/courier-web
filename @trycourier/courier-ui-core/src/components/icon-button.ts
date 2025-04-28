@@ -10,25 +10,20 @@ export class CourierIconButton extends HTMLElement {
     'corner-radius',
     'border-color',
     'border-radius',
-    'font-family',
-    'font-size',
-    'font-weight',
     'variant',
     'mode',
     'text-color',
     'icon'
   ];
 
-  constructor(icon: string) {
+  constructor(svg?: string, color?: string) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.button = document.createElement('button');
     this.button.setAttribute('part', 'button');
 
-    this.icon = new CourierIcon();
-    this.icon.setAttribute('part', 'icon');
-    this.icon.setAttribute('icon', icon);
+    this.icon = new CourierIcon(color, svg);
 
     const style = document.createElement('style');
     style.textContent = `

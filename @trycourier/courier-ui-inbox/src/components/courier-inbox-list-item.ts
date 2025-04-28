@@ -1,22 +1,26 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export class CourierListItem extends HTMLElement {
+  // State
+  private theme: CourierInboxTheme;
+  private message: InboxMessage | null = null;
+  private feedType: CourierInboxFeedType = 'inbox';
+
+  // DOM Elements
   private titleElement: HTMLParagraphElement;
   private subtitleElement: HTMLParagraphElement;
   private closeButton: CourierIconButton | null = null;
-  private message: InboxMessage | null = null;
-  private feedType: CourierInboxFeedType = 'inbox';
+
+  // Event Handlers
   private onItemClick: ((message: InboxMessage) => void) | null = null;
   private onCloseClick: ((message: InboxMessage) => void) | null = null;
 
   constructor(theme: CourierInboxTheme) {
-
-    console.log('theme', theme.indicatorColor);
-
     super();
+    this.theme = theme;
     const shadow = this.attachShadow({ mode: 'open' });
 
     this.titleElement = document.createElement('p');
@@ -41,11 +45,11 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: var(--courier-list-hover-color, #f3f4f6);
+        background-color: ${theme.listItem?.hoverColor ?? CourierColors.gray[200]};
       }
 
       :host(:active) {
-        background-color: var(--courier-list-active-color, #e5e7eb);
+        background-color: ${theme.listItem?.activeColor ?? CourierColors.gray[400]};
       }
 
       :host(:last-child) {
@@ -53,7 +57,7 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(.unread) {
-        box-shadow: inset 2px 0 0 ${theme.indicatorColor ?? '#0070f3'};
+        box-shadow: inset 2px 0 0 ${theme.listItem?.unreadIndicatorColor ?? CourierColors.blue[500]};
       }
 
       .content {
@@ -72,11 +76,12 @@ export class CourierListItem extends HTMLElement {
       p[part="title"] {
         font-size: 14px;
         line-height: 1.4;
+        color: ${theme.listItem?.titleColor ?? CourierColors.black[500]};
       }
 
       p[part="subtitle"] {
         font-size: 14px;
-        color: var(--courier-text-secondary, #6b7280);
+        color: ${theme.listItem?.subtitleColor ?? CourierColors.gray[500]};
         padding-top: 4px;
         line-height: 1.4;
       }
@@ -168,15 +173,14 @@ export class CourierListItem extends HTMLElement {
 
     // Add close button only for inbox feed type
     if (this.feedType === 'inbox') {
-      this.closeButton = new CourierIconButton('remove');
-      // Add click handler for close button
+      const removeIcon = CourierIconSource.remove;
+      this.closeButton = new CourierIconButton(removeIcon);
       this.closeButton.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent event from bubbling up
         if (this.message && this.onCloseClick) {
           this.onCloseClick(this.message);
         }
       });
-
       shadow.appendChild(this.closeButton);
     }
   }

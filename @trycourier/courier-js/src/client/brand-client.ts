@@ -31,6 +31,7 @@ export class BrandClient extends Client {
       url: this.options.urls.courier.graphql,
       headers: {
         'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty', // Empty for now. Will be removed in future.
         'Authorization': `Bearer ${this.options.accessToken}`
       },
       query,

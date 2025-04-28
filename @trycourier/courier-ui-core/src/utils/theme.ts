@@ -1,3 +1,21 @@
+export const CourierColors = {
+  black: {
+    500: '#0A0A0A',
+  },
+  gray: {
+    200: '#F5F5F5',
+    400: '#3A3A3A',
+    500: '#E5E5E5',
+  },
+  white: {
+    500: '#FFFFFF',
+  },
+  blue: {
+    400: '#60A5FA',
+    500: '#2563EB',
+  }
+};
+
 export interface Colors {
   primary: string;
   secondary: string;
@@ -16,11 +34,11 @@ export interface Theme {
 export const theme: { light: Theme, dark: Theme } = {
   light: {
     colors: {
-      primary: '#0A0A0A',
-      secondary: '#FFFFFF',
-      border: '#E5E5E5',
-      link: '#1D4ED8',
-      icon: '#0A0A0A'
+      primary: CourierColors.black[500],
+      secondary: CourierColors.white[500],
+      border: CourierColors.gray[500],
+      link: CourierColors.blue[500],
+      icon: CourierColors.black[500]
     },
     button: {
       cornerRadius: '4px'
@@ -28,11 +46,11 @@ export const theme: { light: Theme, dark: Theme } = {
   },
   dark: {
     colors: {
-      primary: '#FFFFFF',
-      secondary: '#0A0A0A',
-      border: '#3A3A3A',
-      link: '#60A5FA',
-      icon: '#FFFFFF'
+      primary: CourierColors.white[500],
+      secondary: CourierColors.black[500],
+      border: CourierColors.gray[400],
+      link: CourierColors.blue[400],
+      icon: CourierColors.white[500]
     },
     button: {
       cornerRadius: '4px'

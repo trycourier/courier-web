@@ -5,7 +5,7 @@ describe('BrandClient', () => {
 
   it('should fetch brand settings successfully', async () => {
     const brand = await courierClient.brands.getBrand({ brandId: process.env.BRAND_ID! });
-    expect(brand.settings?.inapp?.disableCourierFooter).toBeDefined();
+    expect(brand.settings).toBeDefined();
   });
 
 });

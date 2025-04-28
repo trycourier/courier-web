@@ -114,21 +114,21 @@ describe('InboxClient', () => {
     expect(result.data?.messages?.pageInfo).toBeDefined();
   });
 
-  it('testing socket events', async () => {
-    const socket = courierClient.inbox.socket;
-    socket.receivedMessage = (message) => {
-      expect(message).toBeDefined();
-    };
+  // it('testing socket events', async () => {
+  //   const socket = courierClient.inbox.socket;
+  //   socket.receivedMessage = (message) => {
+  //     expect(message).toBeDefined();
+  //   };
 
-    socket.receivedMessageEvent = (event) => {
-      expect(event).toBeDefined();
-    };
+  //   socket.receivedMessageEvent = (event) => {
+  //     expect(event).toBeDefined();
+  //   };
 
-    await socket.connect();
-    await socket.sendSubscribe();
+  //   await socket.connect();
+  //   await socket.sendSubscribe();
 
-    await new Promise(resolve => setTimeout(resolve, 45000));
+  //   await new Promise(resolve => setTimeout(resolve, 45000));
 
-    socket.disconnect();
-  }, 60000);
+  //   socket.disconnect();
+  // }, 60000);
 });

@@ -18,6 +18,7 @@ export * from './components/icon-button';
 export * from './components/courier-element';
 export * from './components/courier-system-theme-element';
 export * from './utils/system-theme-mode';
+export * from './utils/theme';
 
 // Define array of web components to register
 const components = [

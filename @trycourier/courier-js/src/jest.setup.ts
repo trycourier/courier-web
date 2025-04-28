@@ -9,7 +9,7 @@ dotenv.config({
 console.log('🔑 Environment variables:');
 console.log(JSON.stringify({
   USER_ID: process.env.USER_ID,
+  PUBLIC_API_KEY: process.env.PUBLIC_API_KEY,
   JWT: process.env.JWT,
-  CLIENT_KEY: process.env.CLIENT_KEY,
   TENANT_ID: process.env.TENANT_ID
 }, null, 2));

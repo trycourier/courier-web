@@ -23,9 +23,9 @@ export const CourierIconSource = {
 
 export class CourierIcon extends HTMLElement {
   private iconContainer: HTMLElement;
-  static observedAttributes = ['color', 'mode', 'size', 'icon', 'svg'];
+  static observedAttributes = ['color', 'svg'];
 
-  constructor() {
+  constructor(color?: string, svg?: string) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
     this.iconContainer = document.createElement('div');
@@ -44,18 +44,17 @@ export class CourierIcon extends HTMLElement {
         height: 24px;
         color: var(--courier-icon-color, ${theme.light.colors.icon});
       }
-
-      :host([mode="dark"]) svg {
-        color: var(--courier-icon-color, ${theme.dark.colors.icon});
-      }
     `;
 
     shadow.appendChild(style);
 
-    // Set initial attributes and icon
-    this.updateIcon();
-    this.updateColor();
-    this.updateMode();
+    // Set initial values from constructor
+    if (color) {
+      this.updateColor(color);
+    }
+    if (svg) {
+      this.updateSVG(svg);
+    }
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -63,45 +62,21 @@ export class CourierIcon extends HTMLElement {
 
     switch (name) {
       case 'color':
-        this.updateColor();
-        break;
-      case 'mode':
-        this.updateMode();
-        break;
-      case 'icon':
-        this.updateIcon();
+        this.updateColor(newValue);
         break;
       case 'svg':
-        this.updateIconElement(newValue);
+        this.updateSVG(newValue);
         break;
     }
   }
 
-  private updateIcon() {
-    const iconName = this.getAttribute('icon')?.toLowerCase();
-    if (iconName && iconName in CourierIconSource) {
-      this.updateIconElement(CourierIconSource[iconName as keyof typeof CourierIconSource]);
-    }
+  private updateColor(color: string) {
+    this.style.setProperty('--courier-icon-color', color);
   }
 
-  private updateIconElement(iconElement: string) {
+  private updateSVG(iconElement: string) {
     this.iconContainer.innerHTML = iconElement;
   }
-
-  private updateColor() {
-    const color = this.getAttribute('color');
-    if (color) {
-      this.iconContainer.style.setProperty('--courier-icon-color', color);
-    } else {
-      this.iconContainer.style.removeProperty('--courier-icon-color');
-    }
-  }
-
-  private updateMode() {
-    const mode = this.getAttribute('mode') || 'light';
-    this.setAttribute('mode', mode);
-  }
-
 }
 
 // Register the custom element
