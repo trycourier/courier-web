@@ -61,6 +61,7 @@ class CourierInboxMenuItem extends HTMLElement {
 
       p {
         margin: 0;
+        font-family: var(--courier-font-family);
         font-size: var(--courier-font-size, 14px);
       }
 
@@ -105,6 +106,8 @@ class CourierInboxMenuItem extends HTMLElement {
 
     // Set text color
     this.style.setProperty('--courier-text-primary', menuItem?.font?.color ?? CourierColors.black[500]);
+    this.style.setProperty('--courier-font-family', menuItem?.font?.family ?? null);
+    this.style.setProperty('--courier-font-size', menuItem?.font?.size ?? '14px');
 
     // Set hover and active colors
     this.style.setProperty('--courier-list-hover-color', menuItem?.hoverColor ?? CourierColors.gray[200]);
