@@ -2,8 +2,11 @@ import { theme } from "../utils/theme";
 import { CourierIcon } from "./icon";
 
 export class CourierIconButton extends HTMLElement {
+
+  // State
   private button: HTMLButtonElement;
-  private icon: HTMLElement;
+  private icon: CourierIcon;
+
   static observedAttributes = [
     'disabled',
     'background-color',
@@ -71,6 +74,15 @@ export class CourierIconButton extends HTMLElement {
     this.button.appendChild(this.icon);
     shadow.appendChild(this.button);
   }
+
+  updateColor(color: string) {
+    this.icon.updateColor(color);
+  }
+
+  updateSVG(svg: string) {
+    this.icon.updateSVG(svg);
+  }
+
 }
 
 if (!customElements.get('courier-icon-button')) {

@@ -20,6 +20,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   private _darkTheme: CourierInboxTheme = defaultDarkTheme;
 
   public set theme(value: CourierInboxTheme) {
+    this._header.setTheme(value);
     this._list.setTheme(value);
   }
 

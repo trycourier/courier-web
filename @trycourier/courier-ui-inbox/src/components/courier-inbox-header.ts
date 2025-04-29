@@ -1,8 +1,10 @@
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierButton, CourierIconSource, CourierElement } from "@trycourier/courier-ui-core";
+import { CourierIconSource, CourierElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierColors } from "@trycourier/courier-ui-core";
 
 export class CourierInboxHeader extends CourierElement {
 
@@ -31,7 +33,6 @@ export class CourierInboxHeader extends CourierElement {
   // Components
   private _titleSection?: CourierInboxHeaderTitle;
   private _optionMenu?: CourierInboxFilterMenu;
-  private _archiveButton?: CourierButton;
   private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
 
   constructor(props: { onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
@@ -43,8 +44,24 @@ export class CourierInboxHeader extends CourierElement {
     return ['icon', 'title', 'feed-type'];
   }
 
-  private handleArchiveClick() {
-    alert('We need to implement this');
+  setTheme(theme: CourierInboxTheme) {
+
+    // Update header styles
+    const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
+    if (header) {
+      header.style.backgroundColor = theme.header?.backgroundColor ?? CourierColors.white[500];
+      header.style.borderBottom = `${theme.header?.divider?.width ?? '1px'} solid ${theme.header?.divider?.color ?? CourierColors.gray[200]}`;
+    }
+
+    // Update title section theme
+    if (this._titleSection) {
+      this._titleSection.setTheme(theme);
+    }
+
+    // Update menu theme
+    if (this._optionMenu) {
+      this._optionMenu.setTheme(theme);
+    }
   }
 
   private handleOptionMenuClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
@@ -55,22 +72,13 @@ export class CourierInboxHeader extends CourierElement {
     this._onFeedTypeChange(feedType);
   }
 
-  private showArchiveButton(show: boolean) {
-    if (this._archiveButton) {
-      this._archiveButton.style.display = show ? 'block' : 'none';
-    }
-  }
-
   public refresh(props: CourierInboxHeaderFactoryProps): void {
-
     // Update state 
     this._feedType = props.feedType;
     this._unreadCount = props.unreadCount;
 
     // Update archive button
     const isInbox = props.feedType === 'inbox';
-    const hasMessages = props.messageCount > 0;
-    this.showArchiveButton(isInbox && hasMessages);
 
     // Update title section
     const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
@@ -78,7 +86,6 @@ export class CourierInboxHeader extends CourierElement {
       this._titleSection?.update(option, isInbox ? props.unreadCount : 0);
       this._optionMenu?.selectOption(option);
     }
-
   }
 
   build(newElement: HTMLElement | undefined | null) {
@@ -92,7 +99,6 @@ export class CourierInboxHeader extends CourierElement {
       }
     `;
     this.shadow?.appendChild(style);
-
   }
 
   defaultElement(): HTMLElement {
@@ -103,8 +109,8 @@ export class CourierInboxHeader extends CourierElement {
         align-items: center;
         justify-content: space-between;
         padding: 12px 16px;
-        background-color: var(--courier-header-bg, #ffffff);
-        border-bottom: 1px solid var(--courier-header-border, #e5e7eb);
+        background-color: ${CourierColors.white[500]};
+        border-bottom: 1px solid ${CourierColors.gray[200]};
       }
 
       .header-content {
@@ -134,15 +140,6 @@ export class CourierInboxHeader extends CourierElement {
     // Create and setup actions section
     const actions = document.createElement('div');
     actions.className = 'actions';
-
-    // Create and setup archive button
-    this._archiveButton = new CourierButton();
-    this._archiveButton.setAttributes({
-      variant: 'tertiary',
-    });
-    this._archiveButton.textContent = 'Archive All';
-    this._archiveButton.addEventListener('click', this.handleArchiveClick.bind(this));
-    actions.appendChild(this._archiveButton);
     actions.appendChild(this._optionMenu);
 
     const container = document.createElement('div');
@@ -151,9 +148,6 @@ export class CourierInboxHeader extends CourierElement {
     container.appendChild(this._titleSection);
     container.appendChild(spacer);
     container.appendChild(actions);
-
-    // Hide archive button by default
-    this.showArchiveButton(false);
 
     // Initialize title section with first menu option
     this._titleSection.update(this._menuOptions[0], this._unreadCount);

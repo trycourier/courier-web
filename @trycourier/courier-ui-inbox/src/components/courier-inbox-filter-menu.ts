@@ -1,4 +1,5 @@
-import { CourierIcon, CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxMenuOption = {
   label: string;
@@ -37,11 +38,11 @@ class CourierInboxMenuItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: var(--courier-list-hover-color, #f3f4f6);
+        background-color: var(--courier-list-hover-color, ${CourierColors.gray[200]});
       }
 
       :host(:active) {
-        background-color: var(--courier-list-active-color, #e5e7eb);
+        background-color: var(--courier-list-active-color, ${CourierColors.gray[500]});
       }
 
       .menu-item {
@@ -58,7 +59,7 @@ class CourierInboxMenuItem extends HTMLElement {
       p {
         margin: 0;
         font-size: 14px;
-        color: var(--courier-text-primary, #111827);
+        color: var(--courier-text-primary, ${CourierColors.black[500]});
       }
 
       .check-icon {
@@ -92,6 +93,14 @@ class CourierInboxMenuItem extends HTMLElement {
 
     this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
   }
+
+  public setTheme(theme: CourierInboxTheme, icon: string) {
+    this._itemIcon.updateSVG(icon);
+    this._itemIcon.updateColor(theme.header?.menu?.listItems?.iconColor ?? CourierColors.white[500]);
+    this._title.style.color = theme.header?.menu?.listItems?.color ?? CourierColors.white[500];
+    this._content.style.setProperty('--courier-list-hover-color', theme.header?.menu?.listItems?.hoverColor ?? CourierColors.white[500]);
+    this._content.style.setProperty('--courier-list-active-color', theme.header?.menu?.listItems?.activeColor ?? CourierColors.white[500]);
+  }
 }
 
 export class CourierInboxFilterMenu extends HTMLElement {
@@ -112,7 +121,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    this._menuButton = new CourierIconButton('filter');
+    this._menuButton = new CourierIconButton(CourierIconSource.filter);
     this._menu = document.createElement('div');
     this._menu.className = 'menu';
 
@@ -129,9 +138,9 @@ export class CourierInboxFilterMenu extends HTMLElement {
         top: 40px;
         right: -10px;
         border-radius: 6px;
-        border: 1px solid var(--Stroke-Subtle-Primary, #E5E5E5);
-        background: var(--Background-Default-Primary, #FFF);
-        box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--courier-border-color, ${CourierColors.gray[500]});
+        background: var(--courier-background-color, ${CourierColors.white[500]});
+        box-shadow: var(--courier-shadow, 0 4px 12px 0 ${CourierColors.gray[500]});
         z-index: 1000;
         min-width: 200px;
         overflow: hidden;
@@ -147,6 +156,26 @@ export class CourierInboxFilterMenu extends HTMLElement {
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
     this.setOptions(props.options);
+  }
+
+  public setTheme(theme: CourierInboxTheme) {
+    this._menuButton.updateColor(theme.header?.menu?.icon?.color ?? CourierColors.white[500]);
+    this._menuButton.updateSVG(theme.header?.menu?.icon?.svg ?? CourierIconSource.filter);
+    this._menu.style.backgroundColor = theme.header?.menu?.backgroundColor ?? CourierColors.white[500];
+    this._menu.style.borderColor = theme.header?.menu?.borderColor ?? CourierColors.gray[500];
+    this._menu.style.boxShadow = `${theme.header?.menu?.shadow?.offsetX ?? 0}px ${theme.header?.menu?.shadow?.offsetY ?? 0}px ${theme.header?.menu?.shadow?.blur ?? 10}px ${theme.header?.menu?.shadow?.color ?? CourierColors.gray[500]}`;
+
+    this._options.forEach((option, index) => {
+      const menuItem = this._menu.children[index] as CourierInboxMenuItem;
+      switch (option.label) {
+        case 'Inbox':
+          menuItem.setTheme(theme, theme.header?.menu?.listItems?.icons?.inboxSVG ?? CourierIconSource.inbox);
+          break;
+        case 'Archive':
+          menuItem.setTheme(theme, theme.header?.menu?.listItems?.icons?.archiveSVG ?? CourierIconSource.archive);
+          break;
+      }
+    });
   }
 
   public setOptions(options: CourierInboxMenuOption[]) {

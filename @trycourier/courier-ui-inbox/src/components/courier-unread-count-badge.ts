@@ -1,3 +1,6 @@
+import { CourierColors } from "@trycourier/courier-ui-core";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
+
 export class CourierUnreadCountBadge extends HTMLElement {
   private badge: HTMLElement;
   private count: number = 0;
@@ -19,7 +22,7 @@ export class CourierUnreadCountBadge extends HTMLElement {
       }
 
       .unread-badge {
-        background-color: var(--courier-primary, #0066FF);
+        background-color: ${CourierColors.blue[500]};
         color: white;
         border-radius: 12px;
         padding: 4px 8px;
@@ -37,6 +40,11 @@ export class CourierUnreadCountBadge extends HTMLElement {
   public setCount(count: number) {
     this.count = count;
     this.updateBadge();
+  }
+
+  public setTheme(theme: CourierInboxTheme) {
+    this.badge.style.backgroundColor = theme.header?.unreadIndicator?.backgroundColor ?? CourierColors.blue[500];
+    this.badge.style.color = theme.header?.unreadIndicator?.color ?? CourierColors.white[500];
   }
 
   private updateBadge() {

@@ -1,6 +1,7 @@
-import { CourierIcon } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export class CourierInboxHeaderTitle extends HTMLElement {
 
@@ -36,7 +37,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
         margin: 0;
         font-size: 18px;
         font-weight: 50;
-        color: var(--courier-text-primary, #111827);
+        color: ${CourierColors.black[500]};
       }
     `;
 
@@ -57,6 +58,24 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     shadow.appendChild(this._container);
 
     this.update(props.option, 0);
+  }
+
+  setTheme(theme: CourierInboxTheme) {
+
+    // Update title color
+    if (theme.header?.titleColor) {
+      this._titleElement.style.color = theme.header.titleColor;
+    }
+
+    // Update icon color
+    if (theme.header?.iconColor) {
+      this._iconElement.updateColor(theme.header.iconColor);
+    }
+
+    // Update unread badge color
+    if (theme.header?.unreadIndicator) {
+      this._unreadBadge.setTheme(theme);
+    }
   }
 
   public update(option: CourierInboxMenuOption, unreadCount: number) {

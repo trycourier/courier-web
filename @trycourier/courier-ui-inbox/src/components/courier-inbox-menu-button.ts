@@ -1,4 +1,4 @@
-import { CourierElement, CourierIconButton } from "@trycourier/courier-ui-core";
+import { CourierElement, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
 export class CourierInboxMenuButton extends CourierElement {
@@ -15,7 +15,7 @@ export class CourierInboxMenuButton extends CourierElement {
     this._container.className = 'menu-button-container';
 
     // Create trigger button
-    this._triggerButton = new CourierIconButton('inbox');
+    this._triggerButton = new CourierIconButton(CourierIconSource.inbox);
 
     // Create unread count badge
     this._unreadCountBadge = new CourierUnreadCountBadge();

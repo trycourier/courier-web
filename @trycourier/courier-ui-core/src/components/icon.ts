@@ -70,11 +70,11 @@ export class CourierIcon extends HTMLElement {
     }
   }
 
-  private updateColor(color: string) {
+  public updateColor(color: string) {
     this.style.setProperty('--courier-icon-color', color);
   }
 
-  private updateSVG(iconElement: string) {
+  public updateSVG(iconElement: string) {
     this.iconContainer.innerHTML = iconElement;
   }
 }
