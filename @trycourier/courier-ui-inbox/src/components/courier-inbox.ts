@@ -57,6 +57,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
 
     // Header
     this._header = new CourierInboxHeader({
+      theme: this.theme,
       onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
       }

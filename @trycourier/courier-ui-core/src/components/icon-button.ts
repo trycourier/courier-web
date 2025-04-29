@@ -43,17 +43,16 @@ export class CourierIconButton extends HTMLElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: transparent;
+        background: var(--courier-button-background-color, transparent);
+        transition: background-color 0.2s ease;
       }
 
       button:hover {
-        filter: brightness(0.9);
-        background-color: var(--courier-button-background-color, ${theme.light.colors.secondary});
+        background-color: var(--courier-button-hover-background-color, ${theme.light.colors.secondary});
       }
 
       button:active {
-        filter: brightness(0.8);
-        background-color: var(--courier-button-background-color, ${theme.light.colors.secondary});
+        background-color: var(--courier-button-active-background-color, ${theme.light.colors.secondary});
       }
 
       button:disabled {
@@ -75,12 +74,24 @@ export class CourierIconButton extends HTMLElement {
     shadow.appendChild(this.button);
   }
 
-  updateColor(color: string) {
+  updateIconColor(color: string) {
     this.icon.updateColor(color);
   }
 
-  updateSVG(svg: string) {
+  updateIconSVG(svg: string) {
     this.icon.updateSVG(svg);
+  }
+
+  updateBackgroundColor(color: string) {
+    this.button.style.setProperty('--courier-button-background-color', color);
+  }
+
+  updateHoverBackgroundColor(color: string) {
+    this.button.style.setProperty('--courier-button-hover-background-color', color);
+  }
+
+  updateActiveBackgroundColor(color: string) {
+    this.button.style.setProperty('--courier-button-active-background-color', color);
   }
 
 }

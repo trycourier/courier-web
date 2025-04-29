@@ -1,7 +1,9 @@
 import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxFeedType } from "../types/feed-type";
 
 export type CourierInboxMenuOption = {
+  id: CourierInboxFeedType;
   label: string;
   icon: string;
   onClick: (option: CourierInboxMenuOption) => void;
@@ -50,6 +52,7 @@ class CourierInboxMenuItem extends HTMLElement {
         align-items: center;
         width: 100%;
         gap: 12px;
+        color: var(--courier-text-primary, ${CourierColors.black[500]});
       }
 
       .spacer {
@@ -58,8 +61,7 @@ class CourierInboxMenuItem extends HTMLElement {
 
       p {
         margin: 0;
-        font-size: 14px;
-        color: var(--courier-text-primary, ${CourierColors.black[500]});
+        font-size: var(--courier-font-size, 14px);
       }
 
       .check-icon {
@@ -80,8 +82,7 @@ class CourierInboxMenuItem extends HTMLElement {
     const spacer = document.createElement('div');
     spacer.className = 'spacer';
 
-    this._checkIcon = new CourierIcon();
-    this._checkIcon.setAttribute('icon', 'check');
+    this._checkIcon = new CourierIcon(CourierIconSource.check);
 
     this._content.appendChild(this._itemIcon);
     this._content.appendChild(this._title);
@@ -92,15 +93,41 @@ class CourierInboxMenuItem extends HTMLElement {
     shadow.appendChild(this._content);
 
     this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
+
   }
 
-  public setTheme(theme: CourierInboxTheme, icon: string) {
-    this._itemIcon.updateSVG(icon);
-    this._itemIcon.updateColor(theme.header?.menu?.listItems?.iconColor ?? CourierColors.white[500]);
-    this._title.style.color = theme.header?.menu?.listItems?.color ?? CourierColors.white[500];
-    this._content.style.setProperty('--courier-list-hover-color', theme.header?.menu?.listItems?.hoverColor ?? CourierColors.white[500]);
-    this._content.style.setProperty('--courier-list-active-color', theme.header?.menu?.listItems?.activeColor ?? CourierColors.white[500]);
+  public setTheme(feedType: CourierInboxFeedType, theme?: CourierInboxTheme) {
+    if (!theme) {
+      return;
+    }
+
+    const menuItem = theme.header?.menu?.popup?.listItems;
+
+    // Set text color
+    this.style.setProperty('--courier-text-primary', menuItem?.font?.color ?? CourierColors.black[500]);
+
+    // Set hover and active colors
+    this.style.setProperty('--courier-list-hover-color', menuItem?.hoverColor ?? CourierColors.gray[200]);
+    this.style.setProperty('--courier-list-active-color', menuItem?.activeColor ?? CourierColors.gray[500]);
+
+    // Set selected icon color
+    this._checkIcon.updateColor(menuItem?.icons?.selected?.color ?? CourierColors.white[500]);
+    this._checkIcon.updateSVG(menuItem?.icons?.selected?.svg ?? CourierIconSource.inbox);
+
+    // Update icon based on feed type
+    switch (feedType) {
+      case 'inbox':
+        this._itemIcon.updateSVG(menuItem?.icons?.inboxSVG ?? CourierIconSource.inbox);
+        break;
+      case 'archive':
+        this._itemIcon.updateSVG(menuItem?.icons?.archiveSVG ?? CourierIconSource.archive);
+        break;
+    }
+
+    // Update icon color
+    this._itemIcon.updateColor(menuItem?.icons?.color ?? CourierColors.black[500]);
   }
+
 }
 
 export class CourierInboxFilterMenu extends HTMLElement {
@@ -108,6 +135,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
   // State
   private _options: CourierInboxMenuOption[];
   private _selectedIndex: number = 0;
+  private _theme?: CourierInboxTheme;
 
   // Components
   private _menuButton: CourierIconButton;
@@ -159,22 +187,25 @@ export class CourierInboxFilterMenu extends HTMLElement {
   }
 
   public setTheme(theme: CourierInboxTheme) {
-    this._menuButton.updateColor(theme.header?.menu?.icon?.color ?? CourierColors.white[500]);
-    this._menuButton.updateSVG(theme.header?.menu?.icon?.svg ?? CourierIconSource.filter);
-    this._menu.style.backgroundColor = theme.header?.menu?.backgroundColor ?? CourierColors.white[500];
-    this._menu.style.borderColor = theme.header?.menu?.borderColor ?? CourierColors.gray[500];
-    this._menu.style.boxShadow = `${theme.header?.menu?.shadow?.offsetX ?? 0}px ${theme.header?.menu?.shadow?.offsetY ?? 0}px ${theme.header?.menu?.shadow?.blur ?? 10}px ${theme.header?.menu?.shadow?.color ?? CourierColors.gray[500]}`;
+    this._theme = theme;
+    const menu = theme.header?.menu;
 
+    // Update menu button
+    this._menuButton.updateIconColor(menu?.button?.icon?.color ?? CourierColors.white[500]);
+    this._menuButton.updateIconSVG(menu?.button?.icon?.svg ?? CourierIconSource.filter);
+    this._menuButton.updateBackgroundColor(menu?.button?.backgroundColor ?? CourierColors.white[500]);
+    this._menuButton.updateHoverBackgroundColor(menu?.button?.hoverBackgroundColor ?? CourierColors.white[500]);
+    this._menuButton.updateActiveBackgroundColor(menu?.button?.activeBackgroundColor ?? CourierColors.white[500]);
+
+    // Update menu
+    this._menu.style.backgroundColor = menu?.popup?.backgroundColor ?? CourierColors.white[500];
+    this._menu.style.borderColor = menu?.popup?.borderColor ?? CourierColors.gray[500];
+    this._menu.style.boxShadow = `${menu?.popup?.shadow?.offsetX ?? 0}px ${menu?.popup?.shadow?.offsetY ?? 0}px ${menu?.popup?.shadow?.blur ?? 10}px ${menu?.popup?.shadow?.color ?? CourierColors.gray[500]}`;
+
+    // Update menu items
     this._options.forEach((option, index) => {
       const menuItem = this._menu.children[index] as CourierInboxMenuItem;
-      switch (option.label) {
-        case 'Inbox':
-          menuItem.setTheme(theme, theme.header?.menu?.listItems?.icons?.inboxSVG ?? CourierIconSource.inbox);
-          break;
-        case 'Archive':
-          menuItem.setTheme(theme, theme.header?.menu?.listItems?.icons?.archiveSVG ?? CourierIconSource.archive);
-          break;
-      }
+      menuItem.setTheme(option.id, theme);
     });
   }
 
@@ -188,6 +219,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
     this._options.forEach((option, index) => {
       const menuItem = new CourierInboxMenuItem({ option, isSelected: this._selectedIndex === index });
+      menuItem.setTheme(option.id, this._theme);
 
       menuItem.addEventListener('click', () => {
         this._selectedIndex = index;

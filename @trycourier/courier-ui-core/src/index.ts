@@ -19,6 +19,7 @@ export * from './components/courier-element';
 export * from './components/courier-system-theme-element';
 export * from './utils/system-theme-mode';
 export * from './utils/theme';
+export * from './utils/courier-colors';
 
 // Define array of web components to register
 const components = [

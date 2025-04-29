@@ -11,10 +11,12 @@ export class CourierInboxHeader extends CourierElement {
   // State
   private _feedType: CourierInboxFeedType = 'inbox';
   private _unreadCount: number = 0;
+  private _theme: CourierInboxTheme;
 
   // Menu options
   private _menuOptions: CourierInboxMenuOption[] = [
     {
+      id: 'inbox',
       label: 'Inbox',
       icon: CourierIconSource.inbox,
       onClick: (option: CourierInboxMenuOption) => {
@@ -22,6 +24,7 @@ export class CourierInboxHeader extends CourierElement {
       }
     },
     {
+      id: 'archive',
       label: 'Archive',
       icon: CourierIconSource.archive,
       onClick: (option: CourierInboxMenuOption) => {
@@ -35,9 +38,10 @@ export class CourierInboxHeader extends CourierElement {
   private _optionMenu?: CourierInboxFilterMenu;
   private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
 
-  constructor(props: { onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
+  constructor(props: { theme: CourierInboxTheme, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
     this._onFeedTypeChange = props.onFeedTypeChange;
+    this._theme = props.theme;
   }
 
   static get observedAttributes() {
@@ -50,7 +54,7 @@ export class CourierInboxHeader extends CourierElement {
     const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
     if (header) {
       header.style.backgroundColor = theme.header?.backgroundColor ?? CourierColors.white[500];
-      header.style.borderBottom = `${theme.header?.divider?.width ?? '1px'} solid ${theme.header?.divider?.color ?? CourierColors.gray[200]}`;
+      header.style.boxShadow = `${theme.header?.shadow?.offsetX ?? 0}px ${theme.header?.shadow?.offsetY ?? 0}px ${theme.header?.shadow?.blur ?? 0}px ${theme.header?.shadow?.color ?? CourierColors.gray[500]}`;
     }
 
     // Update title section theme
@@ -110,7 +114,7 @@ export class CourierInboxHeader extends CourierElement {
         justify-content: space-between;
         padding: 12px 16px;
         background-color: ${CourierColors.white[500]};
-        border-bottom: 1px solid ${CourierColors.gray[200]};
+        box-shadow: 0px 4px 8px 0px ${CourierColors.gray[500]};
       }
 
       .header-content {
