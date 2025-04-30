@@ -11,7 +11,6 @@ export class CourierInboxHeader extends CourierElement {
   // State
   private _feedType: CourierInboxFeedType = 'inbox';
   private _unreadCount: number = 0;
-  private _theme: CourierInboxTheme;
 
   // Menu options
   private _menuOptions: CourierInboxMenuOption[] = [
@@ -41,7 +40,6 @@ export class CourierInboxHeader extends CourierElement {
   constructor(props: { theme: CourierInboxTheme, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
     this._onFeedTypeChange = props.onFeedTypeChange;
-    this._theme = props.theme;
   }
 
   static get observedAttributes() {
@@ -59,7 +57,7 @@ export class CourierInboxHeader extends CourierElement {
 
     // Update title section theme
     if (this._titleSection) {
-      this._titleSection.setTheme(theme);
+      this._titleSection.setTheme(theme, this._feedType);
     }
 
     // Update menu theme
@@ -71,7 +69,7 @@ export class CourierInboxHeader extends CourierElement {
   private handleOptionMenuClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
     this._feedType = feedType;
     if (this._titleSection) {
-      this._titleSection.update(option, this._feedType === 'inbox' ? this._unreadCount : 0);
+      this._titleSection.update(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
     }
     this._onFeedTypeChange(feedType);
   }
@@ -87,7 +85,7 @@ export class CourierInboxHeader extends CourierElement {
     // Update title section
     const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
     if (option) {
-      this._titleSection?.update(option, isInbox ? props.unreadCount : 0);
+      this._titleSection?.update(option, this._feedType, isInbox ? props.unreadCount : 0);
       this._optionMenu?.selectOption(option);
     }
   }
@@ -154,7 +152,7 @@ export class CourierInboxHeader extends CourierElement {
     container.appendChild(actions);
 
     // Initialize title section with first menu option
-    this._titleSection.update(this._menuOptions[0], this._unreadCount);
+    this._titleSection.update(this._menuOptions[0], this._feedType, this._unreadCount);
 
     return container;
   }

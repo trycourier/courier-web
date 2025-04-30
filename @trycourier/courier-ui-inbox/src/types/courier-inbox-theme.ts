@@ -1,27 +1,46 @@
 import { CourierColors, CourierIconSource } from "@trycourier/courier-ui-core";
 
+export type CourierInboxFont = {
+  family?: string;
+  weight?: string;
+  size?: string;
+  color?: string;
+}
+
+export type CourierInboxIcon = {
+  color?: string;
+  svg?: string;
+}
+
 export type CourierInboxTheme = {
   backgroundColor?: string;
   header?: {
     backgroundColor?: string;
-    titleColor?: string;
-    iconColor?: string;
-    unreadIndicator?: {
-      color?: string;
-      backgroundColor?: string;
-    }
     shadow?: {
       color?: string;
       offsetX?: number;
       offsetY?: number;
       blur?: number;
     }
+    filters?: {
+      font?: CourierInboxFont;
+      inbox?: {
+        icon?: CourierInboxIcon;
+        title?: string;
+      }
+      archive?: {
+        icon?: CourierInboxIcon;
+        title?: string;
+      }
+      unreadIndicator?: {
+        font?: CourierInboxFont;
+        backgroundColor?: string;
+        borderRadius?: string;
+      }
+    }
     menu?: {
       button?: {
-        icon?: {
-          color?: string;
-          svg?: string;
-        }
+        icon?: CourierInboxIcon;
         backgroundColor?: string;
         hoverBackgroundColor?: string;
         activeBackgroundColor?: string;
@@ -40,16 +59,9 @@ export type CourierInboxTheme = {
         listItems?: {
           hoverColor?: string;
           activeColor?: string;
-          font?: {
-            family?: string;
-            color?: string;
-            size?: string;
-          }
+          font?: CourierInboxFont;
           icons?: {
-            selected?: {
-              color?: string;
-              svg?: string;
-            }
+            selected?: CourierInboxIcon;
             color?: string;
             inboxSVG?: string;
             archiveSVG?: string;
@@ -77,17 +89,41 @@ export const defaultLightTheme: CourierInboxTheme = {
   backgroundColor: CourierColors.white[500],
   header: {
     backgroundColor: CourierColors.white[500],
-    titleColor: CourierColors.black[500],
-    iconColor: CourierColors.black[500],
     shadow: {
       color: CourierColors.gray[500],
       offsetX: 0,
       offsetY: 1,
       blur: 0
     },
-    unreadIndicator: {
-      color: CourierColors.white[500],
-      backgroundColor: CourierColors.blue[500]
+    filters: {
+      font: {
+        color: CourierColors.black[500],
+        family: undefined,
+        size: '18px'
+      },
+      inbox: {
+        icon: {
+          color: CourierColors.black[500],
+          svg: CourierIconSource.inbox
+        },
+        title: 'Inbox'
+      },
+      archive: {
+        icon: {
+          color: CourierColors.black[500],
+          svg: CourierIconSource.archive
+        },
+        title: 'Archive'
+      },
+      unreadIndicator: {
+        font: {
+          color: CourierColors.white[500],
+          family: undefined,
+          size: '14px'
+        },
+        backgroundColor: CourierColors.blue[500],
+        borderRadius: '12px'
+      },
     },
     menu: {
       button: {
@@ -150,17 +186,41 @@ export const defaultDarkTheme: CourierInboxTheme = {
   backgroundColor: CourierColors.black[500],
   header: {
     backgroundColor: CourierColors.black[500],
-    titleColor: CourierColors.white[500],
-    iconColor: CourierColors.white[500],
-    unreadIndicator: {
-      color: CourierColors.white[500],
-      backgroundColor: CourierColors.blue[500]
-    },
     shadow: {
       color: CourierColors.gray[400],
       offsetX: 0,
       offsetY: 1,
       blur: 0
+    },
+    filters: {
+      font: {
+        color: CourierColors.white[500],
+        family: undefined,
+        size: '18px'
+      },
+      inbox: {
+        icon: {
+          color: CourierColors.white[500],
+          svg: CourierIconSource.inbox
+        },
+        title: 'Inbox'
+      },
+      archive: {
+        icon: {
+          color: CourierColors.white[500],
+          svg: CourierIconSource.archive
+        },
+        title: 'Archive'
+      },
+      unreadIndicator: {
+        font: {
+          color: CourierColors.white[500],
+          family: undefined,
+          size: '14px'
+        },
+        backgroundColor: CourierColors.blue[500],
+        borderRadius: '12px'
+      },
     },
     menu: {
       button: {
