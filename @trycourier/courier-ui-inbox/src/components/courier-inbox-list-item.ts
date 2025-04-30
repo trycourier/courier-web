@@ -35,7 +35,7 @@ export class CourierListItem extends HTMLElement {
         display: flex;
         align-items: flex-start;
         padding: 16px;
-        border-bottom: 1px solid ${theme.listItem?.divider?.color ?? CourierColors.gray[200]};
+        border-bottom: ${theme.listItem?.divider?.width ?? '1px'} solid ${theme.listItem?.divider?.color ?? CourierColors.gray[200]};
         font-family: inherit;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -74,14 +74,16 @@ export class CourierListItem extends HTMLElement {
       }
 
       p[part="title"] {
-        font-size: 14px;
+        font-family: ${theme.listItem?.title?.family ?? 'inherit'};
+        font-size: ${theme.listItem?.title?.size ?? '14px'};
         line-height: 1.4;
-        color: ${theme.listItem?.titleColor ?? CourierColors.black[500]};
+        color: ${theme.listItem?.title?.color ?? CourierColors.black[500]};
       }
 
       p[part="subtitle"] {
-        font-size: 14px;
-        color: ${theme.listItem?.subtitleColor ?? CourierColors.gray[500]};
+        font-family: ${theme.listItem?.subtitle?.family ?? 'inherit'};
+        font-size: ${theme.listItem?.subtitle?.size ?? '14px'};
+        color: ${theme.listItem?.subtitle?.color ?? CourierColors.gray[500]};
         padding-top: 4px;
         line-height: 1.4;
       }
@@ -173,7 +175,7 @@ export class CourierListItem extends HTMLElement {
 
     // Add close button only for inbox feed type
     if (this.feedType === 'inbox') {
-      this.closeButton = new CourierIconButton(CourierIconSource.remove, this.theme.listItem?.archiveIconColor);
+      this.closeButton = new CourierIconButton(CourierIconSource.remove, this.theme.listItem?.archiveIcon?.color);
       this.closeButton.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent event from bubbling up
         if (this.message && this.onCloseClick) {

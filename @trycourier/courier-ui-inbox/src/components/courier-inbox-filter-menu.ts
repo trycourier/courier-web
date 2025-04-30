@@ -114,21 +114,22 @@ class CourierInboxMenuItem extends HTMLElement {
     this.style.setProperty('--courier-list-active-color', menuItem?.activeColor ?? CourierColors.gray[500]);
 
     // Set selected icon color
-    this._checkIcon.updateColor(menuItem?.icons?.selected?.color ?? CourierColors.white[500]);
-    this._checkIcon.updateSVG(menuItem?.icons?.selected?.svg ?? CourierIconSource.inbox);
+    this._checkIcon.updateColor(menuItem?.selectionIcon?.color ?? CourierColors.white[500]);
+    this._checkIcon.updateSVG(menuItem?.selectionIcon?.svg ?? CourierIconSource.inbox);
 
     // Update icon based on feed type
     switch (feedType) {
       case 'inbox':
-        this._itemIcon.updateSVG(menuItem?.icons?.inboxSVG ?? CourierIconSource.inbox);
+        this._title.textContent = menuItem?.inbox?.title ?? 'Inbox';
+        this._itemIcon.updateSVG(menuItem?.inbox?.icon?.svg ?? CourierIconSource.inbox);
+        this._itemIcon.updateColor(menuItem?.inbox?.icon?.color ?? CourierColors.black[500]);
         break;
       case 'archive':
-        this._itemIcon.updateSVG(menuItem?.icons?.archiveSVG ?? CourierIconSource.archive);
+        this._title.textContent = menuItem?.archive?.title ?? 'Archive';
+        this._itemIcon.updateSVG(menuItem?.archive?.icon?.svg ?? CourierIconSource.archive);
+        this._itemIcon.updateColor(menuItem?.archive?.icon?.color ?? CourierColors.black[500]);
         break;
     }
-
-    // Update icon color
-    this._itemIcon.updateColor(menuItem?.icons?.color ?? CourierColors.black[500]);
   }
 
 }
@@ -168,14 +169,22 @@ export class CourierInboxFilterMenu extends HTMLElement {
         position: absolute;
         top: 40px;
         right: -10px;
-        border-radius: 6px;
-        border: 1px solid var(--courier-border-color, ${CourierColors.gray[500]});
+        border-radius: var(--courier-border-radius, 6px);
+        border: var(--courier-border-width, 1px) solid var(--courier-border-color, ${CourierColors.gray[500]});
         background: var(--courier-background-color, ${CourierColors.white[500]});
         box-shadow: var(--courier-shadow, 0 4px 12px 0 ${CourierColors.gray[500]});
         z-index: 1000;
         min-width: 200px;
         overflow: hidden;
         padding: 4px 0;
+      }
+
+      courier-inbox-menu-item {
+        border-bottom: var(--courier-divider-width, 0px) solid var(--courier-divider-color, ${CourierColors.gray[500]});
+      }
+
+      courier-inbox-menu-item:last-child {
+        border-bottom: none;
       }
     `;
 
@@ -201,9 +210,13 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menuButton.updateActiveBackgroundColor(menu?.button?.activeBackgroundColor ?? CourierColors.white[500]);
 
     // Update menu
-    this._menu.style.backgroundColor = menu?.popup?.backgroundColor ?? CourierColors.white[500];
-    this._menu.style.borderColor = menu?.popup?.borderColor ?? CourierColors.gray[500];
-    this._menu.style.boxShadow = `${menu?.popup?.shadow?.offsetX ?? 0}px ${menu?.popup?.shadow?.offsetY ?? 0}px ${menu?.popup?.shadow?.blur ?? 10}px ${menu?.popup?.shadow?.color ?? CourierColors.gray[500]}`;
+    this.style.setProperty('--courier-divider-width', menu?.popup?.listItems?.divider?.width ?? '0px');
+    this.style.setProperty('--courier-divider-color', menu?.popup?.listItems?.divider?.color ?? 'transparent');
+    this.style.setProperty('--courier-border-radius', menu?.popup?.borderRadius ?? '6px');
+    this.style.setProperty('--courier-background-color', menu?.popup?.backgroundColor ?? CourierColors.white[500]);
+    this.style.setProperty('--courier-border-color', menu?.popup?.borderColor ?? CourierColors.gray[500]);
+    this.style.setProperty('--courier-border-width', menu?.popup?.borderWidth ?? '1px');
+    this.style.setProperty('--courier-shadow', `${menu?.popup?.shadow?.offsetX ?? 0}px ${menu?.popup?.shadow?.offsetY ?? 0}px ${menu?.popup?.shadow?.blur ?? 10}px ${menu?.popup?.shadow?.color ?? CourierColors.gray[500]}`);
 
     // Update menu items
     this._options.forEach((option, index) => {

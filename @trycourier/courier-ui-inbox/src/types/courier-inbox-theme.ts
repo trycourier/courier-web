@@ -60,11 +60,18 @@ export type CourierInboxTheme = {
           hoverColor?: string;
           activeColor?: string;
           font?: CourierInboxFont;
-          icons?: {
-            selected?: CourierInboxIcon;
+          selectionIcon?: CourierInboxIcon;
+          divider?: {
             color?: string;
-            inboxSVG?: string;
-            archiveSVG?: string;
+            width?: string;
+          }
+          inbox?: {
+            icon?: CourierInboxIcon;
+            title?: string;
+          }
+          archive?: {
+            icon?: CourierInboxIcon;
+            title?: string;
           }
         }
       }
@@ -74,10 +81,10 @@ export type CourierInboxTheme = {
     unreadIndicatorColor?: string;
     hoverColor?: string;
     activeColor?: string;
-    titleColor?: string;
-    subtitleColor?: string;
-    timeColor?: string;
-    archiveIconColor?: string;
+    title?: CourierInboxFont;
+    subtitle?: CourierInboxFont;
+    time?: CourierInboxFont;
+    archiveIcon?: CourierInboxIcon;
     divider?: {
       color?: string;
       width?: string;
@@ -141,7 +148,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         borderWidth: '1px',
         borderRadius: '4px',
         shadow: {
-          color: CourierColors.gray[500],
+          color: CourierColors.black[500_10],
           offsetX: 0,
           offsetY: 4,
           blur: 8
@@ -149,19 +156,32 @@ export const defaultLightTheme: CourierInboxTheme = {
         listItems: {
           hoverColor: CourierColors.gray[200],
           activeColor: CourierColors.gray[500],
+          divider: {
+            color: undefined,
+            width: '0px'
+          },
           font: {
             color: CourierColors.black[500],
             family: undefined,
             size: '14px'
           },
-          icons: {
-            selected: {
-              color: CourierColors.black[500],
-              svg: CourierIconSource.check
-            },
+          selectionIcon: {
             color: CourierColors.black[500],
-            inboxSVG: CourierIconSource.inbox,
-            archiveSVG: CourierIconSource.archive
+            svg: CourierIconSource.check
+          },
+          inbox: {
+            icon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSource.inbox
+            },
+            title: 'Inbox'
+          },
+          archive: {
+            icon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSource.archive
+            },
+            title: 'Archive'
           }
         }
       }
@@ -171,10 +191,21 @@ export const defaultLightTheme: CourierInboxTheme = {
     unreadIndicatorColor: CourierColors.blue[500],
     hoverColor: CourierColors.gray[200],
     activeColor: CourierColors.gray[500],
-    titleColor: CourierColors.black[500],
-    subtitleColor: CourierColors.gray[600],
-    timeColor: CourierColors.gray[500],
-    archiveIconColor: CourierColors.black[500],
+    title: {
+      color: CourierColors.black[500],
+      family: undefined,
+      size: '14px'
+    },
+    subtitle: {
+      color: CourierColors.gray[600],
+      family: undefined,
+      size: '14px'
+    },
+    time: {
+      color: CourierColors.gray[500],
+      family: undefined,
+      size: '12px'
+    },
     divider: {
       color: CourierColors.gray[200],
       width: '1px'
@@ -246,19 +277,32 @@ export const defaultDarkTheme: CourierInboxTheme = {
         listItems: {
           hoverColor: CourierColors.white[500_10],
           activeColor: CourierColors.white[500_20],
+          divider: {
+            color: undefined,
+            width: '0px'
+          },
           font: {
             color: CourierColors.white[500],
             family: undefined,
             size: '14px'
           },
-          icons: {
-            selected: {
-              color: CourierColors.white[500],
-              svg: CourierIconSource.check
-            },
+          selectionIcon: {
             color: CourierColors.white[500],
-            inboxSVG: CourierIconSource.inbox,
-            archiveSVG: CourierIconSource.archive
+            svg: CourierIconSource.check
+          },
+          inbox: {
+            icon: {
+              color: CourierColors.white[500],
+              svg: CourierIconSource.inbox
+            },
+            title: 'Inbox'
+          },
+          archive: {
+            icon: {
+              color: CourierColors.white[500],
+              svg: CourierIconSource.archive
+            },
+            title: 'Archive'
           }
         }
       }
@@ -266,12 +310,23 @@ export const defaultDarkTheme: CourierInboxTheme = {
   },
   listItem: {
     unreadIndicatorColor: CourierColors.blue[500],
-    hoverColor: CourierColors.gray[400],
-    activeColor: CourierColors.gray[500],
-    titleColor: CourierColors.white[500],
-    subtitleColor: CourierColors.gray[500],
-    timeColor: CourierColors.gray[500],
-    archiveIconColor: CourierColors.white[500],
+    hoverColor: CourierColors.white[500_10],
+    activeColor: CourierColors.white[500_20],
+    title: {
+      color: CourierColors.white[500],
+      family: undefined,
+      size: '14px'
+    },
+    subtitle: {
+      color: CourierColors.gray[500],
+      family: undefined,
+      size: '14px'
+    },
+    time: {
+      color: CourierColors.gray[500],
+      family: undefined,
+      size: '12px'
+    },
     divider: {
       color: CourierColors.gray[400],
       width: '1px'
