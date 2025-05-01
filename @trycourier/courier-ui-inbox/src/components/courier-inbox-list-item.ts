@@ -1,9 +1,10 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierIcon, CourierIconButton, CourierIconSource, CourierSystemThemeElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { getFallbackTheme } from "../utils/theme";
 
-export class CourierListItem extends HTMLElement {
+export class CourierListItem extends CourierSystemThemeElement {
   // State
   private theme: CourierInboxTheme;
   private message: InboxMessage | null = null;
@@ -32,13 +33,14 @@ export class CourierListItem extends HTMLElement {
     const style = document.createElement('style');
 
     const listItem = theme.inbox?.list?.item;
+    const fallbackTheme = getFallbackTheme(this.currentSystemTheme);
 
     style.textContent = `
       :host {
         display: flex;
         align-items: flex-start;
         padding: 16px;
-        border-bottom: ${listItem?.divider ?? `1px solid ${CourierColors.gray[200]}`};
+        border-bottom: ${listItem?.divider ?? fallbackTheme.inbox?.list?.item?.divider};
         font-family: inherit;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -48,11 +50,11 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: ${listItem?.hoverColor ?? CourierColors.gray[200]};
+        background-color: ${listItem?.hoverColor ?? fallbackTheme.inbox?.list?.item?.hoverColor};
       }
 
       :host(:active) {
-        background-color: ${listItem?.activeColor ?? CourierColors.gray[400]};
+        background-color: ${listItem?.activeColor ?? fallbackTheme.inbox?.list?.item?.activeColor};
       }
 
       :host(:last-child) {
@@ -60,7 +62,7 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(.unread) {
-        box-shadow: inset 2px 0 0 ${listItem?.unreadIndicatorColor ?? CourierColors.blue[500]};
+        box-shadow: inset 2px 0 0 ${listItem?.unreadIndicatorColor ?? fallbackTheme.inbox?.list?.item?.unreadIndicatorColor};
       }
 
       .content {
@@ -77,16 +79,16 @@ export class CourierListItem extends HTMLElement {
       }
 
       p[part="title"] {
-        font-family: ${listItem?.title?.family ?? 'inherit'};
-        font-size: ${listItem?.title?.size ?? '14px'};
+        font-family: ${listItem?.title?.family ?? fallbackTheme.inbox?.list?.item?.title?.family};
+        font-size: ${listItem?.title?.size ?? fallbackTheme.inbox?.list?.item?.title?.size};
         line-height: 1.4;
-        color: ${listItem?.title?.color ?? CourierColors.black[500]};
+        color: ${listItem?.title?.color ?? fallbackTheme.inbox?.list?.item?.title?.color};
       }
 
       p[part="subtitle"] {
-        font-family: ${listItem?.subtitle?.family ?? 'inherit'};
-        font-size: ${listItem?.subtitle?.size ?? '14px'};
-        color: ${listItem?.subtitle?.color ?? CourierColors.gray[500]};
+        font-family: ${listItem?.subtitle?.family ?? fallbackTheme.inbox?.list?.item?.subtitle?.family};
+        font-size: ${listItem?.subtitle?.size ?? fallbackTheme.inbox?.list?.item?.subtitle?.size};
+        color: ${listItem?.subtitle?.color ?? fallbackTheme.inbox?.list?.item?.subtitle?.color};
         padding-top: 4px;
         line-height: 1.4;
       }

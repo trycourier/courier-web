@@ -1,13 +1,14 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierColors, CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierInfoState, CourierLoadingState, CourierSystemThemeElement } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
+import { getFallbackTheme } from "../utils/theme";
 
-export class CourierInboxList extends HTMLElement {
+export class CourierInboxList extends CourierSystemThemeElement {
 
   // Theme
   private _theme: CourierInboxTheme = defaultLightTheme;
@@ -59,14 +60,11 @@ export class CourierInboxList extends HTMLElement {
   }
 
   private getStyles(): string {
-
-    const list = this._theme.inbox?.list;
-
     return `
       :host {
         flex: 1;
         width: 100%;
-        background-color: ${list?.backgroundColor ?? CourierColors.white[500]};
+        background-color: ${this._theme.inbox?.list?.backgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.list?.backgroundColor};
       }
 
       ul {

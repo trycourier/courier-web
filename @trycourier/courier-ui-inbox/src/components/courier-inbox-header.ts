@@ -5,6 +5,7 @@ import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierColors } from "@trycourier/courier-ui-core";
+import { getFallbackTheme } from "../utils/theme";
 
 export class CourierInboxHeader extends CourierElement {
 
@@ -51,8 +52,8 @@ export class CourierInboxHeader extends CourierElement {
     // Update header styles
     const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
     if (header) {
-      header.style.backgroundColor = theme.inbox?.header?.backgroundColor ?? CourierColors.white[500];
-      header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`;
+      header.style.backgroundColor = theme.inbox?.header?.backgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.backgroundColor ?? CourierColors.white[500];
+      header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.shadow}`;
     }
 
     // Update title section theme

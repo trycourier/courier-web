@@ -1,6 +1,7 @@
-import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource, CourierSystemThemeElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { getFallbackTheme } from "../utils/theme";
 
 export type CourierInboxMenuOption = {
   id: CourierInboxFeedType;
@@ -9,7 +10,7 @@ export type CourierInboxMenuOption = {
   onClick: (option: CourierInboxMenuOption) => void;
 };
 
-class CourierInboxMenuItem extends HTMLElement {
+class CourierInboxMenuItem extends CourierSystemThemeElement {
 
   // State
   private _option: CourierInboxMenuOption;
@@ -39,11 +40,11 @@ class CourierInboxMenuItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: var(--hover-color, ${CourierColors.gray[200]});
+        background-color: var(--hover-color, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.hoverColor ?? CourierColors.gray[200]});
       }
 
       :host(:active) {
-        background-color: var(--active-color, ${CourierColors.gray[500]});
+        background-color: var(--active-color, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.activeColor ?? CourierColors.gray[500]});
       }
 
       .menu-item {
@@ -51,7 +52,7 @@ class CourierInboxMenuItem extends HTMLElement {
         align-items: center;
         width: 100%;
         gap: 12px;
-        color: var(--text-color, ${CourierColors.black[500]});
+        color: var(--text-color, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.font?.color ?? CourierColors.black[500]});
       }
 
       .spacer {
@@ -61,7 +62,7 @@ class CourierInboxMenuItem extends HTMLElement {
       p {
         margin: 0;
         font-family: var(--font-family);
-        font-size: var(--font-size, 14px);
+        font-size: var(--font-size, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.font?.size ?? '14px'});
       }
 
       .check-icon {
@@ -104,36 +105,36 @@ class CourierInboxMenuItem extends HTMLElement {
     const list = theme.inbox?.header?.menu?.popup?.list;
 
     // Set text color
-    this.style.setProperty('--text-color', list?.font?.color ?? CourierColors.black[500]);
-    this.style.setProperty('--font-family', list?.font?.family ?? null);
-    this.style.setProperty('--font-size', list?.font?.size ?? '14px');
+    this.style.setProperty('--text-color', list?.font?.color ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.font?.color ?? CourierColors.black[500]);
+    this.style.setProperty('--font-family', list?.font?.family ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.font?.family ?? null);
+    this.style.setProperty('--font-size', list?.font?.size ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.font?.size ?? '14px');
 
     // Set hover and active colors
-    this.style.setProperty('--hover-color', list?.hoverColor ?? CourierColors.gray[200]);
-    this.style.setProperty('--active-color', list?.activeColor ?? CourierColors.gray[500]);
+    this.style.setProperty('--hover-color', list?.hoverColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.hoverColor ?? CourierColors.gray[200]);
+    this.style.setProperty('--active-color', list?.activeColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.activeColor ?? CourierColors.gray[500]);
 
     // Set selected icon color
-    this._checkIcon.updateColor(theme.inbox?.header?.menu?.popup?.list?.selectionIcon?.color ?? CourierColors.black[500]);
-    this._checkIcon.updateSVG(theme.inbox?.header?.menu?.popup?.list?.selectionIcon?.svg ?? CourierIconSource.check);
+    this._checkIcon.updateColor(list?.selectionIcon?.color ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.selectionIcon?.color ?? CourierColors.black[500]);
+    this._checkIcon.updateSVG(list?.selectionIcon?.svg ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.selectionIcon?.svg ?? CourierIconSource.check);
 
     // Update icon based on feed type
     switch (feedType) {
       case 'inbox':
         this._title.textContent = list?.items?.inbox?.title ?? 'Inbox';
-        this._itemIcon.updateSVG(list?.items?.inbox?.icon?.svg ?? CourierIconSource.inbox);
-        this._itemIcon.updateColor(list?.items?.inbox?.icon?.color ?? CourierColors.black[500]);
+        this._itemIcon.updateSVG(list?.items?.inbox?.icon?.svg ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.items?.inbox?.icon?.svg ?? CourierIconSource.inbox);
+        this._itemIcon.updateColor(list?.items?.inbox?.icon?.color ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.items?.inbox?.icon?.color ?? CourierColors.black[500]);
         break;
       case 'archive':
         this._title.textContent = list?.items?.archive?.title ?? 'Archive';
-        this._itemIcon.updateSVG(list?.items?.archive?.icon?.svg ?? CourierIconSource.archive);
-        this._itemIcon.updateColor(list?.items?.archive?.icon?.color ?? CourierColors.black[500]);
+        this._itemIcon.updateSVG(list?.items?.archive?.icon?.svg ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.items?.archive?.icon?.svg ?? CourierIconSource.archive);
+        this._itemIcon.updateColor(list?.items?.archive?.icon?.color ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.items?.archive?.icon?.color ?? CourierColors.black[500]);
         break;
     }
   }
 
 }
 
-export class CourierInboxFilterMenu extends HTMLElement {
+export class CourierInboxFilterMenu extends CourierSystemThemeElement {
 
   // State
   private _selectedIndex: number = 0;
@@ -168,10 +169,10 @@ export class CourierInboxFilterMenu extends HTMLElement {
         position: absolute;
         top: 42px;
         right: -6px;
-        border-radius: var(--menu-border-radius, 6px);
-        border: var(--menu-border, 1px solid ${CourierColors.gray[500]});
-        background: var(--menu-background-color, ${CourierColors.white[500]});
-        box-shadow: var(--menu-shadow, 0 4px 12px 0 ${CourierColors.gray[500]});
+        border-radius: var(--menu-border-radius, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.borderRadius ?? '6px'});
+        border: var(--menu-border, 1px solid ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.border ?? `1px solid ${CourierColors.gray[500]}`});
+        background: var(--menu-background-color, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.backgroundColor ?? CourierColors.white[500]});
+        box-shadow: var(--menu-shadow, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.shadow ?? `0 4px 12px 0 ${CourierColors.gray[500]}`});
         z-index: 1000;
         min-width: 200px;
         overflow: hidden;
@@ -179,7 +180,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
       }
 
       courier-inbox-menu-item {
-        border-bottom: var(--menu-divider, none);
+        border-bottom: var(--menu-divider, ${getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.divider ?? `transparent`});
       }
 
       courier-inbox-menu-item:last-child {
@@ -203,19 +204,19 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
     // Update menu button
     const button = menu?.button;
-    this._menuButton.updateIconColor(button?.icon?.color ?? CourierColors.black[500]);
-    this._menuButton.updateIconSVG(button?.icon?.svg ?? CourierIconSource.filter);
-    this._menuButton.updateBackgroundColor(button?.backgroundColor ?? 'transparent');
-    this._menuButton.updateHoverBackgroundColor(button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
-    this._menuButton.updateActiveBackgroundColor(button?.activeBackgroundColor ?? CourierColors.black[500_20]);
+    this._menuButton.updateIconColor(button?.icon?.color ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.button?.icon?.color ?? CourierColors.black[500]);
+    this._menuButton.updateIconSVG(button?.icon?.svg ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.button?.icon?.svg ?? CourierIconSource.filter);
+    this._menuButton.updateBackgroundColor(button?.backgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.button?.backgroundColor ?? 'transparent');
+    this._menuButton.updateHoverBackgroundColor(button?.hoverBackgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
+    this._menuButton.updateActiveBackgroundColor(button?.activeBackgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
 
     // Update menu
     const popup = menu?.popup;
-    this.style.setProperty('--menu-divider', popup?.list?.divider ?? `transparent`);
-    this.style.setProperty('--menu-border-radius', popup?.borderRadius ?? '6px');
-    this.style.setProperty('--menu-background-color', popup?.backgroundColor ?? CourierColors.white[500]);
-    this.style.setProperty('--menu-border', popup?.border ?? `1px solid ${CourierColors.gray[500]}`);
-    this.style.setProperty('--menu-shadow', popup?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
+    this.style.setProperty('--menu-divider', popup?.list?.divider ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.list?.divider ?? `transparent`);
+    this.style.setProperty('--menu-border-radius', popup?.borderRadius ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.borderRadius ?? '6px');
+    this.style.setProperty('--menu-background-color', popup?.backgroundColor ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.backgroundColor ?? CourierColors.white[500]);
+    this.style.setProperty('--menu-border', popup?.border ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.border ?? `1px solid ${CourierColors.gray[500]}`);
+    this.style.setProperty('--menu-shadow', popup?.shadow ?? getFallbackTheme(this.currentSystemTheme).inbox?.header?.menu?.popup?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
 
     // Update menu items
     this._options.forEach((option, index) => {

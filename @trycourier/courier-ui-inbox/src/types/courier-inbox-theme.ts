@@ -215,17 +215,17 @@ export const defaultLightTheme: CourierInboxTheme = {
         activeColor: CourierColors.gray[500],
         title: {
           color: CourierColors.black[500],
-          family: undefined,
+          family: 'inherit',
           size: '14px'
         },
         subtitle: {
           color: CourierColors.gray[600],
-          family: undefined,
+          family: 'inherit',
           size: '14px'
         },
         time: {
           color: CourierColors.gray[500],
-          family: undefined,
+          family: 'inherit',
           size: '12px'
         },
         divider: `1px solid ${CourierColors.gray[200]}`
@@ -352,17 +352,17 @@ export const defaultDarkTheme: CourierInboxTheme = {
         activeColor: CourierColors.white[500_20],
         title: {
           color: CourierColors.white[500],
-          family: undefined,
+          family: 'inherit',
           size: '14px'
         },
         subtitle: {
           color: CourierColors.gray[500],
-          family: undefined,
+          family: 'inherit',
           size: '14px'
         },
         time: {
           color: CourierColors.gray[500],
-          family: undefined,
+          family: 'inherit',
           size: '12px'
         },
         divider: `1px solid ${CourierColors.gray[400]}`
