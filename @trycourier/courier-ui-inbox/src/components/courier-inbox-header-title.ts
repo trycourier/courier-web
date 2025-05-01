@@ -70,11 +70,11 @@ export class CourierInboxHeaderTitle extends HTMLElement {
   setTheme(theme: CourierInboxTheme, feedType: CourierInboxFeedType) {
     this._theme = theme;
     this._feedType = feedType;
-    this.style.setProperty('--title-color', theme.header?.filters?.font?.color ?? CourierColors.black[500]);
-    this.style.setProperty('--title-font-size', theme.header?.filters?.font?.size ?? '18px');
-    this.style.setProperty('--title-font-family', theme.header?.filters?.font?.family ?? 'inherit');
-    this.style.setProperty('--title-font-weight', theme.header?.filters?.font?.weight ?? '500');
-    this._unreadBadge.setTheme(theme);
+    this.style.setProperty('--title-color', theme.inbox?.header?.filters?.font?.color ?? CourierColors.black[500]);
+    this.style.setProperty('--title-font-size', theme.inbox?.header?.filters?.font?.size ?? '18px');
+    this.style.setProperty('--title-font-family', theme.inbox?.header?.filters?.font?.family ?? 'inherit');
+    this.style.setProperty('--title-font-weight', theme.inbox?.header?.filters?.font?.weight ?? '500');
+    this._unreadBadge.setUnreadIndicatorStyles(theme.inbox?.header?.filters?.unreadIndicator);
     this.updateFilter();
   }
 
@@ -92,14 +92,14 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     }
     switch (this._feedType) {
       case 'inbox':
-        this._titleElement.textContent = this._theme?.header?.filters?.inbox?.title ?? 'Inbox';
-        this._iconElement.updateSVG(this._theme?.header?.filters?.inbox?.icon?.svg ?? CourierIconSource.inbox);
-        this._iconElement.updateColor(this._theme?.header?.filters?.inbox?.icon?.color ?? CourierColors.black[500]);
+        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.inbox?.title ?? 'Inbox';
+        this._iconElement.updateSVG(this._theme?.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSource.inbox);
+        this._iconElement.updateColor(this._theme?.inbox?.header?.filters?.inbox?.icon?.color ?? CourierColors.black[500]);
         break;
       case 'archive':
-        this._titleElement.textContent = this._theme?.header?.filters?.archive?.title ?? 'Archive';
-        this._iconElement.updateSVG(this._theme?.header?.filters?.archive?.icon?.svg ?? CourierIconSource.archive);
-        this._iconElement.updateColor(this._theme?.header?.filters?.archive?.icon?.color ?? CourierColors.black[500]);
+        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.archive?.title ?? 'Archive';
+        this._iconElement.updateSVG(this._theme?.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSource.archive);
+        this._iconElement.updateColor(this._theme?.inbox?.header?.filters?.archive?.icon?.color ?? CourierColors.black[500]);
         break;
     }
   }

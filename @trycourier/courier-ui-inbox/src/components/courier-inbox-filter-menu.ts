@@ -34,8 +34,7 @@ class CourierInboxMenuItem extends HTMLElement {
       :host {
         display: flex;
         flex-direction: row;
-        height: 36px;
-        padding: 0 12px;
+        padding: 6px 12px;
         cursor: pointer;
       }
 
@@ -102,7 +101,7 @@ class CourierInboxMenuItem extends HTMLElement {
       return;
     }
 
-    const menuItem = theme.header?.menu?.popup?.listItems;
+    const menuItem = theme.inbox?.header?.menu?.popup?.listItems;
 
     // Set text color
     this.style.setProperty('--courier-text-primary', menuItem?.font?.color ?? CourierColors.black[500]);
@@ -137,8 +136,8 @@ class CourierInboxMenuItem extends HTMLElement {
 export class CourierInboxFilterMenu extends HTMLElement {
 
   // State
-  private _options: CourierInboxMenuOption[];
   private _selectedIndex: number = 0;
+  private _options: CourierInboxMenuOption[];
   private _theme?: CourierInboxTheme;
 
   // Components
@@ -180,7 +179,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
       }
 
       courier-inbox-menu-item {
-        border-bottom: var(--courier-divider-width, 0px) solid var(--courier-divider-color, ${CourierColors.gray[500]});
+        border-bottom: var(--courier-border-bottom, none);
       }
 
       courier-inbox-menu-item:last-child {
@@ -200,7 +199,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
   public setTheme(theme: CourierInboxTheme) {
     this._theme = theme;
-    const menu = theme.header?.menu;
+    const menu = theme.inbox?.header?.menu;
 
     // Update menu button
     this._menuButton.updateIconColor(menu?.button?.icon?.color ?? CourierColors.white[500]);
@@ -210,13 +209,12 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menuButton.updateActiveBackgroundColor(menu?.button?.activeBackgroundColor ?? CourierColors.white[500]);
 
     // Update menu
-    this.style.setProperty('--courier-divider-width', menu?.popup?.listItems?.divider?.width ?? '0px');
-    this.style.setProperty('--courier-divider-color', menu?.popup?.listItems?.divider?.color ?? 'transparent');
+    this.style.setProperty('--courier-border-bottom', menu?.popup?.listItems?.divider ?? `1px solid ${CourierColors.gray[500]}`);
     this.style.setProperty('--courier-border-radius', menu?.popup?.borderRadius ?? '6px');
     this.style.setProperty('--courier-background-color', menu?.popup?.backgroundColor ?? CourierColors.white[500]);
     this.style.setProperty('--courier-border-color', menu?.popup?.borderColor ?? CourierColors.gray[500]);
     this.style.setProperty('--courier-border-width', menu?.popup?.borderWidth ?? '1px');
-    this.style.setProperty('--courier-shadow', `${menu?.popup?.shadow?.offsetX ?? 0}px ${menu?.popup?.shadow?.offsetY ?? 0}px ${menu?.popup?.shadow?.blur ?? 10}px ${menu?.popup?.shadow?.color ?? CourierColors.gray[500]}`);
+    this.style.setProperty('--courier-shadow', menu?.popup?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
 
     // Update menu items
     this._options.forEach((option, index) => {

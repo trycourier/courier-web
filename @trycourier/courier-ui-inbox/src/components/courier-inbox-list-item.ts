@@ -35,7 +35,7 @@ export class CourierListItem extends HTMLElement {
         display: flex;
         align-items: flex-start;
         padding: 16px;
-        border-bottom: ${theme.listItem?.divider?.width ?? '1px'} solid ${theme.listItem?.divider?.color ?? CourierColors.gray[200]};
+        border-bottom: ${theme.inbox?.listItem?.divider ?? `1px solid ${CourierColors.gray[200]}`};
         font-family: inherit;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -45,11 +45,11 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: ${theme.listItem?.hoverColor ?? CourierColors.gray[200]};
+        background-color: ${theme.inbox?.listItem?.hoverColor ?? CourierColors.gray[200]};
       }
 
       :host(:active) {
-        background-color: ${theme.listItem?.activeColor ?? CourierColors.gray[400]};
+        background-color: ${theme.inbox?.listItem?.activeColor ?? CourierColors.gray[400]};
       }
 
       :host(:last-child) {
@@ -57,7 +57,7 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(.unread) {
-        box-shadow: inset 2px 0 0 ${theme.listItem?.unreadIndicatorColor ?? CourierColors.blue[500]};
+        box-shadow: inset 2px 0 0 ${theme.inbox?.listItem?.unreadIndicatorColor ?? CourierColors.blue[500]};
       }
 
       .content {
@@ -74,16 +74,16 @@ export class CourierListItem extends HTMLElement {
       }
 
       p[part="title"] {
-        font-family: ${theme.listItem?.title?.family ?? 'inherit'};
-        font-size: ${theme.listItem?.title?.size ?? '14px'};
+        font-family: ${theme.inbox?.listItem?.title?.family ?? 'inherit'};
+        font-size: ${theme.inbox?.listItem?.title?.size ?? '14px'};
         line-height: 1.4;
-        color: ${theme.listItem?.title?.color ?? CourierColors.black[500]};
+        color: ${theme.inbox?.listItem?.title?.color ?? CourierColors.black[500]};
       }
 
       p[part="subtitle"] {
-        font-family: ${theme.listItem?.subtitle?.family ?? 'inherit'};
-        font-size: ${theme.listItem?.subtitle?.size ?? '14px'};
-        color: ${theme.listItem?.subtitle?.color ?? CourierColors.gray[500]};
+        font-family: ${theme.inbox?.listItem?.subtitle?.family ?? 'inherit'};
+        font-size: ${theme.inbox?.listItem?.subtitle?.size ?? '14px'};
+        color: ${theme.inbox?.listItem?.subtitle?.color ?? CourierColors.gray[500]};
         padding-top: 4px;
         line-height: 1.4;
       }
@@ -175,7 +175,7 @@ export class CourierListItem extends HTMLElement {
 
     // Add close button only for inbox feed type
     if (this.feedType === 'inbox') {
-      this.closeButton = new CourierIconButton(CourierIconSource.remove, this.theme.listItem?.archiveIcon?.color);
+      this.closeButton = new CourierIconButton(CourierIconSource.remove, this.theme.inbox?.listItem?.archiveIcon?.color);
       this.closeButton.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent event from bubbling up
         if (this.message && this.onCloseClick) {

@@ -12,324 +12,353 @@ export type CourierInboxIcon = {
   svg?: string;
 }
 
-export type CourierInboxTheme = {
+export type CourierInboxFilterItem = {
+  icon?: CourierInboxIcon;
+  title?: string;
+}
+
+export type CourierInboxUnreadIndicator = {
+  font?: CourierInboxFont;
   backgroundColor?: string;
-  header?: {
-    backgroundColor?: string;
-    shadow?: {
-      color?: string;
-      offsetX?: number;
-      offsetY?: number;
-      blur?: number;
-    }
-    filters?: {
-      font?: CourierInboxFont;
-      inbox?: {
-        icon?: CourierInboxIcon;
-        title?: string;
-      }
-      archive?: {
-        icon?: CourierInboxIcon;
-        title?: string;
-      }
-      unreadIndicator?: {
-        font?: CourierInboxFont;
-        backgroundColor?: string;
-        borderRadius?: string;
-      }
-    }
-    menu?: {
-      button?: {
-        icon?: CourierInboxIcon;
-        backgroundColor?: string;
-        hoverBackgroundColor?: string;
-        activeBackgroundColor?: string;
-      }
-      popup?: {
-        backgroundColor?: string;
-        borderColor?: string;
-        borderWidth?: string;
-        borderRadius?: string;
-        shadow?: {
-          color?: string;
-          offsetX?: number;
-          offsetY?: number;
-          blur?: number;
-        }
-        listItems?: {
-          hoverColor?: string;
-          activeColor?: string;
-          font?: CourierInboxFont;
-          selectionIcon?: CourierInboxIcon;
-          divider?: {
-            color?: string;
-            width?: string;
-          }
-          inbox?: {
-            icon?: CourierInboxIcon;
-            title?: string;
-          }
-          archive?: {
-            icon?: CourierInboxIcon;
-            title?: string;
-          }
-        }
-      }
-    }
+  borderRadius?: string;
+}
+
+export type CourierInboxButton = {
+  icon?: CourierInboxIcon;
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  activeBackgroundColor?: string;
+}
+
+export type CourierInboxMenuButton = CourierInboxButton & {
+  unreadIndicator?: CourierInboxUnreadIndicator;
+}
+
+export type CourierInboxPopup = {
+  backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: string;
+  borderRadius?: string;
+  shadow?: string;
+}
+
+export type CourierInboxListItems = {
+  hoverColor?: string;
+  activeColor?: string;
+  font?: CourierInboxFont;
+  selectionIcon?: CourierInboxIcon;
+  inbox?: CourierInboxFilterItem;
+  archive?: CourierInboxFilterItem;
+  divider?: string;
+}
+
+export type CourierInboxListItem = {
+  unreadIndicatorColor?: string;
+  hoverColor?: string;
+  activeColor?: string;
+  title?: CourierInboxFont;
+  subtitle?: CourierInboxFont;
+  time?: CourierInboxFont;
+  archiveIcon?: CourierInboxIcon;
+  divider?: string;
+}
+
+export type CourierInboxTheme = {
+  popup?: {
+    button?: CourierInboxMenuButton;
+    container?: {
+      backgroundColor?: string;
+      borderRadius?: string;
+      border?: string;
+      shadow?: string;
+    };
   }
-  listItem?: {
-    unreadIndicatorColor?: string;
-    hoverColor?: string;
-    activeColor?: string;
-    title?: CourierInboxFont;
-    subtitle?: CourierInboxFont;
-    time?: CourierInboxFont;
-    archiveIcon?: CourierInboxIcon;
-    divider?: {
-      color?: string;
-      width?: string;
+  inbox?: {
+    backgroundColor?: string;
+    header?: {
+      backgroundColor?: string;
+      shadow?: string;
+      filters?: {
+        font?: CourierInboxFont;
+        inbox?: CourierInboxFilterItem;
+        archive?: CourierInboxFilterItem;
+        unreadIndicator?: CourierInboxUnreadIndicator;
+      }
+      menu?: {
+        button?: CourierInboxButton;
+        popup?: CourierInboxPopup & {
+          listItems?: CourierInboxListItems;
+        }
+      }
     }
+    listItem?: CourierInboxListItem;
   }
 };
 
 export const defaultLightTheme: CourierInboxTheme = {
-  backgroundColor: CourierColors.white[500],
-  header: {
-    backgroundColor: CourierColors.white[500],
-    shadow: {
-      color: CourierColors.gray[500],
-      offsetX: 0,
-      offsetY: 1,
-      blur: 0
-    },
-    filters: {
-      font: {
+  popup: {
+    button: {
+      icon: {
         color: CourierColors.black[500],
-        family: undefined,
-        size: '18px'
+        svg: CourierIconSource.inbox
       },
-      inbox: {
-        icon: {
-          color: CourierColors.black[500],
-          svg: CourierIconSource.inbox
-        },
-        title: 'Inbox'
-      },
-      archive: {
-        icon: {
-          color: CourierColors.black[500],
-          svg: CourierIconSource.archive
-        },
-        title: 'Archive'
-      },
+      backgroundColor: 'transparent',
+      hoverBackgroundColor: CourierColors.black[500_10],
+      activeBackgroundColor: CourierColors.black[500_20],
       unreadIndicator: {
         font: {
           color: CourierColors.white[500],
+          size: '14px',
           family: undefined,
-          size: '14px'
+          weight: undefined
         },
         backgroundColor: CourierColors.blue[500],
         borderRadius: '12px'
-      },
+      }
     },
-    menu: {
-      button: {
-        icon: {
+    container: {
+      backgroundColor: CourierColors.white[500],
+      borderRadius: '8px',
+      border: `1px solid ${CourierColors.gray[500]}`,
+      shadow: `0px 8px 16px -4px ${CourierColors.gray[500]}`
+    }
+  },
+  inbox: {
+    backgroundColor: CourierColors.white[500],
+    header: {
+      backgroundColor: CourierColors.white[500],
+      shadow: `0px 1px 0px 0px ${CourierColors.gray[500]}`,
+      filters: {
+        font: {
           color: CourierColors.black[500],
-          svg: CourierIconSource.filter
+          family: undefined,
+          size: '18px'
         },
-        backgroundColor: 'transparent',
-        hoverBackgroundColor: CourierColors.black[500_10],
-        activeBackgroundColor: CourierColors.black[500_20]
-      },
-      popup: {
-        backgroundColor: CourierColors.white[500],
-        borderColor: CourierColors.gray[500],
-        borderWidth: '1px',
-        borderRadius: '4px',
-        shadow: {
-          color: CourierColors.black[500_10],
-          offsetX: 0,
-          offsetY: 4,
-          blur: 8
-        },
-        listItems: {
-          hoverColor: CourierColors.gray[200],
-          activeColor: CourierColors.gray[500],
-          divider: {
-            color: undefined,
-            width: '0px'
-          },
-          font: {
+        inbox: {
+          icon: {
             color: CourierColors.black[500],
+            svg: CourierIconSource.inbox
+          },
+          title: 'Inbox'
+        },
+        archive: {
+          icon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSource.archive
+          },
+          title: 'Archive'
+        },
+        unreadIndicator: {
+          font: {
+            color: CourierColors.white[500],
             family: undefined,
             size: '14px'
           },
-          selectionIcon: {
+          backgroundColor: CourierColors.blue[500],
+          borderRadius: '12px'
+        }
+      },
+      menu: {
+        button: {
+          icon: {
             color: CourierColors.black[500],
-            svg: CourierIconSource.check
+            svg: CourierIconSource.filter
           },
-          inbox: {
-            icon: {
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.black[500_10],
+          activeBackgroundColor: CourierColors.black[500_20]
+        },
+        popup: {
+          backgroundColor: CourierColors.white[500],
+          borderColor: CourierColors.gray[500],
+          borderWidth: '1px',
+          borderRadius: '4px',
+          shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
+          listItems: {
+            hoverColor: CourierColors.gray[200],
+            activeColor: CourierColors.gray[500],
+            divider: `none`,
+            font: {
               color: CourierColors.black[500],
-              svg: CourierIconSource.inbox
+              family: undefined,
+              size: '14px'
             },
-            title: 'Inbox'
-          },
-          archive: {
-            icon: {
+            selectionIcon: {
               color: CourierColors.black[500],
-              svg: CourierIconSource.archive
+              svg: CourierIconSource.check
             },
-            title: 'Archive'
+            inbox: {
+              icon: {
+                color: CourierColors.black[500],
+                svg: CourierIconSource.inbox
+              },
+              title: 'Inbox'
+            },
+            archive: {
+              icon: {
+                color: CourierColors.black[500],
+                svg: CourierIconSource.archive
+              },
+              title: 'Archive'
+            }
           }
         }
       }
-    }
-  },
-  listItem: {
-    unreadIndicatorColor: CourierColors.blue[500],
-    hoverColor: CourierColors.gray[200],
-    activeColor: CourierColors.gray[500],
-    title: {
-      color: CourierColors.black[500],
-      family: undefined,
-      size: '14px'
     },
-    subtitle: {
-      color: CourierColors.gray[600],
-      family: undefined,
-      size: '14px'
-    },
-    time: {
-      color: CourierColors.gray[500],
-      family: undefined,
-      size: '12px'
-    },
-    divider: {
-      color: CourierColors.gray[200],
-      width: '1px'
+    listItem: {
+      unreadIndicatorColor: CourierColors.blue[500],
+      hoverColor: CourierColors.gray[200],
+      activeColor: CourierColors.gray[500],
+      title: {
+        color: CourierColors.black[500],
+        family: undefined,
+        size: '14px'
+      },
+      subtitle: {
+        color: CourierColors.gray[600],
+        family: undefined,
+        size: '14px'
+      },
+      time: {
+        color: CourierColors.gray[500],
+        family: undefined,
+        size: '12px'
+      },
+      divider: `1px solid ${CourierColors.gray[200]}`
     }
   }
 };
 
 export const defaultDarkTheme: CourierInboxTheme = {
-  backgroundColor: CourierColors.black[500],
-  header: {
-    backgroundColor: CourierColors.black[500],
-    shadow: {
-      color: CourierColors.gray[400],
-      offsetX: 0,
-      offsetY: 1,
-      blur: 0
-    },
-    filters: {
-      font: {
+  popup: {
+    button: {
+      icon: {
         color: CourierColors.white[500],
-        family: undefined,
-        size: '18px'
+        svg: CourierIconSource.inbox
       },
-      inbox: {
-        icon: {
-          color: CourierColors.white[500],
-          svg: CourierIconSource.inbox
-        },
-        title: 'Inbox'
-      },
-      archive: {
-        icon: {
-          color: CourierColors.white[500],
-          svg: CourierIconSource.archive
-        },
-        title: 'Archive'
-      },
+      backgroundColor: 'transparent',
+      hoverBackgroundColor: CourierColors.white[500_10],
+      activeBackgroundColor: CourierColors.white[500_20],
       unreadIndicator: {
         font: {
           color: CourierColors.white[500],
+          size: '14px',
           family: undefined,
-          size: '14px'
+          weight: undefined
         },
         backgroundColor: CourierColors.blue[500],
         borderRadius: '12px'
-      },
+      }
     },
-    menu: {
-      button: {
-        icon: {
+    container: {
+      backgroundColor: CourierColors.black[500],
+      borderRadius: '8px',
+      border: `1px solid ${CourierColors.gray[400]}`,
+      shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`
+    }
+  },
+  inbox: {
+    backgroundColor: CourierColors.black[500],
+    header: {
+      backgroundColor: CourierColors.black[500],
+      shadow: `0px 1px 0px 0px ${CourierColors.gray[400]}`,
+      filters: {
+        font: {
           color: CourierColors.white[500],
-          svg: CourierIconSource.filter
+          family: undefined,
+          size: '18px'
         },
-        backgroundColor: 'transparent',
-        hoverBackgroundColor: CourierColors.white[500_10],
-        activeBackgroundColor: CourierColors.white[500_20]
-      },
-      popup: {
-        backgroundColor: CourierColors.black[500],
-        borderColor: CourierColors.gray[400],
-        borderWidth: '1px',
-        borderRadius: '4px',
-        shadow: {
-          color: CourierColors.white[500_10],
-          offsetX: 0,
-          offsetY: 4,
-          blur: 8
-        },
-        listItems: {
-          hoverColor: CourierColors.white[500_10],
-          activeColor: CourierColors.white[500_20],
-          divider: {
-            color: undefined,
-            width: '0px'
+        inbox: {
+          icon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSource.inbox
           },
+          title: 'Inbox'
+        },
+        archive: {
+          icon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSource.archive
+          },
+          title: 'Archive'
+        },
+        unreadIndicator: {
           font: {
             color: CourierColors.white[500],
             family: undefined,
             size: '14px'
           },
-          selectionIcon: {
+          backgroundColor: CourierColors.blue[500],
+          borderRadius: '12px'
+        }
+      },
+      menu: {
+        button: {
+          icon: {
             color: CourierColors.white[500],
-            svg: CourierIconSource.check
+            svg: CourierIconSource.filter
           },
-          inbox: {
-            icon: {
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20]
+        },
+        popup: {
+          backgroundColor: CourierColors.black[500],
+          borderColor: CourierColors.gray[400],
+          borderWidth: '1px',
+          borderRadius: '4px',
+          shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
+          listItems: {
+            hoverColor: CourierColors.white[500_10],
+            activeColor: CourierColors.white[500_20],
+            divider: `none`,
+            font: {
               color: CourierColors.white[500],
-              svg: CourierIconSource.inbox
+              family: undefined,
+              size: '14px'
             },
-            title: 'Inbox'
-          },
-          archive: {
-            icon: {
+            selectionIcon: {
               color: CourierColors.white[500],
-              svg: CourierIconSource.archive
+              svg: CourierIconSource.check
             },
-            title: 'Archive'
+            inbox: {
+              icon: {
+                color: CourierColors.white[500],
+                svg: CourierIconSource.inbox
+              },
+              title: 'Inbox'
+            },
+            archive: {
+              icon: {
+                color: CourierColors.white[500],
+                svg: CourierIconSource.archive
+              },
+              title: 'Archive'
+            }
           }
         }
       }
-    }
-  },
-  listItem: {
-    unreadIndicatorColor: CourierColors.blue[500],
-    hoverColor: CourierColors.white[500_10],
-    activeColor: CourierColors.white[500_20],
-    title: {
-      color: CourierColors.white[500],
-      family: undefined,
-      size: '14px'
     },
-    subtitle: {
-      color: CourierColors.gray[500],
-      family: undefined,
-      size: '14px'
-    },
-    time: {
-      color: CourierColors.gray[500],
-      family: undefined,
-      size: '12px'
-    },
-    divider: {
-      color: CourierColors.gray[400],
-      width: '1px'
+    listItem: {
+      unreadIndicatorColor: CourierColors.blue[500],
+      hoverColor: CourierColors.white[500_10],
+      activeColor: CourierColors.white[500_20],
+      title: {
+        color: CourierColors.white[500],
+        family: undefined,
+        size: '14px'
+      },
+      subtitle: {
+        color: CourierColors.gray[500],
+        family: undefined,
+        size: '14px'
+      },
+      time: {
+        color: CourierColors.gray[500],
+        family: undefined,
+        size: '12px'
+      },
+      divider: `1px solid ${CourierColors.gray[400]}`
     }
   }
 };

@@ -1,5 +1,5 @@
 import { CourierColors } from "@trycourier/courier-ui-core";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme, CourierInboxUnreadIndicator } from "../types/courier-inbox-theme";
 
 export class CourierUnreadCountBadge extends HTMLElement {
 
@@ -46,11 +46,11 @@ export class CourierUnreadCountBadge extends HTMLElement {
     this.updateBadge();
   }
 
-  public setTheme(theme: CourierInboxTheme) {
-    this.style.setProperty('--background-color', theme.header?.filters?.unreadIndicator?.backgroundColor ?? CourierColors.blue[500]);
-    this.style.setProperty('--color', theme.header?.filters?.unreadIndicator?.font?.color ?? CourierColors.white[500]);
-    this.style.setProperty('--font-size', theme.header?.filters?.unreadIndicator?.font?.size ?? '14px');
-    this.style.setProperty('--border-radius', theme.header?.filters?.unreadIndicator?.borderRadius ?? '12px');
+  public setUnreadIndicatorStyles(styles?: CourierInboxUnreadIndicator) {
+    this.style.setProperty('--background-color', styles?.backgroundColor ?? CourierColors.blue[500]);
+    this.style.setProperty('--color', styles?.font?.color ?? CourierColors.white[500]);
+    this.style.setProperty('--font-size', styles?.font?.size ?? '14px');
+    this.style.setProperty('--border-radius', styles?.borderRadius ?? '12px');
   }
 
   private updateBadge() {

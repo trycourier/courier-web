@@ -51,8 +51,8 @@ export class CourierInboxHeader extends CourierElement {
     // Update header styles
     const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
     if (header) {
-      header.style.backgroundColor = theme.header?.backgroundColor ?? CourierColors.white[500];
-      header.style.boxShadow = `${theme.header?.shadow?.offsetX ?? 0}px ${theme.header?.shadow?.offsetY ?? 0}px ${theme.header?.shadow?.blur ?? 0}px ${theme.header?.shadow?.color ?? CourierColors.gray[500]}`;
+      header.style.backgroundColor = theme.inbox?.header?.backgroundColor ?? CourierColors.white[500];
+      header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`;
     }
 
     // Update title section theme
@@ -112,7 +112,7 @@ export class CourierInboxHeader extends CourierElement {
         justify-content: space-between;
         padding: 10px 16px;
         background-color: ${CourierColors.white[500]};
-        box-shadow: 0px 4px 8px 0px ${CourierColors.gray[500]};
+        box-shadow: 0px 1px 0px 0px ${CourierColors.gray[500]};
       }
 
       .header-content {

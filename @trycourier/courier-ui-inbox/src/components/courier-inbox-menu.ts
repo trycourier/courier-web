@@ -6,9 +6,14 @@ import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
+import { defaultLightTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { defaultDarkTheme } from "../types/courier-inbox-theme";
+import { CourierColors, CourierSystemThemeElement, SystemThemeMode } from "@trycourier/courier-ui-core";
+
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
+export class CourierInboxMenu extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
 
   // State
   private _width: string = '440px';
@@ -18,6 +23,19 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _right: string = '0';
   private _bottom: string = '40px';
   private _left: string = '0';
+
+  // Themes
+  private _lightTheme: CourierInboxTheme = defaultLightTheme;
+  private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+
+  public set theme(value: CourierInboxTheme) {
+    this._triggerButton.setTheme(value);
+    this._inbox.theme = value;
+    this._popup.style.setProperty('--popup-background', value.popup?.container?.backgroundColor ?? CourierColors.white[500]);
+    this._popup.style.setProperty('--popup-border-radius', value.popup?.container?.borderRadius ?? '8px');
+    this._popup.style.setProperty('--popup-border', value.popup?.container?.border ?? `1px solid ${CourierColors.gray[500]}`);
+    this._popup.style.setProperty('--popup-shadow', value.popup?.container?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
+  }
 
   // Components
   private _triggerButton: CourierInboxMenuButton;
@@ -35,7 +53,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left'];
+    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme'];
   }
 
   constructor() {
@@ -74,10 +92,10 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
       .popup {
         display: none;
         position: absolute;
-        background: var(--Background-Default-Primary, #FFF);
-        border-radius: 8px;
-        border: 1px solid var(--Stroke-Subtle-Primary, #E5E5E5);
-        box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.12), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
+        background: var(--popup-background, ${CourierColors.white[500]});
+        border-radius: var(--popup-border-radius, 8px);
+        border: var(--popup-border, 1px solid ${CourierColors.gray[500]});
+        box-shadow: var(--popup-shadow, 0px 8px 16px -4px ${CourierColors.gray[500]});
         z-index: 1000;
         width: ${this._width};
         height: ${this._height};
@@ -114,6 +132,10 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     // Attach the datastore listener
     this._datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+
+    // Refresh the theme
+    this.updateTheme(this.currentSystemTheme);
+
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -147,6 +169,37 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
       case 'left':
         this._left = newValue;
         this.updatePopupPosition();
+        break;
+      case 'light-theme':
+        if (newValue) {
+          this._lightTheme = JSON.parse(newValue);
+          if (this.currentSystemTheme === 'light') {
+            this.updateTheme(this.currentSystemTheme);
+          }
+        }
+        break;
+      case 'dark-theme':
+        if (newValue) {
+          this._darkTheme = JSON.parse(newValue);
+          if (this.currentSystemTheme === 'dark') {
+            this.updateTheme(this.currentSystemTheme);
+          }
+        }
+        break;
+    }
+  }
+
+  protected onSystemThemeChange(theme: SystemThemeMode) {
+    this.updateTheme(theme);
+  }
+
+  private updateTheme(theme: SystemThemeMode) {
+    switch (theme) {
+      case 'light':
+        this.theme = this._lightTheme;
+        break;
+      case 'dark':
+        this.theme = this._darkTheme;
         break;
     }
   }
