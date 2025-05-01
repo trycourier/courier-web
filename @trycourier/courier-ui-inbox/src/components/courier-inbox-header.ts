@@ -110,7 +110,7 @@ export class CourierInboxHeader extends CourierElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
+        padding: 10px 16px;
         background-color: ${CourierColors.white[500]};
         box-shadow: 0px 4px 8px 0px ${CourierColors.gray[500]};
       }

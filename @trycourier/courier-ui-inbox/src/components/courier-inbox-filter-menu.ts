@@ -167,8 +167,8 @@ export class CourierInboxFilterMenu extends HTMLElement {
       .menu {
         display: none;
         position: absolute;
-        top: 40px;
-        right: -10px;
+        top: 42px;
+        right: -6px;
         border-radius: var(--courier-border-radius, 6px);
         border: var(--courier-border-width, 1px) solid var(--courier-border-color, ${CourierColors.gray[500]});
         background: var(--courier-background-color, ${CourierColors.white[500]});

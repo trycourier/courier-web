@@ -38,8 +38,8 @@ export class CourierIconButton extends HTMLElement {
         border: none;
         border-radius: 50%;
         cursor: pointer;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
