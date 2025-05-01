@@ -59,11 +59,14 @@ export class CourierInboxList extends HTMLElement {
   }
 
   private getStyles(): string {
+
+    const list = this._theme.inbox?.list;
+
     return `
       :host {
         flex: 1;
         width: 100%;
-        background-color: ${this._theme.inbox?.backgroundColor ?? CourierColors.white[500]};
+        background-color: ${list?.backgroundColor ?? CourierColors.white[500]};
       }
 
       ul {
