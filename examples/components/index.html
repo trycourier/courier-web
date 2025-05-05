@@ -36,7 +36,19 @@
               "inbox": {
                 "backgroundColor": "#f8f8f8",
                 "header": {
-                  "backgroundColor": "#f8f8f8"
+                  "backgroundColor": "#f8f8f8",
+                  "menu": {
+                    "popup": {
+                      "backgroundColor": "red",
+                      "list": {
+                        "items": {
+                          "inbox": {
+                            "title": "Example"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }'></courier-inbox>
@@ -407,6 +419,29 @@
         message.read ? markAsUnread(message) : markAsRead(message);
         alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
       };
+
+      // Styled inbox
+      const styledInbox = document.getElementById('inbox-styled');
+      styledInbox.setDarkTheme({
+        inbox: {
+          backgroundColor: "#f8f8f8",
+          header: {
+            backgroundColor: "#f8f8f8",
+            menu: {
+              popup: {
+                backgroundColor: "blue",
+                list: {
+                  items: {
+                    inbox: {
+                      title: "Example 1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
 
       // Inbox list item click handler
       document.getElementById('inbox').addEventListener('message-click', handleMessageClick);

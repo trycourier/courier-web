@@ -9,19 +9,33 @@ import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme } from "../types/courier-inbox-theme";
+import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
 
 export class CourierInbox extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
-  // Themes
+  // Theming
+  private _themeBus: CourierInboxThemeBus;
   private _lightTheme: CourierInboxTheme = defaultLightTheme;
   private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+  get theme() {
+    return this._themeBus.getTheme();
+  }
 
-  public set theme(value: CourierInboxTheme) {
-    this._header.setTheme(value);
-    this._list.setTheme(value);
+  public setLightTheme(theme: CourierInboxTheme) {
+    this._lightTheme = theme;
+    if (this.currentSystemTheme === 'light') {
+      this.updateTheme(this.currentSystemTheme);
+    }
+  }
+
+  public setDarkTheme(theme: CourierInboxTheme) {
+    this._darkTheme = theme;
+    if (this.currentSystemTheme === 'dark') {
+      this.updateTheme(this.currentSystemTheme);
+    }
   }
 
   // Components
@@ -55,9 +69,13 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
     // Attach the shadow DOM
     this._shadow = this.attachShadow({ mode: 'open' });
 
+    // Theme
+    this._themeBus = new CourierInboxThemeBus(this._lightTheme);
+
     // Header
     this._header = new CourierInboxHeader({
       theme: this.theme,
+      themeBus: this._themeBus,
       onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
       }
@@ -286,18 +304,12 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
         break;
       case 'light-theme':
         if (newValue) {
-          this._lightTheme = JSON.parse(newValue);
-          if (this.currentSystemTheme === 'light') {
-            this.updateTheme(this.currentSystemTheme);
-          }
+          this.setLightTheme(JSON.parse(newValue));
         }
         break;
       case 'dark-theme':
         if (newValue) {
-          this._darkTheme = JSON.parse(newValue);
-          if (this.currentSystemTheme === 'dark') {
-            this.updateTheme(this.currentSystemTheme);
-          }
+          this.setDarkTheme(JSON.parse(newValue));
         }
         break;
     }
@@ -310,10 +322,10 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   private updateTheme(theme: SystemThemeMode) {
     switch (theme) {
       case 'light':
-        this.theme = this._lightTheme;
+        this._themeBus.setTheme(this._lightTheme);
         break;
       case 'dark':
-        this.theme = this._darkTheme;
+        this._themeBus.setTheme(this._darkTheme);
         break;
     }
   }
