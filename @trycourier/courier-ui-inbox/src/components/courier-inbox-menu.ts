@@ -205,7 +205,7 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
   }
 
   public onUnreadCountChange(_: number): void {
-    this.refreshButton();
+    this.render();
   }
 
   public onMessageClick(props: CourierInboxListItemFactoryProps): void {
@@ -348,10 +348,10 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
 
   public setPopupMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
     this._popupMenuButtonFactory = factory;
-    this.refreshButton();
+    this.render();
   }
 
-  private refreshButton() {
+  private render() {
     const unreadCount = CourierInboxDatastore.shared.unreadCount;
     switch (this._popupMenuButtonFactory) {
       case undefined:

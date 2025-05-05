@@ -46,11 +46,4 @@ export class CourierInboxThemeBus {
     return controller;
   }
 
-  /**
-   * Remove all listeners (optional utility)
-   */
-  destroy() {
-    // This is just a convenience method if needed
-    // Consumers should abort manually using the controller from `onChange`
-  }
 }

@@ -74,7 +74,6 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
 
     // Header
     this._header = new CourierInboxHeader({
-      theme: this.theme,
       themeBus: this._themeBus,
       onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
@@ -85,6 +84,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
 
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
+      themeBus: this._themeBus,
       onRefresh: () => {
         this.refresh();
       },
@@ -114,7 +114,27 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
     });
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    this._shadow.appendChild(style);
+    this._shadow.appendChild(this._list);
+
+    // Attach the datastore listener
+    this._datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+
+    // Listen for authentication state changes
+    this._authListener = Courier.shared.addAuthenticationListener((_) => {
+      this.refresh();
+    });
+
+    // Refresh the theme
+    this.updateTheme(this.currentSystemTheme);
+
+  }
+
+  private getStyles(): string {
+    return `
       :host {
         display: flex;
         flex-direction: column;
@@ -133,22 +153,6 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
         overflow-x: hidden;
       }
     `;
-
-    this._shadow.appendChild(style);
-    this._shadow.appendChild(this._list);
-
-    // Attach the datastore listener
-    this._datastoreListener = new CourierInboxDataStoreListener(this);
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
-
-    // Listen for authentication state changes
-    this._authListener = Courier.shared.addAuthenticationListener((_) => {
-      this.refresh();
-    });
-
-    // Refresh the theme
-    this.updateTheme(this.currentSystemTheme);
-
   }
 
   public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
@@ -211,7 +215,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
 
     switch (this._headerFactory) {
       case undefined:
-        this._header.refresh(props);
+        this._header.render(props);
         break;
       case null:
         this._header.build(null);

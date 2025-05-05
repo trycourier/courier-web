@@ -3,8 +3,12 @@ import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
 
 export class CourierInboxHeaderTitle extends HTMLElement {
+
+  // Theme
+  private _themeSubscription: AbortController;
 
   // State
   private _option: CourierInboxMenuOption;
@@ -16,13 +20,42 @@ export class CourierInboxHeaderTitle extends HTMLElement {
   private _unreadBadge: CourierUnreadCountBadge;
   private _container: HTMLDivElement;
 
-  constructor(props: { option: CourierInboxMenuOption }) {
+  constructor(props: { themeBus: CourierInboxThemeBus, option: CourierInboxMenuOption }) {
     super();
+
     this._option = props.option;
     const shadow = this.attachShadow({ mode: 'open' });
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    this._container = document.createElement('div');
+    this._container.className = 'title-section';
+
+    this._iconElement = new CourierIcon();
+    this._iconElement.setAttribute('svg', this._option.icon);
+
+    this._titleElement = document.createElement('h2');
+    this._unreadBadge = new CourierUnreadCountBadge();
+
+    this._container.appendChild(this._iconElement);
+    this._container.appendChild(this._titleElement);
+    this._container.appendChild(this._unreadBadge);
+
+    shadow.appendChild(style);
+    shadow.appendChild(this._container);
+
+    this.update(props.option, 'inbox', 0);
+
+    // Subscribe to the theme bus
+    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
+      this.setTheme(theme, this._feedType ?? 'inbox');
+    });
+
+  }
+
+  private getStyles(): string {
+    return `
       .title-section {
         display: flex;
         align-items: center;
@@ -47,27 +80,9 @@ export class CourierInboxHeaderTitle extends HTMLElement {
         margin-left: 4px;
       }
     `;
-
-    this._container = document.createElement('div');
-    this._container.className = 'title-section';
-
-    this._iconElement = new CourierIcon();
-    this._iconElement.setAttribute('svg', this._option.icon);
-
-    this._titleElement = document.createElement('h2');
-    this._unreadBadge = new CourierUnreadCountBadge();
-
-    this._container.appendChild(this._iconElement);
-    this._container.appendChild(this._titleElement);
-    this._container.appendChild(this._unreadBadge);
-
-    shadow.appendChild(style);
-    shadow.appendChild(this._container);
-
-    this.update(props.option, 'inbox', 0);
   }
 
-  setTheme(theme: CourierInboxTheme, feedType: CourierInboxFeedType) {
+  private setTheme(theme: CourierInboxTheme, feedType: CourierInboxFeedType) {
     this._theme = theme;
     this._feedType = feedType;
     this.style.setProperty('--title-color', theme.inbox?.header?.filters?.font?.color ?? CourierColors.black[500]);
@@ -102,6 +117,11 @@ export class CourierInboxHeaderTitle extends HTMLElement {
         this._iconElement.updateColor(this._theme?.inbox?.header?.filters?.archive?.icon?.color ?? CourierColors.black[500]);
         break;
     }
+  }
+
+  // Disconnect the theme subscription
+  disconnectedCallback() {
+    this._themeSubscription.abort();
   }
 
 }

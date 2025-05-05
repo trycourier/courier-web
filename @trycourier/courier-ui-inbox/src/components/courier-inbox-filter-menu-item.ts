@@ -24,7 +24,37 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' });
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    this._content = document.createElement('div');
+    this._content.className = 'menu-item';
+
+    this._itemIcon = new CourierIcon();
+    this._itemIcon.setAttribute('svg', this._option.icon);
+    this._itemIcon.setAttribute('size', '16');
+
+    this._title = document.createElement('p');
+    this._title.textContent = this._option.label;
+
+    const spacer = document.createElement('div');
+    spacer.className = 'spacer';
+
+    this._checkIcon = new CourierIcon(CourierIconSource.check);
+
+    this._content.appendChild(this._itemIcon);
+    this._content.appendChild(this._title);
+    this._content.appendChild(spacer);
+    this._content.appendChild(this._checkIcon);
+
+    shadow.appendChild(style);
+    shadow.appendChild(this._content);
+
+    this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
+
+  }
+
+  private getStyles(): string {
+    return `
       :host {
         display: flex;
         flex-direction: row;
@@ -62,32 +92,6 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
         display: none;
       }
     `;
-
-    this._content = document.createElement('div');
-    this._content.className = 'menu-item';
-
-    this._itemIcon = new CourierIcon();
-    this._itemIcon.setAttribute('svg', this._option.icon);
-    this._itemIcon.setAttribute('size', '16');
-
-    this._title = document.createElement('p');
-    this._title.textContent = this._option.label;
-
-    const spacer = document.createElement('div');
-    spacer.className = 'spacer';
-
-    this._checkIcon = new CourierIcon(CourierIconSource.check);
-
-    this._content.appendChild(this._itemIcon);
-    this._content.appendChild(this._title);
-    this._content.appendChild(spacer);
-    this._content.appendChild(this._checkIcon);
-
-    shadow.appendChild(style);
-    shadow.appendChild(this._content);
-
-    this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
-
   }
 
   public setTheme(feedType: CourierInboxFeedType, theme?: CourierInboxTheme) {

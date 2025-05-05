@@ -1,4 +1,4 @@
-import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
@@ -38,7 +38,29 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menu.className = 'menu';
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    shadow.appendChild(style);
+    shadow.appendChild(this._menuButton);
+    shadow.appendChild(this._menu);
+
+    this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
+
+    this.setOptions(props.options);
+
+    // Handle the theme change
+    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
+      this.setTheme(theme);
+    });
+
+    // Set the theme
+    this.setTheme(props.themeBus.getTheme());
+
+  }
+
+  private getStyles(): string {
+    return `
       :host {
         position: relative;
         display: inline-block;
@@ -59,32 +81,17 @@ export class CourierInboxFilterMenu extends HTMLElement {
         padding: 4px 0;
       }
 
-      courier-inbox-menu-item {
+      courier-inbox-filter-menu-item {
         border-bottom: var(--menu-divider, none);
       }
 
-      courier-inbox-menu-item:last-child {
+      courier-inbox-filter-menu-item:last-child {
         border-bottom: none;
       }
     `;
-
-    shadow.appendChild(style);
-    shadow.appendChild(this._menuButton);
-    shadow.appendChild(this._menu);
-
-    this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
-    document.addEventListener('click', this.handleOutsideClick.bind(this));
-
-    this.setOptions(props.options);
-
-    // Handle the theme change
-    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
-      this.setTheme(theme);
-    });
-
   }
 
-  public setTheme(theme: CourierInboxTheme) {
+  private setTheme(theme: CourierInboxTheme) {
     this._theme = theme;
     const menu = theme.inbox?.header?.menu;
 
@@ -98,7 +105,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
     // Update menu
     const popup = menu?.popup;
-    this.style.setProperty('--menu-divider', popup?.list?.divider ?? `transparent`);
+    this.style.setProperty('--menu-divider', popup?.list?.divider ?? `none`);
     this.style.setProperty('--menu-border-radius', popup?.borderRadius ?? '6px');
     this.style.setProperty('--menu-background-color', popup?.backgroundColor ?? CourierColors.white[500]);
     this.style.setProperty('--menu-border', popup?.border ?? `1px solid ${CourierColors.gray[500]}`);

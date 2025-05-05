@@ -5,12 +5,14 @@ import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
-import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
 
 export class CourierInboxList extends HTMLElement {
 
   // Theme
-  private _theme: CourierInboxTheme = defaultLightTheme;
+  private _theme: CourierInboxTheme;
+  private _themeSubscription: AbortController;
 
   // State
   private _messages: InboxMessage[] = [];
@@ -38,12 +40,19 @@ export class CourierInboxList extends HTMLElement {
   }
 
   constructor(props: {
+    themeBus: CourierInboxThemeBus,
     onRefresh: () => void,
     onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onArchiveMessage: (message: InboxMessage, index: number) => void
   }) {
     super();
+
+    // Initialize the theme subscription
+    this._theme = props.themeBus.getTheme();
+    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
+      this.setTheme(theme);
+    });
 
     // Initialize the callbacks
     this._onRefresh = props.onRefresh;
@@ -56,6 +65,7 @@ export class CourierInboxList extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = this.getStyles();
     shadow.appendChild(style);
+
   }
 
   private getStyles(): string {
@@ -249,6 +259,11 @@ export class CourierInboxList extends HTMLElement {
   public setTheme(theme: CourierInboxTheme): void {
     this._theme = theme;
     this.render();
+  }
+
+  // Disconnect the theme subscription
+  disconnectedCallback() {
+    this._themeSubscription.abort();
   }
 
 }
