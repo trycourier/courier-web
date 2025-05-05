@@ -28,9 +28,9 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
   private _lightTheme: CourierInboxTheme = defaultLightTheme;
   private _darkTheme: CourierInboxTheme = defaultDarkTheme;
 
-  public set theme(value: CourierInboxTheme) {
+  public setTheme(value: CourierInboxTheme) {
     this._triggerButton.setTheme(value);
-    this._inbox.theme = value;
+    this._inbox.setTheme(value);
     this._popup.style.setProperty('--popup-background', value.popup?.container?.backgroundColor ?? CourierColors.white[500]);
     this._popup.style.setProperty('--popup-border-radius', value.popup?.container?.borderRadius ?? '8px');
     this._popup.style.setProperty('--popup-border', value.popup?.container?.border ?? `1px solid ${CourierColors.gray[500]}`);
@@ -196,10 +196,10 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
   private updateTheme(theme: SystemThemeMode) {
     switch (theme) {
       case 'light':
-        this.theme = this._lightTheme;
+        this._inbox.setTheme(this._lightTheme);
         break;
       case 'dark':
-        this.theme = this._darkTheme;
+        this._inbox.setTheme(this._darkTheme);
         break;
     }
   }

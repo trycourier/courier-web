@@ -6,8 +6,12 @@ import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierColors } from "@trycourier/courier-ui-core";
 import { getFallbackTheme } from "../utils/theme";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxHeader extends CourierElement {
+
+  // Parent
+  private _inbox: CourierInbox;
 
   // State
   private _feedType: CourierInboxFeedType = 'inbox';
@@ -38,8 +42,9 @@ export class CourierInboxHeader extends CourierElement {
   private _optionMenu?: CourierInboxFilterMenu;
   private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
 
-  constructor(props: { theme: CourierInboxTheme, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
+  constructor(inbox: CourierInbox, props: { onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
+    this._inbox = inbox;
     this._onFeedTypeChange = props.onFeedTypeChange;
   }
 
@@ -134,7 +139,7 @@ export class CourierInboxHeader extends CourierElement {
     `;
 
     this._titleSection = new CourierInboxHeaderTitle({ option: this._menuOptions[0] });
-    this._optionMenu = new CourierInboxFilterMenu({ options: this._menuOptions });
+    this._optionMenu = new CourierInboxFilterMenu(this._inbox, { options: this._menuOptions });
 
     // Create flexible spacer
     const spacer = document.createElement('div');

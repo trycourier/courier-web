@@ -18,8 +18,14 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   // Themes
   private _lightTheme: CourierInboxTheme = defaultLightTheme;
   private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+  private _theme: CourierInboxTheme = defaultLightTheme;
+  public get theme(): CourierInboxTheme {
+    return this._theme;
+  }
 
-  public set theme(value: CourierInboxTheme) {
+  public setTheme(value: CourierInboxTheme) {
+    this._theme = value;
+    console.log('onSystemThemeChange 1', this._theme);
     this._header.setTheme(value);
     this._list.setTheme(value);
   }
@@ -56,8 +62,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
     this._shadow = this.attachShadow({ mode: 'open' });
 
     // Header
-    this._header = new CourierInboxHeader({
-      theme: this.theme,
+    this._header = new CourierInboxHeader(this, {
       onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
       }
@@ -310,10 +315,10 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   private updateTheme(theme: SystemThemeMode) {
     switch (theme) {
       case 'light':
-        this.theme = this._lightTheme;
+        this.setTheme(this._lightTheme);
         break;
       case 'dark':
-        this.theme = this._darkTheme;
+        this.setTheme(this._darkTheme);
         break;
     }
   }
