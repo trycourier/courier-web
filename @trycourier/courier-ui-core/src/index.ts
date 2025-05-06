@@ -1,19 +1,19 @@
 // Import core UI components
-import { CourierButton } from './components/button';
+import { CourierButton } from './components/courier-button';
 import { CourierIcon } from './components/icon';
 import { CourierLink } from './components/link';
 import { CourierLoadingIndicator } from './components/loading-indicator';
 import { CourierLoadingState } from './components/loading-state';
-import { CourierInfoState } from './components/info-state';
+import { CourierInfoState } from './components/courier-info-state';
 import { CourierIconButton } from './components/icon-button';
 
 // Export all components for external use
-export * from './components/button';
+export * from './components/courier-button';
 export * from './components/icon';
 export * from './components/link';
 export * from './components/loading-indicator';
 export * from './components/loading-state';
-export * from './components/info-state';
+export * from './components/courier-info-state';
 export * from './components/icon-button';
 export * from './components/courier-element';
 export * from './components/courier-system-theme-element';

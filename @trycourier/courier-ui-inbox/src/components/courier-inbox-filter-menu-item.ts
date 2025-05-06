@@ -117,12 +117,12 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
     // Update icon based on feed type
     switch (feedType) {
       case 'inbox':
-        this._title.textContent = list?.items?.inbox?.title ?? 'Inbox';
+        this._title.textContent = list?.items?.inbox?.text ?? 'Inbox';
         this._itemIcon.updateSVG(list?.items?.inbox?.icon?.svg ?? CourierIconSource.inbox);
         this._itemIcon.updateColor(list?.items?.inbox?.icon?.color ?? CourierColors.black[500]);
         break;
       case 'archive':
-        this._title.textContent = list?.items?.archive?.title ?? 'Archive';
+        this._title.textContent = list?.items?.archive?.text ?? 'Archive';
         this._itemIcon.updateSVG(list?.items?.archive?.icon?.svg ?? CourierIconSource.archive);
         this._itemIcon.updateColor(list?.items?.archive?.icon?.color ?? CourierColors.black[500]);
         break;

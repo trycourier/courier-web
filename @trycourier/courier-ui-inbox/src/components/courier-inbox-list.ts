@@ -155,10 +155,6 @@ export class CourierInboxList extends HTMLElement {
     this.setError(new Error('No user signed in'));
   }
 
-  private getEmptyText(): string {
-    return `No ${this._feedType} messages yet`;
-  }
-
   private handleRetry(): void {
     this._onRefresh();
   }
@@ -172,11 +168,21 @@ export class CourierInboxList extends HTMLElement {
 
     // Error state
     if (this._error) {
-      const errorElement = new CourierInfoState();
+      const errorElement = new CourierInfoState({
+        title: {
+          text: this._theme.inbox?.error?.title?.text ?? this._error.message,
+          textColor: this._theme.inbox?.error?.title?.font?.color,
+          fontSize: this._theme.inbox?.error?.title?.font?.size,
+          fontWeight: this._theme.inbox?.error?.title?.font?.weight
+        },
+        button: {
+          text: this._theme.inbox?.error?.button?.text ?? 'Retry',
+          textColor: this._theme.inbox?.error?.button?.font?.color,
+          fontSize: this._theme.inbox?.error?.button?.font?.size,
+          fontWeight: this._theme.inbox?.error?.button?.font?.weight
+        }
+      });
       errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
-      errorElement.setButtonText('Retry');
-      errorElement.setButtonVariant('secondary');
-      errorElement.setTitle(this._error.message);
       errorElement.setButtonClickCallback(() => this.handleRetry());
       this.shadowRoot?.appendChild(errorElement);
       return;
@@ -192,11 +198,30 @@ export class CourierInboxList extends HTMLElement {
 
     // Empty state
     if (this._messages.length === 0) {
-      const emptyElement = new CourierInfoState();
+      const empty = this._theme.inbox?.empty;
+      const emptyElement = new CourierInfoState({
+        title: {
+          text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
+          textColor: empty?.title?.font?.color,
+          fontFamily: empty?.title?.font?.family,
+          fontSize: empty?.title?.font?.size,
+          fontWeight: empty?.title?.font?.weight
+        },
+        button: {
+          text: empty?.button?.text ?? 'Refresh',
+          backgroundColor: empty?.button?.backgroundColor,
+          hoverBackgroundColor: empty?.button?.hoverBackgroundColor,
+          activeBackgroundColor: empty?.button?.activeBackgroundColor,
+          textColor: empty?.button?.font?.color,
+          fontFamily: empty?.button?.font?.family,
+          fontSize: empty?.button?.font?.size,
+          fontWeight: empty?.button?.font?.weight,
+          shadow: empty?.button?.shadow,
+          border: empty?.button?.border,
+          borderRadius: empty?.button?.borderRadius
+        }
+      });
       emptyElement.build(this._emptyStateFactory?.({ feedType: this._feedType }));
-      emptyElement.setButtonText('Refresh');
-      emptyElement.setButtonVariant('secondary');
-      emptyElement.setTitle(this.getEmptyText());
       emptyElement.setButtonClickCallback(() => this.handleRefresh());
       this.shadowRoot?.appendChild(emptyElement);
       return;

@@ -107,12 +107,12 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     }
     switch (this._feedType) {
       case 'inbox':
-        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.inbox?.title ?? 'Inbox';
+        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.inbox?.text ?? 'Inbox';
         this._iconElement.updateSVG(this._theme?.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSource.inbox);
         this._iconElement.updateColor(this._theme?.inbox?.header?.filters?.inbox?.icon?.color ?? CourierColors.black[500]);
         break;
       case 'archive':
-        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.archive?.title ?? 'Archive';
+        this._titleElement.textContent = this._theme?.inbox?.header?.filters?.archive?.text ?? 'Archive';
         this._iconElement.updateSVG(this._theme?.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSource.archive);
         this._iconElement.updateColor(this._theme?.inbox?.header?.filters?.archive?.icon?.color ?? CourierColors.black[500]);
         break;

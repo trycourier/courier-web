@@ -1,4 +1,6 @@
-export class CourierElement extends HTMLElement {
+import { CourierSystemThemeElement } from "./courier-system-theme-element";
+
+export class CourierElement extends CourierSystemThemeElement {
   public readonly shadow: ShadowRoot;
 
   constructor() {

@@ -14,7 +14,7 @@ export type CourierInboxIcon = {
 
 export type CourierInboxFilterItem = {
   icon?: CourierInboxIcon;
-  title?: string;
+  text?: string;
 }
 
 export type CourierInboxUnreadIndicator = {
@@ -23,14 +23,25 @@ export type CourierInboxUnreadIndicator = {
   borderRadius?: string;
 }
 
-export type CourierInboxButton = {
+export type CourierInboxIconButton = {
   icon?: CourierInboxIcon;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   activeBackgroundColor?: string;
 }
 
-export type CourierInboxMenuButton = CourierInboxButton & {
+export type CourierInboxButton = {
+  font?: CourierInboxFont;
+  text?: string;
+  shadow?: string;
+  border?: string;
+  borderRadius?: string;
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  activeBackgroundColor?: string;
+}
+
+export type CourierInboxMenuButton = CourierInboxIconButton & {
   unreadIndicator?: CourierInboxUnreadIndicator;
 }
 
@@ -65,6 +76,14 @@ export type CourierInboxListItem = {
   divider?: string;
 }
 
+export type CourierInboxInfoState = {
+  title?: {
+    font?: CourierInboxFont;
+    text?: string;
+  },
+  button?: CourierInboxButton;
+}
+
 export type CourierInboxTheme = {
   popup?: {
     button?: CourierInboxMenuButton;
@@ -86,14 +105,17 @@ export type CourierInboxTheme = {
         unreadIndicator?: CourierInboxUnreadIndicator;
       }
       menu?: {
-        button?: CourierInboxButton;
+        button?: CourierInboxIconButton;
         popup?: CourierInboxPopup;
       }
     }
     list?: {
       backgroundColor?: string;
       item?: CourierInboxListItem;
-    }
+    },
+    loadingIndicatorColor?: string;
+    empty?: CourierInboxInfoState,
+    error?: CourierInboxInfoState
   }
 };
 
@@ -140,14 +162,14 @@ export const defaultLightTheme: CourierInboxTheme = {
             color: CourierColors.black[500],
             svg: CourierIconSource.inbox
           },
-          title: 'Inbox'
+          text: 'Inbox'
         },
         archive: {
           icon: {
             color: CourierColors.black[500],
             svg: CourierIconSource.archive
           },
-          title: 'Archive'
+          text: 'Archive'
         },
         unreadIndicator: {
           font: {
@@ -193,14 +215,14 @@ export const defaultLightTheme: CourierInboxTheme = {
                   color: CourierColors.black[500],
                   svg: CourierIconSource.inbox
                 },
-                title: 'Inbox'
+                text: 'Inbox'
               },
               archive: {
                 icon: {
                   color: CourierColors.black[500],
                   svg: CourierIconSource.archive
                 },
-                title: 'Archive'
+                text: 'Archive'
               }
             }
           }
@@ -230,7 +252,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         },
         divider: `1px solid ${CourierColors.gray[200]}`
       }
-    },
+    }
   }
 };
 
@@ -277,14 +299,14 @@ export const defaultDarkTheme: CourierInboxTheme = {
             color: CourierColors.white[500],
             svg: CourierIconSource.inbox
           },
-          title: 'Inbox'
+          text: 'Inbox'
         },
         archive: {
           icon: {
             color: CourierColors.white[500],
             svg: CourierIconSource.archive
           },
-          title: 'Archive'
+          text: 'Archive'
         },
         unreadIndicator: {
           font: {
@@ -330,14 +352,14 @@ export const defaultDarkTheme: CourierInboxTheme = {
                   color: CourierColors.white[500],
                   svg: CourierIconSource.inbox
                 },
-                title: 'Inbox'
+                text: 'Inbox'
               },
               archive: {
                 icon: {
                   color: CourierColors.white[500],
                   svg: CourierIconSource.archive
                 },
-                title: 'Archive'
+                text: 'Archive'
               }
             }
           }
