@@ -240,6 +240,10 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   }
 
   // Datastore event handlers
+  public onError(error: Error): void {
+    this._list.setError(error);
+  }
+
   public onDataSetChange(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void {
     if (this._currentFeed === feedType) {
       this._list.setDataSet(dataSet);

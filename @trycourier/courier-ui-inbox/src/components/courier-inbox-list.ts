@@ -168,18 +168,27 @@ export class CourierInboxList extends HTMLElement {
 
     // Error state
     if (this._error) {
+      const error = this._theme.inbox?.error;
       const errorElement = new CourierInfoState({
         title: {
-          text: this._theme.inbox?.error?.title?.text ?? this._error.message,
-          textColor: this._theme.inbox?.error?.title?.font?.color,
-          fontSize: this._theme.inbox?.error?.title?.font?.size,
-          fontWeight: this._theme.inbox?.error?.title?.font?.weight
+          text: error?.title?.text ?? this._error.message,
+          textColor: error?.title?.font?.color,
+          fontFamily: error?.title?.font?.family,
+          fontSize: error?.title?.font?.size,
+          fontWeight: error?.title?.font?.weight
         },
         button: {
-          text: this._theme.inbox?.error?.button?.text ?? 'Retry',
-          textColor: this._theme.inbox?.error?.button?.font?.color,
-          fontSize: this._theme.inbox?.error?.button?.font?.size,
-          fontWeight: this._theme.inbox?.error?.button?.font?.weight
+          text: error?.button?.text ?? 'Retry',
+          backgroundColor: error?.button?.backgroundColor,
+          hoverBackgroundColor: error?.button?.hoverBackgroundColor,
+          activeBackgroundColor: error?.button?.activeBackgroundColor,
+          textColor: error?.button?.font?.color,
+          fontFamily: error?.button?.font?.family,
+          fontSize: error?.button?.font?.size,
+          fontWeight: error?.button?.font?.weight,
+          shadow: error?.button?.shadow,
+          border: error?.button?.border,
+          borderRadius: error?.button?.borderRadius
         }
       });
       errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));

@@ -9,4 +9,5 @@ export class CourierInboxDataStoreEvents {
   public onMessageAdd?(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void { }
   public onMessageRemove?(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void { }
   public onMessageUpdate?(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void { }
+  public onError?(error: Error): void { }
 }

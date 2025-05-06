@@ -116,6 +116,9 @@ export class CourierInboxDatastore {
 
     } catch (error) {
       console.error('Error loading inbox:', error);
+      this._dataStoreListeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
     }
   }
 
