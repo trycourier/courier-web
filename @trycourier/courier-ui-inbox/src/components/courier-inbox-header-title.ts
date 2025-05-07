@@ -102,9 +102,6 @@ export class CourierInboxHeaderTitle extends HTMLElement {
   }
 
   private updateFilter() {
-    if (!this._theme) {
-      return;
-    }
     switch (this._feedType) {
       case 'inbox':
         this._titleElement.textContent = this._theme?.inbox?.header?.filters?.inbox?.text ?? 'Inbox';
