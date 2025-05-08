@@ -3,12 +3,12 @@ import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 
 export class CourierInboxHeaderTitle extends HTMLElement {
 
   // Theme
-  private _themeSubscription: AbortController;
+  private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
   private _option: CourierInboxMenuOption;
@@ -20,7 +20,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
   private _unreadBadge: CourierUnreadCountBadge;
   private _container: HTMLDivElement;
 
-  constructor(props: { themeBus: CourierInboxThemeBus, option: CourierInboxMenuOption }) {
+  constructor(props: { themeBus: CourierInboxThemeManager, option: CourierInboxMenuOption }) {
     super();
 
     this._option = props.option;
@@ -36,7 +36,10 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     this._iconElement.setAttribute('svg', this._option.icon);
 
     this._titleElement = document.createElement('h2');
-    this._unreadBadge = new CourierUnreadCountBadge();
+    this._unreadBadge = new CourierUnreadCountBadge({
+      themeBus: props.themeBus,
+      location: 'header'
+    });
 
     this._container.appendChild(this._iconElement);
     this._container.appendChild(this._titleElement);
@@ -89,7 +92,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     this.style.setProperty('--title-font-size', theme.inbox?.header?.filters?.font?.size ?? '18px');
     this.style.setProperty('--title-font-family', theme.inbox?.header?.filters?.font?.family ?? 'inherit');
     this.style.setProperty('--title-font-weight', theme.inbox?.header?.filters?.font?.weight ?? '500');
-    this._unreadBadge.setUnreadIndicatorStyles(theme.inbox?.header?.filters?.unreadIndicator);
+    this._unreadBadge.refreshTheme('header');
     this.updateFilter();
   }
 
@@ -118,7 +121,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
 
   // Disconnect the theme subscription
   disconnectedCallback() {
-    this._themeSubscription.abort();
+    this._themeSubscription.remove();
   }
 
 }

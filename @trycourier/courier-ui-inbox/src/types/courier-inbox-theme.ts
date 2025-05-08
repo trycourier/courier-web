@@ -1,4 +1,4 @@
-import { CourierColors, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIconSource, SystemThemeMode } from "@trycourier/courier-ui-core";
 
 export type CourierInboxFont = {
   family?: string;
@@ -87,7 +87,7 @@ export type CourierInboxInfoState = {
 export type CourierInboxTheme = {
   popup?: {
     button?: CourierInboxMenuButton;
-    container?: {
+    window?: {
       backgroundColor?: string;
       borderRadius?: string;
       border?: string;
@@ -140,7 +140,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         borderRadius: '12px'
       }
     },
-    container: {
+    window: {
       backgroundColor: CourierColors.white[500],
       borderRadius: '8px',
       border: `1px solid ${CourierColors.gray[500]}`,
@@ -277,7 +277,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         borderRadius: '12px'
       }
     },
-    container: {
+    window: {
       backgroundColor: CourierColors.black[500],
       borderRadius: '8px',
       border: `1px solid ${CourierColors.gray[400]}`,
@@ -391,4 +391,88 @@ export const defaultDarkTheme: CourierInboxTheme = {
       }
     }
   }
+};
+
+// Deep merge the themes, only overwriting non-optional properties
+export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): CourierInboxTheme => {
+  const defaultTheme = mode === 'light' ? defaultLightTheme : defaultDarkTheme;
+  return {
+    popup: {
+      button: {
+        ...defaultTheme.popup?.button,
+        ...theme.popup?.button,
+        icon: {
+          ...defaultTheme.popup?.button?.icon,
+          ...theme.popup?.button?.icon
+        },
+        unreadIndicator: {
+          ...defaultTheme.popup?.button?.unreadIndicator,
+          ...theme.popup?.button?.unreadIndicator
+        }
+      },
+      window: {
+        ...defaultTheme.popup?.window,
+        ...theme.popup?.window
+      }
+    },
+    inbox: {
+      header: {
+        ...defaultTheme.inbox?.header,
+        ...theme.inbox?.header,
+        filters: {
+          ...defaultTheme.inbox?.header?.filters,
+          ...theme.inbox?.header?.filters,
+          inbox: {
+            ...defaultTheme.inbox?.header?.filters?.inbox,
+            ...theme.inbox?.header?.filters?.inbox,
+            icon: {
+              ...defaultTheme.inbox?.header?.filters?.inbox?.icon,
+              ...theme.inbox?.header?.filters?.inbox?.icon
+            }
+          },
+          archive: {
+            ...defaultTheme.inbox?.header?.filters?.archive,
+            ...theme.inbox?.header?.filters?.archive,
+            icon: {
+              ...defaultTheme.inbox?.header?.filters?.archive?.icon,
+              ...theme.inbox?.header?.filters?.archive?.icon
+            }
+          },
+          unreadIndicator: {
+            ...defaultTheme.inbox?.header?.filters?.unreadIndicator,
+            ...theme.inbox?.header?.filters?.unreadIndicator
+          }
+        },
+        menu: {
+          ...defaultTheme.inbox?.header?.menu,
+          ...theme.inbox?.header?.menu,
+          button: {
+            ...defaultTheme.inbox?.header?.menu?.button,
+            ...theme.inbox?.header?.menu?.button,
+            icon: {
+              ...defaultTheme.inbox?.header?.menu?.button?.icon,
+              ...theme.inbox?.header?.menu?.button?.icon
+            }
+          }
+        }
+      },
+      list: {
+        ...defaultTheme.inbox?.list,
+        ...theme.inbox?.list,
+        item: {
+          ...defaultTheme.inbox?.list?.item,
+          ...theme.inbox?.list?.item
+        }
+      },
+      loadingIndicatorColor: theme.inbox?.loadingIndicatorColor ?? defaultTheme.inbox?.loadingIndicatorColor,
+      empty: {
+        ...defaultTheme.inbox?.empty,
+        ...theme.inbox?.empty
+      },
+      error: {
+        ...defaultTheme.inbox?.error,
+        ...theme.inbox?.error
+      }
+    }
+  };
 };

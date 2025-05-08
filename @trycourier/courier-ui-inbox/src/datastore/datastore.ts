@@ -271,6 +271,14 @@ export class CourierInboxDatastore {
     return null;
   }
 
+  private applyLocalMessageChange(message: InboxMessage, messageIndices: { [key: string]: number | undefined }) {
+    for (const [feedType, index] of Object.entries(messageIndices)) {
+      if (index !== undefined) {
+        this.updateMessage(message, index, feedType as CourierInboxFeedType);
+      }
+    }
+  }
+
   async readMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
 
     if (!Courier.shared.client) {
@@ -292,20 +300,12 @@ export class CourierInboxDatastore {
 
     try {
       message.read = new Date().toISOString();
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(message, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(message, messageIndices);
       if (canCallApi) {
         await Courier.shared.client.inbox.read({ messageId: message.messageId });
       }
     } catch (error) {
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(originalMessage, messageIndices);
       console.error('Error reading message:', error);
     }
   }
@@ -330,20 +330,12 @@ export class CourierInboxDatastore {
 
     try {
       message.read = undefined;
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(message, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(message, messageIndices);
       if (canCallApi) {
         await Courier.shared.client.inbox.unread({ messageId: message.messageId });
       }
     } catch (error) {
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(originalMessage, messageIndices);
       console.error('Error unreading message:', error);
     }
   }
@@ -370,20 +362,12 @@ export class CourierInboxDatastore {
 
     try {
       message.opened = new Date().toISOString();
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(message, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(message, messageIndices);
       if (canCallApi) {
         await Courier.shared.client.inbox.open({ messageId: message.messageId });
       }
     } catch (error) {
-      for (const [feedType, index] of Object.entries(messageIndices)) {
-        if (index !== undefined) {
-          this.updateMessage(originalMessage, index, feedType as CourierInboxFeedType);
-        }
-      }
+      this.applyLocalMessageChange(originalMessage, messageIndices);
       console.error('Error opening message:', error);
     }
   }

@@ -1,16 +1,24 @@
-import { CourierColors, CourierElement, CourierIconButton, CourierIconSource, theme } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierElement, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 
 export class CourierInboxMenuButton extends CourierElement {
 
-  // State
-  private _theme?: CourierInboxTheme;
+  // Theme
+  private _themeSubscription: CourierInboxThemeSubscription;
 
   // Components
   private _container?: HTMLDivElement;
   private _triggerButton?: CourierIconButton;
   private _unreadCountBadge?: CourierUnreadCountBadge;
+
+  constructor(props: { themeBus: CourierInboxThemeManager }) {
+    super();
+    this._themeSubscription = props.themeBus.subscribe((_: CourierInboxTheme) => {
+      this.updateTheme();
+    });
+  }
 
   defaultElement(): HTMLElement {
 
@@ -22,11 +30,24 @@ export class CourierInboxMenuButton extends CourierElement {
     this._triggerButton = new CourierIconButton(CourierIconSource.inbox);
 
     // Create unread count badge
-    this._unreadCountBadge = new CourierUnreadCountBadge();
+    this._unreadCountBadge = new CourierUnreadCountBadge({
+      themeBus: this._themeSubscription.manager,
+      location: 'button'
+    });
     this._unreadCountBadge.id = 'unread-badge';
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyles();
+
+    this._container.appendChild(style);
+    this._container.appendChild(this._triggerButton);
+    this._container.appendChild(this._unreadCountBadge);
+    this.shadow.appendChild(this._container);
+    return this._container;
+  }
+
+  private getStyles(): string {
+    return `
       .menu-button-container {
         position: relative;
         display: inline-block;
@@ -39,35 +60,33 @@ export class CourierInboxMenuButton extends CourierElement {
         pointer-events: none;
       }
     `;
-
-    this._container.appendChild(style);
-    this._container.appendChild(this._triggerButton);
-    this._container.appendChild(this._unreadCountBadge);
-    this.shadow.appendChild(this._container);
-    return this._container;
   }
 
   public onUnreadCountChange(unreadCount: number): void {
     this._unreadCountBadge?.setCount(unreadCount);
-    this.updateTheme();
-  }
-
-  public setTheme(theme: CourierInboxTheme) {
-    this._theme = theme;
+    console.log('updateTheme Button 0', this._themeSubscription.manager.getTheme()?.popup?.button);
     this.updateTheme();
   }
 
   private updateTheme() {
+    const theme = this._themeSubscription.manager.getTheme();
+    console.log('updateTheme Button 1', theme?.popup?.button);
 
-    // Button
-    this._triggerButton?.updateIconColor(this._theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
-    this._triggerButton?.updateIconSVG(this._theme?.popup?.button?.icon?.svg ?? CourierIconSource.inbox);
-    this._triggerButton?.updateBackgroundColor(this._theme?.popup?.button?.backgroundColor ?? 'transparent');
-    this._triggerButton?.updateHoverBackgroundColor(this._theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
-    this._triggerButton?.updateActiveBackgroundColor(this._theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
+    // Trigger button
+    this._triggerButton?.updateIconColor(theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
+    this._triggerButton?.updateIconSVG(theme?.popup?.button?.icon?.svg ?? CourierIconSource.inbox);
+    this._triggerButton?.updateBackgroundColor(theme?.popup?.button?.backgroundColor ?? 'transparent');
+    this._triggerButton?.updateHoverBackgroundColor(theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
+    this._triggerButton?.updateActiveBackgroundColor(theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
+
 
     // Unread count badge
-    this._unreadCountBadge?.setUnreadIndicatorStyles(this._theme?.popup?.button?.unreadIndicator);
+    this._unreadCountBadge?.refreshTheme('button');
+
+  }
+
+  disconnectedCallback() {
+    this._themeSubscription.remove();
   }
 
 }

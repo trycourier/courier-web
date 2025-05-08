@@ -8,34 +8,26 @@ import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
-import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
+import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
 
-export class CourierInbox extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
+export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
   // Theming
-  private _themeBus: CourierInboxThemeBus;
-  private _lightTheme: CourierInboxTheme = defaultLightTheme;
-  private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+  private _themeBus: CourierInboxThemeManager;
   get theme() {
     return this._themeBus.getTheme();
   }
 
   public setLightTheme(theme: CourierInboxTheme) {
-    this._lightTheme = theme;
-    if (this.currentSystemTheme === 'light') {
-      this.updateTheme(this.currentSystemTheme);
-    }
+    this._themeBus.setLightTheme(theme);
   }
 
   public setDarkTheme(theme: CourierInboxTheme) {
-    this._darkTheme = theme;
-    if (this.currentSystemTheme === 'dark') {
-      this.updateTheme(this.currentSystemTheme);
-    }
+    this._themeBus.setDarkTheme(theme);
   }
 
   // Components
@@ -43,6 +35,7 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
   private _list: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
+  private _style: HTMLStyleElement;
 
   // Header
   private _header: CourierInboxHeader;
@@ -63,14 +56,14 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
     return ['height', 'message-click', 'light-theme', 'dark-theme'];
   }
 
-  constructor() {
+  constructor(themeBus?: CourierInboxThemeManager) {
     super();
 
     // Attach the shadow DOM
     this._shadow = this.attachShadow({ mode: 'open' });
 
     // Theme
-    this._themeBus = new CourierInboxThemeBus(this._lightTheme);
+    this._themeBus = themeBus ?? new CourierInboxThemeManager(defaultLightTheme);
 
     // Header
     this._header = new CourierInboxHeader({
@@ -113,10 +106,10 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
       }
     });
 
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
+    this._style = document.createElement('style');
+    this.refreshTheme();
 
-    this._shadow.appendChild(style);
+    this._shadow.appendChild(this._style);
     this._shadow.appendChild(this._list);
 
     // Attach the datastore listener
@@ -128,9 +121,15 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
       this.refresh();
     });
 
-    // Refresh the theme
-    this.updateTheme(this.currentSystemTheme);
+    // Refresh the theme on change
+    this._themeBus.subscribe((_) => {
+      this.refreshTheme();
+    });
 
+  }
+
+  private refreshTheme() {
+    this._style.textContent = this.getStyles();
   }
 
   private getStyles(): string {
@@ -319,21 +318,6 @@ export class CourierInbox extends CourierSystemThemeElement implements CourierIn
         if (newValue) {
           this.setDarkTheme(JSON.parse(newValue));
         }
-        break;
-    }
-  }
-
-  protected onSystemThemeChange(theme: SystemThemeMode) {
-    this.updateTheme(theme);
-  }
-
-  private updateTheme(theme: SystemThemeMode) {
-    switch (theme) {
-      case 'light':
-        this._themeBus.setTheme(this._lightTheme);
-        break;
-      case 'dark':
-        this._themeBus.setTheme(this._darkTheme);
         break;
     }
   }

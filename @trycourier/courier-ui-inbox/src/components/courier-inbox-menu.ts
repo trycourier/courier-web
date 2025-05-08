@@ -1,5 +1,4 @@
 import { CourierInbox } from "./courier-inbox";
-import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -8,12 +7,12 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { defaultDarkTheme } from "../types/courier-inbox-theme";
-import { CourierColors, CourierSystemThemeElement, SystemThemeMode } from "@trycourier/courier-ui-core";
+import { SystemThemeMode } from "@trycourier/courier-ui-core";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends CourierSystemThemeElement implements CourierInboxDataStoreEvents {
+export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
 
   // State
   private _width: string = '440px';
@@ -24,24 +23,32 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
   private _bottom: string = '40px';
   private _left: string = '0';
 
-  // Themes
-  private _lightTheme: CourierInboxTheme = defaultLightTheme;
-  private _darkTheme: CourierInboxTheme = defaultDarkTheme;
+  // Theming
+  private _themeBus = new CourierInboxThemeManager(defaultLightTheme);
+  get theme() {
+    return this._themeBus.getTheme();
+  }
 
-  public set theme(value: CourierInboxTheme) {
-    this._triggerButton.setTheme(value);
-    // this._inbox.setTheme(value);
-    this._popup.style.setProperty('--popup-background', value.popup?.container?.backgroundColor ?? CourierColors.white[500]);
-    this._popup.style.setProperty('--popup-border-radius', value.popup?.container?.borderRadius ?? '8px');
-    this._popup.style.setProperty('--popup-border', value.popup?.container?.border ?? `1px solid ${CourierColors.gray[500]}`);
-    this._popup.style.setProperty('--popup-shadow', value.popup?.container?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
+  public setLightTheme(theme: CourierInboxTheme) {
+    this._themeBus.setLightTheme(theme);
+  }
+
+  public setDarkTheme(theme: CourierInboxTheme) {
+    this._themeBus.setDarkTheme(theme);
+  }
+
+  private updateTheme() {
+    // console.log('updateTheme', theme, this.theme);
+    // // mergeTheme(theme, themeConfig)
+    // this._themeBus.setTheme(this.theme);
+    this._style.textContent = this.getStyles();
   }
 
   // Components
   private _triggerButton: CourierInboxMenuButton;
   private _popup: HTMLDivElement;
   private _inbox: CourierInbox;
-  private _unreadCountBadge: CourierUnreadCountBadge;
+  private _style: HTMLStyleElement;
 
   // Callbacks
   private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -62,23 +69,50 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
     const shadow = this.attachShadow({ mode: 'open' });
 
     // Create trigger button
-    this._triggerButton = new CourierInboxMenuButton();
+    this._triggerButton = new CourierInboxMenuButton({
+      themeBus: this._themeBus,
+    });
     this._triggerButton.build(undefined);
-
-    // Create unread count badge
-    this._unreadCountBadge = new CourierUnreadCountBadge();
-    this._unreadCountBadge.id = 'unread-badge';
 
     // Create popup container
     this._popup = document.createElement('div');
     this._popup.className = 'popup';
 
     // Create content container
-    this._inbox = new CourierInbox();
+    this._inbox = new CourierInbox(this._themeBus);
     this._inbox.setAttribute('height', '100%');
 
-    const style = document.createElement('style');
-    style.textContent = `
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles();
+
+    shadow.appendChild(this._style);
+    shadow.appendChild(this._triggerButton);
+    shadow.appendChild(this._popup);
+    this._popup.appendChild(this._inbox);
+    this._inbox.setMessageClick(this._onMessageClick);
+
+    // Add event listeners
+    this._triggerButton.addEventListener('click', this.togglePopup.bind(this));
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
+
+    // Initialize popup position
+    this.updatePopupPosition();
+
+    // Attach the datastore listener
+    this._datastoreListener = new CourierInboxDataStoreListener(this);
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+
+    // Refresh the theme
+    this.updateTheme();
+
+    this._themeBus.subscribe(theme => {
+      this.updateTheme();
+    });
+
+  }
+
+  private getStyles(): string {
+    return `
       :host {
         display: inline-block;
         position: relative;
@@ -92,10 +126,10 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
       .popup {
         display: none;
         position: absolute;
-        background: var(--popup-background, ${CourierColors.white[500]});
-        border-radius: var(--popup-border-radius, 8px);
-        border: var(--popup-border, 1px solid ${CourierColors.gray[500]});
-        box-shadow: var(--popup-shadow, 0px 8px 16px -4px ${CourierColors.gray[500]});
+        background: ${this.theme.popup?.window?.backgroundColor ?? 'red'};
+        border-radius: ${this.theme.popup?.window?.borderRadius ?? '8px'};
+        border: ${this.theme.popup?.window?.border ?? `1px solid red`};
+        box-shadow: ${this.theme.popup?.window?.shadow ?? `0px 8px 16px -4px red`};
         z-index: 1000;
         width: ${this._width};
         height: ${this._height};
@@ -115,27 +149,6 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
         height: 100%;
       }
     `;
-
-    shadow.appendChild(style);
-    shadow.appendChild(this._triggerButton);
-    shadow.appendChild(this._popup);
-    this._popup.appendChild(this._inbox);
-    this._inbox.setMessageClick(this._onMessageClick);
-
-    // Add event listeners
-    this._triggerButton.addEventListener('click', this.togglePopup.bind(this));
-    document.addEventListener('click', this.handleOutsideClick.bind(this));
-
-    // Initialize popup position
-    this.updatePopupPosition();
-
-    // Attach the datastore listener
-    this._datastoreListener = new CourierInboxDataStoreListener(this);
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
-
-    // Refresh the theme
-    this.updateTheme(this.currentSystemTheme);
-
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -172,34 +185,13 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
         break;
       case 'light-theme':
         if (newValue) {
-          this._lightTheme = JSON.parse(newValue);
-          if (this.currentSystemTheme === 'light') {
-            this.updateTheme(this.currentSystemTheme);
-          }
+          this.setLightTheme(JSON.parse(newValue));
         }
         break;
       case 'dark-theme':
         if (newValue) {
-          this._darkTheme = JSON.parse(newValue);
-          if (this.currentSystemTheme === 'dark') {
-            this.updateTheme(this.currentSystemTheme);
-          }
+          this.setDarkTheme(JSON.parse(newValue));
         }
-        break;
-    }
-  }
-
-  protected onSystemThemeChange(theme: SystemThemeMode) {
-    this.updateTheme(theme);
-  }
-
-  private updateTheme(theme: SystemThemeMode) {
-    switch (theme) {
-      case 'light':
-        this.theme = this._lightTheme;
-        break;
-      case 'dark':
-        this.theme = this._darkTheme;
         break;
     }
   }
@@ -368,6 +360,7 @@ export class CourierInboxMenu extends CourierSystemThemeElement implements Couri
 
   disconnectedCallback() {
     this._datastoreListener?.remove();
+    this._themeBus.cleanup();
   }
 }
 

@@ -1,7 +1,7 @@
 import { CourierColors, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 import { CourierInboxFilterMenuItem } from "./courier-inbox-filter-menu-item";
 
 export type CourierInboxMenuOption = {
@@ -14,7 +14,7 @@ export type CourierInboxMenuOption = {
 export class CourierInboxFilterMenu extends HTMLElement {
 
   // Theme
-  private _themeSubscription: AbortController;
+  private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
   private _selectedIndex: number = 0;
@@ -25,7 +25,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
   private _menuButton: CourierIconButton;
   private _menu: HTMLDivElement;
 
-  constructor(props: { themeBus: CourierInboxThemeBus, options: CourierInboxMenuOption[] }) {
+  constructor(props: { themeBus: CourierInboxThemeManager, options: CourierInboxMenuOption[] }) {
     super();
 
     this._options = props.options;
@@ -158,7 +158,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._themeSubscription.abort();
+    this._themeSubscription.remove();
   }
 
 }

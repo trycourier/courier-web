@@ -73,16 +73,23 @@ body {
   padding: 0;
 }
 
+.themed {
+  background-color: white;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .themed {
+    background-color: black;
+  }
+}
+
 .grid-item-title {
   margin: 0;
   text-align: center;
   font-size: 14px;
   color: #333;
   align-self: flex-end;
-}
-
-.dark-mode {
-  background: black;
 }
 
 .package-title {

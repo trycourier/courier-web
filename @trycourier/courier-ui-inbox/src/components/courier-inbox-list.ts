@@ -6,13 +6,12 @@ import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeBus } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 
 export class CourierInboxList extends HTMLElement {
 
   // Theme
-  private _theme: CourierInboxTheme;
-  private _themeSubscription: AbortController;
+  private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
   private _messages: InboxMessage[] = [];
@@ -40,7 +39,7 @@ export class CourierInboxList extends HTMLElement {
   }
 
   constructor(props: {
-    themeBus: CourierInboxThemeBus,
+    themeBus: CourierInboxThemeManager,
     onRefresh: () => void,
     onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
@@ -49,9 +48,8 @@ export class CourierInboxList extends HTMLElement {
     super();
 
     // Initialize the theme subscription
-    this._theme = props.themeBus.getTheme();
-    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
-      this.setTheme(theme);
+    this._themeSubscription = props.themeBus.subscribe((_: CourierInboxTheme) => {
+      this.refreshTheme();
     });
 
     // Initialize the callbacks
@@ -70,7 +68,7 @@ export class CourierInboxList extends HTMLElement {
 
   private getStyles(): string {
 
-    const list = this._theme.inbox?.list;
+    const list = this._themeSubscription.manager.getTheme().inbox?.list;
 
     return `
       :host {
@@ -166,9 +164,11 @@ export class CourierInboxList extends HTMLElement {
   private render(): void {
     this.reset();
 
+    const theme = this._themeSubscription.manager.getTheme();
+
     // Error state
     if (this._error) {
-      const error = this._theme.inbox?.error;
+      const error = theme.inbox?.error;
       const errorElement = new CourierInfoState({
         title: {
           text: error?.title?.text ?? this._error.message,
@@ -207,7 +207,7 @@ export class CourierInboxList extends HTMLElement {
 
     // Empty state
     if (this._messages.length === 0) {
-      const empty = this._theme.inbox?.empty;
+      const empty = theme.inbox?.empty;
       const emptyElement = new CourierInfoState({
         title: {
           text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
@@ -247,7 +247,7 @@ export class CourierInboxList extends HTMLElement {
         return;
       }
 
-      const listItem = new CourierListItem(this._theme);
+      const listItem = new CourierListItem(this._themeSubscription.manager.getTheme());
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
@@ -290,14 +290,13 @@ export class CourierInboxList extends HTMLElement {
     this.render();
   }
 
-  public setTheme(theme: CourierInboxTheme): void {
-    this._theme = theme;
+  public refreshTheme(): void {
     this.render();
   }
 
   // Disconnect the theme subscription
   disconnectedCallback() {
-    this._themeSubscription.abort();
+    this._themeSubscription.remove();
   }
 
 }
