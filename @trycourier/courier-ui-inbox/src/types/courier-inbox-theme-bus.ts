@@ -1,4 +1,4 @@
-import { SystemThemeMode, addSystemThemeModeListener, getSystemThemeMode } from "@trycourier/courier-ui-core";
+import { CourierComponentThemeMode, SystemThemeMode, addSystemThemeModeListener, getSystemThemeMode } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme, mergeTheme } from "./courier-inbox-theme";
 
 export interface CourierInboxThemeSubscription {
@@ -19,37 +19,38 @@ export class CourierInboxThemeManager {
   private _subscriptions: CourierInboxThemeSubscription[] = [];
 
   // System theme
-  private _currentSystemTheme: SystemThemeMode;
+  private _userMode: CourierComponentThemeMode;
+  private _systemMode: SystemThemeMode;
   private _systemThemeCleanup: (() => void) | undefined;
 
   public setLightTheme(theme: CourierInboxTheme) {
     this._lightTheme = theme;
-    if (this._currentSystemTheme === 'light') {
-      this.setTheme(mergeTheme(this._currentSystemTheme, this._lightTheme));
+    if (this._systemMode === 'light') {
+      this.updateTheme();
     }
   }
 
   public setDarkTheme(theme: CourierInboxTheme) {
     this._darkTheme = theme;
-    if (this._currentSystemTheme === 'dark') {
-      this.setTheme(mergeTheme(this._currentSystemTheme, this._darkTheme));
+    if (this._systemMode === 'dark') {
+      this.updateTheme();
     }
   }
 
   constructor(initialTheme: CourierInboxTheme) {
     this._theme = initialTheme;
     this._target = new EventTarget();
+    this._userMode = 'system' as CourierComponentThemeMode;
 
     // Get the initial system theme
-    this._currentSystemTheme = getSystemThemeMode();
+    this._systemMode = getSystemThemeMode();
     this.setLightTheme(defaultLightTheme);
     this.setDarkTheme(defaultDarkTheme);
 
     // Set up system theme listener
     this._systemThemeCleanup = addSystemThemeModeListener((mode: SystemThemeMode) => {
-      this._currentSystemTheme = mode;
-      const theme = mode === 'light' ? this._lightTheme : this._darkTheme;
-      this.setTheme(mergeTheme(mode, theme));
+      this._systemMode = mode;
+      this.updateTheme();
     });
   }
 
@@ -57,7 +58,7 @@ export class CourierInboxThemeManager {
    * Get the current system theme
    */
   public get currentSystemTheme(): SystemThemeMode {
-    return this._currentSystemTheme;
+    return this._systemMode;
   }
 
   /**
@@ -68,14 +69,40 @@ export class CourierInboxThemeManager {
   }
 
   /**
+   * Update the theme
+   */
+  private updateTheme() {
+
+    // Use the user mode or fallback to the system mode
+    const mode = this._userMode === 'system' ? this._systemMode : this._userMode;
+
+    // Get the theme  
+    const theme = mode === 'light' ? this._lightTheme : this._darkTheme;
+
+    // Merge the theme
+    const mergedTheme = mergeTheme(mode, theme);
+
+    // Set the theme
+    this.setTheme(mergedTheme);
+  }
+
+  /**
    * Set the theme and notify all listeners
    */
-  public setTheme(theme: CourierInboxTheme) {
+  private setTheme(theme: CourierInboxTheme) {
     if (theme === this._theme) return;
     this._theme = theme;
     this._target.dispatchEvent(new CustomEvent(this.THEME_CHANGE_EVENT, {
       detail: { theme }
     }));
+  }
+
+  /**
+   * Set the mode and notify all listeners
+   */
+  public setMode(mode: CourierComponentThemeMode) {
+    this._userMode = mode;
+    this.updateTheme();
   }
 
   /**

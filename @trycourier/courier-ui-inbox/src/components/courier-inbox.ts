@@ -1,7 +1,7 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierComponentThemeMode, CourierIconSource } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -53,7 +53,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   };
 
   static get observedAttributes() {
-    return ['height', 'message-click', 'light-theme', 'dark-theme'];
+    return ['height', 'message-click', 'light-theme', 'dark-theme', 'mode'];
   }
 
   constructor(themeBus?: CourierInboxThemeManager) {
@@ -318,6 +318,9 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         if (newValue) {
           this.setDarkTheme(JSON.parse(newValue));
         }
+        break;
+      case 'mode':
+        this._themeBus.setMode(newValue as CourierComponentThemeMode);
         break;
     }
   }

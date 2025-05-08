@@ -8,6 +8,7 @@ import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
+import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
@@ -23,19 +24,17 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _left: string = '0';
 
   // Theming
-  private _themeBus = new CourierInboxThemeManager(defaultLightTheme);
+  private _themeManager = new CourierInboxThemeManager(defaultLightTheme);
   get theme() {
-    return this._themeBus.getTheme();
+    return this._themeManager.getTheme();
   }
 
   public setLightTheme(theme: CourierInboxTheme) {
-    console.log('setLightTheme', theme);
-    this._themeBus.setLightTheme(theme);
+    this._themeManager.setLightTheme(theme);
   }
 
   public setDarkTheme(theme: CourierInboxTheme) {
-    console.log('setDarkTheme', theme);
-    this._themeBus.setDarkTheme(theme);
+    this._themeManager.setDarkTheme(theme);
   }
 
   // Components
@@ -54,7 +53,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme'];
+    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
   }
 
   constructor() {
@@ -63,9 +62,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     const shadow = this.attachShadow({ mode: 'open' });
 
     // Create trigger button
-    this._triggerButton = new CourierInboxMenuButton({
-      themeBus: this._themeBus,
-    });
+    this._triggerButton = new CourierInboxMenuButton(this._themeManager);
     this._triggerButton.build(undefined);
 
     // Create popup container
@@ -73,7 +70,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     this._popup.className = 'popup';
 
     // Create content container
-    this._inbox = new CourierInbox(this._themeBus);
+    this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
 
     this._style = document.createElement('style');
@@ -97,7 +94,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
     // Refresh the theme on change
-    this._themeBus.subscribe((_) => {
+    this._themeManager.subscribe((_) => {
       this.refreshTheme();
     });
 
@@ -188,6 +185,9 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
         if (newValue) {
           this.setDarkTheme(JSON.parse(newValue));
         }
+        break;
+      case 'mode':
+        this._themeManager.setMode(newValue as CourierComponentThemeMode);
         break;
     }
   }
@@ -356,7 +356,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
 
   disconnectedCallback() {
     this._datastoreListener?.remove();
-    this._themeBus.cleanup();
+    this._themeManager.cleanup();
   }
 }
 

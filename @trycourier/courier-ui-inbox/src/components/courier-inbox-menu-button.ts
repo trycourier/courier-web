@@ -13,9 +13,9 @@ export class CourierInboxMenuButton extends CourierElement {
   private _triggerButton?: CourierIconButton;
   private _unreadCountBadge?: CourierUnreadCountBadge;
 
-  constructor(props: { themeBus: CourierInboxThemeManager }) {
+  constructor(themeBus: CourierInboxThemeManager) {
     super();
-    this._themeSubscription = props.themeBus.subscribe((_: CourierInboxTheme) => {
+    this._themeSubscription = themeBus.subscribe((_: CourierInboxTheme) => {
       this.updateTheme();
     });
   }

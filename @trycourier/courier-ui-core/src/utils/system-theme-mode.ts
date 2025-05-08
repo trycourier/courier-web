@@ -1,3 +1,5 @@
+export type CourierComponentThemeMode = SystemThemeMode & 'system';
+
 export type SystemThemeMode = 'light' | 'dark';
 
 export const getSystemThemeMode = (): SystemThemeMode => {
