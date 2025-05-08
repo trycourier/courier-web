@@ -3,7 +3,6 @@ import { CourierIconSource, CourierElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierColors } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 
@@ -11,6 +10,7 @@ export class CourierInboxHeader extends CourierElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
+
   // State
   private _feedType: CourierInboxFeedType = 'inbox';
   private _unreadCount: number = 0;
@@ -38,14 +38,17 @@ export class CourierInboxHeader extends CourierElement {
   // Components
   private _titleSection?: CourierInboxHeaderTitle;
   private _optionMenu?: CourierInboxFilterMenu;
+  private _style?: HTMLStyleElement;
+
+  // Callbacks
   private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
 
-  constructor(props: { themeBus: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
+  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
 
     // Subscribe to the theme bus
-    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
-      this.setTheme(theme);
+    this._themeSubscription = props.themeManager.subscribe((_) => {
+      this.refreshTheme();
     });
 
     // Set the on feed type change callback
@@ -57,7 +60,9 @@ export class CourierInboxHeader extends CourierElement {
     return ['icon', 'title', 'feed-type'];
   }
 
-  private setTheme(theme: CourierInboxTheme) {
+  private refreshTheme() {
+
+    const theme = this._themeSubscription.manager.getTheme();
 
     // Update header styles
     const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
@@ -71,7 +76,7 @@ export class CourierInboxHeader extends CourierElement {
   private handleOptionMenuClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
     this._feedType = feedType;
     if (this._titleSection) {
-      this._titleSection.update(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
+      this._titleSection.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
     }
     this._onFeedTypeChange(feedType);
   }
@@ -87,7 +92,7 @@ export class CourierInboxHeader extends CourierElement {
     // Update title section
     const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
     if (option) {
-      this._titleSection?.update(option, this._feedType, isInbox ? props.unreadCount : 0);
+      this._titleSection?.updateSelectedOption(option, this._feedType, isInbox ? props.unreadCount : 0);
       this._optionMenu?.selectOption(option);
     }
   }
@@ -97,25 +102,18 @@ export class CourierInboxHeader extends CourierElement {
 
     // This will put the header above the rest of the elements
     // This is needed incase someone wants to set shadow
-    const style = document.createElement('style');
-    style.textContent = `
-      :host {
-        z-index: 100;
-      }
-    `;
-    this.shadow?.appendChild(style);
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles();
+    this.shadow?.appendChild(this._style);
 
-    // Set the theme
-    this.setTheme(this._themeSubscription.manager.getTheme());
+    this.refreshTheme();
 
   }
 
   defaultElement(): HTMLElement {
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
 
-    this._titleSection = new CourierInboxHeaderTitle({ themeBus: this._themeSubscription.manager, option: this._menuOptions[0] });
-    this._optionMenu = new CourierInboxFilterMenu({ themeBus: this._themeSubscription.manager, options: this._menuOptions });
+    this._titleSection = new CourierInboxHeaderTitle(this._themeSubscription.manager, this._menuOptions[0]);
+    this._optionMenu = new CourierInboxFilterMenu(this._themeSubscription.manager, this._menuOptions);
 
     // Create flexible spacer
     const spacer = document.createElement('div');
@@ -128,19 +126,19 @@ export class CourierInboxHeader extends CourierElement {
 
     const container = document.createElement('div');
     container.className = 'courier-inbox-header';
-    container.appendChild(style);
     container.appendChild(this._titleSection);
     container.appendChild(spacer);
     container.appendChild(actions);
-
-    // Initialize title section with first menu option
-    this._titleSection.update(this._menuOptions[0], this._feedType, this._unreadCount);
 
     return container;
   }
 
   private getStyles(): string {
     return `
+      :host {
+        z-index: 100;
+      }
+
       .courier-inbox-header {
         display: flex;
         align-items: center;

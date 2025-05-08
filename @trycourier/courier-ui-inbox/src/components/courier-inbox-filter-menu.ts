@@ -25,10 +25,10 @@ export class CourierInboxFilterMenu extends HTMLElement {
   private _menuButton: CourierIconButton;
   private _menu: HTMLDivElement;
 
-  constructor(props: { themeBus: CourierInboxThemeManager, options: CourierInboxMenuOption[] }) {
+  constructor(themeManager: CourierInboxThemeManager, options: CourierInboxMenuOption[]) {
     super();
 
-    this._options = props.options;
+    this._options = options;
     this._selectedIndex = 0;
 
     const shadow = this.attachShadow({ mode: 'open' });
@@ -47,15 +47,15 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
-    this.setOptions(props.options);
+    this.setOptions(options);
 
     // Handle the theme change
-    this._themeSubscription = props.themeBus.subscribe((theme: CourierInboxTheme) => {
+    this._themeSubscription = themeManager.subscribe((theme: CourierInboxTheme) => {
       this.setTheme(theme);
     });
 
     // Set the theme
-    this.setTheme(props.themeBus.getTheme());
+    this.setTheme(themeManager.getTheme());
 
   }
 

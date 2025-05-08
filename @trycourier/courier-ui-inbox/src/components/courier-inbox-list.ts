@@ -39,7 +39,7 @@ export class CourierInboxList extends HTMLElement {
   }
 
   constructor(props: {
-    themeBus: CourierInboxThemeManager,
+    themeManager: CourierInboxThemeManager,
     onRefresh: () => void,
     onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
@@ -48,7 +48,7 @@ export class CourierInboxList extends HTMLElement {
     super();
 
     // Initialize the theme subscription
-    this._themeSubscription = props.themeBus.subscribe((_: CourierInboxTheme) => {
+    this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
       this.refreshTheme();
     });
 

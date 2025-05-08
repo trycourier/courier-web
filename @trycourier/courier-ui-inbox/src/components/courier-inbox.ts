@@ -17,17 +17,17 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
   // Theming
-  private _themeBus: CourierInboxThemeManager;
+  private _themeManager: CourierInboxThemeManager;
   get theme() {
-    return this._themeBus.getTheme();
+    return this._themeManager.getTheme();
   }
 
   public setLightTheme(theme: CourierInboxTheme) {
-    this._themeBus.setLightTheme(theme);
+    this._themeManager.setLightTheme(theme);
   }
 
   public setDarkTheme(theme: CourierInboxTheme) {
-    this._themeBus.setDarkTheme(theme);
+    this._themeManager.setDarkTheme(theme);
   }
 
   // Components
@@ -56,18 +56,18 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     return ['height', 'message-click', 'light-theme', 'dark-theme', 'mode'];
   }
 
-  constructor(themeBus?: CourierInboxThemeManager) {
+  constructor(themeManager?: CourierInboxThemeManager) {
     super();
 
     // Attach the shadow DOM
     this._shadow = this.attachShadow({ mode: 'open' });
 
     // Theme
-    this._themeBus = themeBus ?? new CourierInboxThemeManager(defaultLightTheme);
+    this._themeManager = themeManager ?? new CourierInboxThemeManager(defaultLightTheme);
 
     // Header
     this._header = new CourierInboxHeader({
-      themeBus: this._themeBus,
+      themeManager: this._themeManager,
       onFeedTypeChange: (feedType: CourierInboxFeedType) => {
         this.setFeedType(feedType);
       }
@@ -77,7 +77,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
-      themeBus: this._themeBus,
+      themeManager: this._themeManager,
       onRefresh: () => {
         this.refresh();
       },
@@ -122,7 +122,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
 
     // Refresh the theme on change
-    this._themeBus.subscribe((_) => {
+    this._themeManager.subscribe((_) => {
       this.refreshTheme();
     });
 
@@ -320,7 +320,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         }
         break;
       case 'mode':
-        this._themeBus.setMode(newValue as CourierComponentThemeMode);
+        this._themeManager.setMode(newValue as CourierComponentThemeMode);
         break;
     }
   }
