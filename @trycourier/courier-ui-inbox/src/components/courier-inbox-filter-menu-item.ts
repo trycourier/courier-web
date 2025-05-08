@@ -1,5 +1,5 @@
 import { CourierColors, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 
@@ -14,17 +14,21 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
   private _itemIcon: CourierIcon;
   private _title: HTMLParagraphElement;
   private _checkIcon: CourierIcon;
+  private _style: HTMLStyleElement;
 
-  constructor(props: { option: CourierInboxMenuOption, isSelected: boolean }) {
+  // Theme
+  private _themeManager: CourierInboxThemeManager;
+
+  constructor(props: { option: CourierInboxMenuOption, isSelected: boolean, themeManager: CourierInboxThemeManager }) {
     super();
 
     this._option = props.option;
     this._isSelected = props.isSelected;
+    this._themeManager = props.themeManager;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
+    this._style = document.createElement('style');
 
     this._content = document.createElement('div');
     this._content.className = 'menu-item';
@@ -46,14 +50,19 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
     this._content.appendChild(spacer);
     this._content.appendChild(this._checkIcon);
 
-    shadow.appendChild(style);
+    shadow.appendChild(this._style);
     shadow.appendChild(this._content);
 
     this._checkIcon.style.display = this._isSelected ? 'block' : 'none';
 
+    this.refreshTheme(this._option.id);
+
   }
 
   private getStyles(): string {
+
+    const theme = this._themeManager.getTheme();
+
     return `
       :host {
         display: flex;
@@ -63,11 +72,11 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: var(--hover-color, ${CourierColors.gray[200]});
+        background-color: ${theme.inbox?.header?.menu?.popup?.list?.hoverColor ?? 'red'};
       }
 
       :host(:active) {
-        background-color: var(--active-color, ${CourierColors.gray[500]});
+        background-color: ${theme.inbox?.header?.menu?.popup?.list?.activeColor ?? 'red'};
       }
 
       .menu-item {
@@ -75,7 +84,6 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
         align-items: center;
         width: 100%;
         gap: 12px;
-        color: var(--text-color, ${CourierColors.black[500]});
       }
 
       .spacer {
@@ -84,8 +92,10 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
 
       p {
         margin: 0;
-        font-family: var(--font-family);
-        font-size: var(--font-size, 14px);
+        font-family: ${theme.inbox?.header?.menu?.popup?.list?.font?.family ?? 'inherit'};
+        font-weight: ${theme.inbox?.header?.menu?.popup?.list?.font?.weight ?? 'inherit'};
+        font-size: ${theme.inbox?.header?.menu?.popup?.list?.font?.size ?? '14px'};
+        color: ${theme.inbox?.header?.menu?.popup?.list?.font?.color ?? 'red'};
       }
 
       .check-icon {
@@ -94,21 +104,13 @@ export class CourierInboxFilterMenuItem extends HTMLElement {
     `;
   }
 
-  public setTheme(feedType: CourierInboxFeedType, theme?: CourierInboxTheme) {
-    if (!theme) {
-      return;
-    }
+  public refreshTheme(feedType: CourierInboxFeedType) {
+    const theme = this._themeManager.getTheme();
 
     const list = theme.inbox?.header?.menu?.popup?.list;
 
-    // Set text color
-    this.style.setProperty('--text-color', list?.font?.color ?? CourierColors.black[500]);
-    this.style.setProperty('--font-family', list?.font?.family ?? null);
-    this.style.setProperty('--font-size', list?.font?.size ?? '14px');
-
-    // Set hover and active colors
-    this.style.setProperty('--hover-color', list?.hoverColor ?? CourierColors.gray[200]);
-    this.style.setProperty('--active-color', list?.activeColor ?? CourierColors.gray[500]);
+    // Update styles
+    this._style.textContent = this.getStyles();
 
     // Set selected icon color
     this._checkIcon.updateColor(theme.inbox?.header?.menu?.popup?.list?.selectionIcon?.color ?? CourierColors.black[500]);

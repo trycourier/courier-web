@@ -1,5 +1,4 @@
 import { CourierColors, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
 import { CourierInboxFilterMenuItem } from "./courier-inbox-filter-menu-item";
@@ -19,11 +18,11 @@ export class CourierInboxFilterMenu extends HTMLElement {
   // State
   private _selectedIndex: number = 0;
   private _options: CourierInboxMenuOption[];
-  private _theme?: CourierInboxTheme;
 
   // Components
   private _menuButton: CourierIconButton;
   private _menu: HTMLDivElement;
+  private _style: HTMLStyleElement;
 
   constructor(themeManager: CourierInboxThemeManager, options: CourierInboxMenuOption[]) {
     super();
@@ -37,29 +36,31 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menu = document.createElement('div');
     this._menu.className = 'menu';
 
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
+    this._style = document.createElement('style');
 
-    shadow.appendChild(style);
+    shadow.appendChild(this._style);
     shadow.appendChild(this._menuButton);
     shadow.appendChild(this._menu);
 
     this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
-    this.setOptions(options);
-
     // Handle the theme change
-    this._themeSubscription = themeManager.subscribe((theme: CourierInboxTheme) => {
-      this.setTheme(theme);
+    this._themeSubscription = themeManager.subscribe((_) => {
+      this.refreshTheme();
     });
 
     // Set the theme
-    this.setTheme(themeManager.getTheme());
+    this.refreshTheme();
+
+    // this.setOptions(options);
 
   }
 
   private getStyles(): string {
+
+    const theme = this._themeSubscription.manager.getTheme();
+
     return `
       :host {
         position: relative;
@@ -71,10 +72,10 @@ export class CourierInboxFilterMenu extends HTMLElement {
         position: absolute;
         top: 42px;
         right: -6px;
-        border-radius: var(--menu-border-radius, 6px);
-        border: var(--menu-border, 1px solid ${CourierColors.gray[500]});
-        background: var(--menu-background-color, ${CourierColors.white[500]});
-        box-shadow: var(--menu-shadow, 0 4px 12px 0 ${CourierColors.gray[500]});
+        border-radius: ${theme.inbox?.header?.menu?.popup?.borderRadius ?? '6px'};
+        border: ${theme.inbox?.header?.menu?.popup?.border ?? '1px solid red'};
+        background: ${theme.inbox?.header?.menu?.popup?.backgroundColor ?? 'red'};
+        box-shadow: ${theme.inbox?.header?.menu?.popup?.shadow ?? '0 4px 12px 0 red'};
         z-index: 1000;
         min-width: 200px;
         overflow: hidden;
@@ -82,7 +83,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
       }
 
       courier-inbox-filter-menu-item {
-        border-bottom: var(--menu-divider, none);
+        border-bottom: ${theme.inbox?.header?.menu?.popup?.list?.divider ?? 'none'};
       }
 
       courier-inbox-filter-menu-item:last-child {
@@ -91,8 +92,15 @@ export class CourierInboxFilterMenu extends HTMLElement {
     `;
   }
 
-  private setTheme(theme: CourierInboxTheme) {
-    this._theme = theme;
+  private refreshTheme() {
+
+    // Update styles
+    this._style.textContent = this.getStyles();
+
+    // Get theme
+    const theme = this._themeSubscription.manager.getTheme();
+
+    // Get menu
     const menu = theme.inbox?.header?.menu;
 
     // Update menu button
@@ -103,37 +111,25 @@ export class CourierInboxFilterMenu extends HTMLElement {
     this._menuButton.updateHoverBackgroundColor(button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
     this._menuButton.updateActiveBackgroundColor(button?.activeBackgroundColor ?? CourierColors.black[500_20]);
 
-    // Update menu
-    const popup = menu?.popup;
-    this.style.setProperty('--menu-divider', popup?.list?.divider ?? `none`);
-    this.style.setProperty('--menu-border-radius', popup?.borderRadius ?? '6px');
-    this.style.setProperty('--menu-background-color', popup?.backgroundColor ?? CourierColors.white[500]);
-    this.style.setProperty('--menu-border', popup?.border ?? `1px solid ${CourierColors.gray[500]}`);
-    this.style.setProperty('--menu-shadow', popup?.shadow ?? `0px 8px 16px -4px ${CourierColors.gray[500]}`);
-
-    // Update menu items
-    this._options.forEach((option, index) => {
-      const menuItem = this._menu.children[index] as CourierInboxFilterMenuItem;
-      menuItem.setTheme(option.id, theme);
-    });
+    // Reload menu items
+    this.reloadMenuItems();
   }
 
   public setOptions(options: CourierInboxMenuOption[]) {
     this._options = options;
-    this.render();
+    this.reloadMenuItems();
   }
 
-  private render() {
+  private reloadMenuItems() {
     this._menu.innerHTML = '';
 
     this._options.forEach((option, index) => {
-      const menuItem = new CourierInboxFilterMenuItem({ option, isSelected: this._selectedIndex === index });
-      menuItem.setTheme(option.id, this._theme);
+      const menuItem = new CourierInboxFilterMenuItem({ option, isSelected: this._selectedIndex === index, themeManager: this._themeSubscription.manager });
 
       menuItem.addEventListener('click', () => {
         this._selectedIndex = index;
         option.onClick(option);
-        this.render();
+        this.reloadMenuItems();
         this._menu.style.display = 'none';
       });
 
@@ -154,7 +150,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
 
   public selectOption(option: CourierInboxMenuOption) {
     this._selectedIndex = this._options.findIndex(o => o.label === option.label);
-    this.render();
+    this.reloadMenuItems();
   }
 
   disconnectedCallback() {
