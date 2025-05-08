@@ -1,4 +1,4 @@
-import { SystemThemeMode, addSystemThemeModeListener } from "@trycourier/courier-ui-core";
+import { SystemThemeMode, addSystemThemeModeListener, getSystemThemeMode } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme, mergeTheme } from "./courier-inbox-theme";
 
 export interface CourierInboxThemeSubscription {
@@ -19,7 +19,7 @@ export class CourierInboxThemeManager {
   private _subscriptions: CourierInboxThemeSubscription[] = [];
 
   // System theme
-  private _currentSystemTheme: SystemThemeMode = 'light';
+  private _currentSystemTheme: SystemThemeMode;
   private _systemThemeCleanup: (() => void) | undefined;
 
   public setLightTheme(theme: CourierInboxTheme) {
@@ -39,6 +39,11 @@ export class CourierInboxThemeManager {
   constructor(initialTheme: CourierInboxTheme) {
     this._theme = initialTheme;
     this._target = new EventTarget();
+
+    // Get the initial system theme
+    this._currentSystemTheme = getSystemThemeMode();
+    this.setLightTheme(defaultLightTheme);
+    this.setDarkTheme(defaultDarkTheme);
 
     // Set up system theme listener
     this._systemThemeCleanup = addSystemThemeModeListener((mode: SystemThemeMode) => {

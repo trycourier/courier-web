@@ -7,7 +7,6 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { SystemThemeMode } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
@@ -30,18 +29,13 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
   }
 
   public setLightTheme(theme: CourierInboxTheme) {
+    console.log('setLightTheme', theme);
     this._themeBus.setLightTheme(theme);
   }
 
   public setDarkTheme(theme: CourierInboxTheme) {
+    console.log('setDarkTheme', theme);
     this._themeBus.setDarkTheme(theme);
-  }
-
-  private updateTheme() {
-    // console.log('updateTheme', theme, this.theme);
-    // // mergeTheme(theme, themeConfig)
-    // this._themeBus.setTheme(this.theme);
-    this._style.textContent = this.getStyles();
   }
 
   // Components
@@ -83,7 +77,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     this._inbox.setAttribute('height', '100%');
 
     this._style = document.createElement('style');
-    this._style.textContent = this.getStyles();
+    this.refreshTheme();
 
     shadow.appendChild(this._style);
     shadow.appendChild(this._triggerButton);
@@ -102,13 +96,15 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDataSto
     this._datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
-    // Refresh the theme
-    this.updateTheme();
-
-    this._themeBus.subscribe(theme => {
-      this.updateTheme();
+    // Refresh the theme on change
+    this._themeBus.subscribe((_) => {
+      this.refreshTheme();
     });
 
+  }
+
+  private refreshTheme() {
+    this._style.textContent = this.getStyles();
   }
 
   private getStyles(): string {
