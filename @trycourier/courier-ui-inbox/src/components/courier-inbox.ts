@@ -287,6 +287,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   }
 
   disconnectedCallback() {
+    this._themeManager.cleanup();
     this._datastoreListener?.remove();
     this._authListener?.remove();
   }

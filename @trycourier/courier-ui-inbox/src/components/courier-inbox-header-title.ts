@@ -119,7 +119,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
 
   // Disconnect the theme subscription
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 
 }

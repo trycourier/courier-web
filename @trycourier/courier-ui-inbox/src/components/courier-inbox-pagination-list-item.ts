@@ -1,10 +1,14 @@
-import { CourierLoadingIndicator } from "@trycourier/courier-ui-core";
+import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
 export class CourierInboxPaginationListItem extends HTMLElement {
-  private loadingElement?: CourierLoadingIndicator;
+
+  // Components
+  private skeletonLoadingList?: CourierInboxSkeletonList;
   private observer: IntersectionObserver;
-  private onPaginationTrigger: () => void;
   private customItem?: HTMLElement;
+
+  // Handlers
+  private onPaginationTrigger: () => void;
 
   constructor(props: { customItem?: HTMLElement, onPaginationTrigger: () => void }) {
     super();
@@ -15,33 +19,20 @@ export class CourierInboxPaginationListItem extends HTMLElement {
 
     // Add styles to remove padding/margin and set box-sizing
     const style = document.createElement('style');
-    style.textContent = `
-      :host {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-      }
-    `;
+    style.textContent = this.getStyles();
     shadow.appendChild(style);
 
     if (this.customItem) {
       shadow.appendChild(this.customItem);
     } else {
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = `
-        display: flex;
-        justify-content: center;
-        align-items: start;
-        padding: 32px;
-        background-color: var(--courier-bg, #ffffff);
-        min-height: 100%;
-        height: 150%;
-        box-sizing: border-box;
-      `;
+      const container = document.createElement('div');
+      container.className = 'skeleton-container';
 
-      this.loadingElement = new CourierLoadingIndicator();
-      wrapper.appendChild(this.loadingElement);
-      shadow.appendChild(wrapper);
+      this.skeletonLoadingList = new CourierInboxSkeletonList();
+      this.skeletonLoadingList.build(undefined);
+      container.appendChild(this.skeletonLoadingList);
+
+      shadow.appendChild(container);
     }
 
     // Initialize intersection observer
@@ -55,6 +46,20 @@ export class CourierInboxPaginationListItem extends HTMLElement {
 
     // Start observing the element
     this.observer.observe(this);
+  }
+
+  private getStyles(): string {
+    return `
+      :host {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      .skeleton-container {
+        height: 150%;
+      }
+    `;
   }
 
   disconnectedCallback() {

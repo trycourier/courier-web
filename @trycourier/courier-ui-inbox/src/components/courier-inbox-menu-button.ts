@@ -86,7 +86,7 @@ export class CourierInboxMenuButton extends CourierElement {
   }
 
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 
 }

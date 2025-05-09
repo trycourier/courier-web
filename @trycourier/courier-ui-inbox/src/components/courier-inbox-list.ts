@@ -7,6 +7,7 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
 export class CourierInboxList extends HTMLElement {
 
@@ -199,7 +200,7 @@ export class CourierInboxList extends HTMLElement {
 
     // Loading state
     if (this._isLoading) {
-      const loadingElement = new CourierLoadingState();
+      const loadingElement = new CourierInboxSkeletonList();
       loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
       this.shadowRoot?.appendChild(loadingElement);
       return;
@@ -296,7 +297,7 @@ export class CourierInboxList extends HTMLElement {
 
   // Disconnect the theme subscription
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 
 }

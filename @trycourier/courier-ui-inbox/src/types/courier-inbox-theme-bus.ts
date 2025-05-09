@@ -3,7 +3,7 @@ import { CourierInboxTheme, defaultDarkTheme, defaultLightTheme, mergeTheme } fr
 
 export interface CourierInboxThemeSubscription {
   manager: CourierInboxThemeManager;
-  remove: () => void;
+  unsubscribe: () => void;
 }
 
 export class CourierInboxThemeManager {
@@ -118,7 +118,7 @@ export class CourierInboxThemeManager {
 
     const subscription: CourierInboxThemeSubscription = {
       manager: this,
-      remove: () => {
+      unsubscribe: () => {
         controller.abort();
         const index = this._subscriptions.indexOf(subscription);
         if (index > -1) {
@@ -138,7 +138,7 @@ export class CourierInboxThemeManager {
     if (this._systemThemeCleanup) {
       this._systemThemeCleanup();
     }
-    this._subscriptions.forEach(subscription => subscription.remove());
+    this._subscriptions.forEach(subscription => subscription.unsubscribe());
     this._subscriptions = [];
   }
 

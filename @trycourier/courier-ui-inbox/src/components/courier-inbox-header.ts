@@ -168,7 +168,7 @@ export class CourierInboxHeader extends CourierElement {
 
   // Disconnect the theme subscription
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 }
 

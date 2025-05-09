@@ -154,7 +154,7 @@ export class CourierInboxFilterMenu extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 
 }

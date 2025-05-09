@@ -94,7 +94,7 @@ export class CourierUnreadCountBadge extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._themeSubscription.remove();
+    this._themeSubscription.unsubscribe();
   }
 
 }
