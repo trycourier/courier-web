@@ -7,7 +7,7 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';

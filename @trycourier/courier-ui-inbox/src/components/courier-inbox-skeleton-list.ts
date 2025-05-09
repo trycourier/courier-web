@@ -1,10 +1,14 @@
 import { CourierElement } from "@trycourier/courier-ui-core";
 import { CourierInboxSkeletonListItem } from "./courier-inbox-skeleton-list-item";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export class CourierInboxSkeletonList extends CourierElement {
 
-  constructor() {
+  private _theme: CourierInboxTheme;
+
+  constructor(theme: CourierInboxTheme) {
     super();
+    this._theme = theme;
   }
 
   defaultElement(): HTMLElement {
@@ -18,7 +22,7 @@ export class CourierInboxSkeletonList extends CourierElement {
 
     // Create skeleton items
     for (let i = 0; i < 3; i++) {
-      const skeletonItem = new CourierInboxSkeletonListItem({ divider: '1px solid #e0e0e0', opacity: 1 / (i + 1) }); // TODO: Make this a prop
+      const skeletonItem = new CourierInboxSkeletonListItem(this._theme, 1 / (i + 1)); // TODO: Make this a prop
       list.appendChild(skeletonItem);
     }
 
@@ -46,7 +50,7 @@ export class CourierInboxSkeletonList extends CourierElement {
       }
 
       .list > * {
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: ${this._theme.inbox?.loading?.divider ?? '1px solid red'};
       }
 
       .list > *:last-child {

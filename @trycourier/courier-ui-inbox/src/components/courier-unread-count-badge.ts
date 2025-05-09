@@ -1,5 +1,5 @@
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export type CourierUnreadCountLocation = 'button' | 'header';
 

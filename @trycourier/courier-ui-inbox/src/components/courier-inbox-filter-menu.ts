@@ -1,6 +1,6 @@
 import { CourierColors, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxFilterMenuItem } from "./courier-inbox-filter-menu-item";
 
 export type CourierInboxMenuOption = {

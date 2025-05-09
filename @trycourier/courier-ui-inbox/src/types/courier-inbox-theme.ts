@@ -76,6 +76,16 @@ export type CourierInboxListItem = {
   divider?: string;
 }
 
+export type CourierInboxSkeletonLoadingState = {
+  animation?: {
+    color?: string;
+    height?: string;
+    borderRadius?: string;
+    duration?: string;
+  },
+  divider?: string;
+}
+
 export type CourierInboxInfoState = {
   title?: {
     font?: CourierInboxFont;
@@ -113,7 +123,7 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       item?: CourierInboxListItem;
     },
-    loadingIndicatorColor?: string;
+    loading?: CourierInboxSkeletonLoadingState,
     empty?: CourierInboxInfoState,
     error?: CourierInboxInfoState
   }
@@ -252,6 +262,15 @@ export const defaultLightTheme: CourierInboxTheme = {
         },
         divider: `1px solid ${CourierColors.gray[200]}`
       }
+    },
+    loading: {
+      animation: {
+        color: CourierColors.gray[500],
+        height: '14px',
+        borderRadius: '14px',
+        duration: '2s'
+      },
+      divider: `1px solid ${CourierColors.gray[200]}`
     }
   }
 };
@@ -389,6 +408,15 @@ export const defaultDarkTheme: CourierInboxTheme = {
         },
         divider: `1px solid ${CourierColors.gray[400]}`
       }
+    },
+    loading: {
+      animation: {
+        color: CourierColors.white[500],
+        height: '14px',
+        borderRadius: '14px',
+        duration: '2s'
+      },
+      divider: `1px solid ${CourierColors.gray[400]}`
     }
   }
 };
@@ -464,7 +492,10 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           ...theme.inbox?.list?.item
         }
       },
-      loadingIndicatorColor: theme.inbox?.loadingIndicatorColor ?? defaultTheme.inbox?.loadingIndicatorColor,
+      loading: {
+        ...defaultTheme.inbox?.loading,
+        ...theme.inbox?.loading,
+      },
       empty: {
         ...defaultTheme.inbox?.empty,
         ...theme.inbox?.empty

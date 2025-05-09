@@ -1,12 +1,12 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierColors, CourierInfoState, CourierLoadingState } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierInfoState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
 export class CourierInboxList extends HTMLElement {
@@ -200,7 +200,7 @@ export class CourierInboxList extends HTMLElement {
 
     // Loading state
     if (this._isLoading) {
-      const loadingElement = new CourierInboxSkeletonList();
+      const loadingElement = new CourierInboxSkeletonList(theme);
       loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
       this.shadowRoot?.appendChild(loadingElement);
       return;
@@ -248,7 +248,7 @@ export class CourierInboxList extends HTMLElement {
         return;
       }
 
-      const listItem = new CourierListItem(this._themeSubscription.manager.getTheme());
+      const listItem = new CourierListItem(theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
@@ -258,6 +258,7 @@ export class CourierInboxList extends HTMLElement {
     // Add pagination item if can paginate
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
+        theme: theme,
         customItem: this._paginationItemFactory?.({ feedType: this._feedType }),
         onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
       });

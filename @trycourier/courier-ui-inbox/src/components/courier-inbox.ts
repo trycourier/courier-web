@@ -9,7 +9,7 @@ import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
 export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
 

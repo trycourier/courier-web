@@ -1,7 +1,7 @@
 import { CourierColors, CourierElement, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export class CourierInboxMenuButton extends CourierElement {
 

@@ -2,7 +2,7 @@ import { CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
 import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export class CourierInboxHeaderTitle extends HTMLElement {
 

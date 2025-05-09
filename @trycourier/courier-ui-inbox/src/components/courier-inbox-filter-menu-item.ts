@@ -1,5 +1,5 @@
 import { CourierColors, CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxThemeManager } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
 

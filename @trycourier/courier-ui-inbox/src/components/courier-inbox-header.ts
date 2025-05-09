@@ -4,7 +4,7 @@ import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierColors } from "@trycourier/courier-ui-core";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-bus";
+import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export class CourierInboxHeader extends CourierElement {
 

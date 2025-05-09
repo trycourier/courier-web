@@ -1,3 +1,4 @@
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
 export class CourierInboxPaginationListItem extends HTMLElement {
@@ -10,7 +11,7 @@ export class CourierInboxPaginationListItem extends HTMLElement {
   // Handlers
   private onPaginationTrigger: () => void;
 
-  constructor(props: { customItem?: HTMLElement, onPaginationTrigger: () => void }) {
+  constructor(props: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
     super();
     this.onPaginationTrigger = props.onPaginationTrigger;
     this.customItem = props.customItem;
@@ -28,7 +29,7 @@ export class CourierInboxPaginationListItem extends HTMLElement {
       const container = document.createElement('div');
       container.className = 'skeleton-container';
 
-      this.skeletonLoadingList = new CourierInboxSkeletonList();
+      this.skeletonLoadingList = new CourierInboxSkeletonList(props.theme);
       this.skeletonLoadingList.build(undefined);
       container.appendChild(this.skeletonLoadingList);
 
