@@ -99,6 +99,7 @@ export class CourierInboxOptionMenuItem extends HTMLElement {
         font-weight: ${theme.inbox?.header?.menus?.popup?.list?.font?.weight ?? 'inherit'};
         font-size: ${theme.inbox?.header?.menus?.popup?.list?.font?.size ?? '14px'};
         color: ${theme.inbox?.header?.menus?.popup?.list?.font?.color ?? 'red'};
+        white-space: nowrap;
       }
 
       .check-icon {

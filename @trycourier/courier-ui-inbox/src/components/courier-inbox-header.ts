@@ -7,6 +7,8 @@ import { CourierColors } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
+export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
+
 export class CourierInboxHeader extends CourierElement {
 
   // Theme
@@ -23,6 +25,7 @@ export class CourierInboxHeader extends CourierElement {
 
     return [
       {
+        id: 'inbox',
         text: filterMenu?.inbox?.text ?? 'Inbox',
         icon: {
           color: filterMenu?.inbox?.icon?.color ?? 'red',
@@ -37,6 +40,7 @@ export class CourierInboxHeader extends CourierElement {
         }
       },
       {
+        id: 'archive',
         text: filterMenu?.archive?.text ?? 'Archive',
         icon: {
           color: filterMenu?.archive?.icon?.color ?? 'red',
@@ -60,6 +64,7 @@ export class CourierInboxHeader extends CourierElement {
 
     return [
       {
+        id: 'markAllRead',
         text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
         icon: {
           color: actionMenu?.markAllRead?.icon?.color ?? 'red',
@@ -71,6 +76,7 @@ export class CourierInboxHeader extends CourierElement {
         }
       },
       {
+        id: 'archiveAll',
         text: actionMenu?.archiveAll?.text ?? 'Archive All',
         icon: {
           color: actionMenu?.archiveAll?.icon?.color ?? 'red',
@@ -82,6 +88,7 @@ export class CourierInboxHeader extends CourierElement {
         }
       },
       {
+        id: 'archiveRead',
         text: actionMenu?.archiveRead?.text ?? 'Archive Read',
         icon: {
           color: actionMenu?.archiveRead?.icon?.color ?? 'red',
@@ -147,21 +154,17 @@ export class CourierInboxHeader extends CourierElement {
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {
-
-    // Update state 
     this._feedType = props.feedType;
     this._unreadCount = props.unreadCount;
+    this.refreshTitleSection();
+  }
 
-    // Update archive button
-    const isInbox = props.feedType === 'inbox';
-
-    // Update title section
-    const option = this.getFilterOptions().find(opt => opt.text.toLowerCase() === this._feedType);
+  private refreshTitleSection() {
+    const option = this.getFilterOptions().find(opt => ['inbox', 'archive'].includes(opt.id) && opt.id === this._feedType);
     if (option) {
-      this._titleSection?.updateSelectedOption(option, this._feedType, isInbox ? props.unreadCount : 0);
+      this._titleSection?.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
       this._filterMenu?.selectOption(option);
     }
-
   }
 
   build(newElement: HTMLElement | undefined | null) {

@@ -1,10 +1,12 @@
 import { CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
+import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
 
 export type CourierInboxMenuOptionType = 'filters' | 'actions';
 
 export type CourierInboxMenuOption = {
+  id: CourierInboxHeaderMenuItemId;
   text: string;
   icon: {
     color: string;
@@ -110,8 +112,9 @@ export class CourierInboxOptionMenu extends HTMLElement {
 
     // Get menu
     const menu = theme.inbox?.header?.menus;
-    const buttonConfig = this._type === 'filters' ? menu?.filters?.button : menu?.actions?.button;
-    const defaultIcon = this._type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow;
+    const isFilter = this._type === 'filters';
+    const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
+    const defaultIcon = isFilter ? CourierIconSVGs.filter : CourierIconSVGs.overflow;
 
     this._menuButton.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
     this._menuButton.updateIconColor(buttonConfig?.icon?.color ?? 'red');
@@ -171,7 +174,7 @@ export class CourierInboxOptionMenu extends HTMLElement {
   }
 
   public selectOption(option: CourierInboxMenuOption) {
-    this._selectedIndex = this._options.findIndex(o => o.text === option.text);
+    this._selectedIndex = this._options.findIndex(o => o.id === option.id);
     this.refreshMenuItems();
   }
 
