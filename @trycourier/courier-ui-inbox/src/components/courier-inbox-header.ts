@@ -5,6 +5,7 @@ import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierColors } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
+import { CourierInboxDatastore } from "../datastore/datastore";
 
 export class CourierInboxHeader extends CourierElement {
 
@@ -65,8 +66,8 @@ export class CourierInboxHeader extends CourierElement {
           svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
         },
         selectionIcon: null,
-        onClick: (option: CourierInboxMenuOption) => {
-          console.log('inbox', option);
+        onClick: (_: CourierInboxMenuOption) => {
+          CourierInboxDatastore.shared.readAllMessages();
         }
       },
       {
@@ -76,8 +77,8 @@ export class CourierInboxHeader extends CourierElement {
           svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
         },
         selectionIcon: null,
-        onClick: (option: CourierInboxMenuOption) => {
-          console.log('archive', option);
+        onClick: (_: CourierInboxMenuOption) => {
+          alert('TODO: Archive all messages');
         }
       },
       {
@@ -87,9 +88,8 @@ export class CourierInboxHeader extends CourierElement {
           svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
         },
         selectionIcon: null,
-        onClick: (option: CourierInboxMenuOption) => {
-          console.log('archive', option);
-          // this.handleOptionMenuClick('archive', option);
+        onClick: (_: CourierInboxMenuOption) => {
+          alert('TODO: Archive read messages');
         }
       }
     ];
