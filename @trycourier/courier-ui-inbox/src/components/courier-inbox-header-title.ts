@@ -1,5 +1,5 @@
-import { CourierIcon, CourierIconSource } from "@trycourier/courier-ui-core";
-import { CourierInboxMenuOption } from "./courier-inbox-filter-menu";
+import { CourierIcon, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
@@ -32,7 +32,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     this._container.className = 'title-section';
 
     this._iconElement = new CourierIcon();
-    this._iconElement.setAttribute('svg', this._option.icon);
+    this._iconElement.setAttribute('svg', this._option.icon.svg);
 
     this._titleElement = document.createElement('h2');
     this._unreadBadge = new CourierUnreadCountBadge({
@@ -106,12 +106,12 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     switch (this._feedType) {
       case 'inbox':
         this._titleElement.textContent = theme.inbox?.header?.filters?.inbox?.text ?? 'Inbox';
-        this._iconElement.updateSVG(theme.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSource.inbox);
+        this._iconElement.updateSVG(theme.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSVGs.inbox);
         this._iconElement.updateColor(theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'red');
         break;
       case 'archive':
         this._titleElement.textContent = theme.inbox?.header?.filters?.archive?.text ?? 'Archive';
-        this._iconElement.updateSVG(theme.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSource.archive);
+        this._iconElement.updateSVG(theme.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSVGs.archive);
         this._iconElement.updateColor(theme.inbox?.header?.filters?.archive?.icon?.color ?? 'red');
         break;
     }

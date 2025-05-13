@@ -1,20 +1,16 @@
 // Import core UI components
 import { CourierButton } from './components/courier-button';
-import { CourierIcon } from './components/icon';
-import { CourierLink } from './components/link';
-import { CourierLoadingIndicator } from './components/loading-indicator';
-import { CourierLoadingState } from './components/loading-state';
+import { CourierIcon } from './components/courier-icon';
+import { CourierLink } from './components/courier-link';
 import { CourierInfoState } from './components/courier-info-state';
-import { CourierIconButton } from './components/icon-button';
+import { CourierIconButton } from './components/courier-icon-button';
 
 // Export all components for external use
 export * from './components/courier-button';
-export * from './components/icon';
-export * from './components/link';
-export * from './components/loading-indicator';
-export * from './components/loading-state';
+export * from './components/courier-icon';
+export * from './components/courier-link';
 export * from './components/courier-info-state';
-export * from './components/icon-button';
+export * from './components/courier-icon-button';
 export * from './components/courier-element';
 export * from './components/courier-system-theme-element';
 export * from './utils/system-theme-mode';
@@ -26,8 +22,6 @@ const components = [
   { name: 'courier-button', class: CourierButton },
   { name: 'courier-icon', class: CourierIcon },
   { name: 'courier-link', class: CourierLink },
-  { name: 'courier-loading-indicator', class: CourierLoadingIndicator },
-  { name: 'courier-loading-state', class: CourierLoadingState },
   { name: 'courier-info-state', class: CourierInfoState },
   { name: 'courier-icon-button', class: CourierIconButton },
 ] as const;

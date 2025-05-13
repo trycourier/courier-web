@@ -1,5 +1,5 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierColors, CourierIcon, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIcon, CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
@@ -48,11 +48,11 @@ export class CourierListItem extends HTMLElement {
       }
 
       :host(:hover) {
-        background-color: ${listItem?.hoverColor ?? CourierColors.gray[200]};
+        background-color: ${listItem?.hoverBackgroundColor ?? CourierColors.gray[200]};
       }
 
       :host(:active) {
-        background-color: ${listItem?.activeColor ?? CourierColors.gray[400]};
+        background-color: ${listItem?.activeBackgroundColor ?? CourierColors.gray[400]};
       }
 
       :host(:last-child) {
@@ -180,7 +180,7 @@ export class CourierListItem extends HTMLElement {
 
     // Add close button only for inbox feed type
     if (this.feedType === 'inbox') {
-      this.closeButton = new CourierIconButton(CourierIconSource.remove, listItem?.archiveIcon?.color);
+      this.closeButton = new CourierIconButton(CourierIconSVGs.remove, listItem?.archiveIcon?.color);
       this.closeButton.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent event from bubbling up
         if (this.message && this.onCloseClick) {

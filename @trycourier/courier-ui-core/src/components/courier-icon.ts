@@ -1,6 +1,6 @@
-import { theme } from "../utils/theme";
+import { CourierColors } from "../utils/courier-colors";
 
-export const CourierIconSource = {
+export const CourierIconSVGs = {
   inbox: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.5 14.5V17C5.5 17.2812 5.71875 17.5 6 17.5H18C18.25 17.5 18.5 17.2812 18.5 17V14.5H15.9375L15.2812 15.8125C15.0938 16.25 14.6562 16.5 14.1875 16.5H9.78125C9.3125 16.5 8.875 16.25 8.6875 15.8125L8.03125 14.5H5.5ZM18.1875 13L16.6562 6.90625C16.5938 6.65625 16.4062 6.5 16.1875 6.5H7.8125C7.5625 6.5 7.375 6.65625 7.3125 6.90625L5.78125 13H8.1875C8.65625 13 9.09375 13.2812 9.3125 13.7188L9.9375 15H14.0312L14.6875 13.7188C14.875 13.2812 15.3125 13 15.7812 13H18.1875ZM4 14.25C4 14.0938 4 13.9375 4.03125 13.7812L5.84375 6.53125C6.09375 5.625 6.875 5 7.8125 5H16.1875C17.0938 5 17.9062 5.625 18.125 6.53125L19.9375 13.7812C19.9688 13.9375 20 14.0938 20 14.25V17C20 18.125 19.0938 19 18 19H6C4.875 19 4 18.125 4 17V14.25Z" fill="currentColor"/>
 </svg>`,
@@ -18,22 +18,44 @@ export const CourierIconSource = {
 </svg>`,
   remove: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M16.7969 8.27344L13.0469 12.0234L16.7656 15.7422C17.0781 16.0234 17.0781 16.4922 16.7656 16.7734C16.4844 17.0859 16.0156 17.0859 15.7344 16.7734L11.9844 13.0547L8.26562 16.7734C7.98438 17.0859 7.51562 17.0859 7.23438 16.7734C6.92188 16.4922 6.92188 16.0234 7.23438 15.7109L10.9531 11.9922L7.23438 8.27344C6.92188 7.99219 6.92188 7.52344 7.23438 7.21094C7.51562 6.92969 7.98438 6.92969 8.29688 7.21094L12.0156 10.9609L15.7344 7.24219C16.0156 6.92969 16.4844 6.92969 16.7969 7.24219C17.0781 7.52344 17.0781 7.99219 16.7969 8.27344Z" fill="currentColor"/>
+</svg>`,
+  overflow: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.5117 11.9883C18.5117 12.5508 18.1992 13.0195 17.7617 13.3008C17.293 13.582 16.6992 13.582 16.2617 13.3008C15.793 13.0195 15.5117 12.5508 15.5117 11.9883C15.5117 11.457 15.793 10.9883 16.2617 10.707C16.6992 10.4258 17.293 10.4258 17.7617 10.707C18.1992 10.9883 18.5117 11.457 18.5117 11.9883ZM13.5117 11.9883C13.5117 12.5508 13.1992 13.0195 12.7617 13.3008C12.293 13.582 11.6992 13.582 11.2617 13.3008C10.793 13.0195 10.5117 12.5508 10.5117 11.9883C10.5117 11.457 10.793 10.9883 11.2617 10.707C11.6992 10.4258 12.293 10.4258 12.7617 10.707C13.1992 10.9883 13.5117 11.457 13.5117 11.9883ZM7.01172 13.4883C6.44922 13.4883 5.98047 13.207 5.69922 12.7383C5.41797 12.3008 5.41797 11.707 5.69922 11.2383C5.98047 10.8008 6.44922 10.4883 7.01172 10.4883C7.54297 10.4883 8.01172 10.8008 8.29297 11.2383C8.57422 11.707 8.57422 12.3008 8.29297 12.7383C8.01172 13.207 7.54297 13.4883 7.01172 13.4883Z" fill="currentColor"/>
 </svg>`
 };
-
 export class CourierIcon extends HTMLElement {
-  private iconContainer: HTMLElement;
-  static observedAttributes = ['color', 'svg'];
+
+  // State
+  private _color?: string;
+  private _svg?: string;
+
+  // Components
+  private _iconContainer: HTMLElement;
+  private _style: HTMLStyleElement;
 
   constructor(color?: string, svg?: string) {
     super();
+
+    // Set initial values from constructor
+    this._color = color ?? CourierColors.black[500];
+    this._svg = svg;
+
+    // Create components
     const shadow = this.attachShadow({ mode: 'open' });
-    this.iconContainer = document.createElement('div');
-    shadow.appendChild(this.iconContainer);
+    this._iconContainer = document.createElement('div');
+    shadow.appendChild(this._iconContainer);
 
     // Add styles
-    const style = document.createElement('style');
-    style.textContent = `
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles(this._color);
+    shadow.appendChild(this._style);
+
+    // Refresh
+    this.refresh();
+  }
+
+  private getStyles(color: string): string {
+    return `
       :host {
         display: inline-block;
         line-height: 0;
@@ -42,40 +64,28 @@ export class CourierIcon extends HTMLElement {
       svg {
         width: 24px;
         height: 24px;
-        color: var(--courier-icon-color, ${theme.light.colors.icon});
+        color: ${color};
       }
     `;
-
-    shadow.appendChild(style);
-
-    // Set initial values from constructor
-    if (color) {
-      this.updateColor(color);
-    }
-    if (svg) {
-      this.updateSVG(svg);
-    }
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (oldValue === newValue) return;
-
-    switch (name) {
-      case 'color':
-        this.updateColor(newValue);
-        break;
-      case 'svg':
-        this.updateSVG(newValue);
-        break;
+  private refresh() {
+    if (this._svg) {
+      this._iconContainer.innerHTML = this._svg;
+    }
+    if (this._color) {
+      this._style.textContent = this.getStyles(this._color);
     }
   }
 
   public updateColor(color: string) {
-    this.style.setProperty('--courier-icon-color', color);
+    this._color = color;
+    this.refresh();
   }
 
-  public updateSVG(iconElement: string) {
-    this.iconContainer.innerHTML = iconElement;
+  public updateSVG(svg: string) {
+    this._svg = svg;
+    this.refresh();
   }
 }
 

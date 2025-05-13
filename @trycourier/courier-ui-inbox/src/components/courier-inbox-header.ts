@@ -1,6 +1,6 @@
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierIconSource, CourierElement } from "@trycourier/courier-ui-core";
-import { CourierInboxFilterMenu, CourierInboxMenuOption } from "./courier-inbox-filter-menu";
+import { CourierIconSVGs, CourierElement } from "@trycourier/courier-ui-core";
+import { CourierInboxOptionMenu, CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierColors } from "@trycourier/courier-ui-core";
@@ -16,28 +16,89 @@ export class CourierInboxHeader extends CourierElement {
   private _unreadCount: number = 0;
 
   // Menu options
-  private _menuOptions: CourierInboxMenuOption[] = [
-    {
-      id: 'inbox',
-      label: 'Inbox',
-      icon: CourierIconSource.inbox,
-      onClick: (option: CourierInboxMenuOption) => {
-        this.handleOptionMenuClick('inbox', option);
+  private getFilterOptions(): CourierInboxMenuOption[] {
+    const theme = this._themeSubscription.manager.getTheme();
+    const filterMenu = theme.inbox?.header?.menus?.filters;
+
+    return [
+      {
+        text: filterMenu?.inbox?.text ?? 'Inbox',
+        icon: {
+          color: filterMenu?.inbox?.icon?.color ?? 'red',
+          svg: filterMenu?.inbox?.icon?.svg ?? CourierIconSVGs.inbox
+        },
+        selectionIcon: {
+          color: theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.color ?? 'red',
+          svg: theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.svg ?? CourierIconSVGs.check
+        },
+        onClick: (option: CourierInboxMenuOption) => {
+          this.handleOptionMenuItemClick('inbox', option);
+        }
+      },
+      {
+        text: filterMenu?.archive?.text ?? 'Archive',
+        icon: {
+          color: filterMenu?.archive?.icon?.color ?? 'red',
+          svg: filterMenu?.archive?.icon?.svg ?? CourierIconSVGs.archive
+        },
+        selectionIcon: {
+          color: theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.color ?? 'red',
+          svg: theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.svg ?? CourierIconSVGs.check
+        },
+        onClick: (option: CourierInboxMenuOption) => {
+          this.handleOptionMenuItemClick('archive', option);
+        }
       }
-    },
-    {
-      id: 'archive',
-      label: 'Archive',
-      icon: CourierIconSource.archive,
-      onClick: (option: CourierInboxMenuOption) => {
-        this.handleOptionMenuClick('archive', option);
+    ];
+  }
+
+  private getActionOptions(): CourierInboxMenuOption[] {
+
+    const theme = this._themeSubscription.manager.getTheme();
+    const actionMenu = theme.inbox?.header?.menus?.actions;
+
+    return [
+      {
+        text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
+        icon: {
+          color: actionMenu?.markAllRead?.icon?.color ?? 'red',
+          svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
+        },
+        selectionIcon: null,
+        onClick: (option: CourierInboxMenuOption) => {
+          console.log('inbox', option);
+        }
+      },
+      {
+        text: actionMenu?.archiveAll?.text ?? 'Archive All',
+        icon: {
+          color: actionMenu?.archiveAll?.icon?.color ?? 'red',
+          svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
+        },
+        selectionIcon: null,
+        onClick: (option: CourierInboxMenuOption) => {
+          console.log('archive', option);
+        }
+      },
+      {
+        text: actionMenu?.archiveRead?.text ?? 'Archive Read',
+        icon: {
+          color: actionMenu?.archiveRead?.icon?.color ?? 'red',
+          svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
+        },
+        selectionIcon: null,
+        onClick: (option: CourierInboxMenuOption) => {
+          console.log('archive', option);
+          // this.handleOptionMenuClick('archive', option);
+        }
       }
-    }
-  ];
+    ];
+  }
 
   // Components
   private _titleSection?: CourierInboxHeaderTitle;
-  private _optionMenu?: CourierInboxFilterMenu;
+  private _filterMenu?: CourierInboxOptionMenu;
+  private _actionMenu?: CourierInboxOptionMenu;
   private _style?: HTMLStyleElement;
 
   // Callbacks
@@ -71,9 +132,13 @@ export class CourierInboxHeader extends CourierElement {
       header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`;
     }
 
+    // Update menus
+    this._filterMenu?.setOptions(this.getFilterOptions());
+    this._actionMenu?.setOptions(this.getActionOptions());
+
   }
 
-  private handleOptionMenuClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
+  private handleOptionMenuItemClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
     this._feedType = feedType;
     if (this._titleSection) {
       this._titleSection.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
@@ -82,6 +147,7 @@ export class CourierInboxHeader extends CourierElement {
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {
+
     // Update state 
     this._feedType = props.feedType;
     this._unreadCount = props.unreadCount;
@@ -90,11 +156,12 @@ export class CourierInboxHeader extends CourierElement {
     const isInbox = props.feedType === 'inbox';
 
     // Update title section
-    const option = this._menuOptions.find(opt => opt.label.toLowerCase() === this._feedType);
+    const option = this.getFilterOptions().find(opt => opt.text.toLowerCase() === this._feedType);
     if (option) {
       this._titleSection?.updateSelectedOption(option, this._feedType, isInbox ? props.unreadCount : 0);
-      this._optionMenu?.selectOption(option);
+      this._filterMenu?.selectOption(option);
     }
+
   }
 
   build(newElement: HTMLElement | undefined | null) {
@@ -112,8 +179,18 @@ export class CourierInboxHeader extends CourierElement {
 
   defaultElement(): HTMLElement {
 
-    this._titleSection = new CourierInboxHeaderTitle(this._themeSubscription.manager, this._menuOptions[0]);
-    this._optionMenu = new CourierInboxFilterMenu(this._themeSubscription.manager, this._menuOptions);
+    const filterOptions = this.getFilterOptions();
+
+    this._titleSection = new CourierInboxHeaderTitle(this._themeSubscription.manager, filterOptions[0]);
+    this._filterMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, 'filters', true, filterOptions, () => {
+      this._actionMenu?.closeMenu();
+    });
+    this._actionMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, 'actions', false, this.getActionOptions(), () => {
+      this._filterMenu?.closeMenu();
+    });
+
+    // Selected default menu
+    this._filterMenu.selectOption(filterOptions[0]);
 
     // Create flexible spacer
     const spacer = document.createElement('div');
@@ -122,7 +199,8 @@ export class CourierInboxHeader extends CourierElement {
     // Create and setup actions section
     const actions = document.createElement('div');
     actions.className = 'actions';
-    actions.appendChild(this._optionMenu);
+    actions.appendChild(this._filterMenu);
+    actions.appendChild(this._actionMenu);
 
     const container = document.createElement('div');
     container.className = 'courier-inbox-header';

@@ -1,6 +1,5 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
-import { InboxDataSet } from "./inbox-data-set";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {

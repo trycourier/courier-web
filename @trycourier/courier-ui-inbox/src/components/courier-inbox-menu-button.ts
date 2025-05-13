@@ -1,4 +1,4 @@
-import { CourierColors, CourierElement, CourierIconButton, CourierIconSource } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierElement, CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
@@ -27,7 +27,7 @@ export class CourierInboxMenuButton extends CourierElement {
     this._container.className = 'menu-button-container';
 
     // Create trigger button
-    this._triggerButton = new CourierIconButton(CourierIconSource.inbox);
+    this._triggerButton = new CourierIconButton(CourierIconSVGs.inbox);
 
     // Create unread count badge
     this._unreadCountBadge = new CourierUnreadCountBadge({
@@ -74,7 +74,7 @@ export class CourierInboxMenuButton extends CourierElement {
 
     // Trigger button
     this._triggerButton?.updateIconColor(theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
-    this._triggerButton?.updateIconSVG(theme?.popup?.button?.icon?.svg ?? CourierIconSource.inbox);
+    this._triggerButton?.updateIconSVG(theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
     this._triggerButton?.updateBackgroundColor(theme?.popup?.button?.backgroundColor ?? 'transparent');
     this._triggerButton?.updateHoverBackgroundColor(theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
     this._triggerButton?.updateActiveBackgroundColor(theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
