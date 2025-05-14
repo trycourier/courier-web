@@ -19,6 +19,7 @@ export class CourierListItem extends HTMLElement {
   private _timeElement: HTMLParagraphElement;
   private _style: HTMLStyleElement;
   private _menu: CourierListItemActionMenu;
+  private _unreadIndicator: HTMLDivElement;
 
   // Touch gestures
   private _longPressTimeout: number | null = null;
@@ -52,6 +53,10 @@ export class CourierListItem extends HTMLElement {
     this._timeElement = document.createElement('p');
     this._timeElement.setAttribute('part', 'time');
 
+    // Unread indicator
+    this._unreadIndicator = document.createElement('div');
+    this._unreadIndicator.className = 'unread-indicator';
+
     // Style element
     this._style = document.createElement('style');
     this._refreshStyles();
@@ -61,7 +66,7 @@ export class CourierListItem extends HTMLElement {
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
-    shadow.append(this._style, textContainer, this._timeElement, this._menu);
+    shadow.append(this._style, this._unreadIndicator, textContainer, this._timeElement, this._menu);
 
     const cancelPropagation = (e: Event): void => {
       e.stopPropagation();
@@ -261,8 +266,19 @@ export class CourierListItem extends HTMLElement {
         border-bottom: none;
       }
 
-      :host(.unread) {
-        box-shadow: inset 2px 0 0 ${listItem?.unreadIndicatorColor ?? 'red'};
+      .unread-indicator {
+        position: absolute;
+        top: 28px;
+        left: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: ${listItem?.unreadIndicatorColor ?? 'red'};
+        display: none;
+      }
+
+      :host(.unread) .unread-indicator {
+        display: block;
       }
 
       /* Content layout */
@@ -344,7 +360,6 @@ export class CourierListItem extends HTMLElement {
     this._message = message;
     this._feedType = feedType;
     this._updateContent();
-    this._menu.setOptions(this._getMenuOptions());
   }
 
   setOnItemClick(cb: (message: InboxMessage) => void): void {
@@ -360,7 +375,7 @@ export class CourierListItem extends HTMLElement {
     }
 
     // Unread marker
-    this.classList.toggle('unread', !this._message.read);
+    this.classList.toggle('unread', !this._message.read && this._feedType !== 'archive');
 
     this._titleElement.textContent = this._message.title || 'Untitled Message';
     this._subtitleElement.textContent = this._message.preview || this._message.body || '';
