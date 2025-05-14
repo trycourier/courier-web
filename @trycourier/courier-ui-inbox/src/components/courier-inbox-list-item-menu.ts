@@ -1,17 +1,17 @@
 import { CourierIconButton } from "@trycourier/courier-ui-core";
 import { CourierInboxIcon, CourierInboxTheme } from "../types/courier-inbox-theme";
 
-export type CourierListItemMenuOption = {
+export type CourierListItemActionMenuOption = {
   id: string;
   icon: CourierInboxIcon;
   onClick: () => void;
 };
 
-export class CourierListItemMenu extends HTMLElement {
+export class CourierListItemActionMenu extends HTMLElement {
 
   // State
   private _theme: CourierInboxTheme;
-  private _options: CourierListItemMenuOption[] = [];
+  private _options: CourierListItemActionMenuOption[] = [];
 
   // Components
   private _style: HTMLStyleElement;
@@ -30,6 +30,7 @@ export class CourierListItemMenu extends HTMLElement {
     const menu = document.createElement("ul");
     menu.className = "menu";
     shadow.appendChild(menu);
+
   }
 
   private getStyles(): string {
@@ -40,15 +41,15 @@ export class CourierListItemMenu extends HTMLElement {
       :host {
         display: block;
         position: absolute;
-        padding: 4px;
         background: ${menu?.backgroundColor ?? 'red'};
         border: ${menu?.border ?? "1px solid red"};
-        border-radius: ${menu?.borderRadius ?? "4px"};
+        border-radius: ${menu?.borderRadius ?? '0px'};
         box-shadow: ${menu?.shadow ?? "0 2px 8px red"};
         user-select: none;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.15s;
+        overflow: hidden;
       }
 
       :host(.visible) {
@@ -62,7 +63,6 @@ export class CourierListItemMenu extends HTMLElement {
         padding: 0;
         display: flex;
         flex-direction: row;
-        gap: 4px;
       }
 
       li.menu-item {
@@ -76,32 +76,61 @@ export class CourierListItemMenu extends HTMLElement {
     `;
   }
 
-  setOptions(options: CourierListItemMenuOption[]) {
+  setOptions(options: CourierListItemActionMenuOption[]) {
     this._options = options;
     this.renderMenu();
   }
 
   private renderMenu() {
+    // Clear existing menu items
     const menu = this.shadowRoot?.querySelector("ul.menu");
     if (!menu) return;
     menu.innerHTML = "";
     const menuTheme = this._theme.inbox?.list?.item?.menu;
+
+    // Prevent click events from propagating outside of this menu
+    const cancelEvent = (e: Event) => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
+
+    // Create new menu items
     this._options.forEach((opt) => {
       const icon = new CourierIconButton(opt.icon.svg, opt.icon.color, menuTheme?.backgroundColor, menuTheme?.item?.hoverBackgroundColor, menuTheme?.item?.activeBackgroundColor, menuTheme?.item?.borderRadius);
-      icon.addEventListener('click', opt.onClick);
+
+      // Handle both click and touch events
+      const handleInteraction = (e: Event) => {
+        cancelEvent(e);
+        opt.onClick();
+      };
+
+      // Add click handler for desktop
+      icon.addEventListener('click', handleInteraction);
+
+      // Add touch handlers for mobile
+      icon.addEventListener('touchstart', cancelEvent);
+      icon.addEventListener('touchend', handleInteraction);
+
+      // Prevent default touch behavior
+      icon.addEventListener('touchmove', cancelEvent);
+
+      // Prevent mouse events from interfering
+      icon.addEventListener('mousedown', cancelEvent);
+      icon.addEventListener('mouseup', cancelEvent);
+
       menu.appendChild(icon);
     });
   }
 
   show() {
-    this.classList.add("visible");
+    this.classList.add('visible');
   }
 
   hide() {
-    this.classList.remove("visible");
+    this.classList.remove('visible');
   }
 }
 
 if (!customElements.get("courier-list-item-menu")) {
-  customElements.define("courier-list-item-menu", CourierListItemMenu);
+  customElements.define("courier-list-item-menu", CourierListItemActionMenu);
 }

@@ -178,4 +178,6 @@ export class CourierInboxOptionMenu extends HTMLElement {
   }
 }
 
-customElements.define('courier-inbox-option-menu', CourierInboxOptionMenu);
+if (!customElements.get('courier-inbox-option-menu')) {
+  customElements.define('courier-inbox-option-menu', CourierInboxOptionMenu);
+}

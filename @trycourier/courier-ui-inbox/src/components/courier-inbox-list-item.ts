@@ -1,38 +1,39 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierIcon, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/extensions";
-import { CourierListItemMenu, CourierListItemMenuOption } from "./courier-inbox-list-item-menu";
+import { CourierListItemActionMenu, CourierListItemActionMenuOption } from "./courier-inbox-list-item-menu";
+import { CourierInboxDatastore } from "../datastore/datastore";
 
 export class CourierListItem extends HTMLElement {
-
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
   private _feedType: CourierInboxFeedType = 'inbox';
+  private _isMobile: boolean = false;
 
-  // DOM Elements
+  // Elements
   private _titleElement: HTMLParagraphElement;
   private _subtitleElement: HTMLParagraphElement;
   private _timeElement: HTMLParagraphElement;
   private _style: HTMLStyleElement;
-  private _menu: CourierListItemMenu | null = null;
+  private _menu: CourierListItemActionMenu;
 
-  // Touch gesture state
-  private _touchStartX: number | null = null;
-  private _touchStartY: number | null = null;
-  private _touchMoved: boolean = false;
+  // Touch gestures
+  private _longPressTimeout: number | null = null;
+  private _isLongPress: boolean = false;
 
-  // Event Handlers
+  // Callbacks
   private onItemClick: ((message: InboxMessage) => void) | null = null;
+  private onLongPress: ((message: InboxMessage) => void) | null = null;
 
   constructor(theme: CourierInboxTheme) {
     super();
     this._theme = theme;
+    this._isMobile = 'ontouchstart' in window;
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // Text Container
     const textContainer = document.createElement('div');
     textContainer.className = 'text-container';
 
@@ -51,112 +52,166 @@ export class CourierListItem extends HTMLElement {
     this._timeElement = document.createElement('p');
     this._timeElement.setAttribute('part', 'time');
 
-    // Style
+    // Style element
     this._style = document.createElement('style');
-    this.refresh();
+    this._refreshStyles();
 
-    // Menu (hidden by default)
-    this._menu = new CourierListItemMenu(this._theme);
-    this._menu.setOptions(this.getMenuOptions());
+    // Action menu
+    this._menu = new CourierListItemActionMenu(this._theme);
+    this._menu.setOptions(this._getMenuOptions());
 
-    // Append elements
-    shadow.appendChild(this._style);
-    shadow.appendChild(textContainer);
-    shadow.appendChild(this._timeElement);
-    shadow.appendChild(this._menu);
+    // Append elements into shadow‑DOM
+    shadow.append(this._style, textContainer, this._timeElement, this._menu);
 
-    // Add click event listener
+    const cancelPropagation = (e: Event): void => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
+
+    this._menu.addEventListener('mousedown', cancelPropagation);
+    this._menu.addEventListener('pointerdown', cancelPropagation);
+    this._menu.addEventListener('click', cancelPropagation);
+
     this.addEventListener('click', (e) => {
-      if (this._message && this.onItemClick && !(e.target instanceof CourierIcon)) {
+      if (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu)) {
+        return;
+      }
+      if (this._message && this.onItemClick && !(e.target instanceof CourierIcon) && !this._isLongPress) {
         this.onItemClick(this._message);
       }
     });
 
-    // Mouse hover events for desktop
-    this.addEventListener('mouseenter', () => {
-      this.showMenu();
-    });
-    this.addEventListener('mouseleave', () => {
-      this.hideMenu();
-    });
+    this._setupHoverBehavior();
+    this._setupLongPressBehavior();
+  }
 
-    // Touch gesture events for mobile
-    this.addEventListener('touchstart', (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        this._touchStartX = e.touches[0].clientX;
-        this._touchStartY = e.touches[0].clientY;
-        this._touchMoved = false;
-      }
-    }, { passive: true });
+  private _setupHoverBehavior(): void {
+    // Only show menu on hover for non-mobile devices
+    if (!this._isMobile) {
+      this.addEventListener('mouseenter', () => {
+        this._isLongPress = false;
+        this._showMenu();
+      });
+      this.addEventListener('mouseleave', () => this._hideMenu());
+    }
+  }
 
-    this.addEventListener('touchmove', (e: TouchEvent) => {
-      if (this._touchStartX === null || this._touchStartY === null) return;
-      const dx = e.touches[0].clientX - this._touchStartX;
-      const dy = e.touches[0].clientY - this._touchStartY;
-      if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) {
-        this._touchMoved = true;
-        this.showMenu();
-      }
-    }, { passive: true });
+  private _setupLongPressBehavior(): void {
+    const menu = this._theme.inbox?.list?.item?.menu
+
+    if (!menu?.enabled) {
+      return;
+    }
+
+    const longPress = menu.longPress;
+
+    this.addEventListener(
+      'touchstart',
+      () => {
+        // Start long press timer
+        this._longPressTimeout = window.setTimeout(() => {
+          this._isLongPress = true;
+          this._showMenu();
+          if (this._message && this.onLongPress) {
+            this.onLongPress(this._message);
+            // Vibrate device if supported
+            if (navigator.vibrate) {
+              navigator.vibrate(longPress?.vibrationDuration ?? 50);
+            }
+          }
+          // Keep the menu visible for 2 s, then hide again
+          setTimeout(() => {
+            this._hideMenu();
+            this._isLongPress = false;
+          }, longPress?.displayDuration ?? 2000);
+        }, 650);
+      },
+      { passive: true },
+    );
 
     this.addEventListener('touchend', () => {
-      if (this._touchMoved) {
-        // Keep menu open for a short time, then hide
-        setTimeout(() => this.hideMenu(), 2000);
+      // Clear long press timeout
+      if (this._longPressTimeout) {
+        window.clearTimeout(this._longPressTimeout);
+        this._longPressTimeout = null;
       }
-      this._touchStartX = null;
-      this._touchStartY = null;
-      this._touchMoved = false;
     });
   }
 
-  private getMenuOptions(): CourierListItemMenuOption[] {
-    // You can customize these options as needed
-    return [
-      {
-        id: "mark-read",
+  setOnLongPress(cb: (message: InboxMessage) => void): void {
+    this.onLongPress = cb;
+  }
+
+  // Helpers
+  private _getMenuOptions(): CourierListItemActionMenuOption[] {
+    const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
+    let options: CourierListItemActionMenuOption[] = [];
+
+    // Only add read/unread option if not in archive feed
+    if (!this._message?.archived) {
+      options.push({
+        id: this._message?.read ? 'unread' : 'read',
         icon: {
-          svg: this._message && !this._message.read ? CourierIconSVGs.check : CourierIconSVGs.inbox,
-          color: 'red'
+          svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
+          color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
         },
         onClick: () => {
-          // Example: toggle read state (should be replaced with real logic)
           if (this._message) {
-            // this._message.read = !this._message.read;
-            this.updateContent();
+            if (this._message.read) {
+              CourierInboxDatastore.shared.unreadMessage(this._message);
+            } else {
+              CourierInboxDatastore.shared.readMessage(this._message);
+            }
+          }
+        },
+      });
+    }
+
+    options.push({
+      id: this._message?.archived ? 'unarchive' : 'archive',
+      icon: {
+        svg: this._message?.archived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
+        color: this._message?.archived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+      },
+      onClick: () => {
+        if (this._message) {
+          if (this._message.archived) {
+            alert('unarchive');
+            // CourierInboxDatastore.shared.unarchiveMessage(this._message);
+          } else {
+            CourierInboxDatastore.shared.archiveMessage(this._message);
           }
         }
       },
-      {
-        id: "delete",
-        icon: {
-          svg: CourierIconSVGs.archive,
-          color: 'red'
-        },
-        onClick: () => {
-          // Example: remove item (should be replaced with real logic)
-          this.dispatchEvent(new CustomEvent("delete-message", { detail: { message: this._message } }));
-        }
-      }
-    ];
+    });
+
+    return options;
   }
 
-  private showMenu() {
-    if (this._menu) {
-      this._menu.setOptions(this.getMenuOptions());
-      this._menu.style.display = "block";
+  // Menu visibility helpers
+  private _showMenu(): void {
+    const menu = this._theme.inbox?.list?.item?.menu;
+
+    if (menu && menu.enabled) {
+      this._menu.setOptions(this._getMenuOptions());
+      this._menu.style.display = 'block';
       this._menu.show();
+      this._timeElement.style.opacity = '0';
     }
   }
 
-  private hideMenu() {
-    if (this._menu) {
+  private _hideMenu(): void {
+    const menu = this._theme.inbox?.list?.item?.menu;
+
+    if (menu && menu.enabled) {
       this._menu.hide();
-      this._menu.style.display = "none";
+      this._menu.style.display = 'none';
+      this._timeElement.style.opacity = '1';
     }
   }
 
-  private getStyles(): string {
+  // Styling
+  private _getStyles(): string {
     const listItem = this._theme.inbox?.list?.item;
 
     return `
@@ -165,7 +220,7 @@ export class CourierListItem extends HTMLElement {
         flex-direction: row;
         align-items: flex-start;
         justify-content: space-between;
-        border-bottom: ${listItem?.divider ?? `1px solid red`};
+        border-bottom: ${listItem?.divider ?? '1px solid red'};
         font-family: inherit;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -174,14 +229,32 @@ export class CourierListItem extends HTMLElement {
         box-sizing: border-box;
         padding: 12px 20px;
         position: relative;
+        background-color: ${listItem?.backgroundColor ?? 'transparent'};
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        touch-action: manipulation;
       }
 
-      :host(:hover) {
-        background-color: ${listItem?.hoverBackgroundColor ?? 'red'};
+      /* ───────────────────────── Base hover / active ────────────────── */
+      @media (hover: hover) {
+        :host(:hover) {
+          background-color: ${listItem?.hoverBackgroundColor ?? 'red'};
+        }
       }
-
       :host(:active) {
         background-color: ${listItem?.activeBackgroundColor ?? 'red'};
+      }
+
+      /* ───────────────────────── Menu hover / active ────────────────── */
+      @media (hover: hover) {
+        :host(:hover):has(courier-list-item-menu:hover, courier-list-item-menu *:hover) {
+          background-color: ${listItem?.backgroundColor ?? 'transparent'};
+        }
+      }
+      :host(:active):has(courier-list-item-menu:active, courier-list-item-menu *:active) {
+        background-color: ${listItem?.backgroundColor ?? 'transparent'};
       }
 
       :host(:last-child) {
@@ -192,6 +265,7 @@ export class CourierListItem extends HTMLElement {
         box-shadow: inset 2px 0 0 ${listItem?.unreadIndicatorColor ?? 'red'};
       }
 
+      /* Content layout */
       .text-container {
         flex: 1;
         display: flex;
@@ -202,49 +276,52 @@ export class CourierListItem extends HTMLElement {
       p {
         margin: 0;
         overflow-wrap: break-word;
-        word-wrap: break-word;
         word-break: break-word;
         hyphens: auto;
+        line-height: 1.4;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
       }
 
-      p[part="title"] {
+      p[part='title'] {
         font-family: ${listItem?.title?.family ?? 'inherit'};
         font-size: ${listItem?.title?.size ?? '14px'};
-        line-height: 1.4;
         color: ${listItem?.title?.color ?? 'red'};
         margin-bottom: 4px;
       }
 
-      p[part="subtitle"] {
+      p[part='subtitle'] {
         font-family: ${listItem?.subtitle?.family ?? 'inherit'};
         font-size: ${listItem?.subtitle?.size ?? '14px'};
         color: ${listItem?.subtitle?.color ?? 'red'};
-        line-height: 1.4;
       }
 
-      p[part="time"] {
+      p[part='time'] {
         font-family: ${listItem?.time?.family ?? 'inherit'};
         font-size: ${listItem?.time?.size ?? '14px'};
         color: ${listItem?.time?.color ?? 'red'};
-        line-height: 1.4;
+        text-align: right;
         white-space: nowrap;
       }
 
       courier-list-item-menu {
         z-index: 1;
         position: absolute;
-        top: 6px;
-        right: 6px;
-        display: none;
+        top: 8px;
+        right: 8px;
+        display: none; /* becomes block while visible */
       }
     `;
   }
 
-  private refresh() {
-    this._style.textContent = this.getStyles();
+  private _refreshStyles(): void {
+    this._style.textContent = this._getStyles();
   }
 
-  connectedCallback() {
+  // Lifecycle hooks
+  connectedCallback(): void {
     const messageAttr = this.getAttribute('message');
     const feedTypeAttr = this.getAttribute('feed-type');
 
@@ -255,54 +332,42 @@ export class CourierListItem extends HTMLElement {
     if (messageAttr) {
       try {
         this._message = JSON.parse(messageAttr) as InboxMessage;
-        this.updateContent();
-      } catch (e) {
-        console.error('Failed to parse message:', e);
+        this._updateContent();
+      } catch (err) {
+        console.error('CourierListItem – failed to parse message:', err);
       }
     }
   }
 
-  setMessage(message: InboxMessage, feedType: CourierInboxFeedType) {
+  // Public API
+  setMessage(message: InboxMessage, feedType: CourierInboxFeedType): void {
     this._message = message;
     this._feedType = feedType;
-    this.updateContent();
-    if (this._menu) {
-      this._menu.setOptions(this.getMenuOptions());
-    }
+    this._updateContent();
+    this._menu.setOptions(this._getMenuOptions());
   }
 
-  setOnItemClick(callback: (message: InboxMessage) => void) {
-    this.onItemClick = callback;
+  setOnItemClick(cb: (message: InboxMessage) => void): void {
+    this.onItemClick = cb;
   }
 
-  private updateContent() {
-    // Unread
-    if (this._message && !this._message.read) {
-      this.classList.add('unread');
-    } else {
-      this.classList.remove('unread');
-    }
-
-    // Empty
+  // Content rendering
+  private _updateContent(): void {
     if (!this._message) {
       this._titleElement.textContent = '';
       this._subtitleElement.textContent = '';
       return;
     }
 
-    // Title
+    // Unread marker
+    this.classList.toggle('unread', !this._message.read);
+
     this._titleElement.textContent = this._message.title || 'Untitled Message';
-
-    // Subtitle
     this._subtitleElement.textContent = this._message.preview || this._message.body || '';
-
-    // Time
     this._timeElement.textContent = getMessageTime(this._message);
 
-    // Update menu options if menu exists
-    if (this._menu) {
-      this._menu.setOptions(this.getMenuOptions());
-    }
+    // Update menu icons (e.g. read/unread)
+    this._menu.setOptions(this._getMenuOptions());
   }
 }
 

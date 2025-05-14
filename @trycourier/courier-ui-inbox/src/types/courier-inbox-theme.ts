@@ -61,6 +61,7 @@ export type CourierInboxPopup = {
 
 export type CourierInboxListItem = {
   unreadIndicatorColor?: string;
+  backgroundColor?: string;
   hoverBackgroundColor?: string;
   activeBackgroundColor?: string;
   title?: CourierInboxFont;
@@ -69,18 +70,23 @@ export type CourierInboxListItem = {
   archiveIcon?: CourierInboxIcon;
   divider?: string;
   menu?: {
+    enabled?: boolean;
     backgroundColor?: string;
     border?: string;
     borderRadius?: string;
     shadow?: string;
+    longPress?: {
+      displayDuration?: number;
+      vibrationDuration?: number;
+    };
     item?: {
       hoverBackgroundColor?: string;
       activeBackgroundColor?: string;
       borderRadius?: string;
-      readIcon?: CourierInboxIcon;
-      unreadIcon?: CourierInboxIcon;
-      archiveIcon?: CourierInboxIcon;
-      unarchiveIcon?: CourierInboxIcon;
+      read?: CourierInboxIcon;
+      unread?: CourierInboxIcon;
+      archive?: CourierInboxIcon;
+      unarchive?: CourierInboxIcon;
     };
   };
 }
@@ -278,7 +284,7 @@ export const defaultLightTheme: CourierInboxTheme = {
           markAllRead: {
             icon: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.readAll
+              svg: CourierIconSVGs.read
             },
             text: 'Mark All as Read'
           },
@@ -302,6 +308,7 @@ export const defaultLightTheme: CourierInboxTheme = {
     list: {
       backgroundColor: CourierColors.white[500],
       item: {
+        backgroundColor: 'transparent',
         unreadIndicatorColor: CourierColors.blue[500],
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
@@ -322,27 +329,32 @@ export const defaultLightTheme: CourierInboxTheme = {
         },
         divider: `1px solid ${CourierColors.gray[200]}`,
         menu: {
+          enabled: true,
           backgroundColor: CourierColors.white[500],
           border: `1px solid ${CourierColors.gray[500]}`,
           borderRadius: '4px',
           shadow: `0px 2px 4px -2px ${CourierColors.gray[500]}`,
+          longPress: {
+            displayDuration: 4000,
+            vibrationDuration: 50
+          },
           item: {
             hoverBackgroundColor: CourierColors.gray[200],
             activeBackgroundColor: CourierColors.gray[500],
-            borderRadius: '2px',
-            readIcon: {
+            borderRadius: '0px',
+            read: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.check
+              svg: CourierIconSVGs.read
             },
-            unreadIcon: {
+            unread: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.inbox
+              svg: CourierIconSVGs.unread
             },
-            archiveIcon: {
+            archive: {
               color: CourierColors.black[500],
               svg: CourierIconSVGs.archive
             },
-            unarchiveIcon: {
+            unarchive: {
               color: CourierColors.black[500],
               svg: CourierIconSVGs.archiveRead
             }
@@ -483,7 +495,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
           markAllRead: {
             icon: {
               color: CourierColors.white[500],
-              svg: CourierIconSVGs.readAll
+              svg: CourierIconSVGs.read
             },
             text: 'Mark All as Read'
           },
@@ -525,7 +537,39 @@ export const defaultDarkTheme: CourierInboxTheme = {
           family: undefined,
           size: '12px'
         },
-        divider: `1px solid ${CourierColors.gray[400]}`
+        divider: `1px solid ${CourierColors.gray[400]}`,
+        menu: {
+          enabled: true,
+          backgroundColor: CourierColors.black[500],
+          border: `1px solid ${CourierColors.gray[400]}`,
+          borderRadius: '4px',
+          shadow: `0px 2px 4px -2px ${CourierColors.white[500_20]}`,
+          longPress: {
+            displayDuration: 4000,
+            vibrationDuration: 50
+          },
+          item: {
+            hoverBackgroundColor: CourierColors.white[500_10],
+            activeBackgroundColor: CourierColors.white[500_20],
+            borderRadius: '0px',
+            read: {
+              color: CourierColors.white[500],
+              svg: CourierIconSVGs.read
+            },
+            unread: {
+              color: CourierColors.white[500],
+              svg: CourierIconSVGs.unread
+            },
+            archive: {
+              color: CourierColors.white[500],
+              svg: CourierIconSVGs.archive
+            },
+            unarchive: {
+              color: CourierColors.white[500],
+              svg: CourierIconSVGs.archiveRead
+            }
+          }
+        }
       }
     },
     loading: {
@@ -664,7 +708,31 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
         ...theme.inbox?.list,
         item: {
           ...defaultTheme.inbox?.list?.item,
-          ...theme.inbox?.list?.item
+          ...theme.inbox?.list?.item,
+          menu: {
+            ...defaultTheme.inbox?.list?.item?.menu,
+            ...theme.inbox?.list?.item?.menu,
+            item: {
+              ...defaultTheme.inbox?.list?.item?.menu?.item,
+              ...theme.inbox?.list?.item?.menu?.item,
+              read: {
+                ...defaultTheme.inbox?.list?.item?.menu?.item?.read,
+                ...theme.inbox?.list?.item?.menu?.item?.read
+              },
+              unread: {
+                ...defaultTheme.inbox?.list?.item?.menu?.item?.unread,
+                ...theme.inbox?.list?.item?.menu?.item?.unread
+              },
+              archive: {
+                ...defaultTheme.inbox?.list?.item?.menu?.item?.archive,
+                ...theme.inbox?.list?.item?.menu?.item?.archive
+              },
+              unarchive: {
+                ...defaultTheme.inbox?.list?.item?.menu?.item?.unarchive,
+                ...theme.inbox?.list?.item?.menu?.item?.unarchive
+              }
+            }
+          }
         }
       },
       loading: {
