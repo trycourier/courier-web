@@ -2,20 +2,15 @@ import { CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core"
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
+import { CourierInboxIcon } from "../types/courier-inbox-theme";
 
 export type CourierInboxMenuOptionType = 'filters' | 'actions';
 
 export type CourierInboxMenuOption = {
   id: CourierInboxHeaderMenuItemId;
   text: string;
-  icon: {
-    color: string;
-    svg: string;
-  };
-  selectionIcon?: {
-    color: string;
-    svg: string;
-  } | null;
+  icon: CourierInboxIcon;
+  selectionIcon?: CourierInboxIcon | null;
   onClick: (option: CourierInboxMenuOption) => void;
 };
 

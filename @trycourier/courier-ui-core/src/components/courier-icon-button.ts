@@ -6,27 +6,19 @@ export class CourierIconButton extends HTMLElement {
   private _backgroundColor?: string;
   private _hoverBackgroundColor?: string;
   private _activeBackgroundColor?: string;
+  private _borderRadius?: string;
+  private _height?: string;
+  private _width?: string;
 
   // Elements
   private _style: HTMLStyleElement;
   private _button: HTMLButtonElement;
   private _icon: CourierIcon;
 
-  static observedAttributes = [
-    'disabled',
-    'background-color',
-    'corner-radius',
-    'border-color',
-    'border-radius',
-    'variant',
-    'mode',
-    'text-color',
-    'icon'
-  ];
-
-  constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string) {
+  constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string, borderRadius?: string, height?: string, width?: string) {
     super();
 
+    this._borderRadius = borderRadius;
     this._backgroundColor = backgroundColor;
     this._hoverBackgroundColor = hoverBackgroundColor;
     this._activeBackgroundColor = activeBackgroundColor;
@@ -53,14 +45,15 @@ export class CourierIconButton extends HTMLElement {
     return `
       :host {
         display: inline-block;
+        border-radius: ${this._borderRadius ?? '50%'};
       }
 
       button {
         border: none;
-        border-radius: 50%;
+        border-radius: ${this._borderRadius ?? '50%'};
         cursor: pointer;
-        width: 36px;
-        height: 36px;
+        width: ${this._width ?? '36px'};
+        height: ${this._height ?? '36px'};
         display: flex;
         align-items: center;
         justify-content: center;

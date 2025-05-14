@@ -251,7 +251,6 @@ export class CourierInboxList extends HTMLElement {
       const listItem = new CourierListItem(theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
-      listItem.setOnCloseClick((message) => this._onArchiveMessage?.(message, index));
       list.appendChild(listItem);
     });
 

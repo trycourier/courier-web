@@ -224,7 +224,7 @@ export class CourierInboxHeader extends CourierElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 16px;
+        padding: 10px 10px 10px 16px;
         background-color: ${CourierColors.white[500]};
         box-shadow: 0px 1px 0px 0px ${CourierColors.gray[500]};
       }
@@ -242,7 +242,7 @@ export class CourierInboxHeader extends CourierElement {
       .actions {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 4px;
       }
     `;
   }

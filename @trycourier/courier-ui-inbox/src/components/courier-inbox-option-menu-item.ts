@@ -32,8 +32,7 @@ export class CourierInboxOptionMenuItem extends HTMLElement {
     this._content = document.createElement('div');
     this._content.className = 'menu-item';
 
-    this._itemIcon = new CourierIcon();
-    this._itemIcon.setAttribute('svg', this._option.icon.svg);
+    this._itemIcon = new CourierIcon(this._option.icon.svg ?? CourierIconSVGs.inbox);
     this._itemIcon.setAttribute('size', '16');
 
     this._title = document.createElement('p');

@@ -68,6 +68,21 @@ export type CourierInboxListItem = {
   time?: CourierInboxFont;
   archiveIcon?: CourierInboxIcon;
   divider?: string;
+  menu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    shadow?: string;
+    item?: {
+      hoverBackgroundColor?: string;
+      activeBackgroundColor?: string;
+      borderRadius?: string;
+      readIcon?: CourierInboxIcon;
+      unreadIcon?: CourierInboxIcon;
+      archiveIcon?: CourierInboxIcon;
+      unarchiveIcon?: CourierInboxIcon;
+    };
+  };
 }
 
 export type CourierInboxSkeletonLoadingState = {
@@ -301,11 +316,38 @@ export const defaultLightTheme: CourierInboxTheme = {
           size: '14px'
         },
         time: {
-          color: CourierColors.gray[500],
+          color: CourierColors.gray[600],
           family: undefined,
-          size: '12px'
+          size: '14px'
         },
-        divider: `1px solid ${CourierColors.gray[200]}`
+        divider: `1px solid ${CourierColors.gray[200]}`,
+        menu: {
+          backgroundColor: CourierColors.white[500],
+          border: `1px solid ${CourierColors.gray[500]}`,
+          borderRadius: '4px',
+          shadow: `0px 2px 4px -2px ${CourierColors.gray[500]}`,
+          item: {
+            hoverBackgroundColor: CourierColors.gray[200],
+            activeBackgroundColor: CourierColors.gray[500],
+            borderRadius: '2px',
+            readIcon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSVGs.check
+            },
+            unreadIcon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSVGs.inbox
+            },
+            archiveIcon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSVGs.archive
+            },
+            unarchiveIcon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSVGs.archiveRead
+            }
+          }
+        }
       }
     },
     loading: {
