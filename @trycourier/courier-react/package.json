@@ -1,0 +1,36 @@
+{
+  "name": "@trycourier/courier-react",
+  "version": "1.0.0",
+  "description": "The React components for the Courier web UI",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "watch": "vite build --watch",
+    "preview": "vite preview",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "courier",
+    "ui",
+    "react",
+    "typescript",
+    "browser"
+  ],
+  "author": "Courier",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.0",
+    "@vitejs/plugin-react": "4.4.1"
+  }
+}
