@@ -1,4 +1,4 @@
-import { InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
 
 // Header
@@ -25,6 +25,13 @@ export type CourierInboxStateErrorFactoryProps = {
 // List Item
 export type CourierInboxListItemFactoryProps = {
   message: InboxMessage;
+  index: number;
+}
+
+// List Item Action
+export type CourierInboxListItemActionFactoryProps = {
+  message: InboxMessage;
+  action: InboxAction;
   index: number;
 }
 

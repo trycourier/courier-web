@@ -1,4 +1,4 @@
-import { InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierColors, CourierInfoState } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
@@ -23,7 +23,8 @@ export class CourierInboxList extends HTMLElement {
 
   // Callbacks
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
-  private _onArchiveMessage: ((message: InboxMessage, index: number) => void) | null = null;
+  private _onMessageActionClick: ((message: InboxMessage, action: InboxAction, index: number) => void) | null = null;
+  private _onMessageLongPress: ((message: InboxMessage, index: number) => void) | null = null;
   private _onRefresh: () => void;
 
   // Factories
@@ -44,7 +45,8 @@ export class CourierInboxList extends HTMLElement {
     onRefresh: () => void,
     onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
-    onArchiveMessage: (message: InboxMessage, index: number) => void
+    onMessageActionClick: (message: InboxMessage, action: InboxAction, index: number) => void,
+    onMessageLongPress: (message: InboxMessage, index: number) => void
   }) {
     super();
 
@@ -57,7 +59,8 @@ export class CourierInboxList extends HTMLElement {
     this._onRefresh = props.onRefresh;
     this._onPaginationTrigger = props.onPaginationTrigger;
     this._onMessageClick = props.onMessageClick;
-    this._onArchiveMessage = props.onArchiveMessage;
+    this._onMessageActionClick = props.onMessageActionClick;
+    this._onMessageLongPress = props.onMessageLongPress;
 
     const shadow = this.attachShadow({ mode: 'open' });
 
@@ -251,6 +254,8 @@ export class CourierInboxList extends HTMLElement {
       const listItem = new CourierListItem(theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
+      listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
+      listItem.setOnItemLongPress((message) => this._onMessageLongPress?.(message, index));
       list.appendChild(listItem);
     });
 

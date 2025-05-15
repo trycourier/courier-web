@@ -69,6 +69,15 @@ export type CourierInboxListItem = {
   time?: CourierInboxFont;
   archiveIcon?: CourierInboxIcon;
   divider?: string;
+  actions?: {
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    shadow?: string;
+    font?: CourierInboxFont;
+  }
   menu?: {
     enabled?: boolean;
     backgroundColor?: string;
@@ -312,6 +321,19 @@ export const defaultLightTheme: CourierInboxTheme = {
         unreadIndicatorColor: CourierColors.blue[500],
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
+        actions: {
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.gray[200],
+          activeBackgroundColor: CourierColors.gray[500],
+          border: `1px solid ${CourierColors.gray[500]}`,
+          borderRadius: '4px',
+          shadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.06)',
+          font: {
+            color: CourierColors.black[500],
+            family: undefined,
+            size: '14px'
+          }
+        },
         title: {
           color: CourierColors.black[500],
           family: undefined,
@@ -519,9 +541,23 @@ export const defaultDarkTheme: CourierInboxTheme = {
     list: {
       backgroundColor: CourierColors.black[500],
       item: {
+        backgroundColor: 'transparent',
         unreadIndicatorColor: CourierColors.blue[500],
         hoverBackgroundColor: CourierColors.white[500_10],
         activeBackgroundColor: CourierColors.white[500_20],
+        actions: {
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20],
+          border: `1px solid ${CourierColors.gray[400]}`,
+          borderRadius: '4px',
+          shadow: `0px 1px 2px 0px ${CourierColors.white[500_10]}`,
+          font: {
+            color: CourierColors.white[500],
+            family: undefined,
+            size: '14px'
+          }
+        },
         title: {
           color: CourierColors.white[500],
           family: undefined,

@@ -59,6 +59,7 @@ export class CourierIconButton extends HTMLElement {
         justify-content: center;
         background: ${this._backgroundColor ?? 'transparent'};
         transition: background-color 0.2s ease;
+        touch-action: manipulation;
       }
 
       button:hover {

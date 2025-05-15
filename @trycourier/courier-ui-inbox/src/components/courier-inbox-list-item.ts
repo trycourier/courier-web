@@ -1,5 +1,5 @@
-import { InboxMessage } from "@trycourier/courier-js";
-import { CourierIcon } from "@trycourier/courier-ui-core";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { CourierButton, CourierButtonVariants, CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/extensions";
@@ -20,6 +20,7 @@ export class CourierListItem extends HTMLElement {
   private _style: HTMLStyleElement;
   private _menu: CourierListItemActionMenu;
   private _unreadIndicator: HTMLDivElement;
+  private _actionsContainer: HTMLDivElement;
 
   // Touch gestures
   private _longPressTimeout: number | null = null;
@@ -27,7 +28,8 @@ export class CourierListItem extends HTMLElement {
 
   // Callbacks
   private onItemClick: ((message: InboxMessage) => void) | null = null;
-  private onLongPress: ((message: InboxMessage) => void) | null = null;
+  private onItemLongPress: ((message: InboxMessage) => void) | null = null;
+  private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
 
   constructor(theme: CourierInboxTheme) {
     super();
@@ -35,8 +37,8 @@ export class CourierListItem extends HTMLElement {
     this._isMobile = 'ontouchstart' in window;
     const shadow = this.attachShadow({ mode: 'open' });
 
-    const textContainer = document.createElement('div');
-    textContainer.className = 'text-container';
+    const contentContainer = document.createElement('div');
+    contentContainer.className = 'content-container';
 
     // Title
     this._titleElement = document.createElement('p');
@@ -46,8 +48,13 @@ export class CourierListItem extends HTMLElement {
     this._subtitleElement = document.createElement('p');
     this._subtitleElement.setAttribute('part', 'subtitle');
 
-    textContainer.appendChild(this._titleElement);
-    textContainer.appendChild(this._subtitleElement);
+    // Actions
+    this._actionsContainer = document.createElement('div');
+    this._actionsContainer.className = 'actions-container';
+
+    contentContainer.appendChild(this._titleElement);
+    contentContainer.appendChild(this._subtitleElement);
+    contentContainer.appendChild(this._actionsContainer);
 
     // Time
     this._timeElement = document.createElement('p');
@@ -66,7 +73,7 @@ export class CourierListItem extends HTMLElement {
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
-    shadow.append(this._style, this._unreadIndicator, textContainer, this._timeElement, this._menu);
+    shadow.append(this._style, this._unreadIndicator, contentContainer, this._timeElement, this._menu);
 
     const cancelPropagation = (e: Event): void => {
       e.stopPropagation();
@@ -117,8 +124,8 @@ export class CourierListItem extends HTMLElement {
         this._longPressTimeout = window.setTimeout(() => {
           this._isLongPress = true;
           this._showMenu();
-          if (this._message && this.onLongPress) {
-            this.onLongPress(this._message);
+          if (this._message && this.onItemLongPress) {
+            this.onItemLongPress(this._message);
             // Vibrate device if supported
             if (navigator.vibrate) {
               navigator.vibrate(longPress?.vibrationDuration ?? 50);
@@ -144,7 +151,7 @@ export class CourierListItem extends HTMLElement {
   }
 
   setOnLongPress(cb: (message: InboxMessage) => void): void {
-    this.onLongPress = cb;
+    this.onItemLongPress = cb;
   }
 
   // Helpers
@@ -215,7 +222,6 @@ export class CourierListItem extends HTMLElement {
     }
   }
 
-  // Styling
   private _getStyles(): string {
     const listItem = this._theme.inbox?.list?.item;
 
@@ -254,11 +260,11 @@ export class CourierListItem extends HTMLElement {
 
       /* ───────────────────────── Menu hover / active ────────────────── */
       @media (hover: hover) {
-        :host(:hover):has(courier-list-item-menu:hover, courier-list-item-menu *:hover) {
+        :host(:hover):has(courier-list-item-menu:hover, courier-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
           background-color: ${listItem?.backgroundColor ?? 'transparent'};
         }
       }
-      :host(:active):has(courier-list-item-menu:active, courier-list-item-menu *:active) {
+      :host(:active):has(courier-list-item-menu:active, courier-list-item-menu *:active, courier-button:active, courier-button *:active) {
         background-color: ${listItem?.backgroundColor ?? 'transparent'};
       }
 
@@ -281,8 +287,7 @@ export class CourierListItem extends HTMLElement {
         display: block;
       }
 
-      /* Content layout */
-      .text-container {
+      .content-container {
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -329,6 +334,17 @@ export class CourierListItem extends HTMLElement {
         right: 8px;
         display: none; /* becomes block while visible */
       }
+
+      .actions-container {
+        display: flex;
+        margin-top: 10px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        display: none;
+      }
+
     `;
   }
 
@@ -356,14 +372,22 @@ export class CourierListItem extends HTMLElement {
   }
 
   // Public API
-  setMessage(message: InboxMessage, feedType: CourierInboxFeedType): void {
+  public setMessage(message: InboxMessage, feedType: CourierInboxFeedType): void {
     this._message = message;
     this._feedType = feedType;
     this._updateContent();
   }
 
-  setOnItemClick(cb: (message: InboxMessage) => void): void {
+  public setOnItemClick(cb: (message: InboxMessage) => void): void {
     this.onItemClick = cb;
+  }
+
+  public setOnItemActionClick(cb: (message: InboxMessage, action: InboxAction) => void): void {
+    this.onItemActionClick = cb;
+  }
+
+  public setOnItemLongPress(cb: (message: InboxMessage) => void): void {
+    this.onItemLongPress = cb;
   }
 
   // Content rendering
@@ -381,8 +405,43 @@ export class CourierListItem extends HTMLElement {
     this._subtitleElement.textContent = this._message.preview || this._message.body || '';
     this._timeElement.textContent = getMessageTime(this._message);
 
+
     // Update menu icons (e.g. read/unread)
     this._menu.setOptions(this._getMenuOptions());
+
+    // Update actions container
+    const hasActions = this._message?.actions && this._message.actions.length > 0;
+    this._actionsContainer.style.display = hasActions ? 'flex' : 'none';
+
+    const actionsTheme = this._theme.inbox?.list?.item?.actions;
+
+    // Add the actions to the actions container
+    this._message?.actions?.forEach(action => {
+
+      // Create the action element  
+      const actionButton = new CourierButton({
+        text: action.content,
+        variant: 'secondary',
+        backgroundColor: actionsTheme?.backgroundColor,
+        hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
+        activeBackgroundColor: actionsTheme?.activeBackgroundColor,
+        border: actionsTheme?.border,
+        borderRadius: actionsTheme?.borderRadius,
+        shadow: actionsTheme?.shadow,
+        fontFamily: actionsTheme?.font?.family,
+        fontSize: actionsTheme?.font?.size,
+        fontWeight: actionsTheme?.font?.weight,
+        textColor: actionsTheme?.font?.color,
+        onClick: () => {
+          if (this._message && this.onItemActionClick) {
+            this.onItemActionClick(this._message, action);
+          }
+        },
+      });
+
+      // Add the action element to the actions container
+      this._actionsContainer.appendChild(actionButton);
+    });
   }
 }
 

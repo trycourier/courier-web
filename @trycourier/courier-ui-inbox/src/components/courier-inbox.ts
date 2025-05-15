@@ -7,7 +7,7 @@ import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
@@ -43,6 +43,8 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   // List
   private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
+  private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
+  private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
 
   // Default props
   private _defaultProps = {
@@ -101,8 +103,23 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
         this._onMessageClick?.({ message, index });
       },
-      onArchiveMessage: (message, _) => {
-        CourierInboxDatastore.shared.archiveMessage(message);
+      onMessageActionClick: (message, action, index) => {
+        this.dispatchEvent(new CustomEvent('message-action-click', {
+          detail: { message, action, index },
+          bubbles: true,
+          composed: true
+        }));
+
+        this._onMessageActionClick?.({ message, action, index });
+      },
+      onMessageLongPress: (message, index) => {
+        this.dispatchEvent(new CustomEvent('message-long-press', {
+          detail: { message, index },
+          bubbles: true,
+          composed: true
+        }));
+
+        this._onMessageLongPress?.({ message, index });
       }
     });
 
@@ -186,6 +203,14 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
 
   public setMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageClick = handler;
+  }
+
+  public setMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
+    this._onMessageActionClick = handler;
+  }
+
+  public setMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
+    this._onMessageLongPress = handler;
   }
 
   public setFeedType(feedType: CourierInboxFeedType) {

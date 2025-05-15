@@ -16,7 +16,8 @@ export type CourierButtonProps = {
   fontSize?: string,
   fontWeight?: string,
   textColor?: string,
-  variant?: CourierButtonVariant
+  variant?: CourierButtonVariant,
+  onClick?: () => void
 }
 
 const baseButtonStyles = {
@@ -74,6 +75,15 @@ export class CourierButton extends CourierSystemThemeElement {
     shadow.appendChild(this._button);
 
     this.updateButton(props);
+
+    // Add click handler with prevent default and stop propagation
+    this._button.addEventListener('click', (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (props.onClick) {
+        props.onClick();
+      }
+    });
   }
 
   private getStyles(props: CourierButtonProps): string {
@@ -132,6 +142,7 @@ export class CourierButton extends CourierSystemThemeElement {
         color: ${props.textColor ?? defaultTextColor()};
         border: ${props.border ?? defaultBorder()};
         box-shadow: ${props.shadow ?? defaultShadow()};
+        touch-action: manipulation;
       }
 
       button:hover {

@@ -447,6 +447,19 @@
                     "unreadIndicatorColor": "#2196f3",
                     "hoverColor": "#00000010",
                     "activeColor": "#00000020",
+                    "actions": {
+                      "backgroundColor": "#2196f3",
+                      "hoverBackgroundColor": "#1976d2",
+                      "activeBackgroundColor": "#1565c0",
+                      "border": "none",
+                      "borderRadius": "32px",
+                      "shadow": "none",
+                      "font": {
+                        "color": "#fff",
+                        "family": "Verdana",
+                        "size": "14px"
+                      }
+                    },
                     "title": {
                       "color": "#000",
                       "family": "Verdana",
@@ -736,6 +749,16 @@
         alert(`Message ${index}:\n${JSON.stringify(message, null, 2)}`);
       };
 
+      const handleMessageLongPress = (event) => {
+        const { message, index } = event.detail;
+        alert(`Message ${index} long pressed:\n${JSON.stringify(message, null, 2)}`);
+      };
+
+      const handleMessageActionClick = (event) => {
+        const { message, action, index } = event.detail;
+        alert(`Message ${index} action clicked:\n${JSON.stringify(message, null, 2)}\nAction: ${action}`);
+      };
+
       const styledDarkTheme = {
         popup: {
           button: {
@@ -892,6 +915,19 @@
           list: {
             backgroundColor: "#1a1a2e",
             item: {
+              actions: {
+                backgroundColor: "#2196f3",
+                hoverBackgroundColor: "#1976d2",
+                activeBackgroundColor: "#1565c0",
+                border: "none",
+                borderRadius: "32px",
+                shadow: "none",
+                font: {
+                  color: "#fff",
+                  family: "Verdana",
+                  size: "14px"
+                }
+              },
               unreadIndicatorColor: "#2196f3",
               hoverColor: "#ffffff10",
               activeColor: "#ffffff20",
@@ -987,6 +1023,10 @@
       // Inbox list item click handler
       document.getElementById('inbox').addEventListener('message-click', handleMessageClick);
       document.getElementById('inbox-menu').addEventListener('message-click', handleMessageClick);
+      document.getElementById('inbox').addEventListener('message-long-press', handleMessageLongPress);
+      document.getElementById('inbox-menu').addEventListener('message-long-press', handleMessageLongPress);
+      document.getElementById('inbox').addEventListener('message-action-click', handleMessageActionClick);
+      document.getElementById('inbox-menu').addEventListener('message-action-click', handleMessageActionClick);
 
       // Custom inbox list item
       const customInbox = document.getElementById('inbox-custom');
