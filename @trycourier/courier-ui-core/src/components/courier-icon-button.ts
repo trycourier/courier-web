@@ -22,6 +22,8 @@ export class CourierIconButton extends HTMLElement {
     this._backgroundColor = backgroundColor;
     this._hoverBackgroundColor = hoverBackgroundColor;
     this._activeBackgroundColor = activeBackgroundColor;
+    this._height = height;
+    this._width = width;
 
     const shadow = this.attachShadow({ mode: 'open' });
 

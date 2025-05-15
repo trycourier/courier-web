@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierButton, CourierButtonVariants, CourierIcon } from "@trycourier/courier-ui-core";
+import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/extensions";
