@@ -1,36 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
-import HelloWorld from '@trycourier/courier-react'
+import { CourierInbox, Courier } from '@trycourier/courier-react'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+
+    // Add auth listener after signing in
+    const listener = Courier.shared.addAuthenticationListener((props) => {
+      console.log('Auth state changed:', props);
+      setUserId(props.userId);
+    });
+
+    // Sign in immediately when component mounts
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+      showLogs: true
+    });
+
+    // Clean up listener on unmount
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <HelloWorld name="Michael" />
-    </>
+    <div className="App">
+      <CourierInbox />
+    </div>
   )
 }
 

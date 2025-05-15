@@ -5,3 +5,6 @@ export * from './components/courier-inbox-menu';
 export * from './types/factories';
 export * from './types/feed-type';
 export * from './utils/extensions';
+export * from './types/courier-inbox-theme';
+export * from './types/courier-inbox-theme-manager';
+export * from './types/feed-type';

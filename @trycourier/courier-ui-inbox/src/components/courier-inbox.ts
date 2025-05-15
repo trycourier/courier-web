@@ -155,7 +155,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: ${this._defaultProps.height}px;
+        height: ${this._defaultProps.height};
         overflow: hidden;
       }
 
