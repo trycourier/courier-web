@@ -356,7 +356,7 @@ export const defaultLightTheme: CourierInboxTheme = {
             },
             unarchive: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.archiveRead
+              svg: CourierIconSVGs.unarchive
             }
           }
         }
@@ -566,7 +566,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
             },
             unarchive: {
               color: CourierColors.white[500],
-              svg: CourierIconSVGs.archiveRead
+              svg: CourierIconSVGs.unarchive
             }
           }
         }
