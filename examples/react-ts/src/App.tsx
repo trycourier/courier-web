@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import './App.css'
+import { useEffect } from 'react'
 import { CourierInbox, useCourier } from '@trycourier/courier-react'
 
 function App() {
@@ -7,29 +7,11 @@ function App() {
   const courier = useCourier();
 
   useEffect(() => {
-
-    // Add auth listener after signing in
-    const listener = courier.addAuthenticationListener((props) => {
-      console.log('Auth state changed:', props);
-    });
-
-    // Sign in immediately when component mounts
-    console.log('Signing in', {
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT
-    });
     courier.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
       showLogs: true
     });
-    console.log('Signed in', JSON.stringify(courier.id));
-
-    // Clean up listener on unmount
-    return () => {
-      console.log('Removing listener');
-      listener.remove();
-    };
   }, []);
 
   return (
@@ -39,4 +21,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
