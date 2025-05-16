@@ -304,6 +304,7 @@ export class CourierListItem extends HTMLElement {
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
+        text-align: left;
       }
 
       p[part='title'] {

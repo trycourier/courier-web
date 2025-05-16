@@ -10,6 +10,11 @@ import { UUID } from "../utils/uuid";
 export class Courier {
 
   /**
+   * The unique identifier for the Courier instance
+   */
+  public readonly id = UUID.generate();
+
+  /**
    * The shared Courier instance
    */
   private static instance: Courier;

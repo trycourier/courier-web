@@ -124,4 +124,6 @@ export class CourierInboxOptionMenuItem extends HTMLElement {
 
 }
 
-customElements.define('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);
+if (!customElements.get('courier-inbox-filter-menu-item')) {
+  customElements.define('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);
+}

@@ -6,14 +6,11 @@ function App() {
 
   const courier = useCourier();
 
-  // const [userId, setUserId] = useState<string | undefined>(undefined);
-
   useEffect(() => {
 
     // Add auth listener after signing in
     const listener = courier.addAuthenticationListener((props) => {
       console.log('Auth state changed:', props);
-      // setUserId(props.userId);
     });
 
     // Sign in immediately when component mounts
@@ -26,6 +23,7 @@ function App() {
       jwt: import.meta.env.VITE_JWT,
       showLogs: true
     });
+    console.log('Signed in', JSON.stringify(courier.id));
 
     // Clean up listener on unmount
     return () => {

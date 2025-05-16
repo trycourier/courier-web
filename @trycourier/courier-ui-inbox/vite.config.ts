@@ -11,9 +11,11 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: [],
+      external: ['@trycourier/courier-js'], // Add courier-js as external
       output: {
-        globals: {},
+        globals: {
+          '@trycourier/courier-js': 'CourierJS', // Ensure the global name matches
+        },
       },
     },
   },
@@ -23,4 +25,4 @@ export default defineConfig({
       include: ['src/**/*.ts'],
     }) as PluginOption,
   ],
-}); 
+});

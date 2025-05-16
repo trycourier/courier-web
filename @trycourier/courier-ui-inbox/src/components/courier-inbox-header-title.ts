@@ -31,8 +31,7 @@ export class CourierInboxHeaderTitle extends HTMLElement {
     this._container = document.createElement('div');
     this._container.className = 'title-section';
 
-    this._iconElement = new CourierIcon();
-    this._iconElement.setAttribute('svg', this._option.icon.svg);
+    this._iconElement = new CourierIcon(undefined, this._option.icon.svg);
 
     this._titleElement = document.createElement('h2');
     this._unreadBadge = new CourierUnreadCountBadge({

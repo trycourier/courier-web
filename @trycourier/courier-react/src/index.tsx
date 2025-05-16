@@ -19,14 +19,16 @@ export const CourierInbox: React.FC<CourierInboxProps> = ({
   lightTheme,
   darkTheme,
   mode,
-}) => (
-  <courier-inbox
-    height={height}
-    message-click={messageClick ? 'true' : undefined}
-    light-theme={lightTheme && JSON.stringify(lightTheme)}
-    dark-theme={darkTheme && JSON.stringify(darkTheme)}
-    mode={mode}
-  />
-);
+}) => {
+  return (
+    <courier-inbox
+      height={height}
+      message-click={messageClick ? 'true' : undefined}
+      light-theme={lightTheme && JSON.stringify(lightTheme)}
+      dark-theme={darkTheme && JSON.stringify(darkTheme)}
+      mode={mode}
+    />
+  );
+};
 
 export const useCourier = () => Courier.shared;

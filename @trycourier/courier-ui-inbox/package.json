@@ -24,7 +24,11 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
+  "peerDependencies": {
+    "@trycourier/courier-js": "file:../@trycourier/courier-js",
+    "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core"
+  },
+  "devDependencies": {
     "@trycourier/courier-js": "file:../@trycourier/courier-js",
     "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core"
   }
