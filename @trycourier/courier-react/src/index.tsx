@@ -1,7 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { CourierInbox as CourierInboxElement } from "@trycourier/courier-ui-inbox";
+// Imports the courier-inbox web component
+import "@trycourier/courier-ui-inbox";
 
-interface CourierInboxProps {
+// Other imports
+import React from "react";
+import { Courier } from "@trycourier/courier-js";
+
+export interface CourierInboxProps {
   height?: number;
   messageClick?: (props: any) => void;
   lightTheme?: any;
@@ -14,32 +18,15 @@ export const CourierInbox: React.FC<CourierInboxProps> = ({
   messageClick,
   lightTheme,
   darkTheme,
-  mode
-}) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const inboxRef = useRef<CourierInboxElement | null>(null);
+  mode,
+}) => (
+  <courier-inbox
+    height={height}
+    message-click={messageClick ? 'true' : undefined}
+    light-theme={lightTheme && JSON.stringify(lightTheme)}
+    dark-theme={darkTheme && JSON.stringify(darkTheme)}
+    mode={mode}
+  />
+);
 
-  // Initialize inbox
-  useEffect(() => {
-    if (containerRef.current && !inboxRef.current) {
-      const inbox = new CourierInboxElement();
-      inboxRef.current = inbox;
-      containerRef.current.replaceChildren(inbox);
-    }
-  }, []);
-
-  // Update attributes when props change
-  useEffect(() => {
-    if (inboxRef.current) {
-      if (height) inboxRef.current.setAttribute('height', height.toString());
-      if (messageClick) inboxRef.current.setAttribute('message-click', 'true');
-      if (lightTheme) inboxRef.current.setAttribute('light-theme', JSON.stringify(lightTheme));
-      if (darkTheme) inboxRef.current.setAttribute('dark-theme', JSON.stringify(darkTheme));
-      if (mode) inboxRef.current.setAttribute('mode', mode);
-    }
-  }, [height, messageClick, lightTheme, darkTheme, mode]);
-
-  return <div ref={containerRef}></div>;
-};
-
-export { Courier } from "@trycourier/courier-js";
+export const useCourier = () => Courier.shared;

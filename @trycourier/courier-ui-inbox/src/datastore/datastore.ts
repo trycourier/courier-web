@@ -81,11 +81,12 @@ export class CourierInboxDatastore {
 
   public async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
 
-    if (!Courier.shared.client) {
-      return;
-    }
-
     try {
+
+      // If the user is not signed in, return early
+      if (!Courier.shared.client?.options.userId) {
+        throw new Error('User is not signed in');
+      }
 
       // Fetch and update the data set and unread count in parallel
       const [dataSet, unreadCount] = await Promise.all([

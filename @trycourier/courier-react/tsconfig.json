@@ -4,11 +4,11 @@
     "declaration": true,
     "declarationDir": "dist",
     "outDir": "dist",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "types": [
       "jest",
-      "vite/client"
-    ]
+      "vite/client",
+    ],
   },
   "include": [
     "src"

@@ -133,15 +133,20 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this._datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
+    // Refresh the theme on change
+    this._themeManager.subscribe((_) => {
+      this.refreshTheme();
+    });
+
     // Listen for authentication state changes
     this._authListener = Courier.shared.addAuthenticationListener((_) => {
       this.refresh();
     });
 
-    // Refresh the theme on change
-    this._themeManager.subscribe((_) => {
-      this.refreshTheme();
-    });
+    // Refresh the inbox if the user is already signed in
+    if (Courier.shared.client?.options.userId) {
+      this.refresh();
+    }
 
   }
 

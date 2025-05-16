@@ -1,21 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import './App.css'
-import { CourierInbox, Courier } from '@trycourier/courier-react'
+import { CourierInbox, useCourier } from '@trycourier/courier-react'
 
 function App() {
 
-  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const courier = useCourier();
+
+  // const [userId, setUserId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
 
     // Add auth listener after signing in
-    const listener = Courier.shared.addAuthenticationListener((props) => {
+    const listener = courier.addAuthenticationListener((props) => {
       console.log('Auth state changed:', props);
-      setUserId(props.userId);
+      // setUserId(props.userId);
     });
 
     // Sign in immediately when component mounts
-    Courier.shared.signIn({
+    console.log('Signing in', {
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+    courier.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
       showLogs: true
@@ -23,6 +29,7 @@ function App() {
 
     // Clean up listener on unmount
     return () => {
+      console.log('Removing listener');
       listener.remove();
     };
   }, []);
