@@ -79,7 +79,7 @@ export class CourierInboxDatastore {
     return unreadCount ?? 0;
   }
 
-  public async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
+  public async load(props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
 
     try {
 
@@ -88,13 +88,16 @@ export class CourierInboxDatastore {
         throw new Error('User is not signed in');
       }
 
+      // If no props are provided, use the default values
+      const properties = props ?? { feedType: 'inbox', canUseCache: true };
+
       // Fetch and update the data set and unread count in parallel
       const [dataSet, unreadCount] = await Promise.all([
-        this.fetchDataSet(props),
-        this.fetchUnreadCount(props)
+        this.fetchDataSet(properties),
+        this.fetchUnreadCount(properties)
       ]);
 
-      switch (props.feedType) {
+      switch (properties.feedType) {
         case 'inbox':
           this._inboxDataSet = dataSet;
           break;
@@ -108,7 +111,7 @@ export class CourierInboxDatastore {
 
       // Notify the listeners
       this._dataStoreListeners.forEach(listener => {
-        listener.events.onDataSetChange?.(dataSet, props.feedType);
+        listener.events.onDataSetChange?.(dataSet, properties.feedType);
         listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
       });
 

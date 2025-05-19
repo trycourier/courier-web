@@ -2,7 +2,7 @@
 import '@trycourier/courier-ui-inbox';
 
 export interface CourierInboxProps {
-  height?: number;
+  height?: string;
   messageClick?: (props: any) => void;
   lightTheme?: any;
   darkTheme?: any;

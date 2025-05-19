@@ -84,6 +84,7 @@ export class CourierInfoState extends CourierElement {
         justify-content: center;
         height: 100%;
         width: 100%;
+        padding: 24px;
       }
 
       .container {
