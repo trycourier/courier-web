@@ -7,14 +7,14 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'CourierUIInbox',
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
+      fileName: (format) => `index.${format}.js`,
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['@trycourier/courier-js'], // Add courier-js as external
+      external: ['@trycourier/courier-js'],
       output: {
         globals: {
-          '@trycourier/courier-js': 'CourierJS', // Ensure the global name matches
+          '@trycourier/courier-js': 'CourierJS',
         },
       },
     },
@@ -25,4 +25,9 @@ export default defineConfig({
       include: ['src/**/*.ts'],
     }) as PluginOption,
   ],
+  resolve: {
+    alias: {
+      '@trycourier/courier-js': '@trycourier/courier-js/src'
+    }
+  }
 });

@@ -12,7 +12,12 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@trycourier/courier-ui-inbox', '@trycourier/courier-js'], // Add both as external
+      external: [
+        'react',
+        'react-dom',
+        '@trycourier/courier-ui-inbox',
+        '@trycourier/courier-js',
+      ],
       output: {
         globals: {
           react: 'React',
