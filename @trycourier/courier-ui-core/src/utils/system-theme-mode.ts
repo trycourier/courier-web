@@ -1,6 +1,6 @@
-export type CourierComponentThemeMode = SystemThemeMode & 'system';
-
 export type SystemThemeMode = 'light' | 'dark';
+
+export type CourierComponentThemeMode = SystemThemeMode | 'system';
 
 export const getSystemThemeMode = (): SystemThemeMode => {
   if (typeof window === 'undefined') {
