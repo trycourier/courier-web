@@ -1,6 +1,7 @@
 import './App.css'
 import { useEffect } from 'react'
 import { CourierInbox, useCourier } from '@trycourier/courier-react'
+import type { CourierInboxListItemFactoryProps } from '@trycourier/courier-ui-inbox';
 
 function App() {
 
@@ -57,15 +58,34 @@ function App() {
       </pre>
       <CourierInbox
         height={'100%'}
-        mode={'dark'}
+        mode={'light'}
         lightTheme={THEME}
         darkTheme={THEME}
-        onMessageClick={({ message, index }) => {
-          !message.read ? courier.inbox.readMessage(message) : courier.inbox.unreadMessage(message);
+        listItemFactory={(props: CourierInboxListItemFactoryProps | undefined | null) => {
+          return (
+            <div style={{
+              padding: '12px',
+              borderBottom: '1px solid #eee',
+              textAlign: 'left',
+              backgroundColor: '#f9f9f9',
+              cursor: 'pointer'
+            }} onClick={() => {
+              !props?.message.read ? courier.inbox.readMessage(props?.message) : courier.inbox.unreadMessage(props?.message);
+            }}>
+              <div style={{ fontWeight: props?.message.read ? 'normal' : 'bold' }}>
+                {props?.message?.title || 'Untitled Message'}
+              </div>
+              <div style={{ fontWeight: props?.message.read ? 'normal' : 'bold', fontSize: '0.9em', color: '#666', marginTop: '4px' }}>
+                {props?.message?.preview || 'No preview'}
+              </div>
+            </div>
+          );
+        }}
+        onMessageClick={(props: CourierInboxListItemFactoryProps) => {
+          !props?.message.read ? courier.inbox.readMessage(props?.message) : courier.inbox.unreadMessage(props?.message);
         }}
         onMessageActionClick={({ message, index, action }) => {
           alert(JSON.stringify({ message, index, action }));
-          // courier.inbox.markAsUnread(message);
         }}
         onMessageLongPress={({ message, index }) => {
           alert(JSON.stringify({ message, index }));
