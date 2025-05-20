@@ -5,13 +5,13 @@ import { CourierComponentThemeMode, CourierIconSVGs } from "@trycourier/courier-
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
+import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
-export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEvents {
+export class CourierInbox extends HTMLElement {
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
@@ -55,7 +55,7 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
   };
 
   static get observedAttributes() {
-    return ['height', 'message-click', 'light-theme', 'dark-theme', 'mode'];
+    return ['height', 'light-theme', 'dark-theme', 'mode', 'message-click', 'message-action-click', 'message-long-press'];
   }
 
   constructor(themeManager?: CourierInboxThemeManager) {
@@ -104,6 +104,9 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         this._onMessageClick?.({ message, index });
       },
       onMessageActionClick: (message, action, index) => {
+
+        // TODO: Track action click?
+
         this.dispatchEvent(new CustomEvent('message-action-click', {
           detail: { message, action, index },
           bubbles: true,
@@ -130,7 +133,44 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     this._shadow.appendChild(this._list);
 
     // Attach the datastore listener
-    this._datastoreListener = new CourierInboxDataStoreListener(this);
+    this._datastoreListener = new CourierInboxDataStoreListener({
+      onError: (error: Error) => {
+        this._list.setError(error);
+      },
+      onDataSetChange: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
+        if (this._currentFeed === feedType) {
+          this._list.setDataSet(dataSet);
+          this.updateHeader();
+        }
+      },
+      onPageAdded: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
+        if (this._currentFeed === feedType) {
+          this._list.addPage(dataSet);
+          this.updateHeader();
+        }
+      },
+      onMessageAdd: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+        if (this._currentFeed === feedType) {
+          this._list.addMessage(message, index);
+          this.updateHeader();
+        }
+      },
+      onMessageRemove: (_: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+        if (this._currentFeed === feedType) {
+          this._list.removeMessage(index);
+          this.updateHeader();
+        }
+      },
+      onMessageUpdate: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+        if (this._currentFeed === feedType) {
+          this._list.updateMessage(message, index);
+          this.updateHeader();
+        }
+      },
+      onUnreadCountChange: (_: number) => {
+        this.updateHeader();
+      }
+    });
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
     // Refresh the theme on change
@@ -161,7 +201,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
         flex-direction: column;
         width: 100%;
         height: ${this._defaultProps.height};
-        overflow: hidden;
       }
 
       courier-inbox-header {
@@ -268,50 +307,6 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
     });
   }
 
-  // Datastore event handlers
-  public onError(error: Error): void {
-    this._list.setError(error);
-  }
-
-  public onDataSetChange(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void {
-    if (this._currentFeed === feedType) {
-      this._list.setDataSet(dataSet);
-      this.updateHeader();
-    }
-  }
-
-  public onPageAdded(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void {
-    if (this._currentFeed === feedType) {
-      this._list.addPage(dataSet);
-      this.updateHeader();
-    }
-  }
-
-  public onMessageAdd(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
-    if (this._currentFeed === feedType) {
-      this._list.addMessage(message, index);
-      this.updateHeader();
-    }
-  }
-
-  public onMessageRemove(_: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
-    if (this._currentFeed === feedType) {
-      this._list.removeMessage(index);
-      this.updateHeader();
-    }
-  }
-
-  public onMessageUpdate(message: InboxMessage, index: number, feedType: CourierInboxFeedType): void {
-    if (this._currentFeed === feedType) {
-      this._list.updateMessage(message, index);
-      this.updateHeader();
-    }
-  }
-
-  public onUnreadCountChange(_: number): void {
-    this.updateHeader();
-  }
-
   connectedCallback() {
     this.refresh();
   }
@@ -338,6 +333,28 @@ export class CourierInbox extends HTMLElement implements CourierInboxDataStoreEv
           }
         } else {
           this._onMessageClick = undefined;
+        }
+        break;
+      case 'message-action-click':
+        if (newValue) {
+          try {
+            this._onMessageActionClick = new Function('props', newValue) as (props: CourierInboxListItemActionFactoryProps) => void;
+          } catch (error) {
+            console.error('Failed to parse message-action-click handler:', error);
+          }
+        } else {
+          this._onMessageActionClick = undefined;
+        }
+        break;
+      case 'message-long-press':
+        if (newValue) {
+          try {
+            this._onMessageLongPress = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
+          } catch (error) {
+            console.error('Failed to parse message-long-press handler:', error);
+          }
+        } else {
+          this._onMessageLongPress = undefined;
         }
         break;
       case 'light-theme':

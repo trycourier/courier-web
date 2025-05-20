@@ -1,28 +1,35 @@
-// Imports the courier-inbox web component
-import '@trycourier/courier-ui-inbox';
+import React, { useMemo } from "react";
+import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
+import { serializeHandler } from "../utils/utils";
 
 export interface CourierInboxProps {
   height?: string;
-  messageClick?: (props: any) => void;
-  lightTheme?: any;
-  darkTheme?: any;
-  mode?: string;
+  lightTheme?: CourierInboxTheme;
+  darkTheme?: CourierInboxTheme;
+  mode?: 'light' | 'dark' | 'system';
+  onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
+  onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
+  onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
 }
 
-export const CourierInbox: React.FC<CourierInboxProps> = ({
-  height,
-  messageClick,
-  lightTheme,
-  darkTheme,
-  mode,
-}) => {
+export const CourierInbox: React.FC<CourierInboxProps> = (props) => {
+
+  // Serialized handlers
+  // This is necessary because the web component expects a string, not a function
+  const clickAttr = useMemo(() => serializeHandler(props.onMessageClick), [props.onMessageClick]);
+  const actionClickAttr = useMemo(() => serializeHandler(props.onMessageActionClick), [props.onMessageActionClick]);
+  const longPressAttr = useMemo(() => serializeHandler(props.onMessageLongPress), [props.onMessageLongPress]);
+
   return (
     <courier-inbox
-      height={height}
-      message-click={messageClick ? 'true' : undefined}
-      light-theme={lightTheme && JSON.stringify(lightTheme)}
-      dark-theme={darkTheme && JSON.stringify(darkTheme)}
-      mode={mode}
+      height={props.height}
+      message-click={clickAttr}
+      message-action-click={actionClickAttr}
+      message-long-press={longPressAttr}
+      light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
+      dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
+      mode={props.mode}
     />
   );
+
 };

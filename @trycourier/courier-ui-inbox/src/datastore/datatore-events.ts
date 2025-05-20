@@ -2,7 +2,7 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { InboxMessage } from "@trycourier/courier-js";
 
-export class CourierInboxDataStoreEvents {
+export class CourierInboxDatastoreEvents {
   public onDataSetChange?(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void { }
   public onPageAdded?(dataSet: InboxDataSet, feedType: CourierInboxFeedType): void { }
   public onUnreadCountChange?(unreadCount: number): void { }

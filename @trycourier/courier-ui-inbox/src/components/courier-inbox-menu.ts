@@ -1,5 +1,5 @@
 import { CourierInbox } from "./courier-inbox";
-import { CourierInboxDataStoreEvents } from "../datastore/datatore-events";
+import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
@@ -12,7 +12,7 @@ import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends HTMLElement implements CourierInboxDataStoreEvents {
+export class CourierInboxMenu extends HTMLElement implements CourierInboxDatastoreEvents {
 
   // State
   private _width: string = '440px';

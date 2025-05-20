@@ -1,5 +1,5 @@
 import React from 'react';
-import { Courier, CourierProps } from '@trycourier/courier-js';
+import { Courier, CourierProps, InboxMessage } from '@trycourier/courier-js';
 import { CourierInboxDatastore, CourierInboxDataStoreListener, CourierInboxFeedType, InboxDataSet } from '@trycourier/courier-ui-inbox';
 
 type AuthenticationHooks = {
@@ -12,6 +12,11 @@ type InboxHooks = {
   load: (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => Promise<void>,
   fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => Promise<InboxDataSet | null>,
   setPaginationLimit: (limit: number) => void,
+  readMessage: (message: InboxMessage) => Promise<void>,
+  unreadMessage: (message: InboxMessage) => Promise<void>,
+  clickMessage: (message: InboxMessage) => Promise<void>,
+  archiveMessage: (message: InboxMessage) => Promise<void>,
+  openMessage: (message: InboxMessage) => Promise<void>,
   inbox?: InboxDataSet,
   archive?: InboxDataSet,
   unreadCount?: number,
@@ -31,6 +36,11 @@ export const useCourier = () => {
   const loadInbox = (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => CourierInboxDatastore.shared.load(props);
   const fetchNextPageOfMessages = (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
   const setPaginationLimit = (limit: number) => Courier.shared.paginationLimit = limit;
+  const readMessage = (message: InboxMessage) => CourierInboxDatastore.shared.readMessage(message);
+  const unreadMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unreadMessage(message);
+  const clickMessage = (message: InboxMessage) => CourierInboxDatastore.shared.clickMessage(message);
+  const archiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.archiveMessage(message);
+  const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage(message);
 
   // State
   const [auth, setAuth] = React.useState<AuthenticationHooks>({
@@ -42,7 +52,12 @@ export const useCourier = () => {
   const [inbox, setInbox] = React.useState<InboxHooks>({
     load: loadInbox,
     fetchNextPageOfMessages,
-    setPaginationLimit
+    setPaginationLimit,
+    readMessage,
+    unreadMessage,
+    clickMessage,
+    archiveMessage,
+    openMessage
   });
 
   React.useEffect(() => {
@@ -88,6 +103,11 @@ export const useCourier = () => {
       load: loadInbox,
       fetchNextPageOfMessages,
       setPaginationLimit,
+      readMessage,
+      unreadMessage,
+      clickMessage,
+      archiveMessage,
+      openMessage,
       inbox: datastore.inboxDataSet,
       archive: datastore.archiveDataSet,
       unreadCount: datastore.unreadCount,

@@ -1,10 +1,10 @@
 import { CourierInboxDatastore } from "./datastore";
-import { CourierInboxDataStoreEvents } from "./datatore-events";
+import { CourierInboxDatastoreEvents } from "./datatore-events";
 
 export class CourierInboxDataStoreListener {
-  readonly events: CourierInboxDataStoreEvents;
+  readonly events: CourierInboxDatastoreEvents;
 
-  constructor(events: CourierInboxDataStoreEvents) {
+  constructor(events: CourierInboxDatastoreEvents) {
     this.events = events;
   }
 
