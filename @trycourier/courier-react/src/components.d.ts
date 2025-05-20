@@ -8,6 +8,10 @@ declare module "react/jsx-runtime" {
         HTMLAttributes<HTMLElement>,
         HTMLElement
       > & CourierInboxProps;
+      "courier-inbox-menu": DetailedHTMLProps<
+        HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & CourierInboxMenuProps;
     }
   }
 }

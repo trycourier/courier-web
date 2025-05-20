@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react'
-import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from '@trycourier/courier-ui-inbox';
+import { CourierInbox, CourierInboxMenu, useCourier } from '@trycourier/courier-react'
+import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 
 function App() {
@@ -32,18 +32,25 @@ function App() {
 
   }, []);
 
-  const THEME = {
+  const theme: CourierInboxTheme = {
+    popup: {
+      button: {
+        unreadIndicator: {
+          backgroundColor: '#9b4dca',
+        }
+      }
+    },
     inbox: {
       header: {
         filters: {
           unreadIndicator: {
-            backgroundColor: 'red',
+            backgroundColor: '#9b4dca',
           }
         }
       },
       list: {
         item: {
-          unreadIndicatorColor: 'red',
+          unreadIndicatorColor: '#9b4dca',
         }
       }
     }
@@ -59,11 +66,29 @@ function App() {
           archiveCount: courier.inbox.archive?.messages.length,
         }, null, 2)}
       </pre>
+
+
+      <div style={{ padding: '32px' }}>
+        <CourierInboxMenu
+          popupAlignment={'top-center'}
+          popupWidth={'500px'}
+          popupHeight={'620px'}
+          left={'56px'}
+          top={'56px'}
+          right={'56px'}
+          bottom={'56px'}
+          mode={mode}
+          lightTheme={theme}
+          darkTheme={theme}
+          feedType={feedType}
+        />
+      </div>
+
       <CourierInbox
         height={'100%'}
         mode={mode}
-        lightTheme={THEME}
-        darkTheme={THEME}
+        lightTheme={theme}
+        darkTheme={theme}
         feedType={feedType}
         renderHeader={(props: CourierInboxHeaderFactoryProps | undefined | null) => {
           return (
