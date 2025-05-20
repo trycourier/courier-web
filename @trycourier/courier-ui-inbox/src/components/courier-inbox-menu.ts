@@ -2,7 +2,7 @@ import { CourierInbox } from "./courier-inbox";
 import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
@@ -43,9 +43,6 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
   private _inbox: CourierInbox;
   private _style: HTMLStyleElement;
 
-  // Callbacks
-  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
-
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
@@ -53,7 +50,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
+    return ['popup-alignment', 'message-click', 'message-action-click', 'message-long-press', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
   }
 
   constructor() {
@@ -80,7 +77,6 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
     shadow.appendChild(this._triggerButton);
     shadow.appendChild(this._popup);
     this._popup.appendChild(this._inbox);
-    this._inbox.setMessageClick(this._onMessageClick);
 
     // Add event listeners
     this._triggerButton.addEventListener('click', this.togglePopup.bind(this));
@@ -196,8 +192,16 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
     this.render();
   }
 
-  public onMessageClick(props: CourierInboxListItemFactoryProps): void {
-    this._onMessageClick?.(props);
+  public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
+    this._inbox.onMessageClick(handler);
+  }
+
+  public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
+    this._inbox.onMessageActionClick(handler);
+  }
+
+  public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
+    this._inbox.onMessageLongPress(handler);
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {

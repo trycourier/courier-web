@@ -1,6 +1,6 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxMenu as CourierInboxMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
-import { reactNodeToHTMLElement, serializeHandler } from "../utils/utils";
+import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 
 export interface CourierInboxMenuProps {
@@ -30,11 +30,26 @@ export interface CourierInboxMenuProps {
 export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
   const menuRef = useRef<CourierInboxMenuElement>(null);
 
-  // Serialized handlers
-  // This is necessary because the web component expects a string, not a function
-  const clickAttr = useMemo(() => serializeHandler(props.onMessageClick), [props.onMessageClick]);
-  const actionClickAttr = useMemo(() => serializeHandler(props.onMessageActionClick), [props.onMessageActionClick]);
-  const longPressAttr = useMemo(() => serializeHandler(props.onMessageLongPress), [props.onMessageLongPress]);
+  // Handle message click
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    menu.onMessageClick(props.onMessageClick);
+  }, [props.onMessageClick, menuRef]);
+
+  // Handle message action click
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    menu.onMessageActionClick(props.onMessageActionClick);
+  }, [props.onMessageActionClick, menuRef]);
+
+  // Handle message long press
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    menu.onMessageLongPress(props.onMessageLongPress);
+  }, [props.onMessageLongPress, menuRef]);
 
   // Render header
   useEffect(() => {
@@ -139,9 +154,6 @@ export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
       top={props.top}
       right={props.right}
       bottom={props.bottom}
-      message-click={clickAttr}
-      message-action-click={actionClickAttr}
-      message-long-press={longPressAttr}
       light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
       dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
       mode={props.mode}

@@ -1,6 +1,6 @@
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
-import { reactNodeToHTMLElement, serializeHandler } from "../utils/utils";
+import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 
 export interface CourierInboxProps {
@@ -23,11 +23,26 @@ export interface CourierInboxProps {
 export const CourierInbox = (props: CourierInboxProps) => {
   const inboxRef = useRef<CourierInboxElement>(null);
 
-  // Serialized handlers
-  // This is necessary because the web component expects a string, not a function
-  const clickAttr = useMemo(() => serializeHandler(props.onMessageClick), [props.onMessageClick]);
-  const actionClickAttr = useMemo(() => serializeHandler(props.onMessageActionClick), [props.onMessageActionClick]);
-  const longPressAttr = useMemo(() => serializeHandler(props.onMessageLongPress), [props.onMessageLongPress]);
+  // Handle message click
+  useEffect(() => {
+    const inbox = inboxRef.current;
+    if (!inbox) return;
+    inbox.onMessageClick(props.onMessageClick);
+  }, [props.onMessageClick, inboxRef]);
+
+  // Handle message action click
+  useEffect(() => {
+    const inbox = inboxRef.current;
+    if (!inbox) return;
+    inbox.onMessageActionClick(props.onMessageActionClick);
+  }, [props.onMessageActionClick, inboxRef]);
+
+  // Handle message long press
+  useEffect(() => {
+    const inbox = inboxRef.current;
+    if (!inbox) return;
+    inbox.onMessageLongPress(props.onMessageLongPress);
+  }, [props.onMessageLongPress, inboxRef]);
 
   // Render header
   useEffect(() => {
@@ -114,9 +129,6 @@ export const CourierInbox = (props: CourierInboxProps) => {
     <courier-inbox
       ref={inboxRef}
       height={props.height}
-      message-click={clickAttr}
-      message-action-click={actionClickAttr}
-      message-long-press={longPressAttr}
       light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
       dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
       mode={props.mode}

@@ -292,6 +292,15 @@ function App() {
           renderPopupErrorState={renderErrorState}
           renderPopupPaginationItem={renderPaginationItem}
           renderPopupMenuButton={renderMenuButton}
+          onMessageClick={({ message, index }) => {
+            !message.read ? courier.inbox.readMessage(message) : courier.inbox.unreadMessage(message);
+          }}
+          onMessageActionClick={({ message, index, action }) => {
+            alert(JSON.stringify({ message, index, action }));
+          }}
+          onMessageLongPress={({ message, index }) => {
+            alert(JSON.stringify({ message, index }));
+          }}
         />
       </div>
 

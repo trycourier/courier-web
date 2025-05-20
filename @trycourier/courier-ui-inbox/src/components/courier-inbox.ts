@@ -245,15 +245,15 @@ export class CourierInbox extends HTMLElement {
     this._list.setPaginationItemFactory(factory);
   }
 
-  public setMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
+  public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageClick = handler;
   }
 
-  public setMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
+  public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
     this._onMessageActionClick = handler;
   }
 
-  public setMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
+  public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageLongPress = handler;
   }
 
