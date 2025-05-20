@@ -4,18 +4,20 @@ import { CourierInbox, useCourier } from '@trycourier/courier-react'
 
 function App() {
 
-  const Courier = useCourier();
+  const courier = useCourier();
 
   useEffect(() => {
 
-    Courier.hooks.authentication.signIn({
+    courier.auth.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT
     });
 
-    // Courier.hooks.inbox.load();
+    // courier.inbox.setPaginationLimit(10);
 
-    // Courier.hooks.inbox.fetchNextPageOfMessages({
+    // courier.inbox.load();
+
+    // courier.inbox.fetchNextPageOfMessages({
     //   feedType: 'archive'
     // });
 
@@ -25,18 +27,10 @@ function App() {
     <div className="App">
       <pre className="courier-debug-info">
         {JSON.stringify({
-          auth: {
-            userId: Courier.hooks.authentication.userId
-          },
-          inbox: {
-            unreadCount: Courier.hooks.inbox.unreadCount,
-            inbox: {
-              count: Courier.hooks.inbox.inbox?.messages.length
-            },
-            archive: {
-              count: Courier.hooks.inbox.archive?.messages.length
-            }
-          }
+          userId: courier.auth.userId,
+          unreadCount: courier.inbox.unreadCount,
+          inboxCount: courier.inbox.inbox?.messages.length,
+          archiveCount: courier.inbox.archive?.messages.length,
         }, null, 2)}
       </pre>
       <CourierInbox height={'100%'} />

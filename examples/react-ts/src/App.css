@@ -11,7 +11,7 @@
   right: 16px;
   max-height: 400px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -20,5 +20,5 @@
   line-height: 1.4;
   z-index: 1000;
   text-align: left;
-  color: #000;
+  color: #fff;
 }

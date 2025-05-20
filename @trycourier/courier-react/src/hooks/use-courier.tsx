@@ -11,15 +11,11 @@ type AuthenticationHooks = {
 type InboxHooks = {
   load: (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => Promise<void>,
   fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => Promise<InboxDataSet | null>,
+  setPaginationLimit: (limit: number) => void,
   inbox?: InboxDataSet,
   archive?: InboxDataSet,
   unreadCount?: number,
   error?: Error
-}
-
-type CourierHooks = {
-  authentication: AuthenticationHooks,
-  inbox: InboxHooks
 }
 
 // A hook for managing the shared state of Courier
@@ -27,37 +23,48 @@ type CourierHooks = {
 // can be used directly by importing from '@trycourier/courier-js'
 export const useCourier = () => {
 
-  const [hooks, setHooks] = React.useState<CourierHooks>({
-    authentication: {
-      signIn: (props: CourierProps) => Courier.shared.signIn(props),
-      signOut: () => Courier.shared.signOut()
-    },
-    inbox: {
-      load: (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => CourierInboxDatastore.shared.load(props),
-      fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props)
-    }
+  // Authentication Functions 
+  const signIn = (props: CourierProps) => Courier.shared.signIn(props);
+  const signOut = () => Courier.shared.signOut();
+
+  // Inbox Functions
+  const loadInbox = (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => CourierInboxDatastore.shared.load(props);
+  const fetchNextPageOfMessages = (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
+  const setPaginationLimit = (limit: number) => Courier.shared.paginationLimit = limit;
+
+  // State
+  const [auth, setAuth] = React.useState<AuthenticationHooks>({
+    userId: undefined,
+    signIn,
+    signOut
   });
 
-  // Setup
+  const [inbox, setInbox] = React.useState<InboxHooks>({
+    load: loadInbox,
+    fetchNextPageOfMessages,
+    setPaginationLimit
+  });
+
   React.useEffect(() => {
 
     // Add a listener to the Courier instance
-    const listener = Courier.shared.addAuthenticationListener(() => refreshValues());
+    const listener = Courier.shared.addAuthenticationListener(() => refreshAuth());
 
     // Add inbox data store listener
     const inboxListener = new CourierInboxDataStoreListener({
-      onError: (error) => refreshValues(error),
-      onDataSetChange: () => refreshValues(),
-      onPageAdded: () => refreshValues(),
-      onMessageAdd: () => refreshValues(),
-      onMessageRemove: () => refreshValues(),
-      onMessageUpdate: () => refreshValues(),
-      onUnreadCountChange: () => refreshValues()
+      onError: (error) => refreshInbox(error),
+      onDataSetChange: () => refreshInbox(),
+      onPageAdded: () => refreshInbox(),
+      onMessageAdd: () => refreshInbox(),
+      onMessageRemove: () => refreshInbox(),
+      onMessageUpdate: () => refreshInbox(),
+      onUnreadCountChange: () => refreshInbox()
     });
     CourierInboxDatastore.shared.addDataStoreListener(inboxListener);
 
     // Set initial values
-    refreshValues();
+    refreshAuth();
+    refreshInbox();
 
     // Remove listeners when the component unmounts
     return () => {
@@ -66,28 +73,31 @@ export const useCourier = () => {
     };
   }, []);
 
-  const refreshValues = (error?: Error) => {
+  const refreshAuth = () => {
     const options = Courier.shared.client?.options;
+    setAuth({
+      userId: options?.userId,
+      signIn,
+      signOut
+    });
+  }
+
+  const refreshInbox = (error?: Error) => {
     const datastore = CourierInboxDatastore.shared;
-    setHooks({
-      authentication: {
-        userId: options?.userId,
-        signIn: (props: CourierProps) => Courier.shared.signIn(props),
-        signOut: () => Courier.shared.signOut()
-      },
-      inbox: {
-        load: (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => datastore.load(props),
-        fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => datastore.fetchNextPageOfMessages(props),
-        inbox: datastore.inboxDataSet,
-        archive: datastore.archiveDataSet,
-        unreadCount: datastore.unreadCount,
-        error: error,
-      }
+    setInbox({
+      load: loadInbox,
+      fetchNextPageOfMessages,
+      setPaginationLimit,
+      inbox: datastore.inboxDataSet,
+      archive: datastore.archiveDataSet,
+      unreadCount: datastore.unreadCount,
+      error: error,
     });
   }
 
   return {
     shared: Courier.shared,
-    hooks: hooks,
+    auth: auth,
+    inbox: inbox,
   };
 };
