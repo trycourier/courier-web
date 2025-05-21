@@ -89,7 +89,7 @@ export class CourierInbox extends HTMLElement {
             feedType: feedType
           });
         } catch (error) {
-          console.error('Failed to fetch next page of messages:', error);
+          Courier.shared.client?.options.logger?.error('Failed to fetch next page of messages:', error);
         }
       },
       onMessageClick: (message, index) => {
@@ -329,7 +329,7 @@ export class CourierInbox extends HTMLElement {
           try {
             this._onMessageClick = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
           } catch (error) {
-            console.error('Failed to parse message-click handler:', error);
+            Courier.shared.client?.options.logger?.error('Failed to parse message-click handler:', error);
           }
         } else {
           this._onMessageClick = undefined;
@@ -340,7 +340,7 @@ export class CourierInbox extends HTMLElement {
           try {
             this._onMessageActionClick = new Function('props', newValue) as (props: CourierInboxListItemActionFactoryProps) => void;
           } catch (error) {
-            console.error('Failed to parse message-action-click handler:', error);
+            Courier.shared.client?.options.logger?.error('Failed to parse message-action-click handler:', error);
           }
         } else {
           this._onMessageActionClick = undefined;
@@ -351,7 +351,7 @@ export class CourierInbox extends HTMLElement {
           try {
             this._onMessageLongPress = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
           } catch (error) {
-            console.error('Failed to parse message-long-press handler:', error);
+            Courier.shared.client?.options.logger?.error('Failed to parse message-long-press handler:', error);
           }
         } else {
           this._onMessageLongPress = undefined;

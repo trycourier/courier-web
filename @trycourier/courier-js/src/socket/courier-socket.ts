@@ -1,13 +1,28 @@
+import { CourierClientOptions } from "../client/courier-client";
+
 export class CourierSocket {
+
+  // Constants
   private static readonly NORMAL_CLOSURE_STATUS = 1000;
+
+  // Properties
   private webSocket: WebSocket | null = null;
   private pingInterval: NodeJS.Timeout | null = null;
+
+  // Callbacks
   public onOpen?: () => void;
   public onMessageReceived?: (message: string) => void;
   public onClose?: (code: number, reason?: string) => void;
   public onError?: (error: Error) => void;
 
-  constructor(private readonly url: string) { }
+  // Properties
+  private readonly url: string;
+  readonly options: CourierClientOptions;
+
+  constructor(url: string, options: CourierClientOptions) {
+    this.url = url;
+    this.options = options;
+  }
 
   /**
    * Dynamically checks if the WebSocket is connected
@@ -78,7 +93,7 @@ export class CourierSocket {
       try {
         await this.send({ action: 'keepAlive' });
       } catch (error) {
-        console.error('Error occurred on Keep Alive:', error);
+        this.options.logger?.error('Error occurred on Keep Alive:', error);
       }
     }, props?.intervalInMillis ?? 300_000);
   }

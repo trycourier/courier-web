@@ -23,11 +23,13 @@ export type EventType =
   | 'click';
 
 export class InboxSocket extends CourierSocket {
+
   public receivedMessage?: (message: InboxMessage) => void;
   public receivedMessageEvent?: (event: MessageEvent) => void;
 
-  constructor(private readonly options: CourierClientOptions) {
-    super(InboxSocket.buildUrl(options));
+  constructor(options: CourierClientOptions) {
+    const url = InboxSocket.buildUrl(options);
+    super(url, options);
     this.onMessageReceived = (data) => this.convertToType(data);
   }
 

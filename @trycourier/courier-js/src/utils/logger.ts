@@ -1,36 +1,36 @@
 export class Logger {
 
-  constructor(private readonly showLogs: boolean) {
-    this.showLogs = showLogs;
-  }
+  private readonly PREFIX = '[COURIER]';
+
+  constructor(private readonly showLogs: boolean) { }
 
   public warn(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.warn(`[Courier] ${message}`, ...args);
+      console.warn(`${this.PREFIX} ${message}`, ...args);
     }
   }
 
   public log(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.log(`[Courier] ${message}`, ...args);
+      console.log(`${this.PREFIX} ${message}`, ...args);
     }
   }
 
   public error(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.error(`[Courier] ${message}`, ...args);
+      console.error(`${this.PREFIX} ${message}`, ...args);
     }
   }
 
   public debug(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.debug(`[Courier] ${message}`, ...args);
+      console.debug(`${this.PREFIX} ${message}`, ...args);
     }
   }
 
   public info(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.info(`[Courier] ${message}`, ...args);
+      console.info(`${this.PREFIX} ${message}`, ...args);
     }
   }
 }

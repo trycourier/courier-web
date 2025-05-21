@@ -1,4 +1,4 @@
-import { InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -367,7 +367,7 @@ export class CourierListItem extends HTMLElement {
         this._message = JSON.parse(messageAttr) as InboxMessage;
         this._updateContent();
       } catch (err) {
-        console.error('CourierListItem – failed to parse message:', err);
+        Courier.shared.client?.options.logger?.error('CourierListItem – failed to parse message:', err);
       }
     }
   }

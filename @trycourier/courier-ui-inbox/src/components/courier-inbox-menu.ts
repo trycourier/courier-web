@@ -9,6 +9,7 @@ import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
+import { Courier } from "@trycourier/courier-js";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
@@ -301,7 +302,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
       this._popupAlignment = position;
       this.updatePopupPosition();
     } else {
-      console.error(`Invalid position: ${position}`);
+      Courier.shared.client?.options.logger?.error(`Invalid position: ${position}`);
     }
   }
 

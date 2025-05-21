@@ -1,6 +1,5 @@
 import { CourierElement } from "./courier-element";
 import { CourierButton, CourierButtonProps, CourierButtonVariants } from "./courier-button";
-import { theme } from "../utils/theme";
 import { SystemThemeMode } from "../utils/system-theme-mode";
 
 export type CourierInfoStateProps = {

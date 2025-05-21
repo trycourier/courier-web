@@ -119,7 +119,7 @@ export class CourierInboxDatastore {
       await this.connectSocket();
 
     } catch (error) {
-      console.error('Error loading inbox:', error);
+      Courier.shared.client?.options.logger?.error('Error loading inbox:', error);
       this._dataStoreListeners.forEach(listener => {
         listener.events.onError?.(error as Error);
       });
@@ -132,15 +132,15 @@ export class CourierInboxDatastore {
     try {
       // If the socket is not available, return early
       if (!socket) {
-        console.log('CourierInbox socket not available');
+        Courier.shared.client?.options.logger?.info('CourierInbox socket not available');
         return;
       }
 
-      console.log('CourierInbox socket', Courier.shared.client?.options.connectionId);
+      Courier.shared.client?.options.logger?.info('CourierInbox socket connectionId:', Courier.shared.client?.options.connectionId);
 
       // If the socket is already connected, return early
       if (socket.isConnected) {
-        console.log('CourierInbox socket already connected');
+        Courier.shared.client?.options.logger?.info('CourierInbox socket already connected. Socket will not attempt reconnection.');
         return;
       }
 
@@ -198,9 +198,9 @@ export class CourierInboxDatastore {
       await socket.connect();
       await socket.sendSubscribe();
       socket.keepAlive();
-      console.log('CourierInbox socket connected');
+      Courier.shared.client?.options.logger?.info('CourierInbox socket connected');
     } catch (error) {
-      console.error('Failed to connect socket:', error);
+      Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
     }
   }
 
@@ -233,7 +233,7 @@ export class CourierInboxDatastore {
             this.addPage(dataSet, 'inbox');
             return dataSet;
           } catch (error) {
-            console.error('Error fetching next page of inbox messages:', error);
+            Courier.shared.client?.options.logger?.error('Error fetching next page of inbox messages:', error);
             return null;
           } finally {
             this.isPaginatingInbox = false;
@@ -262,7 +262,7 @@ export class CourierInboxDatastore {
             this.addPage(dataSet, 'archive');
             return dataSet;
           } catch (error) {
-            console.error('Error fetching next page of archived messages:', error);
+            Courier.shared.client?.options.logger?.error('Error fetching next page of archived messages:', error);
             return null;
           } finally {
             this.isPaginatingArchive = false;
@@ -310,7 +310,7 @@ export class CourierInboxDatastore {
       }
     } catch (error) {
       this.applyLocalMessageChange(originalMessage, messageIndices);
-      console.error('Error reading message:', error);
+      Courier.shared.client?.options.logger?.error('Error reading message:', error);
     }
   }
 
@@ -340,7 +340,7 @@ export class CourierInboxDatastore {
       }
     } catch (error) {
       this.applyLocalMessageChange(originalMessage, messageIndices);
-      console.error('Error unreading message:', error);
+      Courier.shared.client?.options.logger?.error('Error unreading message:', error);
     }
   }
 
@@ -372,7 +372,7 @@ export class CourierInboxDatastore {
       }
     } catch (error) {
       this.applyLocalMessageChange(originalMessage, messageIndices);
-      console.error('Error opening message:', error);
+      Courier.shared.client?.options.logger?.error('Error opening message:', error);
     }
   }
 
@@ -389,7 +389,7 @@ export class CourierInboxDatastore {
         });
       }
     } catch (error) {
-      console.error('Error clicking message:', error);
+      Courier.shared.client?.options.logger?.error('Error clicking message:', error);
     }
   }
 
@@ -472,7 +472,7 @@ export class CourierInboxDatastore {
       }
 
     } catch (error) {
-      console.error('Error reading all messages:', error);
+      Courier.shared.client?.options.logger?.error('Error reading all messages:', error);
 
       // Reset to original state on error
       if (this._inboxDataSet && originalInboxMessageData) {
