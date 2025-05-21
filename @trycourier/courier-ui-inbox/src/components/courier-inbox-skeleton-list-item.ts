@@ -63,7 +63,7 @@ class CourierSkeletonAnimatedRow extends HTMLElement {
   }
 
   private getStyles(theme: CourierInboxTheme, widthPercent: number): string {
-    const color = theme.inbox?.loading?.animation?.color ?? '#000';
+    const color = theme.inbox?.loading?.animation?.barColor ?? '#000';
 
     // Handle both 3 and 6 character hex colors
     const hexColor = color.length === 4 ?
@@ -88,7 +88,7 @@ class CourierSkeletonAnimatedRow extends HTMLElement {
       }
 
       .skeleton-item {
-        height: ${theme.inbox?.loading?.animation?.height ?? '14px'};
+        height: ${theme.inbox?.loading?.animation?.barHeight ?? '14px'};
         width: 100%;
         background: linear-gradient(
           90deg,
@@ -98,7 +98,7 @@ class CourierSkeletonAnimatedRow extends HTMLElement {
         );
         background-size: 200% 100%;
         animation: shimmer ${theme.inbox?.loading?.animation?.duration ?? '2s'} ease-in-out infinite;
-        border-radius: ${theme.inbox?.loading?.animation?.borderRadius ?? '14px'};
+        border-radius: ${theme.inbox?.loading?.animation?.barBorderRadius ?? '14px'};
       }
 
       @keyframes shimmer {

@@ -43,6 +43,10 @@ export class CourierInboxMenuButton extends CourierElement {
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadCountBadge);
     this.shadow.appendChild(this._container);
+
+    // Set the theme of the button
+    this.updateTheme();
+
     return this._container;
   }
 
@@ -64,13 +68,11 @@ export class CourierInboxMenuButton extends CourierElement {
 
   public onUnreadCountChange(unreadCount: number): void {
     this._unreadCountBadge?.setCount(unreadCount);
-    console.log('updateTheme Button 0', this._themeSubscription.manager.getTheme()?.popup?.button);
     this.updateTheme();
   }
 
   private updateTheme() {
     const theme = this._themeSubscription.manager.getTheme();
-    console.log('updateTheme Button 1', theme?.popup?.button);
 
     // Trigger button
     this._triggerButton?.updateIconColor(theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
@@ -78,7 +80,6 @@ export class CourierInboxMenuButton extends CourierElement {
     this._triggerButton?.updateBackgroundColor(theme?.popup?.button?.backgroundColor ?? 'transparent');
     this._triggerButton?.updateHoverBackgroundColor(theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
     this._triggerButton?.updateActiveBackgroundColor(theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
-
 
     // Unread count badge
     this._unreadCountBadge?.refreshTheme('button');

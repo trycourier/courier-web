@@ -68,15 +68,6 @@ export class CourierInfoState extends CourierElement {
 
   private getStyles(props: CourierInfoStateProps): string {
 
-    const textDefaultColor = () => {
-      switch (this.currentSystemTheme) {
-        case 'light':
-          return theme.light.colors.primary;
-        case 'dark':
-          return theme.dark.colors.primary;
-      }
-    }
-
     return `
       :host {
         display: flex;
@@ -84,7 +75,6 @@ export class CourierInfoState extends CourierElement {
         justify-content: center;
         height: 100%;
         width: 100%;
-        padding: 24px;
       }
 
       .container {
@@ -94,11 +84,12 @@ export class CourierInfoState extends CourierElement {
         justify-content: center;
         gap: 16px;
         text-align: center;
+        padding: 24px;
       }
 
       .container h2 {
         margin: 0;
-        color: ${props.title?.textColor ?? textDefaultColor()};
+        color: ${props.title?.textColor ?? 'red'};
         font-size: ${props.title?.fontSize ?? '16px'};
         font-weight: ${props.title?.fontWeight ?? '500'};
         font-family: ${props.title?.fontFamily ?? 'inherit'};

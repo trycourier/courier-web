@@ -182,7 +182,7 @@ export class CourierInboxList extends HTMLElement {
           fontWeight: error?.title?.font?.weight
         },
         button: {
-          text: error?.button?.text ?? 'Retry',
+          text: error?.button?.text,
           backgroundColor: error?.button?.backgroundColor,
           hoverBackgroundColor: error?.button?.hoverBackgroundColor,
           activeBackgroundColor: error?.button?.activeBackgroundColor,
@@ -221,7 +221,7 @@ export class CourierInboxList extends HTMLElement {
           fontWeight: empty?.title?.font?.weight
         },
         button: {
-          text: empty?.button?.text ?? 'Refresh',
+          text: empty?.button?.text,
           backgroundColor: empty?.button?.backgroundColor,
           hoverBackgroundColor: empty?.button?.hoverBackgroundColor,
           activeBackgroundColor: empty?.button?.activeBackgroundColor,

@@ -102,9 +102,9 @@ export type CourierInboxListItem = {
 
 export type CourierInboxSkeletonLoadingState = {
   animation?: {
-    color?: string;
-    height?: string;
-    borderRadius?: string;
+    barColor?: string;
+    barHeight?: string;
+    barBorderRadius?: string;
     duration?: string;
   },
   divider?: string;
@@ -386,12 +386,36 @@ export const defaultLightTheme: CourierInboxTheme = {
     },
     loading: {
       animation: {
-        color: CourierColors.gray[500],
-        height: '14px',
-        borderRadius: '14px',
+        barColor: CourierColors.gray[500],
+        barHeight: '14px',
+        barBorderRadius: '14px',
         duration: '2s'
       },
       divider: `1px solid ${CourierColors.gray[200]}`
+    },
+    empty: {
+      title: {
+        font: {
+          size: '16px',
+          weight: '500',
+          color: CourierColors.black[500],
+        }
+      },
+      button: {
+        text: 'Refresh'
+      }
+    },
+    error: {
+      title: {
+        font: {
+          size: '16px',
+          weight: '500',
+          color: CourierColors.black[500],
+        }
+      },
+      button: {
+        text: 'Retry'
+      }
     }
   }
 };
@@ -610,12 +634,36 @@ export const defaultDarkTheme: CourierInboxTheme = {
     },
     loading: {
       animation: {
-        color: CourierColors.white[500],
-        height: '14px',
-        borderRadius: '14px',
+        barColor: CourierColors.white[500],
+        barHeight: '14px',
+        barBorderRadius: '14px',
         duration: '2s'
       },
       divider: `1px solid ${CourierColors.gray[400]}`
+    },
+    empty: {
+      title: {
+        font: {
+          size: '16px',
+          weight: '500',
+          color: CourierColors.white[500],
+        }
+      },
+      button: {
+        text: 'Refresh'
+      }
+    },
+    error: {
+      title: {
+        font: {
+          size: '16px',
+          weight: '500',
+          color: CourierColors.white[500],
+        }
+      },
+      button: {
+        text: 'Retry'
+      }
     }
   }
 };
