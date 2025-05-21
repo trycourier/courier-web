@@ -30,7 +30,7 @@ export class CourierSystemThemeElement extends HTMLElement {
     }
   }
 
-  protected onSystemThemeChange(mode: SystemThemeMode): void {
+  protected onSystemThemeChange(_: SystemThemeMode): void {
     // Default implementation does nothing
   }
 
