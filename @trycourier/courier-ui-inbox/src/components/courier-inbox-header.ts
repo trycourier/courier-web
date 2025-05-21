@@ -73,7 +73,7 @@ export class CourierInboxHeader extends CourierElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.readAllMessages();
+          CourierInboxDatastore.shared.readAllMessages(/* callApi */ true);
         }
       },
       {
@@ -98,7 +98,7 @@ export class CourierInboxHeader extends CourierElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          alert('TODO: Archive read messages');
+          CourierInboxDatastore.shared.archiveReadMessages(/* callApi */ true);
         }
       }
     ];

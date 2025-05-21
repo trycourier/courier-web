@@ -60,6 +60,10 @@ describe('InboxClient', () => {
     })).resolves.not.toThrow();
   });
 
+  it('should archive read messages', async () => {
+    await expect(courierClient.inbox.archiveRead()).resolves.not.toThrow();
+  });
+
   it('Connect to inbox socket', async () => {
     const socket = courierClient.inbox.socket;
 

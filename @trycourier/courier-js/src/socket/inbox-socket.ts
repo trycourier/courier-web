@@ -13,14 +13,15 @@ export interface MessageEvent {
 }
 
 export type EventType =
-  | 'read'
-  | 'unread'
+  | 'archive-read'
+  | 'archive'
+  | 'click'
   | 'mark-all-read'
   | 'opened'
-  | 'unopened'
-  | 'archive'
+  | 'read'
   | 'unarchive'
-  | 'click';
+  | 'unopened'
+  | 'unread';
 
 export class InboxSocket extends CourierSocket {
 
