@@ -6,7 +6,7 @@ exit 0
 
 # Check if package name is provided
 if [ -z "$1" ]; then
-  gum style --foreground 196 "❌ Please provide a package name"
+  gum style --foreground 196 "Please provide a package name"
   exit 1
 fi
 
@@ -15,7 +15,7 @@ package_dir="$(dirname "$0")/../$1"
 
 # Check if package directory exists
 if [ ! -d "$package_dir" ]; then
-  gum style --foreground 196 "❌ Package directory not found: $package_dir"
+  gum style --foreground 196 "Package directory not found: $package_dir"
   exit 1
 fi
 
@@ -28,8 +28,8 @@ wait
 
 # Check if tests passed
 if [ $? -eq 0 ]; then
-  gum style --foreground 46 "✅ Tests passed for $1"
+  gum style --foreground 46 "Tests passed for $1"
 else
-  gum style --foreground 196 "❌ Tests failed for $1"
+  gum style --foreground 196 "Tests failed for $1"
   exit 1
 fi

@@ -2,7 +2,7 @@
 
 # Check if package name is provided
 if [ -z "$1" ]; then
-  gum style --foreground 196 "❌ Please provide package name"
+  gum style --foreground 196 "Please provide package name"
   exit 1
 fi
 
@@ -11,7 +11,7 @@ package_dir="$(dirname "$0")/../$1"
 
 # Check if package directory exists
 if [ ! -d "$package_dir" ]; then
-  gum style --foreground 196 "❌ Package directory not found: $package_dir"
+  gum style --foreground 196 "Package directory not found: $package_dir"
   exit 1
 fi
 
@@ -34,7 +34,7 @@ minor_version="$major.$((minor + 1)).0$pre_release"
 major_version="$((major + 1)).0.0$pre_release"
 
 # Show version selection menu
-selected_type=$(gum choose --header "🔄 Select version (current: $current_version)" \
+selected_type=$(gum choose --header "Select version (current: $current_version)" \
   "patch (new: $patch_version)" \
   "minor (new: $minor_version)" \
   "major (new: $major_version)" \
@@ -55,10 +55,10 @@ case "$version_type" in
     new_version="$major_version"
     ;;
   "custom")
-    new_version=$(gum input --header "Enter custom version (current: $current_version)" --placeholder "$current_version")
+    new_version=$(gum input --header "Enter custom version (current: $current_version)" --value "$current_version")
     ;;
   *)
-    gum style --foreground 196 "❌ Invalid version type selected"
+    gum style --foreground 196 "Invalid version type selected"
     exit 1
     ;;
 esac
@@ -66,4 +66,4 @@ esac
 # Update package.json with new version
 npm version "$new_version" --no-git-tag-version
 
-gum style --foreground 46 "✅ Version incremented to $new_version"
+gum style --foreground 46 "Version incremented to $new_version"
