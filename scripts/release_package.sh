@@ -26,8 +26,7 @@ version=$(node -p "require('$package_dir/package.json').version")
 current_branch=$(git branch --show-current)
 
 # Show release confirmation
-gum style --foreground 208 "📦 About to release $1@$version"
-gum style --foreground 208 "This will:"
+gum style --foreground 208 "About to release $1@$version. This will:"
 gum style --foreground 208 "1. Push changes to git"
 gum style --foreground 208 "2. Create a GitHub release"
 gum style --foreground 208 "3. Publish to npm"
@@ -71,3 +70,26 @@ gum style --border normal --border-foreground 212 --padding "1 1" "$(
   gum style --foreground 212 "To install the package, run:"
   gum style --foreground 212 "npm i $1@$version"
 )"
+
+# Define package dependencies mapping
+declare -A package_deps=(
+  ["@trycourier/courier-js"]="@trycourier/courier-ui-inbox"
+  ["@trycourier/courier-ui-core"]="@trycourier/courier-ui-inbox"
+  ["@trycourier/courier-ui-inbox"]="@trycourier/courier-react"
+)
+
+# Get the new version
+new_version=$(node -p "require('$package_dir/package.json').version")
+
+# Check if current package has dependencies to update
+if [[ -n "${package_deps[$1]:-}" ]]; then
+  dep_package="${package_deps[$1]}"
+  dep_dir="$(dirname "$0")/../$dep_package"
+  
+  if [ -d "$dep_dir" ]; then
+    gum style --foreground 46 "Updating $dep_package peer dependency..."
+    cd "$dep_dir"
+    npm pkg set "peerDependencies.$1=$new_version"
+    cd "$package_dir"
+  fi
+fi

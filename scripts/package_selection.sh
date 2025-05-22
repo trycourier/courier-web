@@ -27,18 +27,19 @@ step_names=()
 for step in "${deployment_steps[@]}"; do
   step_names+=("${step%%:*}")
 done
+
 # ── select steps ───────────────────────────────────────────────────────────
-selected_steps=$(gum choose --header "Select steps to perform:" --no-limit --selected='*' "${step_names[@]}") || { gum style --foreground 196 "Deployment cancelled"; exit 1; }
+selected_steps=($(gum choose --header "Select steps to perform:" --no-limit --selected='*' "${step_names[@]}")) || { gum style --foreground 196 "Deployment cancelled"; exit 1; }
 
 gum style --foreground 46 "Selected steps:"
-echo "${selected_steps[@]}"
+printf '%s\n' "${selected_steps[@]}"
 
 # ── execution ───────────────────────────────────────────────────────────────
 for step in "${deployment_steps[@]}"; do
   step_name=${step%%:*}
   cmd=${step#*:}
   # Only execute if step was selected
-  if [[ " ${selected_steps[@]} " =~ " ${step_name} " ]]; then
+  if [[ " ${selected_steps[*]} " =~ " ${step_name} " ]]; then
     gum style --foreground 46 "$step_name"
     eval "$cmd"
   fi

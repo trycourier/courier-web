@@ -27,7 +27,7 @@
   "peerDependencies": {
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "@trycourier/courier-ui-inbox": "file:../@trycourier/courier-ui-inbox"
+    "@trycourier/courier-ui-inbox": "1.0.1-beta"
   },
   "devDependencies": {
     "react": "19.1.0",
