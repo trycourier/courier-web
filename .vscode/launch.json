@@ -82,21 +82,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "vscode-jest-tests",
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
-      "args": [
-        "--i",
-        "--config",
-        "--runInBand",
-        "jest.config.ts"
-      ],
-      "cwd": "${workspaceFolder}/@trycourier/courier-js",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Localhost QR",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
