@@ -15,6 +15,9 @@ export class InboxClient extends Client {
 
   /**
    * Get paginated messages
+   * @param paginationLimit - Number of messages to return per page (default: 24)
+   * @param startCursor - Cursor for pagination
+   * @returns Promise resolving to paginated messages response
    */
   public async getMessages(props?: {
     paginationLimit?: number;
@@ -69,6 +72,9 @@ export class InboxClient extends Client {
 
   /**
    * Get paginated archived messages
+   * @param paginationLimit - Number of messages to return per page (default: 24)
+   * @param startCursor - Cursor for pagination
+   * @returns Promise resolving to paginated archived messages response
    */
   public async getArchivedMessages(props?: {
     paginationLimit?: number;
@@ -123,6 +129,7 @@ export class InboxClient extends Client {
 
   /**
    * Get unread message count
+   * @returns Promise resolving to number of unread messages
    */
   public async getUnreadMessageCount(): Promise<number> {
     const query = `
@@ -146,6 +153,9 @@ export class InboxClient extends Client {
 
   /**
    * Track a click event
+   * @param messageId - ID of the message
+   * @param trackingId - ID for tracking the click
+   * @returns Promise resolving when click is tracked
    */
   public async click(props: { messageId: string, trackingId: string }): Promise<void> {
     const query = `
@@ -173,6 +183,8 @@ export class InboxClient extends Client {
 
   /**
    * Mark a message as read
+   * @param messageId - ID of the message to mark as read
+   * @returns Promise resolving when message is marked as read
    */
   public async read(props: { messageId: string }): Promise<void> {
     const query = `
@@ -200,6 +212,8 @@ export class InboxClient extends Client {
 
   /**
    * Mark a message as unread
+   * @param messageId - ID of the message to mark as unread
+   * @returns Promise resolving when message is marked as unread
    */
   public async unread(props: { messageId: string }): Promise<void> {
     const query = `
@@ -227,6 +241,7 @@ export class InboxClient extends Client {
 
   /**
    * Mark all messages as read
+   * @returns Promise resolving when all messages are marked as read
    */
   public async readAll(): Promise<void> {
     const query = `
@@ -254,6 +269,8 @@ export class InboxClient extends Client {
 
   /**
    * Mark a message as opened
+   * @param messageId - ID of the message to mark as opened
+   * @returns Promise resolving when message is marked as opened
    */
   public async open(props: { messageId: string }): Promise<void> {
     const query = `
@@ -281,6 +298,8 @@ export class InboxClient extends Client {
 
   /**
    * Archive a message
+   * @param messageId - ID of the message to archive
+   * @returns Promise resolving when message is archived
    */
   public async archive(props: { messageId: string }): Promise<void> {
     const query = `

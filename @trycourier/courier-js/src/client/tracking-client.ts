@@ -6,6 +6,11 @@ export class TrackingClient extends Client {
 
   /**
    * Post an inbound courier event
+   * @param event - The event type: Example: "New Order Placed"
+   * @param messageId - The message ID
+   * @param type - The type of event: Available options: "track"
+   * @param properties - The properties of the event
+   * @returns Promise resolving to the message ID
    * @see https://www.courier.com/docs/reference/inbound/courier-track-event
    */
   public async postInboundCourier(props: {
@@ -32,6 +37,9 @@ export class TrackingClient extends Client {
   /**
    * Post a tracking URL event
    * These urls are found in messages sent from Courier
+   * @param url - The URL to post the event to
+   * @param event - The event type: Available options: "click", "open", "unsubscribe"
+   * @returns Promise resolving when the event is posted
    */
   public async postTrackingUrl(props: {
     url: string;

@@ -6,6 +6,9 @@ export class TokenClient extends Client {
 
   /**
    * Store a push notification token for a user
+   * @param token - The push notification token
+   * @param provider - The provider of the token
+   * @param device - The device information
    * @see https://www.courier.com/docs/reference/token-management/put-token
    */
   public async putUserToken(props: {
@@ -41,6 +44,8 @@ export class TokenClient extends Client {
 
   /**
    * Delete a push notification token for a user
+   * @param token - The push notification token
+   * @returns Promise resolving when token is deleted
    */
   public async deleteUserToken(props: {
     token: string;

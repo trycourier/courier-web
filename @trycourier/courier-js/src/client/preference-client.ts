@@ -8,15 +8,17 @@ export class PreferenceClient extends Client {
 
   /**
    * Get all preferences for a user
+   * @param paginationCursor - Optional cursor for pagination
+   * @returns Promise resolving to user preferences
    * @see https://www.courier.com/docs/reference/user-preferences/list-all-user-preferences
    */
-  public async getUserPreferences(params?: {
+  public async getUserPreferences(props?: {
     paginationCursor?: string;
   }): Promise<CourierUserPreferences> {
     let url = `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences`;
 
-    if (params?.paginationCursor) {
-      url += `?cursor=${params.paginationCursor}`;
+    if (props?.paginationCursor) {
+      url += `?cursor=${props.paginationCursor}`;
     }
 
     const json = await http({
@@ -38,15 +40,17 @@ export class PreferenceClient extends Client {
 
   /**
    * Get preferences for a specific topic
+   * @param topicId - The ID of the topic to get preferences for
+   * @returns Promise resolving to topic preferences
    * @see https://www.courier.com/docs/reference/user-preferences/get-subscription-topic-preferences
    */
-  public async getUserPreferenceTopic(params: {
+  public async getUserPreferenceTopic(props: {
     topicId: string;
   }): Promise<CourierUserPreferencesTopic> {
 
     const json = await http({
       options: this.options,
-      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${props.topicId}`,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.options.accessToken}`
@@ -59,9 +63,14 @@ export class PreferenceClient extends Client {
 
   /**
    * Update preferences for a specific topic
+   * @param topicId - The ID of the topic to update preferences for
+   * @param status - The new status for the topic
+   * @param hasCustomRouting - Whether the topic has custom routing
+   * @param customRouting - The custom routing channels for the topic
+   * @returns Promise resolving when update is complete
    * @see https://www.courier.com/docs/reference/user-preferences/update-subscription-topic-preferences
    */
-  public async putUserPreferenceTopic(params: {
+  public async putUserPreferenceTopic(props: {
     topicId: string;
     status: CourierUserPreferencesStatus;
     hasCustomRouting: boolean;
@@ -70,15 +79,15 @@ export class PreferenceClient extends Client {
 
     const payload = {
       topic: {
-        status: params.status,
-        has_custom_routing: params.hasCustomRouting,
-        custom_routing: params.customRouting,
+        status: props.status,
+        has_custom_routing: props.hasCustomRouting,
+        custom_routing: props.customRouting,
       },
     };
 
     await http({
       options: this.options,
-      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${params.topicId}`,
+      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/preferences/${props.topicId}`,
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${this.options.accessToken}`
@@ -89,13 +98,13 @@ export class PreferenceClient extends Client {
 
   /**
    * Get the notification center URL
-   * @param params 
-   * @returns 
+   * @param clientKey - The client key to use for the URL
+   * @returns The notification center URL
    */
-  public getNotificationCenterUrl(params: {
+  public getNotificationCenterUrl(props: {
     clientKey: string;
   }): string {
-    const rootTenantId = decode(params.clientKey);
+    const rootTenantId = decode(props.clientKey);
     const url = encode(`${rootTenantId}#${this.options.userId}${this.options.tenantId ? `#${this.options.tenantId}` : ""}#${false}`);
     return `https://view.notificationcenter.app/p/${url}`;
   }

@@ -9,26 +9,19 @@ import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 
 export interface CourierProps {
-  jwt?: string;
-  publicApiKey?: string;
-  userId: string;
-  connectionId?: string;
-  tenantId?: string;
-  showLogs?: boolean;
-  apiUrls?: CourierApiUrls;
+  jwt?: string;                // JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token
+  publicApiKey?: string;       // Public API key for authentication
+  userId: string;              // User ID for the client. This is normally an ID that matches users in your system
+  connectionId?: string;       // Inbox Websocket connection ID
+  tenantId?: string;           // Tenant ID. Used for multi-tenant apps
+  showLogs?: boolean;          // Flag to control logging. Logs are prefixed with [COURIER].
+  apiUrls?: CourierApiUrls;    // Custom API URLs
 }
 
-export interface CourierClientOptions {
-  readonly jwt?: string;
-  readonly publicApiKey?: string;
-  readonly userId: string;
-  readonly connectionId?: string;
-  readonly tenantId?: string;
-  readonly showLogs?: boolean;
-  readonly apiUrls?: CourierApiUrls;
-  readonly accessToken?: string;
-  readonly logger: Logger;
-  readonly urls: CourierApiUrls;
+export interface CourierClientOptions extends Omit<CourierProps, 'apiUrls'> {
+  readonly accessToken?: string;   // Combined authentication token (jwt or publicApiKey)
+  readonly logger: Logger;         // Logger instance
+  readonly urls: CourierApiUrls;   // Final API URLs configuration
 }
 
 export class CourierClient extends Client {
@@ -41,10 +34,10 @@ export class CourierClient extends Client {
 
   constructor(props: CourierProps) {
 
-    // Determine if we should show logs
+    // Determine if we should show logs based on props or environment
     const showLogs = props.showLogs !== undefined ? props.showLogs : process.env.NODE_ENV === 'development';
 
-    // Setup options with defaults
+    // Setup base options with default values
     const baseOptions = {
       ...props,
       showLogs,
@@ -52,14 +45,14 @@ export class CourierClient extends Client {
       accessToken: props.jwt ?? props.publicApiKey
     };
 
-    // Attach logger and urls to options
+    // Initialize base client with logger and URLs
     super({
       ...baseOptions,
       logger: new Logger(baseOptions.showLogs),
       urls: getCourierApiUrls(baseOptions.apiUrls)
     });
 
-    // Create subclients
+    // Initialize all subclients with the configured options
     this.tokens = new TokenClient(this.options);
     this.brands = new BrandClient(this.options);
     this.preferences = new PreferenceClient(this.options);
@@ -67,11 +60,12 @@ export class CourierClient extends Client {
     this.lists = new ListClient(this.options);
     this.tracking = new TrackingClient(this.options);
 
+    // Warn if no authentication method is provided
     if (!this.options.jwt && !this.options.publicApiKey) {
       this.options.logger.warn('Courier Client initialized with no authentication method. Please provide a JWT or public API key.');
     }
 
-    // Warn about public key usage
+    // Warn about using public API key in production
     if (this.options.publicApiKey) {
       this.options.logger?.warn(
         'Courier Warning: Public API Keys are for testing only. Please use JWTs for production.\n' +
@@ -80,7 +74,7 @@ export class CourierClient extends Client {
       );
     }
 
-    // Check for both keys
+    // Warn if both authentication methods are provided
     if (this.options.jwt && this.options.publicApiKey) {
       this.options.logger?.warn(
         'Courier Warning: Both a JWT and a Public API Key were provided. The Public API Key will be ignored.'

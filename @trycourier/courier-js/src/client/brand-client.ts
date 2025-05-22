@@ -6,6 +6,8 @@ export class BrandClient extends Client {
 
   /**
    * Get a brand by ID using GraphQL
+   * @param brandId - The ID of the brand to retrieve
+   * @returns Promise resolving to the requested brand
    */
   public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
     const query = `
