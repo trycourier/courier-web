@@ -63,3 +63,6 @@ if [[ "$version" == *"-"* ]]; then
 else
   npm publish
 fi
+
+# Show success message
+gum style --border normal --border-foreground 212 --padding "1 1" "$(gum style --foreground 212 "✨ Package successfully published to npm!\n🔗 View it here: https://www.npmjs.com/package/$1")"
