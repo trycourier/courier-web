@@ -1,9 +1,5 @@
 #!/bin/bash
 
-gum style --foreground 208 "⚠️  Skipping tests for now. Something weird going on with Jest."
-exit 0
-
-
 # Check if package name is provided
 if [ -z "$1" ]; then
   gum style --foreground 196 "Please provide a package name"
@@ -20,16 +16,20 @@ if [ ! -d "$package_dir" ]; then
 fi
 
 # Navigate to package directory and run tests
-gum style --foreground 46 "🧪 Running tests for $1..."
+gum style --foreground 46 "Running tests for $1..."
 cd "$package_dir" && npm run test
 
-# Wait for tests to complete
-wait
-
-# Check if tests passed
-if [ $? -eq 0 ]; then
+# Store the exit code from npm test
+test_exit_code=$?
+# Check if tests passed based on the exit code
+if [ $test_exit_code -eq 0 ]; then
   gum style --foreground 46 "Tests passed for $1"
 else
-  gum style --foreground 196 "Tests failed for $1"
-  exit 1
+  gum style --foreground 196 "Some tests failed for $1"
+  # Ask for confirmation to continue
+  if gum confirm "Continue to next step anyway?"; then
+    gum style --foreground 208 "Continuing to next step..."
+  else
+    exit 1
+  fi
 fi
