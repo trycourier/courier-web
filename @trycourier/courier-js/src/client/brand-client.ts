@@ -30,7 +30,7 @@ export class BrandClient extends Client {
 
     const json = await graphql({
       options: this.options,
-      url: this.options.urls.courier.graphql,
+      url: this.options.apiUrls.courier.graphql,
       headers: {
         'x-courier-user-id': this.options.userId,
         'x-courier-client-key': 'empty', // Empty for now. Will be removed in future.

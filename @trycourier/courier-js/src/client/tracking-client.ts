@@ -20,7 +20,7 @@ export class TrackingClient extends Client {
     properties?: Record<string, any>;
   }): Promise<{ messageId: string }> {
     return await http({
-      url: `${this.options.urls.courier.rest}/inbound/courier`,
+      url: `${this.options.apiUrls.courier.rest}/inbound/courier`,
       options: this.options,
       method: 'POST',
       headers: {

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import '@jest/globals';
+import fetchMock from 'jest-fetch-mock';
 
 dotenv.config({
   path: path.resolve(__dirname, '../../../.env.test')
@@ -13,3 +14,7 @@ console.log(JSON.stringify({
   JWT: process.env.JWT,
   TENANT_ID: process.env.TENANT_ID
 }, null, 2));
+
+// Polyfill fetch for Jest but don't mock it.
+fetchMock.enableMocks();
+fetchMock.dontMock();

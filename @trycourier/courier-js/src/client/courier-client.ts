@@ -18,10 +18,16 @@ export interface CourierProps {
   apiUrls?: CourierApiUrls;    // Custom API URLs
 }
 
-export interface CourierClientOptions extends Omit<CourierProps, 'apiUrls'> {
-  readonly accessToken?: string;   // Combined authentication token (jwt or publicApiKey)
-  readonly logger: Logger;         // Logger instance
-  readonly urls: CourierApiUrls;   // Final API URLs configuration
+export interface CourierClientOptions {
+  readonly jwt?: string;                // JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token
+  readonly publicApiKey?: string;       // Public API key for authentication
+  readonly userId: string;              // User ID for the client. This is normally an ID that matches users in your system
+  readonly connectionId?: string;       // Inbox Websocket connection ID
+  readonly tenantId?: string;           // Tenant ID. Used for multi-tenant apps
+  readonly showLogs?: boolean;          // Flag to control logging. Logs are prefixed with [COURIER].
+  readonly accessToken?: string;        // Combined authentication token (jwt or publicApiKey)
+  readonly logger: Logger;              // Logger instance
+  readonly apiUrls: CourierApiUrls;     // Final API URLs configuration
 }
 
 export class CourierClient extends Client {
@@ -49,7 +55,7 @@ export class CourierClient extends Client {
     super({
       ...baseOptions,
       logger: new Logger(baseOptions.showLogs),
-      urls: getCourierApiUrls(baseOptions.apiUrls)
+      apiUrls: getCourierApiUrls(baseOptions.apiUrls)
     });
 
     // Initialize all subclients with the configured options

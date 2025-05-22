@@ -32,7 +32,7 @@ export class TokenClient extends Client {
 
     await http({
       options: this.options,
-      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
+      url: `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${this.options.accessToken}`
@@ -52,7 +52,7 @@ export class TokenClient extends Client {
   }): Promise<void> {
     await http({
       options: this.options,
-      url: `${this.options.urls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
+      url: `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/tokens/${props.token}`,
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${this.options.accessToken}`

@@ -13,7 +13,7 @@ export class ListClient extends Client {
     listId: string;
   }): Promise<void> {
     return await http({
-      url: `${this.options.urls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
+      url: `${this.options.apiUrls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
       options: this.options,
       method: 'PUT',
       headers: {
@@ -32,7 +32,7 @@ export class ListClient extends Client {
     listId: string;
   }): Promise<void> {
     return await http({
-      url: `${this.options.urls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
+      url: `${this.options.apiUrls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
       options: this.options,
       method: 'DELETE',
       headers: {

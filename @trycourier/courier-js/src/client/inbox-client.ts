@@ -66,7 +66,7 @@ export class InboxClient extends Client {
         'x-courier-user-id': this.options.userId,
         'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -123,7 +123,7 @@ export class InboxClient extends Client {
         'x-courier-user-id': this.options.userId,
         'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -145,7 +145,7 @@ export class InboxClient extends Client {
         'x-courier-user-id': this.options.userId,
         'Authorization': `Bearer ${this.options.accessToken}`
       },
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
 
     return response.data?.count ?? 0;
@@ -177,7 +177,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -206,7 +206,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -235,7 +235,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -263,7 +263,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -292,7 +292,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 
@@ -321,7 +321,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 }

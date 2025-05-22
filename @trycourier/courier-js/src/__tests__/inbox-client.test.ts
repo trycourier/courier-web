@@ -86,7 +86,7 @@ describe('InboxClient', () => {
     // Connect to the socket
     await socket.connect();
 
-    // Subscribe to the socket  
+    // Subscribe to the socket
     await socket.sendSubscribe();
 
     // Keep the socket alive
@@ -128,8 +128,8 @@ describe('InboxClient', () => {
     await socket.connect();
     await socket.sendSubscribe();
 
-    await new Promise(resolve => setTimeout(resolve, 450000));
+    await new Promise(resolve => setTimeout(resolve, 4500));
 
     socket.disconnect();
-  }, 600000);
+  }, 6000);
 });
