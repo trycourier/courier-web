@@ -25,7 +25,7 @@ version=$(node -p "require('$package_dir/package.json').version")
 # Get current branch
 current_branch=$(git branch --show-current)
 
-Push changes to git
+# Push changes to git
 gum style --foreground 46 "📤 Pushing changes to git..."
 git add .
 git commit -m "chore: release $1@$version"
@@ -37,4 +37,11 @@ gh release create "v$version" --title "$1@$version" --notes "Release of $1@$vers
 
 # Publish to npm
 gum style --foreground 46 "📦 Publishing $1@$version to npm..."
-cd "$package_dir" && npm publish
+cd "$package_dir"
+
+# Check if version is a prerelease
+if [[ "$version" == *"-"* ]]; then
+  npm publish --tag beta
+else
+  npm publish
+fi
