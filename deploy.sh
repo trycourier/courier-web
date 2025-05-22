@@ -1,7 +1,12 @@
 #!/bin/bash
+set -euo pipefail
 
 # Install dependencies
-sh ./scripts/install_dependencies.sh
+if ! sh ./scripts/install_dependencies.sh; then
+  exit 1
+fi
 
 # Run the package selection script
-sh ./scripts/package_selection.sh
+if ! sh ./scripts/package_selection.sh; then
+  exit 1
+fi
