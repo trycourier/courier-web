@@ -1,6 +1,6 @@
 export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
   preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
 
   extensionsToTreatAsEsm: ['.ts'],
   transform: {
@@ -15,7 +15,7 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
 
   roots: ['<rootDir>/src'],
   testMatch: [
-    '**/__tests__/**/*.ts?(x)',
+    '**/__tests__/**/*(spec|test).ts?(x)',
     '**/?(*.)+(spec|test).ts?(x)'
   ],
   setupFiles: ['<rootDir>/src/jest.setup.ts']
