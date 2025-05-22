@@ -25,6 +25,18 @@ version=$(node -p "require('$package_dir/package.json').version")
 # Get current branch
 current_branch=$(git branch --show-current)
 
+# Show release confirmation
+gum style --foreground 208 "📦 About to release $1@$version"
+gum style --foreground 208 "This will:"
+gum style --foreground 208 "1. Push changes to git"
+gum style --foreground 208 "2. Create a GitHub release"
+gum style --foreground 208 "3. Publish to npm"
+
+if ! gum confirm "Do you want to proceed with the release?"; then
+  gum style --foreground 196 "❌ Release cancelled"
+  exit 1
+fi
+
 # Push changes to git
 gum style --foreground 46 "📤 Pushing changes to git..."
 git add .
@@ -34,6 +46,12 @@ git push origin "$current_branch"
 # Create GitHub release
 gum style --foreground 46 "🚀 Creating GitHub release for $1@$version..."
 gh release create "v$version" --title "$1@$version" --notes "Release of $1@$version"
+
+# Show npm publish confirmation
+if ! gum confirm "Ready to publish to npm. Proceed?"; then
+  gum style --foreground 196 "❌ npm publish cancelled"
+  exit 1
+fi
 
 # Publish to npm
 gum style --foreground 46 "📦 Publishing $1@$version to npm..."
