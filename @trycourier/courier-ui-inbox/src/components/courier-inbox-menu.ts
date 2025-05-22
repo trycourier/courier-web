@@ -141,7 +141,7 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
     `;
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
       case 'popup-alignment':
         if (this.isValidPosition(newValue)) {
