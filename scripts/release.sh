@@ -7,4 +7,4 @@ sh "$(dirname "$0")/check_git.sh" || exit 1
 sh "$(dirname "$0")/incremement_version.sh" "$1" || exit 1
 
 # Run push release
-sh "$(dirname "$0")/push_release.sh" "$1" || exit 1
+sh "$(dirname "$0")/release_package.sh" "$1" || exit 1
