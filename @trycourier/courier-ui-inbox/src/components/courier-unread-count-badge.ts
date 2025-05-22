@@ -99,4 +99,6 @@ export class CourierUnreadCountBadge extends HTMLElement {
 
 }
 
-customElements.define('courier-unread-count-badge', CourierUnreadCountBadge);
+if (!customElements.get('courier-unread-count-badge')) {
+  customElements.define('courier-unread-count-badge', CourierUnreadCountBadge);
+}
