@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react",
-  "version": "8.0.1-beta",
+  "version": "8.0.2-beta",
   "description": "The React components for the Courier web UI",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
@@ -26,7 +26,7 @@
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-ui-inbox": "1.0.1-beta"
+    "@trycourier/courier-ui-inbox": "1.0.2-beta"
   },
   "peerDependencies": {
     "react": "19.1.0",
