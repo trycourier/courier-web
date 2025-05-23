@@ -114,16 +114,43 @@ export class CourierInboxDatastore {
         listener.events.onDataSetChange?.(dataSet, properties.feedType);
         listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
       });
-
-      // Connect to the socket
-      await this.connectSocket();
-
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Error loading inbox:', error);
       this._dataStoreListeners.forEach(listener => {
         listener.events.onError?.(error as Error);
       });
     }
+  }
+
+  /** Listen for inbox and archive dataset updates. */
+  public async listenForUpdates() {
+    try {
+      // Ensure both datasets are loaded since we may receive updates for messages in either.
+      await this.ensureDataSetsLoaded();
+
+      // Connect to the socket
+      await this.connectSocket();
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error('Error listening for updates:', error);
+      this._dataStoreListeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
+    }
+  }
+
+  /** Fetch either/both datasets if they aren't already loaded. */
+  private async ensureDataSetsLoaded() {
+    let dataSetPromises: Promise<void>[] = [];
+
+    if (!this._inboxDataSet) {
+      dataSetPromises.push(this.load({ feedType: 'inbox', canUseCache: true }));
+    }
+
+    if (!this._archiveDataSet) {
+      dataSetPromises.push(this.load({ feedType: 'archive', canUseCache: true }));
+    }
+
+    await Promise.all(dataSetPromises);
   }
 
   private async connectSocket() {
@@ -207,6 +234,11 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Get a message by messageId from the inbox or archive data set
+   * @param props - The message ID
+   * @returns The message or undefined if it is not found
+   */
   private getMessage(props: { messageId: string }): InboxMessage | undefined {
     return this._inboxDataSet?.messages.find(m => m.messageId === props.messageId) ??
       this._archiveDataSet?.messages.find(m => m.messageId === props.messageId);
