@@ -12,64 +12,72 @@ if ! command -v gh &> /dev/null; then
   fi
 fi
 
-# Get package name from argument
-if [ -z "$1" ]; then
+# ── helper vars ───────────────────────────────────────────────────────────
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   #   /abs/path/to/scripts
+package_name="$1"                                            #   @trycourier/courier-js
+package_dir="$script_dir/../$package_name"                   #   ../@trycourier/courier-js
+
+# ── check args ────────────────────────────────────────────────────────────
+if [[ -z "${package_name:-}" ]]; then
   gum style --foreground 196 "Please provide package name"
   exit 1
 fi
 
-# Get version from package.json
-package_dir="$(dirname "$0")/../$1"
+# ── ensure GitHub CLI ─────────────────────────────────────────────────────
+if ! command -v gh &>/dev/null; then
+  gum style --foreground 196 "GitHub CLI is not installed"
+  gum style --foreground 208 "Installing GitHub CLI…"
+  case "$OSTYPE" in
+    darwin*)  brew install gh ;;
+    linux-gnu*) sudo apt-get install -y gh ;;
+    *) gum style --foreground 196 "Unsupported OS for automatic installation"; exit 1 ;;
+  esac
+fi
+
+# ── read package version ──────────────────────────────────────────────────
 version=$(node -p "require('$package_dir/package.json').version")
 
-# Get current branch
+# ── current Git branch ────────────────────────────────────────────────────
 current_branch=$(git branch --show-current)
 
-# Show release confirmation
-gum style --foreground 208 "About to release $1@$version. This will:"
-gum style --foreground 208 "1. Push changes to git"
-gum style --foreground 208 "2. Create a GitHub release"
-gum style --foreground 208 "3. Publish to npm"
+# ── user confirmation ─────────────────────────────────────────────────────
+gum style --foreground 208 "About to release $package_name@$version. This will:"
+gum style --foreground 208 "  1. Commit & push changes"
+gum style --foreground 208 "  2. Create a GitHub release"
+gum style --foreground 208 "  3. Publish to npm"
+gum confirm "Proceed?" || { gum style --foreground 196 "Release cancelled"; exit 1; }
 
-if ! gum confirm "Do you want to proceed with the release?"; then
-  gum style --foreground 196 "Release cancelled"
-  exit 1
-fi
-
-# Push changes to git
-gum style --foreground 46 "Pushing changes to git..."
+# ── Git commit & push ─────────────────────────────────────────────────────
+gum style --foreground 46 "Pushing changes to git…"
 git add .
-git commit -m "chore: release $1@$version"
+git commit -m "chore: release $package_name@$version" || true  # no-op if nothing to commit
 git push origin "$current_branch"
 
-# Create GitHub release
-gum style --foreground 46 "Creating GitHub release for $1@$version..."
-gh release create "v$version" --title "$1@$version" --notes "Release of $1@$version"
+# ── GitHub release ────────────────────────────────────────────────────────
+gum style --foreground 46 "Creating GitHub release…"
+gh release create "v$version" \
+  --title "$package_name@$version" \
+  --notes "Release of $package_name@$version"
 
-# Show npm publish confirmation
-if ! gum confirm "Ready to publish to npm. Proceed?"; then
-  gum style --foreground 196 "npm publish cancelled"
-  exit 1
-fi
+# ── npm publish ───────────────────────────────────────────────────────────
+gum confirm "Ready to publish to npm?" || { gum style --foreground 196 "npm publish cancelled"; exit 1; }
 
-# Publish to npm
-gum style --foreground 46 "Publishing $1@$version to npm..."
-cd "$package_dir"
-
-# Check if version is a prerelease
+pushd "$package_dir" >/dev/null
+gum style --foreground 46 "Publishing $package_name@$version to npm…"
 if [[ "$version" == *"-"* ]]; then
   npm publish --tag beta
 else
   npm publish
 fi
+popd >/dev/null   # ← we are back in $script_dir
 
-# Show success message
+# ── success banner ────────────────────────────────────────────────────────
 gum style --border normal --border-foreground 212 --padding "0 1" "$(
-  gum style --foreground 212 "Package successfully published to npm! View it here:"
-  gum style --foreground 212 "👉 https://www.npmjs.com/package/$1"
-  gum style --foreground 212 "To install the package, run:"
-  gum style --foreground 212 "npm i $1@$version"
+  gum style --foreground 212 "Package successfully published!"
+  gum style --foreground 212 "👉 https://www.npmjs.com/package/$package_name"
+  gum style --foreground 212 "Install with:"
+  gum style --foreground 212 "   npm i $package_name@$version"
 )"
 
-# Bump dependencies
-bash "$(dirname "$0")/bump_dependencies.sh" "$1"
+# ── bump internal dependencies ────────────────────────────────────────────
+bash "$script_dir/bump_dependencies.sh" "$package_name"
