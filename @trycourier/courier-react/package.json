@@ -10,7 +10,8 @@
     "build": "tsc && vite build",
     "watch": "vite build --watch",
     "preview": "vite preview",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "echo \"courier-react has no tests\""
   },
   "keywords": [
     "courier",

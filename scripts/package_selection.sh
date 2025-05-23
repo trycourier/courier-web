@@ -6,16 +6,17 @@ command -v gum >/dev/null 2>&1 || { gum style --foreground 196 "Gum is not insta
 
 # ── package menu ────────────────────────────────────────────────────────────
 packages=(
-  "courier-js"
-  "courier-ui-core"
-  "courier-ui-inbox"
-  "courier-react"
+  "courier-js       — Base API client and shared instance singleton"
+  "courier-ui-core  — Core UI components, styles, colors etc that are shared between packages"
+  "courier-ui-inbox — Inbox UI components"
+  "courier-react    — React wrapper around UI components"
 )
 
 # Show a window explaining the deployment process
 gum style --border normal --border-foreground 212 --padding "1 1" "$(gum style --foreground 212 "🚀 Courier Javascript Package Deployment")"
 
-selected_package=$(gum choose --header "Select a package to deploy from @trycourier:" "${packages[@]}") || { gum style --foreground 196 "Package selection cancelled"; exit 1; }
+# Extract just the package name without description for the selection
+selected_package=$(gum choose --header "Select a package to deploy from @trycourier:" "${packages[@]}" | cut -d' ' -f1) || { gum style --foreground 196 "Package selection cancelled"; exit 1; }
 
 # ── deployment checklist ────────────────────────────────────────────────────
 deployment_steps=(
@@ -31,9 +32,6 @@ done
 # ── select steps ───────────────────────────────────────────────────────────
 selected_steps=($(gum choose --header "Select steps to perform:" --no-limit --selected='*' "${step_names[@]}")) || { gum style --foreground 196 "Deployment cancelled"; exit 1; }
 
-gum style --foreground 46 "Selected steps:"
-printf '%s\n' "${selected_steps[@]}"
-
 # ── execution ───────────────────────────────────────────────────────────────
 for step in "${deployment_steps[@]}"; do
   step_name=${step%%:*}
@@ -45,4 +43,7 @@ for step in "${deployment_steps[@]}"; do
   fi
 done
 
-gum style --foreground 46 "Done"
+# Ask if the user wants to deploy another package
+if gum confirm "Deployment steps completed. Would you like to deploy another package?"; then
+  sh deploy.sh
+fi
