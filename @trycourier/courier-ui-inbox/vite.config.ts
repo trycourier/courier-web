@@ -12,9 +12,13 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: [],
+      external: [
+        '@trycourier/courier-js',
+      ],
       output: {
-        globals: {},
+        globals: {
+          '@trycourier/courier-js': 'CourierJS',
+        },
       },
     },
   },

@@ -25,6 +25,11 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    dedupe: [
+      '@trycourier/courier-js'
+    ]
+  },
   plugins: [
     react(),
     dts({
