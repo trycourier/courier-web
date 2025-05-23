@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     courier.auth.signIn({
       userId: 'your_user_id',
-      jwt: 'ey.....',
+      jwt: 'ey...n0',
     });
   }, []);
 
