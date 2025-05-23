@@ -161,31 +161,34 @@ export class CourierInboxDatastore {
 
         switch (event.event) {
           case 'mark-all-read':
-            this.readAllMessages();
+            this.readAllMessages(/* callApi */ false);
             break;
           case 'read':
             if (message) {
-              this.readMessage(message, false);
+              this.readMessage(message, /* callApi */ false);
             }
             break;
           case 'unread':
             if (message) {
-              this.unreadMessage(message, false);
+              this.unreadMessage(message, /* callApi */ false);
             }
             break;
           case 'opened':
             if (message) {
-              this.openMessage(message, false);
+              this.openMessage(message, /* callApi */ false);
             }
             break;
           case 'archive':
             if (message) {
-              this.archiveMessage(message, false);
+              this.archiveMessage(message, /* callApi */ false);
             }
+            break;
+          case 'archive-read':
+            this.archiveReadMessages(/* callApi */ false);
             break;
           case 'click':
             if (message) {
-              this.clickMessage(message, false);
+              this.clickMessage(message, /* callApi */ false);
             }
             break;
           case 'unopened':
@@ -425,6 +428,76 @@ export class CourierInboxDatastore {
       this.addMessage(originalMessage, originalIndex, 'inbox');
       message.archived = undefined;
       this.removeMessage(message, originalIndex, 'archive');
+    }
+  }
+
+  async archiveReadMessages(canCallApi: boolean = true): Promise<void> {
+    if (!Courier.shared.client) {
+      return;
+    }
+
+    // Store original state for potential rollback
+    const originalInboxMessageData = this._inboxDataSet;
+    const originalArchiveMessageData = this._archiveDataSet;
+
+    try {
+      // Archive all read messages
+      this._inboxDataSet?.messages.forEach(message => {
+        if (!message.read) {
+          return;
+        }
+
+        const originalMessageIndex = this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId);
+        if (originalMessageIndex === undefined) {
+          return;
+        }
+
+        // Remove message from inbox
+        this.removeMessage(message, originalMessageIndex, 'inbox');
+
+        // Add message to archive
+        if (this._archiveDataSet?.messages) {
+          const insertIndex = this.findInsertIndex(message, this._archiveDataSet.messages);
+          message.archived = new Date().toISOString();
+          this.addMessage(message, insertIndex, 'archive');
+        }
+      });
+
+      // Notify listeners
+      this._dataStoreListeners.forEach(listener => {
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
+      });
+
+      // Call API to archive read messages
+      if (canCallApi) {
+        await Courier.shared.client.inbox.archiveRead();
+      }
+
+    } catch (error) {
+      console.error('Error archiving read messages:', error);
+
+      // Reset to original state on error
+      if (this._inboxDataSet && originalInboxMessageData) {
+        this._inboxDataSet.messages = originalInboxMessageData.messages;
+      }
+      if (this._archiveDataSet && originalArchiveMessageData) {
+        this._archiveDataSet.messages = originalArchiveMessageData.messages;
+      }
+
+      // Notify listeners of the reset
+      this._dataStoreListeners.forEach(listener => {
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
+      });
     }
   }
 

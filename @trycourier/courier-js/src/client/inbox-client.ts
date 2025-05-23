@@ -324,4 +324,31 @@ export class InboxClient extends Client {
       url: this.options.apiUrls.inbox.graphql,
     });
   }
+
+  /**
+   * Archive all read messages.
+   */
+  public async archiveRead(): Promise<void> {
+    const query = `
+      mutation TrackEvent {
+        archiveRead
+      }
+    `;
+
+    const headers: Record<string, string> = {
+      'x-courier-user-id': this.options.userId,
+      'Authorization': `Bearer ${this.options.accessToken}`
+    };
+
+    if (this.options.connectionId) {
+      headers['x-courier-client-source-id'] = this.options.connectionId;
+    }
+
+    await graphql({
+      options: this.options,
+      query,
+      headers,
+      url: this.options.urls.inbox.graphql,
+    });
+  }
 }
