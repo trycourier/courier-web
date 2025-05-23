@@ -90,6 +90,18 @@
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Deploy Packages",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "deploy.sh"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
   ]
 }

@@ -42,5 +42,6 @@
     "editor.defaultFormatter": "vscode.css-language-features"
   },
   "editor.formatOnSave": true,
-  "jest.runMode": "on-demand"
+  "jest.runMode": "on-demand",
+  "jest.rootPath": "@trycourier/courier-js"
 }
