@@ -64,7 +64,7 @@ else
 fi
 
 # Show success message
-gum style --border normal --border-foreground 212 --padding "1 1" "$(
+gum style --border normal --border-foreground 212 --padding "0 1" "$(
   gum style --foreground 212 "Package successfully published to npm! View it here:"
   gum style --foreground 212 "👉 https://www.npmjs.com/package/$1"
   gum style --foreground 212 "To install the package, run:"

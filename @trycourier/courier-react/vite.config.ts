@@ -2,6 +2,7 @@ import { defineConfig, PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
+import visualizer from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   build: {
@@ -33,6 +34,14 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.tsx'],
+    }) as PluginOption,
+    visualizer({
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+      template: 'treemap',
+      sourcemap: true,
+      filename: 'stats.html'
     }) as PluginOption,
   ],
 });

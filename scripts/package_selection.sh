@@ -13,15 +13,16 @@ packages=(
 )
 
 # Show a window explaining the deployment process
-gum style --border normal --border-foreground 212 --padding "1 1" "$(gum style --foreground 212 "🚀 Courier Javascript Package Deployment")"
+gum style --border normal --border-foreground 212 --padding "0 1" "$(gum style --foreground 212 "🚀 Courier Javascript Package Deployment")"
 
 # Extract just the package name without description for the selection
 selected_package=$(gum choose --header "Select a package to deploy from @trycourier:" "${packages[@]}" | cut -d' ' -f1) || { gum style --foreground 196 "Package selection cancelled"; exit 1; }
 
 # ── deployment checklist ────────────────────────────────────────────────────
 deployment_steps=(
-  "Run Tests:$(dirname "$0")/test.sh @trycourier/$selected_package"
-  "Release Package:$(dirname "$0")/release.sh @trycourier/$selected_package"
+  "Analyze Package Size:bash $(dirname "$0")/analyze.sh @trycourier/$selected_package"
+  "Run Tests:bash $(dirname "$0")/test.sh @trycourier/$selected_package"
+  "Release Package:bash $(dirname "$0")/release.sh @trycourier/$selected_package"
 )
 
 step_names=()

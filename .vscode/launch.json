@@ -94,7 +94,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Deploy Packages",
+      "name": "Package Deployment",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "deploy.sh"
