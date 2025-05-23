@@ -15,7 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@trycourier/courier-js": "^2.0.0-beta"
+    "@trycourier/courier-js": "file:../../@trycourier/courier-js"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

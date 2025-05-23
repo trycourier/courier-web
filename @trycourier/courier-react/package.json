@@ -25,16 +25,16 @@
     "dist"
   ],
   "peerDependencies": {
+    "@trycourier/courier-ui-inbox": "1.0.1-beta",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "@trycourier/courier-ui-inbox": "1.0.1-beta"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "@trycourier/courier-ui-inbox": "file:../@trycourier/courier-ui-inbox",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.0",
     "@vitejs/plugin-react": "4.4.1",
-    "@trycourier/courier-ui-inbox": "file:../@trycourier/courier-ui-inbox"
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
