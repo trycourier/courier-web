@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'CourierUICore',
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
+      fileName: (format) => format === 'es' ? 'index.mjs' : 'index.umd.js',
       formats: ['es', 'umd'],
     },
     rollupOptions: {

@@ -9,7 +9,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.tsx'),
       name: 'CourierReact',
-      fileName: (format) => `index.${format}.js`,
+      fileName: (format) => format === 'es' ? 'index.mjs' : 'index.umd.js',
       formats: ['es', 'umd'],
     },
     rollupOptions: {

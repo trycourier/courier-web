@@ -8,8 +8,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'CourierJS',
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
-      formats: ['es', 'umd'],
+      fileName: (format) => format === 'es' ? 'index.mjs' : 'index.cjs',
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: [],
