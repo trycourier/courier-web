@@ -36,11 +36,11 @@ export const useCourier = () => {
   const loadInbox = (props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) => CourierInboxDatastore.shared.load(props);
   const fetchNextPageOfMessages = (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
   const setPaginationLimit = (limit: number) => Courier.shared.paginationLimit = limit;
-  const readMessage = (message: InboxMessage) => CourierInboxDatastore.shared.readMessage(message);
-  const unreadMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unreadMessage(message);
-  const clickMessage = (message: InboxMessage) => CourierInboxDatastore.shared.clickMessage(message);
-  const archiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.archiveMessage(message);
-  const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage(message);
+  const readMessage = (message: InboxMessage) => CourierInboxDatastore.shared.readMessage({ message });
+  const unreadMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unreadMessage({ message });
+  const clickMessage = (message: InboxMessage) => CourierInboxDatastore.shared.clickMessage({ message });
+  const archiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.archiveMessage({ message });
+  const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage({ message });
 
   // State
   const [auth, setAuth] = React.useState<AuthenticationHooks>({
