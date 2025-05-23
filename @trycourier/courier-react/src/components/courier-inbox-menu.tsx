@@ -145,6 +145,7 @@ export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
   }, [props.feedType, menuRef]);
 
   return (
+    /* @ts-ignore */
     <courier-inbox-menu
       ref={menuRef}
       popup-alignment={props.popupAlignment}

@@ -126,6 +126,7 @@ export const CourierInbox = (props: CourierInboxProps) => {
   }, [props.feedType, inboxRef]);
 
   return (
+    /* @ts-ignore */
     <courier-inbox
       ref={inboxRef}
       height={props.height}

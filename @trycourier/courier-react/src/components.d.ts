@@ -1,5 +1,5 @@
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
-import type { CourierInboxProps } from "./index";
+import type { CourierInboxProps, CourierInboxMenuProps } from "./index";
 
 declare module "react/jsx-runtime" {
   namespace JSX {

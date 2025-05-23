@@ -11,7 +11,8 @@
     ],
   },
   "include": [
-    "src"
+    "src",
+    "src/components.d.ts"
   ],
   "exclude": [
     "vite.config.ts",
