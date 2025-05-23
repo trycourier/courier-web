@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@trycourier/courier-js": "2.0.2-beta",
-    "@trycourier/courier-ui-core": "1.0.1-beta",
+    "@trycourier/courier-ui-core": "1.0.4-beta",
     "@trycourier/courier-ui-inbox": "1.0.3-beta"
   },
   "peerDependencies": {
