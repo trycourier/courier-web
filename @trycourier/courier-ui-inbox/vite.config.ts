@@ -12,11 +12,9 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['@trycourier/courier-js'],
+      external: [],
       output: {
-        globals: {
-          '@trycourier/courier-js': 'CourierJS',
-        },
+        globals: {},
       },
     },
   },
@@ -35,8 +33,8 @@ export default defineConfig({
     }) as PluginOption,
   ],
   resolve: {
-    alias: {
-      '@trycourier/courier-js': '@trycourier/courier-js/src'
-    }
+    alias: process.env.DEV_ALIAS
+      ? { '@trycourier/courier-js': '@trycourier/courier-js/src' }
+      : {},
   }
 });

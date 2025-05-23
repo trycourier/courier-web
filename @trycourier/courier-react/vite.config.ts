@@ -16,15 +16,11 @@ export default defineConfig({
       external: [
         'react',
         'react-dom',
-        '@trycourier/courier-ui-inbox',
-        '@trycourier/courier-js',
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          '@trycourier/courier-ui-inbox': 'CourierUIInbox',
-          '@trycourier/courier-js': 'CourierJS',
         },
       },
     },
