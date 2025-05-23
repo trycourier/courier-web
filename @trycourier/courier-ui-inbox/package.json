@@ -2,7 +2,7 @@
   "name": "@trycourier/courier-ui-inbox",
   "version": "1.0.3-beta",
   "description": "Inbox components for the Courier web UI",
-  "main": "dist/index.umd.js",
+  "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {

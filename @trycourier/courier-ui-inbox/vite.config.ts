@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'CourierUIInbox',
-      fileName: (format) => format === 'es' ? 'index.mjs' : 'index.umd.js',
+      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
       formats: ['es', 'umd'],
     },
     rollupOptions: {
