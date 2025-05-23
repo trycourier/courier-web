@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react",
-  "version": "1.0.0",
+  "version": "8.0.0-beta",
   "description": "The React components for the Courier web UI",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
