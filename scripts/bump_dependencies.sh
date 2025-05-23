@@ -1,44 +1,41 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Get the new version
+########################################
+# Usage: ./bump_dependencies.sh @scope/package
+########################################
+
+package_name="$1"                       # e.g. @trycourier/courier-js
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ── read the new version from THAT package’s package.json ───────────────
 new_version=$(node -p "require('$1/package.json').version")
-gum style --foreground 46 "Updating peer dependencies for $1@$new_version..."
+gum style --foreground 46 "Updating dependencies for $package_name@$new_version"
 
-# Handle courier-js dependencies
-if [[ "$1" == "@trycourier/courier-js" ]]; then
-  for dep in "courier-ui-inbox" "courier-react"; do
-    dep_dir="$(dirname "$0")/../@trycourier/$dep"
-    if [ -d "$dep_dir" ]; then
-      gum style --foreground 46 "Updating $dep peer dependency..."
-      cd "$dep_dir"
-      npm pkg set "dependencies.$1=$new_version"
-      cd "$package_dir"
+# helper – updates deps in every target dir passed in
+update_deps () {
+  local targets=("$@")                  # array of package folders (no scope)
+  for target in "${targets[@]}"; do
+    local dep_dir="$script_dir/../@trycourier/$target"
+    if [[ -d "$dep_dir" ]]; then
+      gum style --foreground 21 " ↳ $target → $package_name@$new_version"
+      ( cd "$dep_dir" && npm pkg set "dependencies.$package_name=$new_version" )
     fi
   done
-fi
+}
 
-# Handle courier-ui-core dependencies
-if [[ "$1" == "@trycourier/courier-ui-core" ]]; then
-  for dep in "courier-ui-inbox" "courier-react"; do
-    dep_dir="$(dirname "$0")/../@trycourier/$dep"
-    if [ -d "$dep_dir" ]; then
-      gum style --foreground 46 "Updating $dep peer dependency..."
-      cd "$dep_dir"
-      npm pkg set "dependencies.$1=$new_version"
-      cd "$package_dir"
-    fi
-  done
-fi
-
-# Handle courier-ui-inbox dependencies
-if [[ "$1" == "@trycourier/courier-ui-inbox" ]]; then
-  for dep in "courier-react"; do
-    dep_dir="$(dirname "$0")/../@trycourier/$dep"
-    if [ -d "$dep_dir" ]; then
-      gum style --foreground 46 "Updating $dep peer dependency..."
-      cd "$dep_dir"
-      npm pkg set "dependencies.$1=$new_version"
-      cd "$package_dir"
-    fi
-  done
-fi
+# ── route by the *source* package we just published ─────────────────────
+case "$package_name" in
+  "@trycourier/courier-js")
+    update_deps courier-ui-inbox courier-react
+    ;;
+  "@trycourier/courier-ui-core")
+    update_deps courier-ui-inbox courier-react
+    ;;
+  "@trycourier/courier-ui-inbox")
+    update_deps courier-react
+    ;;
+  *)
+    gum style --foreground 196 "No dep rules defined for $package_name"
+    ;;
+esac
