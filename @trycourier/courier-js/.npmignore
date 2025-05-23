@@ -1,4 +1,4 @@
-tests/
+__tests__/
 .github/
 .DS_Store
 *.log
@@ -6,3 +6,4 @@ tests/
 jest.config.js
 src/jest.setup.ts
 tsconfig.json
+.vscode/

@@ -1,7 +1,8 @@
-tests/
+__tests__/
 .github/
 .DS_Store
 *.log
 .gitignore
 jest.config.js
 tsconfig.json
+.vscode/

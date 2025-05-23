@@ -348,7 +348,7 @@ export class InboxClient extends Client {
       options: this.options,
       query,
       headers,
-      url: this.options.urls.inbox.graphql,
+      url: this.options.apiUrls.inbox.graphql,
     });
   }
 }

@@ -56,19 +56,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Refresh Packages",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "refresh"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "CourierJS Tests",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -90,6 +77,19 @@
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Refresh Packages",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "refresh"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",
