@@ -72,4 +72,4 @@ gum style --border normal --border-foreground 212 --padding "0 1" "$(
 )"
 
 # Bump dependencies
-bash "bump_dependencies.sh" "$1"
+bash "$(dirname "$0")/bump_dependencies.sh" "$1"
