@@ -73,7 +73,7 @@ export class CourierInboxHeader extends CourierElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.readAllMessages(/* callApi */ true);
+          CourierInboxDatastore.shared.readAllMessages({ canCallApi: true });
         }
       },
       {
@@ -98,7 +98,7 @@ export class CourierInboxHeader extends CourierElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveReadMessages(/* callApi */ true);
+          CourierInboxDatastore.shared.archiveReadMessages({ canCallApi: true });
         }
       }
     ];

@@ -92,7 +92,7 @@ export class CourierInbox extends HTMLElement {
         }
       },
       onMessageClick: (message, index) => {
-        CourierInboxDatastore.shared.clickMessage(message);
+        CourierInboxDatastore.shared.clickMessage({ message });
 
         this.dispatchEvent(new CustomEvent('message-click', {
           detail: { message, index },
@@ -258,7 +258,7 @@ export class CourierInbox extends HTMLElement {
 
   public setFeedType(feedType: CourierInboxFeedType) {
 
-    // Update state 
+    // Update state
     this._currentFeed = feedType;
 
     // Update components

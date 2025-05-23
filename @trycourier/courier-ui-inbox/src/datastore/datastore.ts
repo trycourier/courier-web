@@ -161,34 +161,34 @@ export class CourierInboxDatastore {
 
         switch (event.event) {
           case 'mark-all-read':
-            this.readAllMessages(/* callApi */ false);
+            this.readAllMessages({ canCallApi: false });
             break;
           case 'read':
             if (message) {
-              this.readMessage(message, /* callApi */ false);
+              this.readMessage({ message, canCallApi: false });
             }
             break;
           case 'unread':
             if (message) {
-              this.unreadMessage(message, /* callApi */ false);
+              this.unreadMessage({ message, canCallApi: false });
             }
             break;
           case 'opened':
             if (message) {
-              this.openMessage(message, /* callApi */ false);
+              this.openMessage({ message, canCallApi: false });
             }
             break;
           case 'archive':
             if (message) {
-              this.archiveMessage(message, /* callApi */ false);
+              this.archiveMessage({ message, canCallApi: false });
             }
             break;
           case 'archive-read':
-            this.archiveReadMessages(/* callApi */ false);
+            this.archiveReadMessages({ canCallApi: false });
             break;
           case 'click':
             if (message) {
-              this.clickMessage(message, /* callApi */ false);
+              this.clickMessage({ message, canCallApi: false });
             }
             break;
           case 'unopened':
@@ -286,7 +286,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async readMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
+  async readMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
 
     if (!Courier.shared.client) {
       return;
@@ -317,7 +317,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async unreadMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
+  async unreadMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -347,7 +347,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async openMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
+  async openMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -379,7 +379,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async clickMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
+  async clickMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -396,7 +396,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async archiveMessage(message: InboxMessage, canCallApi: boolean = true): Promise<void> {
+  async archiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -431,7 +431,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async archiveReadMessages(canCallApi: boolean = true): Promise<void> {
+  async archiveReadMessages({ canCallApi = true }: { canCallApi?: boolean; } = {}): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }
@@ -501,7 +501,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  async readAllMessages(canCallApi: boolean = true): Promise<void> {
+  async readAllMessages({ canCallApi = true }: { canCallApi?: boolean; } = {}): Promise<void> {
     if (!Courier.shared.client) {
       return;
     }

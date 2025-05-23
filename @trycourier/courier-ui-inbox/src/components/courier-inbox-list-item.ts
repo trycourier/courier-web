@@ -170,9 +170,9 @@ export class CourierListItem extends HTMLElement {
         onClick: () => {
           if (this._message) {
             if (this._message.read) {
-              CourierInboxDatastore.shared.unreadMessage(this._message);
+              CourierInboxDatastore.shared.unreadMessage({ message: this._message });
             } else {
-              CourierInboxDatastore.shared.readMessage(this._message);
+              CourierInboxDatastore.shared.readMessage({ message: this._message });
             }
           }
         },
@@ -191,7 +191,7 @@ export class CourierListItem extends HTMLElement {
             alert('unarchive');
             // CourierInboxDatastore.shared.unarchiveMessage(this._message);
           } else {
-            CourierInboxDatastore.shared.archiveMessage(this._message);
+            CourierInboxDatastore.shared.archiveMessage({ message: this._message });
           }
         }
       },
@@ -419,7 +419,7 @@ export class CourierListItem extends HTMLElement {
     // Add the actions to the actions container
     this._message?.actions?.forEach(action => {
 
-      // Create the action element  
+      // Create the action element
       const actionButton = new CourierButton({
         text: action.content,
         variant: 'secondary',
