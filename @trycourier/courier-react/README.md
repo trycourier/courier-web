@@ -4,7 +4,7 @@ React UI components used to create an Inbox
 
 ## Installation
 
-```ts
+```bash
 npm i @trycourier/courier-react@8.0.4-beta
 ```
 
