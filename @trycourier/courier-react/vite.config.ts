@@ -27,7 +27,8 @@ export default defineConfig({
   },
   resolve: {
     dedupe: [
-      '@trycourier/courier-js'
+      '@trycourier/courier-js',
+      '@trycourier/courier-ui-inbox',
     ]
   },
   plugins: [
