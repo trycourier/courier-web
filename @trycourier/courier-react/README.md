@@ -1,6 +1,6 @@
 # @trycourier/courier-react
 
-The base API client and shared instance singleton for Courier's JavaScript Browser SDK.
+React UI components used to create an Inbox
 
 ## Installation
 
