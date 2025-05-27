@@ -297,6 +297,7 @@ export class CourierInbox extends HTMLElement {
 
   private async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
     await CourierInboxDatastore.shared.load(props);
+    await CourierInboxDatastore.shared.listenForUpdates();
   }
 
   public refresh() {
