@@ -3,13 +3,15 @@ import { getClient } from './utils';
 describe('ListsClient', () => {
   const courierClient = getClient();
 
-  it('should put subscription successfully', async () => {
+  // TODO(C-13925): Support subscriptions.
+  it.skip('should put subscription successfully', async () => {
     await courierClient.lists.putSubscription({
       listId: 'example-list-id'
     });
   });
 
-  it('should delete subscription successfully', async () => {
+  // TODO(C-13925): Support subscriptions.
+  it.skip('should delete subscription successfully', async () => {
     await courierClient.lists.deleteSubscription({
       listId: 'example-list-id'
     });
