@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
+import crypto from 'crypto';
 
 dotenv.config({
   path: path.resolve(__dirname, '../../../.env.test')
@@ -18,3 +19,9 @@ console.log(JSON.stringify({
 // Polyfill fetch for Jest but don't mock it.
 fetchMock.enableMocks();
 fetchMock.dontMock();
+
+Object.defineProperty(globalThis, 'crypto', {
+  value: {
+    randomUUID: () => crypto.randomUUID()
+  }
+});
