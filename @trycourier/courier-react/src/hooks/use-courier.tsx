@@ -17,6 +17,7 @@ type InboxHooks = {
   clickMessage: (message: InboxMessage) => Promise<void>,
   archiveMessage: (message: InboxMessage) => Promise<void>,
   openMessage: (message: InboxMessage) => Promise<void>,
+  unarchiveMessage: (message: InboxMessage) => Promise<void>,
   inbox?: InboxDataSet,
   archive?: InboxDataSet,
   unreadCount?: number,
@@ -28,7 +29,7 @@ type InboxHooks = {
 // can be used directly by importing from '@trycourier/courier-js'
 export const useCourier = () => {
 
-  // Authentication Functions 
+  // Authentication Functions
   const signIn = (props: CourierProps) => Courier.shared.signIn(props);
   const signOut = () => Courier.shared.signOut();
 
@@ -41,6 +42,7 @@ export const useCourier = () => {
   const clickMessage = (message: InboxMessage) => CourierInboxDatastore.shared.clickMessage({ message });
   const archiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.archiveMessage({ message });
   const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage({ message });
+  const unarchiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unarchiveMessage({ message });
 
   // State
   const [auth, setAuth] = React.useState<AuthenticationHooks>({
@@ -57,7 +59,8 @@ export const useCourier = () => {
     unreadMessage,
     clickMessage,
     archiveMessage,
-    openMessage
+    openMessage,
+    unarchiveMessage
   });
 
   React.useEffect(() => {
@@ -108,6 +111,7 @@ export const useCourier = () => {
       clickMessage,
       archiveMessage,
       openMessage,
+      unarchiveMessage,
       inbox: datastore.inboxDataSet,
       archive: datastore.archiveDataSet,
       unreadCount: datastore.unreadCount,
