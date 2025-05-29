@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
+import { Courier, InboxAction, InboxMessage, MessageEvent } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -218,8 +218,12 @@ export class CourierInboxDatastore {
               this.clickMessage({ message, canCallApi: false });
             }
             break;
-          case 'unopened':
           case 'unarchive':
+            if (message) {
+              this.unarchiveMessage({ message, canCallApi: false });
+            }
+            break;
+          case 'unopened':
             break;
         }
       };
@@ -460,6 +464,44 @@ export class CourierInboxDatastore {
       this.addMessage(originalMessage, originalIndex, 'inbox');
       message.archived = undefined;
       this.removeMessage(message, originalIndex, 'archive');
+    }
+  }
+
+  async unarchiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
+    if (!Courier.shared.client || !this._archiveDataSet || !this._inboxDataSet) {
+      return;
+    }
+
+    // Create an unarchived copy of the message
+    const unarchivedMessage = CourierInboxDatastore.copyMessage(message);
+    unarchivedMessage.archived = undefined;
+
+    // Copies of original state in case of a rollback
+    const originalArchive = CourierInboxDatastore.copyInboxDataSet(this._archiveDataSet);
+    const originalInbox = CourierInboxDatastore.copyInboxDataSet(this._inboxDataSet);
+
+    try {
+      // Find index of message in archive
+      const removeIndex = this._archiveDataSet.messages.findIndex(m => m.messageId === message.messageId);
+      if (removeIndex === undefined) {
+        return;
+      }
+
+      // Find index to insert unarchived message
+      const insertIndex = this.findInsertIndex(unarchivedMessage, this._inboxDataSet.messages);
+
+      // Remove message from archive and add to inbox
+      this.removeMessage(message, removeIndex, 'archive');
+      this.addMessage(unarchivedMessage, insertIndex, 'inbox');
+
+      // Call API to unarchive message
+      if (canCallApi) {
+        await Courier.shared.client.inbox.unarchive({ messageId: message.messageId });
+      }
+    } catch (error) {
+      // Rollback local state
+      this._archiveDataSet = originalArchive;
+      this._inboxDataSet = originalInbox;
     }
   }
 
@@ -707,4 +749,46 @@ export class CourierInboxDatastore {
     });
   }
 
+  private static copyInboxDataSet(dataSet: InboxDataSet): InboxDataSet {
+    return {
+      ...dataSet,
+      messages: dataSet.messages.map(CourierInboxDatastore.copyMessage),
+    };
+  }
+
+  private static copyMessage(message: InboxMessage): InboxMessage {
+    const copy = {
+      ...message,
+    };
+
+    if (message.actions) {
+      copy.actions = message.actions.map(CourierInboxDatastore.copyInboxAction);
+    }
+
+    if (message.data) {
+      copy.data = JSON.parse(JSON.stringify(message.data));
+    }
+
+    if (message.tags) {
+      copy.tags = [...message.tags];
+    }
+
+    if (message.trackingIds) {
+      copy.trackingIds = { ...message.trackingIds };
+    }
+
+    return copy;
+  }
+
+  private static copyInboxAction(action: InboxAction): InboxAction {
+    const copy = {
+      ...action,
+    };
+
+    if (action.data) {
+      copy.data = JSON.parse(JSON.stringify(action.data));
+    }
+
+    return copy;
+  }
 }
