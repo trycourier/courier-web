@@ -21,6 +21,7 @@ export default defineConfig({
         },
       },
     },
+    sourcemap: true,
   },
   plugins: [
     dts({

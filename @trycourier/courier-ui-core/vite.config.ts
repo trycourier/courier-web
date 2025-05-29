@@ -17,6 +17,7 @@ export default defineConfig({
         globals: {},
       },
     },
+    sourcemap: true,
   },
   plugins: [
     dts({
@@ -32,4 +33,4 @@ export default defineConfig({
       filename: 'stats.html'
     }) as PluginOption,
   ],
-}); 
+});

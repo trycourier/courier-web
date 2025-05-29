@@ -23,6 +23,7 @@ export default defineConfig({
         drop_console: false,
       },
     },
+    sourcemap: true,
   },
   plugins: [
     dts({
@@ -38,4 +39,4 @@ export default defineConfig({
       filename: 'stats.html'
     }) as PluginOption,
   ],
-}); 
+});
