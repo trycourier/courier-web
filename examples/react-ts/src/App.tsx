@@ -7,7 +7,7 @@ import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 function App() {
   const courier = useCourier();
   const [feedType, setFeedType] = useState<CourierInboxFeedType>('inbox');
-  const [mode, setMode] = useState<CourierComponentThemeMode>('light');
+  const [mode] = useState<CourierComponentThemeMode>('light');
 
   useEffect(() => {
     courier.shared.signIn({
@@ -102,7 +102,9 @@ function App() {
         cursor: 'pointer',
         transition: 'all 0.2s ease',
       }} onClick={() => {
-        !props?.message.read ? courier.inbox.readMessage(props?.message) : courier.inbox.unreadMessage(props?.message);
+        if (props?.message) {
+          !props?.message.read ? courier.inbox.readMessage(props?.message) : courier.inbox.unreadMessage(props?.message);
+        }
       }}>
         <div style={{
           fontWeight: props?.message.read ? 'normal' : '600',
@@ -127,7 +129,7 @@ function App() {
     );
   };
 
-  const renderEmptyState = (props: CourierInboxStateEmptyFactoryProps | undefined | null) => {
+  const renderEmptyState = (_props: CourierInboxStateEmptyFactoryProps | undefined | null) => {
     return (
       <div style={{
         display: 'flex',
@@ -145,7 +147,7 @@ function App() {
     );
   };
 
-  const renderLoadingState = (props: CourierInboxStateLoadingFactoryProps | undefined | null) => {
+  const renderLoadingState = (_props: CourierInboxStateLoadingFactoryProps | undefined | null) => {
     return (
       <div style={{
         display: 'flex',
@@ -169,7 +171,7 @@ function App() {
     );
   };
 
-  const renderErrorState = (props: CourierInboxStateErrorFactoryProps | undefined | null) => {
+  const renderErrorState = (_props: CourierInboxStateErrorFactoryProps | undefined | null) => {
     return (
       <div style={{
         display: 'flex',
@@ -187,7 +189,7 @@ function App() {
     );
   };
 
-  const renderPaginationItem = (props: CourierInboxPaginationItemFactoryProps | undefined | null) => {
+  const renderPaginationItem = (_props: CourierInboxPaginationItemFactoryProps | undefined | null) => {
     return (
       <div style={{
         padding: '16px',
@@ -292,7 +294,7 @@ function App() {
           renderPopupErrorState={renderErrorState}
           renderPopupPaginationItem={renderPaginationItem}
           renderPopupMenuButton={renderMenuButton}
-          onMessageClick={({ message, index }) => {
+          onMessageClick={({ message, index: _index }) => {
             !message.read ? courier.inbox.readMessage(message) : courier.inbox.unreadMessage(message);
           }}
           onMessageActionClick={({ message, index, action }) => {
