@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ── prerequisite ─────────────────────────────────────────────────────────────
-command -v gum >/dev/null 2>&1 || { gum style --foreground 196 "Gum is not installed"; exit 1; }
+command -v gum >/dev/null 2>&1 || { gum style --foreground 196 "Gum is not installed. Do you need to run `brew install gum'?"; exit 1; }
 
 # ── package menu ────────────────────────────────────────────────────────────
 packages=(

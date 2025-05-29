@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Check if gum is installed
-command -v gum >/dev/null 2>&1 || { echo "Gum is not installed"; exit 1; }
+command -v gum >/dev/null 2>&1 || { echo "Gum is not installed. Do you need to run `brew install gum'?"; exit 1; }
 
 # Check if git is installed
 if ! command -v git >/dev/null 2>&1; then
