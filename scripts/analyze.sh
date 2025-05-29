@@ -16,7 +16,7 @@ function success() {
 }
 
 # Check if gum is installed
-command -v gum >/dev/null 2>&1 || { echo "Gum is not installed."; exit 1; }
+command -v gum >/dev/null 2>&1 || { echo "Gum is not installed. Do you need to run 'brew install gum'?"; exit 1; }
 
 # Check if package name is provided
 if [ $# -eq 0 ]; then
@@ -48,7 +48,7 @@ if [ -f "$BUNDLE_FILE" ]; then
   # Get size in bytes
   SIZE_BYTES=$(stat -f%z "$BUNDLE_FILE" 2>/dev/null || stat -c%s "$BUNDLE_FILE")
   SIZE_KB=$(echo "scale=2; $SIZE_BYTES / 1024" | bc)
-  
+
   # Get gzip size in bytes
   GZIP_BYTES=$(gzip -c "$BUNDLE_FILE" | wc -c)
   GZIP_KB=$(echo "scale=2; $GZIP_BYTES / 1024" | bc)
