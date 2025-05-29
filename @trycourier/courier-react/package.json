@@ -31,8 +31,8 @@
     "@trycourier/courier-ui-inbox": "1.0.5-beta"
   },
   "peerDependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
   },
   "devDependencies": {
     "@trycourier/courier-ui-inbox": "file:../@trycourier/courier-ui-inbox",

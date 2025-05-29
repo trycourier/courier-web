@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
-import { flushSync } from "react-dom";
-import { createRoot } from "react-dom/client";
+import ReactDOM, { flushSync } from "react-dom";
 
 /**
  * Converts a React node to an HTMLElement.
@@ -13,9 +12,30 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
 
   // Use flushSync to ensure the DOM is updated synchronously
   flushSync(() => {
-    const root = createRoot(container);
-    root.render(<>{node}</>);
+    render(<>{node}</>, container);
   });
 
   return container;
+}
+
+/**
+ * Render a React node with compatibility for React 17 and 18+ (createRoot).
+ * See https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis
+ * for compatibility details
+ *
+ * @param node - The React node to render.
+ * @param container - The container to render the node into.
+ * @returns The rendered node.
+ */
+function render(node: ReactNode, container: HTMLElement) {
+  // Check if createRoot is a function (React 18+)
+  const createRoot = (ReactDOM as any)["createRoot"];
+  if (createRoot instanceof Function) {
+    const root = createRoot(container);
+    return root.render(node);
+  }
+
+  // Fallback to render (React 17)
+  const render = (ReactDOM as any)["render"];
+  return render(node, container);
 }
