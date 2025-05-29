@@ -18,7 +18,8 @@ describe('PreferenceClient', () => {
     expect(Array.isArray(topic.customRouting)).toBe(true);
   });
 
-  it('should update user preference topic successfully', async () => {
+  // TODO(C-14105): Create test project with channel delivery customization enabled.
+  it.skip('should update user preference topic successfully', async () => {
     const topicId = process.env.TOPIC_ID!;
     const result = await courierClient.preferences.putUserPreferenceTopic({
       topicId,
