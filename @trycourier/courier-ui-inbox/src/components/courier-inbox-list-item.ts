@@ -188,8 +188,7 @@ export class CourierListItem extends HTMLElement {
       onClick: () => {
         if (this._message) {
           if (this._message.archived) {
-            alert('unarchive');
-            // CourierInboxDatastore.shared.unarchiveMessage(this._message);
+            CourierInboxDatastore.shared.unarchiveMessage({ message: this._message });
           } else {
             CourierInboxDatastore.shared.archiveMessage({ message: this._message });
           }
