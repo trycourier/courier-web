@@ -3,6 +3,7 @@ import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { DataSetSnapshot, MessageSnapshot } from "../types/snapshots";
+import { copyInboxDataSet, copyMessage } from "../utils/utils";
 
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
@@ -843,8 +844,8 @@ export class CourierInboxDatastore {
   private getDatastoreSnapshot(unreadCount: number, inboxDataSet: InboxDataSet, archiveDataSet: InboxDataSet): DataSetSnapshot {
     return {
       unreadCount,
-      inbox: this.copyInboxDataSet(inboxDataSet),
-      archive: this.copyInboxDataSet(archiveDataSet),
+      inbox: copyInboxDataSet(inboxDataSet),
+      archive: copyInboxDataSet(archiveDataSet),
     };
   }
 
@@ -854,68 +855,18 @@ export class CourierInboxDatastore {
    * @returns A copy of the inbox message with its archive and inbox indices
    */
   private getMessageSnapshot(message: InboxMessage): MessageSnapshot {
+    const archiveIndex = this._archiveDataSet
+      ? this._archiveDataSet.messages.findIndex(m => m.messageId === message.messageId)
+      : undefined;
+
+    const inboxIndex = this._inboxDataSet
+      ? this._inboxDataSet.messages.findIndex(m => m.messageId === message.messageId)
+      : undefined;
+
     return {
-      message: this.copyMessage(message),
-      archiveIndex: this._archiveDataSet ? this._archiveDataSet?.messages.findIndex(m => m.messageId === message.messageId) : undefined,
-      inboxIndex: this._inboxDataSet ? this._inboxDataSet?.messages.findIndex(m => m.messageId === message.messageId) : undefined,
-    };
-  }
-
-  /**
-   * Copy a message
-   * @param message - The message to copy
-   * @returns A copy of the message
-   */
-  private copyMessage(message: InboxMessage): InboxMessage {
-    const copy = {
-      ...message,
-    };
-
-    if (message.actions) {
-      copy.actions = message.actions.map(action => this.copyInboxAction(action));
-    }
-
-    if (message.data) {
-      copy.data = JSON.parse(JSON.stringify(message.data));
-    }
-
-    if (message.tags) {
-      copy.tags = [...message.tags];
-    }
-
-    if (message.trackingIds) {
-      copy.trackingIds = { ...message.trackingIds };
-    }
-
-    return copy;
-  }
-
-  /**
-   * Copy an inbox action
-   * @param action - The inbox action to copy
-   * @returns A copy of the inbox action
-   */
-  private copyInboxAction(action: InboxAction): InboxAction {
-    const copy = {
-      ...action,
-    };
-
-    if (action.data) {
-      copy.data = JSON.parse(JSON.stringify(action.data));
-    }
-
-    return copy;
-  }
-
-  /**
-   * Copy an inbox data set
-   * @param dataSet - The inbox data set to copy
-   * @returns A copy of the inbox data set
-   */
-  private copyInboxDataSet(dataSet: InboxDataSet): InboxDataSet {
-    return {
-      ...dataSet,
-      messages: dataSet.messages.map(message => this.copyMessage(message)),
+      message: copyMessage(message),
+      archiveIndex,
+      inboxIndex,
     };
   }
 
