@@ -6,7 +6,6 @@ import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierColors } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxDatastore } from "../datastore/datastore";
-import { Courier } from "@trycourier/courier-js";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
 

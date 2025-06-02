@@ -17,13 +17,13 @@ export default defineConfig({
         globals: {},
       },
     },
-    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: false,
       },
     },
     sourcemap: true,
+    minify: 'terser',
   },
   plugins: [
     dts({
