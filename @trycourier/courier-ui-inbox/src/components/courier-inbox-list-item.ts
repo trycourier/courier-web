@@ -2,7 +2,7 @@ import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { getMessageTime } from "../utils/extensions";
+import { getMessageTime } from "../utils/utils";
 import { CourierListItemActionMenu, CourierListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
@@ -159,8 +159,10 @@ export class CourierListItem extends HTMLElement {
     const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
     let options: CourierListItemActionMenuOption[] = [];
 
+    const isArchiveFeed = this._feedType === 'archive';
+
     // Only add read/unread option if not in archive feed
-    if (!this._message?.archived) {
+    if (!isArchiveFeed) {
       options.push({
         id: this._message?.read ? 'unread' : 'read',
         icon: {
@@ -180,14 +182,14 @@ export class CourierListItem extends HTMLElement {
     }
 
     options.push({
-      id: this._message?.archived ? 'unarchive' : 'archive',
+      id: isArchiveFeed ? 'unarchive' : 'archive',
       icon: {
-        svg: this._message?.archived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
-        color: this._message?.archived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+        svg: isArchiveFeed ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
+        color: isArchiveFeed ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
       },
       onClick: () => {
         if (this._message) {
-          if (this._message.archived) {
+          if (isArchiveFeed) {
             CourierInboxDatastore.shared.unarchiveMessage({ message: this._message });
           } else {
             CourierInboxDatastore.shared.archiveMessage({ message: this._message });
@@ -404,7 +406,6 @@ export class CourierListItem extends HTMLElement {
     this._titleElement.textContent = this._message.title || 'Untitled Message';
     this._subtitleElement.textContent = this._message.preview || this._message.body || '';
     this._timeElement.textContent = getMessageTime(this._message);
-
 
     // Update menu icons (e.g. read/unread)
     this._menu.setOptions(this._getMenuOptions());

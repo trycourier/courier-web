@@ -5,3 +5,4 @@ tests/
 .gitignore
 jest.config.js
 tsconfig.json
+stats.html

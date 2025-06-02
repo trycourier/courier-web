@@ -295,7 +295,7 @@ export const defaultLightTheme: CourierInboxTheme = {
               color: CourierColors.black[500],
               svg: CourierIconSVGs.read
             },
-            text: 'Mark All as Read'
+            text: 'Read All'
           },
           archiveAll: {
             icon: {
@@ -543,7 +543,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
               color: CourierColors.white[500],
               svg: CourierIconSVGs.read
             },
-            text: 'Mark All as Read'
+            text: 'Read All'
           },
           archiveAll: {
             icon: {
