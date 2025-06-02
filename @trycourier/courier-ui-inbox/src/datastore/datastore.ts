@@ -466,14 +466,11 @@ export class CourierInboxDatastore {
 
     // If the message is not in the inbox, return
     if (messageSnapshot.inboxIndex === undefined) {
-      console.log('archiveMessage 1', messageSnapshot);
       return;
     }
 
     // Get the datastore snapshots
     const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
-
-    console.log('archiveMessage 2', messageSnapshot);
 
     try {
 
@@ -510,23 +507,15 @@ export class CourierInboxDatastore {
     // Get the message snapshot
     const messageSnapshot = this.getMessageSnapshot(message);
 
-    console.log('unarchiveMessage 1', messageSnapshot);
-
     // If the message is not in the archive, return
     if (messageSnapshot.archiveIndex === undefined) {
-      console.log('unarchiveMessage 1.2', messageSnapshot);
       return;
     }
-
-    console.log('unarchiveMessage 1.1', messageSnapshot);
-
 
     try {
 
       // Update the message to be unarchived
       messageSnapshot.message.archived = undefined;
-
-      console.log('unarchiveMessage 3', messageSnapshot);
 
       // Remove message from local state
       this.removeMessage(message, messageSnapshot.archiveIndex, 'archive');
@@ -850,7 +839,6 @@ export class CourierInboxDatastore {
    * @returns A copy of the inbox action
    */
   private copyInboxAction(action: InboxAction): InboxAction {
-    console.log('copyInboxAction', action);
     const copy = {
       ...action,
     };
