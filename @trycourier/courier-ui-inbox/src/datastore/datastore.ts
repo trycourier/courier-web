@@ -590,6 +590,63 @@ export class CourierInboxDatastore {
     }
   }
 
+  async archiveAllMessages({ canCallApi = true }: { canCallApi?: boolean; } = {}): Promise<void> {
+    if (!this.canMutate()) {
+      return;
+    }
+
+    // Get snapshot of the inbox data set
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+
+    try {
+
+      const timestamp = new Date().toISOString();
+
+      // Archive all read messages
+      this._inboxDataSet?.messages.forEach(message => {
+        message.archived = timestamp;
+
+        // Add message to archive
+        if (this._archiveDataSet?.messages) {
+          const insertIndex = this.findInsertIndex(message, this._archiveDataSet);
+          this._archiveDataSet.messages.splice(insertIndex, 0, message);
+        }
+
+      });
+
+      // Clear the inbox data set
+      this._inboxDataSet = {
+        messages: [],
+        canPaginate: false,
+        paginationCursor: null,
+        feedType: 'inbox',
+      };
+
+      // Update the unread count
+      this._unreadCount = 0;
+
+      // Notify listeners
+      this._dataStoreListeners.forEach(listener => {
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
+        listener.events.onUnreadCountChange?.(this._unreadCount!);
+      });
+
+      // Call API to archive all messages
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.archiveAll();
+      }
+
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error('Error archiving all messages:', error);
+      this.applyDatastoreSnapshot(datastoreSnapshot);
+    }
+  }
+
   async readAllMessages({ canCallApi = true }: { canCallApi?: boolean; } = {}): Promise<void> {
     if (!this.canMutate()) {
       return;

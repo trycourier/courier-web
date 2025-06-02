@@ -85,8 +85,7 @@ export class CourierInboxHeader extends CourierElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          // alert('TODO: Archive all messages');
-          alert(JSON.stringify(Courier.shared.client?.options));
+          CourierInboxDatastore.shared.archiveAllMessages({ canCallApi: true });
         }
       },
       {
