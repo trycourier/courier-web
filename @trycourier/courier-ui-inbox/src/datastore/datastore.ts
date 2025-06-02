@@ -1,4 +1,4 @@
-import { Courier, InboxAction, InboxMessage, MessageEvent } from "@trycourier/courier-js";
+import { Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
