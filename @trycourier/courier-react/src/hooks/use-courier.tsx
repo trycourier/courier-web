@@ -18,6 +18,7 @@ type InboxHooks = {
   archiveMessage: (message: InboxMessage) => Promise<void>,
   openMessage: (message: InboxMessage) => Promise<void>,
   unarchiveMessage: (message: InboxMessage) => Promise<void>,
+  readAllMessages: () => Promise<void>,
   inbox?: InboxDataSet,
   archive?: InboxDataSet,
   unreadCount?: number,
@@ -43,6 +44,7 @@ export const useCourier = () => {
   const archiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.archiveMessage({ message });
   const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage({ message });
   const unarchiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unarchiveMessage({ message });
+  const readAllMessages = () => CourierInboxDatastore.shared.readAllMessages();
 
   // State
   const [auth, setAuth] = React.useState<AuthenticationHooks>({
@@ -60,7 +62,8 @@ export const useCourier = () => {
     clickMessage,
     archiveMessage,
     openMessage,
-    unarchiveMessage
+    unarchiveMessage,
+    readAllMessages
   });
 
   React.useEffect(() => {
@@ -70,7 +73,7 @@ export const useCourier = () => {
 
     // Add inbox data store listener
     const inboxListener = new CourierInboxDataStoreListener({
-      onError: (error) => refreshInbox(error),
+      onError: (error: Error) => refreshInbox(error),
       onDataSetChange: () => refreshInbox(),
       onPageAdded: () => refreshInbox(),
       onMessageAdd: () => refreshInbox(),
@@ -112,6 +115,7 @@ export const useCourier = () => {
       archiveMessage,
       openMessage,
       unarchiveMessage,
+      readAllMessages,
       inbox: datastore.inboxDataSet,
       archive: datastore.archiveDataSet,
       unreadCount: datastore.unreadCount,
