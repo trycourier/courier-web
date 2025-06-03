@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@trycourier/courier-react": "file:../@trycourier/courier-react"
+    "@trycourier/courier-react": "file:../../@trycourier/courier-react"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

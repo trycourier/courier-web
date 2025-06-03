@@ -31,6 +31,7 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
  * @returns The rendered node.
  */
 function render(node: ReactNode, container: HTMLElement) {
+
   // Check if createRoot is a function (React 18+)
   if (reactVersion >= 18) {
     const root = createRoot(container);

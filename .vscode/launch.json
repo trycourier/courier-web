@@ -98,7 +98,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "refresh"
+        "sync"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

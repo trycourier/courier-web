@@ -6,6 +6,7 @@
     "examples/*"
   ],
   "scripts": {
+    "sync": "sh ./scripts/sync.sh",
     "refresh": "npm run remove-cache && npm run clear && npm i",
     "reload": "npm run remove-cache && npm run clear && npm run courier-js && npm run courier-ui-core && npm run courier-ui-inbox && npm run courier-web",
     "courier-web": "npm install",

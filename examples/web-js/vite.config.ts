@@ -1,17 +1,22 @@
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig({
   server: {
     host: '0.0.0.0',
     watch: {
-      ignored: ['!**/node_modules/@trycourier/**']
+      ignored: ['!../../@trycourier/courier-react/src/**', '!../../@trycourier/courier-ui-inbox/src/**', '!../../@trycourier/courier-js/src/**']
     }
   },
   resolve: {
     alias: {
-      '@trycourier/courier-ui-core': '@trycourier/courier-ui-core/src',
-      '@trycourier/courier-ui-inbox': '@trycourier/courier-ui-inbox/src',
-      '@trycourier/courier-js': '@trycourier/courier-js/src'
+      '@trycourier/courier-react': path.resolve(__dirname, '../../@trycourier/courier-react/src'),
+      '@trycourier/courier-ui-inbox': path.resolve(__dirname, '../../@trycourier/courier-ui-inbox/src'),
+      '@trycourier/courier-js': path.resolve(__dirname, '../../@trycourier/courier-js/src')
     }
+  },
+  optimizeDeps: {
+    force: true,
+    include: ['@trycourier/courier-react', '@trycourier/courier-ui-inbox', '@trycourier/courier-js']
   }
 });
