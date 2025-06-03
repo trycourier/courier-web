@@ -16,13 +16,15 @@ export default defineConfig({
       external: [
         "react",
         "react-dom",
-        "react-dom/client",
+        "react-dom/client", // React 18+ only — must be dynamically imported
         "object-assign",
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'react-dom/client': 'ReactDOMClient', // avoids warning
+          'object-assign': 'ObjectAssign',
         },
       },
     },
