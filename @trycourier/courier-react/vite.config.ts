@@ -14,8 +14,10 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        'react',
-        'react-dom',
+        "react",
+        "react-dom",
+        "react-dom/client",
+        "object-assign",
       ],
       output: {
         globals: {

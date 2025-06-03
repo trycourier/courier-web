@@ -1,41 +1,43 @@
 import { ReactNode } from "react";
-import ReactDOM, { flushSync } from "react-dom";
+import * as ReactDOM from "react-dom";
+
+let client: any | null = null;
+const { flushSync } = ReactDOM as any;
 
 /**
- * Converts a React node to an HTMLElement.
- * This function uses flushSync to ensure the DOM is updated synchronously.
- * @param node - The React node to convert.
- * @returns The converted HTMLElement.
+ * Converts React node to HTMLElement with synchronous updates
  */
 export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
-  const container = document.createElement('div');
-
-  // Use flushSync to ensure the DOM is updated synchronously
-  flushSync(() => {
-    render(<>{node}</>, container);
-  });
-
+  const container = document.createElement("div");
+  flushSync(() => renderCompat(node, container));
   return container;
 }
 
-/**
- * Render a React node with compatibility for React 17 and 18+ (createRoot).
- * See https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis
- * for compatibility details
- *
- * @param node - The React node to render.
- * @param container - The container to render the node into.
- * @returns The rendered node.
- */
-function render(node: ReactNode, container: HTMLElement) {
-  // Check if createRoot is a function (React 18+)
-  const createRoot = (ReactDOM as any)["createRoot"];
-  if (createRoot instanceof Function) {
-    const root = createRoot(container);
-    return root.render(node);
+export async function renderCompat(
+  node: ReactNode,
+  container: HTMLElement
+): Promise<void> {
+  let createRoot = (ReactDOM as any).createRoot;
+
+  if (!createRoot) {
+    try {
+      if (client === null) {
+        client = await import("react-dom/client");
+      }
+      createRoot = client.createRoot;
+    } catch {
+      /* React 18+ only */
+    }
   }
 
-  // Fallback to render (React 17)
-  const render = (ReactDOM as any)["render"];
-  return render(node, container);
+  if (typeof createRoot === "function") {
+    createRoot(container).render(node);
+  } else if (typeof (ReactDOM as any).render === "function") {
+    (ReactDOM as any).render(node, container);
+  } else {
+    throw new Error(
+      "Neither ReactDOM.createRoot nor ReactDOM.render is available - " +
+      "check your react-dom version."
+    );
+  }
 }
