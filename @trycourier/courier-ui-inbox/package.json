@@ -11,7 +11,7 @@
     "watch": "vite build --watch",
     "preview": "vite preview",
     "prepare": "npm run build",
-    "test": "echo \"courier-ui-inbox has no tests\""
+    "test": "jest"
   },
   "keywords": [
     "courier",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@trycourier/courier-js": "file:../@trycourier/courier-js",
-    "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core"
+    "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core",
+    "jest": "^29.7.0"
   }
 }
