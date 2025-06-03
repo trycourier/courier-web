@@ -5,7 +5,7 @@ React UI components used to create an Inbox
 ## Installation
 
 ```bash
-npm i @trycourier/courier-react@8.0.4-beta
+npm i @trycourier/courier-react@8.0.6-beta
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ function App() {
       }}
       onMessageLongPress={(props) => {
         console.log(props);
-      }} 
+      }}
        />
 
       // or
@@ -49,7 +49,7 @@ function App() {
       }}
       onMessageLongPress={(props) => {
         console.log(props);
-      }} 
+      }}
        />
   );
 
@@ -59,6 +59,7 @@ export default App;
 ```
 
 ## Theme Customization
+
 This allows you to style the prebuilt `<CourierInbox/>`. Tons of options live inside `CourierInboxTheme`. Command click in to see all options!
 
 ```ts
@@ -117,6 +118,7 @@ const theme: CourierInboxTheme = {
 ```
 
 ## Fully Custom UI Elements
+
 You can change any element in the Inbox to be custom. Here are the available options.
 
 ```ts
