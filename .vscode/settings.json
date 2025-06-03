@@ -43,5 +43,4 @@
   },
   "editor.formatOnSave": true,
   "jest.runMode": "on-demand",
-  "jest.rootPath": "@trycourier/courier-js"
 }
