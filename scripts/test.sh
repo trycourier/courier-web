@@ -17,7 +17,7 @@ fi
 
 # Navigate to package directory and run tests
 gum style --foreground 46 "Running tests for $1..."
-cd "$package_dir" && npm run test
+cd "$package_dir" && yarn test
 
 # Store the exit code from npm test
 test_exit_code=$?

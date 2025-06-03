@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react",
-  "version": "8.0.10-beta",
+  "version": "8.0.11-beta",
   "description": "The React components for the Courier web UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -45,6 +45,8 @@
     "@types/react-dom": "19.1.0",
     "@vitejs/plugin-react": "4.4.1",
     "react": ">=17.0.2",
-    "react-dom": ">=17.0.2"
+    "react-dom": ">=17.0.2",
+    "vite": "6.2.6",
+    "vite-plugin-dts": "4.5.3"
   }
 }

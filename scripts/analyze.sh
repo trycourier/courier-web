@@ -39,7 +39,7 @@ cd "$TARGET_DIR"
 [ -d "dist" ] && rm -rf dist
 
 # Build
-npm run build
+yarn build
 
 # Check for bundle output
 BUNDLE_FILE=$(find ./dist -type f -name "*.js" | head -n 1)
