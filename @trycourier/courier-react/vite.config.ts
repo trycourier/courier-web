@@ -16,14 +16,14 @@ export default defineConfig({
       external: [
         "react",
         "react-dom",
-        "react-dom/client", // React 18+ only — must be dynamically imported
+        "react-dom/client",
         "object-assign",
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'react-dom/client': 'ReactDOMClient', // avoids warning
+          'react-dom/client': 'ReactDOMClient',
           'object-assign': 'ObjectAssign',
         },
       },
@@ -35,7 +35,7 @@ export default defineConfig({
     dedupe: [
       '@trycourier/courier-js',
       '@trycourier/courier-ui-inbox',
-    ]
+    ],
   },
   plugins: [
     react(),

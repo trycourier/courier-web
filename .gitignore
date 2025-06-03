@@ -33,3 +33,4 @@ coverage/
 .cache/
 .temp/
 .tmp/
+stats.html

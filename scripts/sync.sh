@@ -7,6 +7,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 # Function to clean up dependencies
 cleanup_dependencies() {
     cd "$ROOT_DIR"
+    yarn cache clean
     rm -rf node_modules
     rm -rf **/node_modules
     rm yarn.lock
