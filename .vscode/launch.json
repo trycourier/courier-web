@@ -17,26 +17,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run React Latest TS",
+      "name": "Run React TS",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/react-latest-ts",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run React 17 TS",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}/examples/react-17-ts",
+      "cwd": "${workspaceFolder}/examples/react-ts",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },

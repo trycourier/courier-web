@@ -1,5 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, version } from "react";
 import ReactDOM, { flushSync } from "react-dom";
+
+const reactVersion = parseInt(version.split('.')[0]);
 
 /**
  * Converts a React node to an HTMLElement.
@@ -29,10 +31,14 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
  */
 function render(node: ReactNode, container: HTMLElement) {
   // Check if createRoot is a function (React 18+)
-  const createRoot = (ReactDOM as any)["createRoot"];
-  if (createRoot instanceof Function) {
-    const root = createRoot(container);
-    return root.render(node);
+  if (reactVersion >= 18) {
+    // Lazy load createRoot from react-dom/client
+    import('react-dom/client').then(({ createRoot }) => {
+      if (createRoot instanceof Function) {
+        const root = createRoot(container);
+        return root.render(node);
+      }
+    });
   }
 
   // Fallback to render (React 17)
