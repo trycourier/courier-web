@@ -37,6 +37,7 @@ export class CourierInboxSocket extends CourierSocket {
 
     if ('event' in data) {
       for (const listener of this.messageEventListeners) {
+        this.logger?.debug('Calling message event listener', data);
         listener(data);
       }
     }

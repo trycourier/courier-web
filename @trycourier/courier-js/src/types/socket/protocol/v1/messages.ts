@@ -100,6 +100,9 @@ export interface MessageEventEnvelope {
   /** Event type indicating a new message, or a mutation to one or more existing messages. */
   event: MessageEvent;
 
+  /** Message ID. */
+  messageId?: string;
+
   /** Optional: Message data, varying by event. */
   data?: InboxMessage;
 }

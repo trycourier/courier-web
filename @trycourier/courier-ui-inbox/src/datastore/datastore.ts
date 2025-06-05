@@ -174,13 +174,16 @@ export class CourierInboxDatastore {
 
       // Handle message events
       socket.addMessageEventListener((event: MessageEventEnvelope) => {
+        console.log('Datastore received message event', event);
         if (event.event === MessageEvent.NewMessage) {
           const message: InboxMessage = event.data as InboxMessage;
           this.addMessage(message, 0, 'inbox');
           return;
         }
 
-        const message = this.getMessage({ messageId: event.data?.messageId });
+        const message = this.getMessage({ messageId: event.messageId });
+
+        console.log('Datastore message', message);
 
         switch (event.event) {
           case MessageEvent.MarkAllRead:

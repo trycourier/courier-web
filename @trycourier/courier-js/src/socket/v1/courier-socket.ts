@@ -1,6 +1,6 @@
 import { CourierClientOptions } from "../../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE } from "../../types/socket/protocol/v1/errors";
-import { ServerMessageEnvelope } from "../../types/socket/protocol/v1/messages";
+import { ReconnectMessage, ServerMessageEnvelope } from "../../types/socket/protocol/v1/messages";
 import { MessageEventEnvelope } from "../../types/socket/protocol/v1/messages";
 import { Logger } from "../../utils/logger";
 
@@ -74,7 +74,12 @@ export abstract class CourierSocket {
 
       this.webSocket.addEventListener('message', (event: MessageEvent) => {
         try {
-          const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope;
+          const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope | ReconnectMessage;
+          if ('event' in json && json.event === 'reconnect') {
+            this.retryConnection(json.retryAfter * 1000);
+            return;
+          }
+
           this.onMessageReceived(json)
         } catch (error) {
           this.options.logger?.error('Error parsing socket message', error);
