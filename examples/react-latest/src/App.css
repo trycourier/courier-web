@@ -1,6 +1,5 @@
 #root {
   width: 100%;
-  max-width: 1000px;
   margin: 0 auto;
   text-align: center;
 }
@@ -21,4 +20,11 @@
   z-index: 1000;
   text-align: left;
   color: #fff;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px;
 }

@@ -15,8 +15,6 @@ export default function Home() {
     });
   }, []);
 
-  return (
-    <CourierInbox height='100%' />
-  );
+  return <CourierInbox height='100%' />;
 
 }
