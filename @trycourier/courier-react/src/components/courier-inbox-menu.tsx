@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxMenu as CourierInboxMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
+import { CourierClientComponent } from "./courier-client-component";
 
 export interface CourierInboxMenuProps {
   popupAlignment?: CourierInboxPopupAlignment;
@@ -145,19 +146,21 @@ export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
   }, [props.feedType, menuRef]);
 
   return (
-    /* @ts-ignore */
-    <courier-inbox-menu
-      ref={menuRef}
-      popup-alignment={props.popupAlignment}
-      popup-width={props.popupWidth}
-      popup-height={props.popupHeight}
-      left={props.left}
-      top={props.top}
-      right={props.right}
-      bottom={props.bottom}
-      light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
-      dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
-      mode={props.mode}
-    />
+    <CourierClientComponent>
+      {/* @ts-ignore */}
+      <courier-inbox-menu
+        ref={menuRef}
+        popup-alignment={props.popupAlignment}
+        popup-width={props.popupWidth}
+        popup-height={props.popupHeight}
+        left={props.left}
+        top={props.top}
+        right={props.right}
+        bottom={props.bottom}
+        light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
+        dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
+        mode={props.mode}
+      />
+    </CourierClientComponent>
   );
 };
