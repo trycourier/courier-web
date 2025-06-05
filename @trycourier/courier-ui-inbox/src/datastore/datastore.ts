@@ -169,7 +169,7 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.info('CourierInbox socket connectionId:', Courier.shared.client?.options.connectionId);
 
       // If the socket is already connected, return early
-      if (socket.isConnected) {
+      if (socket.isOpen) {
         Courier.shared.client?.options.logger?.info('CourierInbox socket already connected. Socket will not attempt reconnection.');
         return;
       }

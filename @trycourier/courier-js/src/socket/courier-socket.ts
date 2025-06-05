@@ -1,5 +1,7 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE } from "../types/socket/protocol/v1/errors";
+import { ServerMessageEnvelope } from "../types/socket/protocol/v1/messages";
+import { MessageEventEnvelope } from "../types/socket/protocol/v1/messages";
 import { Logger } from "../utils/logger";
 
 /**
@@ -69,7 +71,7 @@ export abstract class CourierSocket {
       });
 
       this.webSocket.addEventListener('message', (event: MessageEvent) => {
-        this.onMessageReceived(event);
+        this.onMessageReceived(JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope);
       });
 
       this.webSocket.addEventListener('close', (event: CloseEvent) => {
@@ -125,7 +127,7 @@ export abstract class CourierSocket {
 
   public abstract onOpen(event: Event): Promise<void>;
 
-  public abstract onMessageReceived(event: MessageEvent): Promise<void>;
+  public abstract onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void>;
 
   public abstract onClose(event: CloseEvent): Promise<void>;
 

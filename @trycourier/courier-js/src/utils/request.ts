@@ -52,7 +52,7 @@ export async function http(props: {
   validCodes?: number[]
 }): Promise<any> {
   const validCodes = props.validCodes ?? [200];
-  const uid = props.options.showLogs ? UUID.generate() : undefined;
+  const uid = props.options.showLogs ? UUID.nanoid() : undefined;
 
   // Create request
   const request = new Request(props.url, {
@@ -127,7 +127,7 @@ export async function graphql(props: {
   query: string,
   variables?: Record<string, any>
 }): Promise<any> {
-  const uid = props.options.showLogs ? UUID.generate() : undefined;
+  const uid = props.options.showLogs ? UUID.nanoid() : undefined;
 
   // Log request if enabled
   if (uid) {

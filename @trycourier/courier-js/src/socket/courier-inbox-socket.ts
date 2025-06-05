@@ -1,5 +1,5 @@
 import { CourierClientOptions } from '../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, ServerMessageEnvelope } from '../types/socket/protocol/v1/messages';
+import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../types/socket/protocol/v1/messages';
 import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
 
@@ -27,7 +27,14 @@ export class CourierInboxSocket extends CourierSocket {
 
     return Promise.resolve();
   }
-  public onMessageReceived(_: MessageEvent): Promise<void> {
+  public onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void> {
+    console.log('onMessageReceived', data);
+    if ('action' in data && data.action === ServerAction.Ping) {
+      const envelope: ServerMessageEnvelope = data as ServerMessageEnvelope;
+      this.sendPong(envelope);
+    }
+
+    // Restart the ping interval if a message is received from the server.
     this.restartPingInterval();
 
     return Promise.resolve();

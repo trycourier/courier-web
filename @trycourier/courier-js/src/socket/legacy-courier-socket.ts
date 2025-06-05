@@ -39,7 +39,7 @@ export class CourierSocket {
       try {
         this.webSocket = new WebSocket(this.url);
 
-        this.webSocket.addEventListener('open', () => {
+        this.webSocket.onopen = (_: Event) => {
           this.onOpen?.();
           resolve();
         };

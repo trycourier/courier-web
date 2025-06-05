@@ -12,7 +12,7 @@ export class Courier {
   /**
    * The unique identifier for the Courier instance
    */
-  public readonly id = UUID.generate();
+  public readonly id = UUID.nanoid();
 
   /**
    * The shared Courier instance
@@ -66,7 +66,7 @@ export class Courier {
    * @param options - The options for the Courier client
    */
   public signIn(props: CourierProps) {
-    const connectionId = props.connectionId ?? UUID.generate();
+    const connectionId = props.connectionId ?? UUID.nanoid();
     this.instanceClient = new CourierClient({ ...props, connectionId });
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
