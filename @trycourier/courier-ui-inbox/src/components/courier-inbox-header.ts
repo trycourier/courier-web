@@ -1,5 +1,5 @@
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierIconSVGs, CourierElement } from "@trycourier/courier-ui-core";
+import { CourierIconSVGs, CourierElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxOptionMenu, CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
@@ -253,6 +253,4 @@ export class CourierInboxHeader extends CourierElement {
   }
 }
 
-if (!customElements.get('courier-inbox-header')) {
-  customElements.define('courier-inbox-header', CourierInboxHeader);
-}
+registerElement('courier-inbox-header', CourierInboxHeader);

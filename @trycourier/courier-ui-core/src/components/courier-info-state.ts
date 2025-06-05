@@ -109,8 +109,5 @@ export class CourierInfoState extends CourierElement {
   public setButtonClickCallback(callback: () => void) {
     this._buttonClickCallback = callback;
   }
-}
 
-if (!customElements.get('courier-info-state')) {
-  customElements.define('courier-info-state', CourierInfoState);
 }

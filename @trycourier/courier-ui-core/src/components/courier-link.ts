@@ -1,6 +1,7 @@
 import { theme } from "../utils/theme";
+import { BaseElement } from "./base-element";
 
-export class CourierLink extends HTMLElement {
+export class CourierLink extends BaseElement {
   private link: HTMLAnchorElement;
   static observedAttributes = [
     'href',
@@ -177,9 +178,4 @@ export class CourierLink extends HTMLElement {
       this.link.style.removeProperty('--courier-link-font-size');
     }
   }
-}
-
-// Register the custom element
-if (!customElements.get('courier-link')) {
-  customElements.define('courier-link', CourierLink);
 }

@@ -1,12 +1,13 @@
 import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierListItemActionMenu, CourierListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
-export class CourierListItem extends HTMLElement {
+export class CourierListItem extends BaseElement {
+
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
@@ -446,6 +447,4 @@ export class CourierListItem extends HTMLElement {
   }
 }
 
-if (!customElements.get('courier-list-item')) {
-  customElements.define('courier-list-item', CourierListItem);
-}
+registerElement('courier-inbox-list-item', CourierListItem);

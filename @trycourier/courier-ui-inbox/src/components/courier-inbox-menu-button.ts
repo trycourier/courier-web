@@ -1,4 +1,4 @@
-import { CourierColors, CourierElement, CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
@@ -92,6 +92,4 @@ export class CourierInboxMenuButton extends CourierElement {
 
 }
 
-if (!customElements.get('courier-inbox-menu-button')) {
-  customElements.define('courier-inbox-menu-button', CourierInboxMenuButton);
-}
+registerElement('courier-inbox-menu-button', CourierInboxMenuButton);

@@ -1,6 +1,7 @@
+import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
-export class CourierInboxSkeletonListItem extends HTMLElement {
+export class CourierInboxSkeletonListItem extends BaseElement {
 
   // Shadow root
   private _shadow: ShadowRoot;
@@ -41,11 +42,9 @@ export class CourierInboxSkeletonListItem extends HTMLElement {
 }
 
 // Register the custom element
-if (!customElements.get('courier-inbox-skeleton-list-item')) {
-  customElements.define('courier-inbox-skeleton-list-item', CourierInboxSkeletonListItem);
-}
+registerElement('courier-inbox-skeleton-list-item', CourierInboxSkeletonListItem);
 
-class CourierSkeletonAnimatedRow extends HTMLElement {
+class CourierSkeletonAnimatedRow extends BaseElement {
 
   private _shadow: ShadowRoot;
 
@@ -113,6 +112,4 @@ class CourierSkeletonAnimatedRow extends HTMLElement {
   }
 }
 
-if (!customElements.get('courier-skeleton-animated-row')) {
-  customElements.define('courier-skeleton-animated-row', CourierSkeletonAnimatedRow);
-}
+registerElement('courier-skeleton-animated-row', CourierSkeletonAnimatedRow);

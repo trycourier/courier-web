@@ -10,10 +10,11 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { Courier } from "@trycourier/courier-js";
+import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends HTMLElement implements CourierInboxDatastoreEvents {
+export class CourierInboxMenu extends BaseElement implements CourierInboxDatastoreEvents {
 
   // State
   private _width: string = '440px';
@@ -365,6 +366,4 @@ export class CourierInboxMenu extends HTMLElement implements CourierInboxDatasto
   }
 }
 
-if (!customElements.get('courier-inbox-menu')) {
-  customElements.define('courier-inbox-menu', CourierInboxMenu);
-}
+registerElement('courier-inbox-menu', CourierInboxMenu);

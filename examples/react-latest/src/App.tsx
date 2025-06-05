@@ -10,9 +10,12 @@ function App() {
   const [mode] = useState<CourierComponentThemeMode>('light');
 
   useEffect(() => {
+    console.log('User ID', import.meta.env.VITE_USER_ID);
+    console.log('JWT', import.meta.env.VITE_JWT);
     courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT
+      jwt: import.meta.env.VITE_JWT,
+      showLogs: false,
     });
   }, []);
 

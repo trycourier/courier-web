@@ -1,6 +1,7 @@
+import { BaseElement } from "./base-element";
 import { CourierIcon } from "./courier-icon";
 
-export class CourierIconButton extends HTMLElement {
+export class CourierIconButton extends BaseElement {
 
   // State
   private _backgroundColor?: string;
@@ -110,8 +111,4 @@ export class CourierIconButton extends HTMLElement {
     this.refresh();
   }
 
-}
-
-if (!customElements.get('courier-icon-button')) {
-  customElements.define('courier-icon-button', CourierIconButton);
 }

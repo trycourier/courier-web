@@ -167,7 +167,3 @@ export class CourierButton extends CourierSystemThemeElement {
     this._style.textContent = this.getStyles(props);
   }
 }
-
-if (!customElements.get('courier-button')) {
-  customElements.define('courier-button', CourierButton);
-}

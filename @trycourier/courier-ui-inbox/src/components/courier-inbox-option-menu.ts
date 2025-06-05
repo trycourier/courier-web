@@ -1,4 +1,4 @@
-import { CourierIconButton, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
@@ -14,7 +14,7 @@ export type CourierInboxMenuOption = {
   onClick: (option: CourierInboxMenuOption) => void;
 };
 
-export class CourierInboxOptionMenu extends HTMLElement {
+export class CourierInboxOptionMenu extends BaseElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -178,6 +178,4 @@ export class CourierInboxOptionMenu extends HTMLElement {
   }
 }
 
-if (!customElements.get('courier-inbox-option-menu')) {
-  customElements.define('courier-inbox-option-menu', CourierInboxOptionMenu);
-}
+registerElement('courier-inbox-option-menu', CourierInboxOptionMenu);

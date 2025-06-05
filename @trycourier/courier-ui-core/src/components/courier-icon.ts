@@ -1,4 +1,5 @@
 import { CourierColors } from "../utils/courier-colors";
+import { BaseElement } from "./base-element";
 
 export const CourierIconSVGs = {
   inbox: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +37,7 @@ export const CourierIconSVGs = {
 </svg>`
 };
 
-export class CourierIcon extends HTMLElement {
+export class CourierIcon extends BaseElement {
 
   // State
   private _color?: string;
@@ -103,9 +104,4 @@ export class CourierIcon extends HTMLElement {
     this._svg = svg;
     this.refresh();
   }
-}
-
-// Register the custom element
-if (!customElements.get('courier-icon')) {
-  customElements.define('courier-icon', CourierIcon);
 }

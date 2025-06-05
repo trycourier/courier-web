@@ -17,6 +17,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Next Latest",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/examples/next-latest",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Run React Latest",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
@@ -107,7 +120,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Refresh Packages",
+      "name": "Sync Packages",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",

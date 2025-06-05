@@ -1,9 +1,10 @@
+import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export type CourierUnreadCountLocation = 'button' | 'header';
 
-export class CourierUnreadCountBadge extends HTMLElement {
+export class CourierUnreadCountBadge extends BaseElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -99,6 +100,4 @@ export class CourierUnreadCountBadge extends HTMLElement {
 
 }
 
-if (!customElements.get('courier-unread-count-badge')) {
-  customElements.define('courier-unread-count-badge', CourierUnreadCountBadge);
-}
+registerElement('courier-unread-count-badge', CourierUnreadCountBadge);
