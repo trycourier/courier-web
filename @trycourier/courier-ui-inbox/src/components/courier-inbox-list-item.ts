@@ -7,7 +7,6 @@ import { CourierListItemActionMenu, CourierListItemActionMenuOption } from "./co
 import { CourierInboxDatastore } from "../datastore/datastore";
 
 export class CourierListItem extends BaseElement {
-
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
@@ -447,4 +446,4 @@ export class CourierListItem extends BaseElement {
   }
 }
 
-registerElement('courier-inbox-list-item', CourierListItem);
+registerElement('courier-list-item', CourierListItem);
