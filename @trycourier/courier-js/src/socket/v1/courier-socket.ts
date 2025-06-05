@@ -194,11 +194,11 @@ export abstract class CourierSocket {
   }
 
   private getBackoffTimeInMillis(): number {
-    const backoffIntervalInMillis = CourierSocket.BACKOFF_INTERVALS_IN_MILLIS[this.retryAttempt - 1];
+    const backoffIntervalInMillis = CourierSocket.BACKOFF_INTERVALS_IN_MILLIS[this.retryAttempt];
     const lowerBound = backoffIntervalInMillis - (backoffIntervalInMillis * CourierSocket.BACKOFF_JITTER_FACTOR);
     const upperBound = backoffIntervalInMillis + (backoffIntervalInMillis * CourierSocket.BACKOFF_JITTER_FACTOR);
 
-    return Math.random() * (upperBound - lowerBound) + lowerBound;
+    return Math.floor(Math.random() * (upperBound - lowerBound) + lowerBound);
   }
 
   private async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
@@ -208,11 +208,9 @@ export abstract class CourierSocket {
     }
 
     if (this.retryAttempt >= CourierSocket.MAX_RETRY_ATTEMPTS) {
-      this.logger?.error('Max retry attempts reached.');
+      this.logger?.error(`Max retry attempts (${CourierSocket.MAX_RETRY_ATTEMPTS}) reached.`);
       return;
     }
-
-    this.retryAttempt++;
 
     const backoffTimeInMillis = suggestedBackoffTimeInMillis ?? this.getBackoffTimeInMillis();
     this.retryTimeoutId = window.setTimeout(async () => {
@@ -222,12 +220,9 @@ export abstract class CourierSocket {
         // connect() will retry if applicable
       }
     }, backoffTimeInMillis);
+    this.logger?.debug(`Retrying connection in ${Math.floor(backoffTimeInMillis / 1000)}s. Retry attempt ${this.retryAttempt + 1} of ${CourierSocket.MAX_RETRY_ATTEMPTS}.`);
 
-    this.logger?.debug('Retrying connection', {
-      backoffTimeInMillis,
-      retryAttempt: this.retryAttempt,
-      maxRetryAttempts: CourierSocket.MAX_RETRY_ATTEMPTS,
-    });
+    this.retryAttempt++;
   }
 
   private clearRetryTimeout(): void {

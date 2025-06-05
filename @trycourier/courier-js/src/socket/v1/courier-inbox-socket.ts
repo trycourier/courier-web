@@ -47,13 +47,11 @@ export class CourierInboxSocket extends CourierSocket {
     return Promise.resolve();
   }
   public onClose(event: CloseEvent): Promise<void> {
-    this.logger?.debug('WebSocket closed', event);
+
 
     return Promise.resolve();
   }
   public onError(event: Event): Promise<void> {
-    this.logger?.debug('WebSocket error', event);
-
     return Promise.resolve();
   }
 
