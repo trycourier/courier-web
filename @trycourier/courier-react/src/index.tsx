@@ -4,4 +4,4 @@ import '@trycourier/courier-ui-inbox';
 // Exports the hooks and components
 export * from './hooks/use-courier';
 export * from './components/courier-inbox';
-export * from './components/courier-inbox-menu';
+export * from './components/courier-inbox-popup-menu';

@@ -1,10 +1,10 @@
 import { useRef, useEffect } from "react";
-import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxMenu as CourierInboxMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
+import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPopupMenu as CourierInboxPopupMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 
-export interface CourierInboxMenuProps {
+export interface CourierInboxPopupMenuProps {
   popupAlignment?: CourierInboxPopupAlignment;
   popupWidth?: string;
   popupHeight?: string;
@@ -28,8 +28,8 @@ export interface CourierInboxMenuProps {
   renderPopupMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => React.ReactNode;
 }
 
-export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
-  const menuRef = useRef<CourierInboxMenuElement>(null);
+export const CourierInboxPopupMenu = (props: CourierInboxPopupMenuProps) => {
+  const menuRef = useRef<CourierInboxPopupMenuElement>(null);
 
   // Handle message click
   useEffect(() => {
@@ -148,7 +148,7 @@ export const CourierInboxMenu = (props: CourierInboxMenuProps) => {
   return (
     <CourierClientComponent>
       {/* @ts-ignore */}
-      <courier-inbox-menu
+      <courier-inbox-popup-menu
         ref={menuRef}
         popup-alignment={props.popupAlignment}
         popup-width={props.popupWidth}

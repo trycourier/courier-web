@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Web JS",
+      "name": "Run Vanilla Web",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",

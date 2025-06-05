@@ -14,7 +14,7 @@ import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxMenu extends BaseElement implements CourierInboxDatastoreEvents {
+export class CourierInboxPopupMenu extends BaseElement implements CourierInboxDatastoreEvents {
 
   // State
   private _width: string = '440px';
@@ -366,4 +366,4 @@ export class CourierInboxMenu extends BaseElement implements CourierInboxDatasto
   }
 }
 
-registerElement('courier-inbox-menu', CourierInboxMenu);
+registerElement('courier-inbox-popup-menu', CourierInboxPopupMenu);

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { useCourier, CourierInboxMenu } from '@trycourier/courier-react';
+import { useCourier, CourierInboxPopupMenu } from '@trycourier/courier-react';
 
 export default function Home() {
 
@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
     <div className='center'>
-      <CourierInboxMenu />
+      <CourierInboxPopupMenu />
     </div>
   );
 
