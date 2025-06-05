@@ -234,7 +234,7 @@ export class CourierInboxDatastore {
       // Connect and subscribe to socket
       await socket.connect();
       await socket.sendSubscribe();
-      socket.keepAlive();
+      // socket.keepAlive();
       Courier.shared.client?.options.logger?.info('CourierInbox socket connected');
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);

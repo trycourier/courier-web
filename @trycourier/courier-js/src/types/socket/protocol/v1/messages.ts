@@ -10,6 +10,9 @@ export enum ClientAction {
   /** Unsubscribe from a channel. */
   Unsubscribe = 'unsubscribe',
 
+  /** Pong response to a ping message from the server. */
+  Pong = 'pong',
+
   /** Ping the server to keep the connection alive. */
   Ping = 'ping',
 }
@@ -17,7 +20,7 @@ export enum ClientAction {
 /**
  * Client request envelope.
  */
-export interface ActionRequestEnvelope {
+export interface ClientMessageEnvelope {
   /**
    * Transaction ID.
    *
@@ -43,9 +46,12 @@ export interface ActionRequestEnvelope {
   data?: Record<string, any>;
 }
 
-export enum ActionResponse {
+export enum ServerAction {
   /** Response to an action request. */
   Ack = 'ack',
+
+  /** Ping message from the server. */
+  Ping = 'ping',
 
   /** Response to a ping request. */
   Pong = 'pong',
@@ -54,7 +60,7 @@ export enum ActionResponse {
 /**
  * Server response envelope.
  */
-export interface ActionResponseEnvelope {
+export interface ServerMessageEnvelope {
   /**
    * Transaction ID.
    *
@@ -65,7 +71,7 @@ export interface ActionResponseEnvelope {
   /**
    * Response from the server.
    */
-  response: ActionResponse;
+  action: ServerAction;
 }
 
 /**
