@@ -1,4 +1,4 @@
-import { CourierSocket } from './courier-socket';
+import { CourierSocket } from './v1/courier-socket';
 import { CourierClientOptions } from '../client/courier-client';
 import { InboxMessage } from '../types/inbox';
 

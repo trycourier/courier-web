@@ -1,6 +1,6 @@
-import { CourierClientOptions } from '../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../types/socket/protocol/v1/messages';
-import { UUID } from '../utils/uuid';
+import { CourierClientOptions } from '../../client/courier-client';
+import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../../types/socket/protocol/v1/messages';
+import { UUID } from '../../utils/uuid';
 import { CourierSocket } from './courier-socket';
 
 export class CourierInboxSocket extends CourierSocket {
@@ -18,6 +18,8 @@ export class CourierInboxSocket extends CourierSocket {
    */
   private pingIntervalId: number | null = null;
 
+  private messageEventListeners: ((message: MessageEventEnvelope) => void)[] = [];
+
   constructor(options: CourierClientOptions) {
     super(options);
   }
@@ -28,10 +30,15 @@ export class CourierInboxSocket extends CourierSocket {
     return Promise.resolve();
   }
   public onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void> {
-    console.log('onMessageReceived', data);
     if ('action' in data && data.action === ServerAction.Ping) {
       const envelope: ServerMessageEnvelope = data as ServerMessageEnvelope;
       this.sendPong(envelope);
+    }
+
+    if ('event' in data) {
+      for (const listener of this.messageEventListeners) {
+        listener(data);
+      }
     }
 
     // Restart the ping interval if a message is received from the server.
@@ -60,7 +67,6 @@ export class CourierInboxSocket extends CourierSocket {
       },
     };
 
-    this.logger?.debug('Sending subscribe request', envelope);
     this.send(envelope);
   }
 
@@ -73,8 +79,11 @@ export class CourierInboxSocket extends CourierSocket {
       },
     };
 
-    this.logger?.debug('Sending unsubscribe request', envelope);
     this.send(envelope);
+  }
+
+  public addMessageEventListener(listener: (message: MessageEventEnvelope) => void): void {
+    this.messageEventListeners.push(listener);
   }
 
   /**
@@ -89,7 +98,6 @@ export class CourierInboxSocket extends CourierSocket {
       action: ClientAction.Ping,
     };
 
-    this.logger?.debug('Sending ping request', envelope);
     this.send(envelope);
   }
 
@@ -105,7 +113,6 @@ export class CourierInboxSocket extends CourierSocket {
       action: ClientAction.Pong,
     };
 
-    this.logger?.debug('Sending pong response', response);
     this.send(response);
   }
 

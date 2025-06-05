@@ -103,3 +103,20 @@ export interface MessageEventEnvelope {
   /** Optional: Message data, varying by event. */
   data?: InboxMessage;
 }
+
+/**
+ * Message sent by the server to indicate that the client should reconnect.
+ */
+export interface ReconnectMessage {
+  /** Event type indicating a reconnection. */
+  event: 'reconnect';
+
+  /** Message describing the reason for the reconnection. */
+  message: string;
+
+  /** Seconds after which the client should retry the connection. */
+  retryAfter: number;
+
+  /** https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/code */
+  code: number;
+}

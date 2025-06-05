@@ -12,7 +12,7 @@ export class Logger {
 
   public log(message: string, ...args: any[]): void {
     if (this.showLogs) {
-      console.log(`${this.PREFIX} ${message}`, ...args);
+      // console.log(`${this.PREFIX} ${message}`, ...args);
     }
   }
 

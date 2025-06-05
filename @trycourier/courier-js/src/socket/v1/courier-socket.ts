@@ -1,8 +1,8 @@
-import { CourierClientOptions } from "../client/courier-client";
-import { CLOSE_CODE_NORMAL_CLOSURE } from "../types/socket/protocol/v1/errors";
-import { ServerMessageEnvelope } from "../types/socket/protocol/v1/messages";
-import { MessageEventEnvelope } from "../types/socket/protocol/v1/messages";
-import { Logger } from "../utils/logger";
+import { CourierClientOptions } from "../../client/courier-client";
+import { CLOSE_CODE_NORMAL_CLOSURE } from "../../types/socket/protocol/v1/errors";
+import { ServerMessageEnvelope } from "../../types/socket/protocol/v1/messages";
+import { MessageEventEnvelope } from "../../types/socket/protocol/v1/messages";
+import { Logger } from "../../utils/logger";
 
 /**
  * Abstract base class for Courier WebSocket implementations.
@@ -30,9 +30,9 @@ export abstract class CourierSocket {
     480_000, // 8 minutes
   ];
 
-
   private webSocket: WebSocket | null = null;
   private retryAttempt: number = 0;
+  private retryTimeoutId: number | null = null;
 
   private readonly url: string;
   private readonly options: CourierClientOptions;
@@ -52,9 +52,11 @@ export abstract class CourierSocket {
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
   public async connect(): Promise<void> {
+    this.clearRetryTimeout();
+
     if (this.isConnecting || this.isOpen) {
       this.options.logger?.info('Attempted to open a WebSocket connection, but one already exists.');
-      return;
+      return Promise.reject(new Error('WebSocket connection already exists'));
     }
 
     return new Promise((resolve, reject) => {
@@ -71,7 +73,12 @@ export abstract class CourierSocket {
       });
 
       this.webSocket.addEventListener('message', (event: MessageEvent) => {
-        this.onMessageReceived(JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope);
+        try {
+          const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope;
+          this.onMessageReceived(json)
+        } catch (error) {
+          this.options.logger?.error('Error parsing socket message', error);
+        }
       });
 
       this.webSocket.addEventListener('close', (event: CloseEvent) => {
@@ -96,7 +103,7 @@ export abstract class CourierSocket {
         // so we reject the promise to indicate that the connection could not be established.
         reject(event);
       });
-    })
+    });
   }
 
   public close(code: number, reason?: string): void {
@@ -187,14 +194,19 @@ export abstract class CourierSocket {
   }
 
   private getBackoffTimeInMillis(): number {
-    const backoffIntervalInMillis = CourierSocket.BACKOFF_INTERVALS_IN_MILLIS[this.retryAttempt];
+    const backoffIntervalInMillis = CourierSocket.BACKOFF_INTERVALS_IN_MILLIS[this.retryAttempt - 1];
     const lowerBound = backoffIntervalInMillis - (backoffIntervalInMillis * CourierSocket.BACKOFF_JITTER_FACTOR);
     const upperBound = backoffIntervalInMillis + (backoffIntervalInMillis * CourierSocket.BACKOFF_JITTER_FACTOR);
 
     return Math.random() * (upperBound - lowerBound) + lowerBound;
   }
 
-  private retryConnection(suggestedBackoffTimeInMillis?: number): void {
+  private async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
+    if (this.retryTimeoutId !== null) {
+      this.logger?.debug('Skipping retry attempt because a previous retry is already scheduled.');
+      return;
+    }
+
     if (this.retryAttempt >= CourierSocket.MAX_RETRY_ATTEMPTS) {
       this.logger?.error('Max retry attempts reached.');
       return;
@@ -203,8 +215,25 @@ export abstract class CourierSocket {
     this.retryAttempt++;
 
     const backoffTimeInMillis = suggestedBackoffTimeInMillis ?? this.getBackoffTimeInMillis();
-    setTimeout(() => {
-      this.connect();
+    this.retryTimeoutId = window.setTimeout(async () => {
+      try {
+        await this.connect();
+      } catch (error) {
+        // connect() will retry if applicable
+      }
     }, backoffTimeInMillis);
+
+    this.logger?.debug('Retrying connection', {
+      backoffTimeInMillis,
+      retryAttempt: this.retryAttempt,
+      maxRetryAttempts: CourierSocket.MAX_RETRY_ATTEMPTS,
+    });
+  }
+
+  private clearRetryTimeout(): void {
+    if (this.retryTimeoutId !== null) {
+      window.clearTimeout(this.retryTimeoutId);
+      this.retryTimeoutId = null;
+    }
   }
 }

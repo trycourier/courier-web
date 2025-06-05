@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, MessageEvent } from "@trycourier/courier-js";
+import { Courier, InboxMessage, MessageEvent, MessageEventEnvelope } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -166,76 +166,68 @@ export class CourierInboxDatastore {
         return;
       }
 
-      Courier.shared.client?.options.logger?.info('CourierInbox socket connectionId:', Courier.shared.client?.options.connectionId);
-
-      // If the socket is already connected, return early
-      if (socket.isOpen) {
-        Courier.shared.client?.options.logger?.info('CourierInbox socket already connected. Socket will not attempt reconnection.');
+      // If the socket is already connecting or open, return early
+      if (socket.isConnecting || socket.isOpen) {
+        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
         return;
       }
 
-      // Handle new messages
-      socket.receivedMessage = (message: InboxMessage) => {
-        this.addMessage(message, 0, 'inbox');
-      };
-
       // Handle message events
-      socket.receivedMessageEvent = (event: MessageEvent) => {
-
-        let message: InboxMessage | undefined;
-
-        // Get the original message if possible
-        if (event.messageId) {
-          message = this.getMessage({ messageId: event.messageId });
+      socket.addMessageEventListener((event: MessageEventEnvelope) => {
+        if (event.event === MessageEvent.NewMessage) {
+          const message: InboxMessage = event.data as InboxMessage;
+          this.addMessage(message, 0, 'inbox');
+          return;
         }
 
+        const message = this.getMessage({ messageId: event.data?.messageId });
+
         switch (event.event) {
-          case 'mark-all-read':
+          case MessageEvent.MarkAllRead:
             this.readAllMessages({ canCallApi: false });
             break;
-          case 'read':
+          case MessageEvent.Read:
             if (message) {
               this.readMessage({ message, canCallApi: false });
             }
             break;
-          case 'unread':
+          case MessageEvent.Unread:
             if (message) {
               this.unreadMessage({ message, canCallApi: false });
             }
             break;
-          case 'opened':
+          case MessageEvent.Opened:
             if (message) {
               this.openMessage({ message, canCallApi: false });
             }
             break;
-          case 'archive':
+          case MessageEvent.Archive:
             if (message) {
               this.archiveMessage({ message, canCallApi: false });
             }
             break;
-          case 'archive-read':
+          case MessageEvent.ArchiveRead:
             this.archiveReadMessages({ canCallApi: false });
             break;
-          case 'click':
+          case MessageEvent.Clicked:
             if (message) {
               this.clickMessage({ message, canCallApi: false });
             }
             break;
-          case 'unarchive':
+          case MessageEvent.Unarchive:
             if (message) {
               this.unarchiveMessage({ message, canCallApi: false });
             }
             break;
-          case 'unopened':
+          case MessageEvent.Unopened:
             break;
         }
-      };
+      });
 
       // Connect and subscribe to socket
-      await socket.connect();
+      await socket.connect()
       await socket.sendSubscribe();
-      // socket.keepAlive();
-      Courier.shared.client?.options.logger?.info('CourierInbox socket connected');
+      Courier.shared.client?.options.logger?.info(`Inbox socket connected for client ID: [${Courier.shared.client?.options.connectionId}]`);
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
     }
@@ -246,7 +238,11 @@ export class CourierInboxDatastore {
    * @param props - The message ID
    * @returns The message or undefined if it is not found
    */
-  private getMessage(props: { messageId: string }): InboxMessage | undefined {
+  private getMessage(props: { messageId?: string }): InboxMessage | undefined {
+    if (!props.messageId) {
+      return undefined;
+    }
+
     return this._inboxDataSet?.messages.find(m => m.messageId === props.messageId) ??
       this._archiveDataSet?.messages.find(m => m.messageId === props.messageId);
   }
