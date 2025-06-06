@@ -3,6 +3,10 @@ body {
   margin: 0;
 }
 
+courier-inbox {
+  width: 100%;
+}
+
 #app {
   max-width: 800px;
   margin: 0 auto;
@@ -10,6 +14,13 @@ body {
   flex-direction: column;
   gap: 40px;
   padding: 40px 16px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px;
 }
 
 .grid-section {

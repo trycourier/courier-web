@@ -17,14 +17,12 @@ export default defineConfig({
         "react",
         "react-dom",
         "react-dom/client",
-        "object-assign",
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
           'react-dom/client': 'ReactDOMClient',
-          'object-assign': 'ObjectAssign',
         },
       },
     },

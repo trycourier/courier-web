@@ -1,12 +1,12 @@
 import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierButton, CourierIcon } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
-import { CourierListItemActionMenu, CourierListItemActionMenuOption } from "./courier-inbox-list-item-menu";
+import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
-export class CourierListItem extends HTMLElement {
+export class CourierListItem extends BaseElement {
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
@@ -18,7 +18,7 @@ export class CourierListItem extends HTMLElement {
   private _subtitleElement: HTMLParagraphElement;
   private _timeElement: HTMLParagraphElement;
   private _style: HTMLStyleElement;
-  private _menu: CourierListItemActionMenu;
+  private _menu: CourierInboxListItemMenu;
   private _unreadIndicator: HTMLDivElement;
   private _actionsContainer: HTMLDivElement;
 
@@ -69,7 +69,7 @@ export class CourierListItem extends HTMLElement {
     this._refreshStyles();
 
     // Action menu
-    this._menu = new CourierListItemActionMenu(this._theme);
+    this._menu = new CourierInboxListItemMenu(this._theme);
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
@@ -155,9 +155,9 @@ export class CourierListItem extends HTMLElement {
   }
 
   // Helpers
-  private _getMenuOptions(): CourierListItemActionMenuOption[] {
+  private _getMenuOptions(): CourierInboxListItemActionMenuOption[] {
     const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
-    let options: CourierListItemActionMenuOption[] = [];
+    let options: CourierInboxListItemActionMenuOption[] = [];
 
     const isArchiveFeed = this._feedType === 'archive';
 
@@ -261,11 +261,11 @@ export class CourierListItem extends HTMLElement {
 
       /* ───────────────────────── Menu hover / active ────────────────── */
       @media (hover: hover) {
-        :host(:hover):has(courier-list-item-menu:hover, courier-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
+        :host(:hover):has(courier-inbox-list-item-menu:hover, courier-inbox-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
           background-color: ${listItem?.backgroundColor ?? 'transparent'};
         }
       }
-      :host(:active):has(courier-list-item-menu:active, courier-list-item-menu *:active, courier-button:active, courier-button *:active) {
+      :host(:active):has(courier-inbox-list-item-menu:active, courier-inbox-list-item-menu *:active, courier-button:active, courier-button *:active) {
         background-color: ${listItem?.backgroundColor ?? 'transparent'};
       }
 
@@ -329,7 +329,7 @@ export class CourierListItem extends HTMLElement {
         white-space: nowrap;
       }
 
-      courier-list-item-menu {
+      courier-inbox-list-item-menu {
         z-index: 1;
         position: absolute;
         top: 8px;
@@ -446,6 +446,4 @@ export class CourierListItem extends HTMLElement {
   }
 }
 
-if (!customElements.get('courier-list-item')) {
-  customElements.define('courier-list-item', CourierListItem);
-}
+registerElement('courier-inbox-list-item', CourierListItem);

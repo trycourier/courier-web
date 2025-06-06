@@ -1,7 +1,8 @@
+import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
-export class CourierInboxPaginationListItem extends HTMLElement {
+export class CourierInboxPaginationListItem extends BaseElement {
 
   // Components
   private skeletonLoadingList?: CourierInboxSkeletonList;
@@ -69,6 +70,4 @@ export class CourierInboxPaginationListItem extends HTMLElement {
 
 }
 
-if (!customElements.get('courier-inbox-pagination-list-item')) {
-  customElements.define('courier-inbox-pagination-list-item', CourierInboxPaginationListItem);
-}
+registerElement('courier-inbox-pagination-list-item', CourierInboxPaginationListItem);

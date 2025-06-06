@@ -1,7 +1,7 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { CourierComponentThemeMode, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierComponentThemeMode, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -10,7 +10,7 @@ import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps,
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
-export class CourierInbox extends HTMLElement {
+export class CourierInbox extends BaseElement {
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
@@ -376,6 +376,4 @@ export class CourierInbox extends HTMLElement {
 }
 
 // Register the custom element
-if (!customElements.get('courier-inbox')) {
-  customElements.define('courier-inbox', CourierInbox);
-}
+registerElement('courier-inbox', CourierInbox);

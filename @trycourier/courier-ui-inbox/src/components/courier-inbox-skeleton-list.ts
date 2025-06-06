@@ -1,4 +1,4 @@
-import { CourierElement } from "@trycourier/courier-ui-core";
+import { CourierElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxSkeletonListItem } from "./courier-inbox-skeleton-list-item";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
@@ -60,7 +60,4 @@ export class CourierInboxSkeletonList extends CourierElement {
   }
 }
 
-// Register the custom element
-if (!customElements.get('courier-inbox-skeleton-list')) {
-  customElements.define('courier-inbox-skeleton-list', CourierInboxSkeletonList);
-}
+registerElement('courier-inbox-skeleton-list', CourierInboxSkeletonList);

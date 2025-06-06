@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanilla Web</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div class="center">
+    <courier-inbox-popup-menu></courier-inbox-popup-menu>
+  </div>
+
+  <script type="module">
+    import { CourierInbox } from '@trycourier/courier-ui-inbox';
+    import { Courier } from '@trycourier/courier-js';
+
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+      showLogs: true
+    });
+  </script>
+</body>
+
+</html>

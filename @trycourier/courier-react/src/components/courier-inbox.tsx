@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
+import { CourierClientComponent } from "./courier-client-component";
 
 export interface CourierInboxProps {
   height?: string;
@@ -126,13 +127,15 @@ export const CourierInbox = (props: CourierInboxProps) => {
   }, [props.feedType, inboxRef]);
 
   return (
-    /* @ts-ignore */
-    <courier-inbox
-      ref={inboxRef}
-      height={props.height}
-      light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
-      dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
-      mode={props.mode}
-    />
+    <CourierClientComponent>
+      {/* @ts-ignore */}
+      <courier-inbox
+        ref={inboxRef}
+        height={props.height}
+        light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
+        dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
+        mode={props.mode}
+      />
+    </CourierClientComponent>
   );
 };

@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierColors, CourierInfoState } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierColors, CourierInfoState, registerElement } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
@@ -9,7 +9,7 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
-export class CourierInboxList extends HTMLElement {
+export class CourierInboxList extends BaseElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -307,6 +307,4 @@ export class CourierInboxList extends HTMLElement {
 
 }
 
-if (!customElements.get('courier-inbox-list')) {
-  customElements.define('courier-inbox-list', CourierInboxList);
-}
+registerElement('courier-inbox-list', CourierInboxList);

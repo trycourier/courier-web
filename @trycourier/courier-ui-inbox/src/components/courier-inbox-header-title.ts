@@ -3,8 +3,9 @@ import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
+import { registerElement, BaseElement } from "@trycourier/courier-ui-core";
 
-export class CourierInboxHeaderTitle extends HTMLElement {
+export class CourierInboxHeaderTitle extends BaseElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -123,6 +124,4 @@ export class CourierInboxHeaderTitle extends HTMLElement {
 
 }
 
-if (!customElements.get('courier-inbox-header-title')) {
-  customElements.define('courier-inbox-header-title', CourierInboxHeaderTitle);
-}
+registerElement('courier-inbox-header-title', CourierInboxHeaderTitle);

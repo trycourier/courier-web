@@ -23,6 +23,14 @@ build_package() {
     cd "$ROOT_DIR"
 }
 
+# Function to install example dependencies
+install_example() {
+    local example_name=$1
+    cd "$ROOT_DIR/examples/$example_name"
+    npm install
+    cd "$ROOT_DIR"
+}
+
 # Main execution
 cleanup_dependencies
 
@@ -31,3 +39,6 @@ build_package "@trycourier/courier-js"
 build_package "@trycourier/courier-ui-core"
 build_package "@trycourier/courier-ui-inbox"
 build_package "@trycourier/courier-react"
+
+# Install example dependencies
+install_example "next-latest"

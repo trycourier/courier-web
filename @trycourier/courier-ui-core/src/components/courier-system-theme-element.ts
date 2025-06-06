@@ -1,6 +1,7 @@
 import { addSystemThemeModeListener, getSystemThemeMode, SystemThemeMode } from "../utils/system-theme-mode";
+import { BaseElement } from "./base-element";
 
-export class CourierSystemThemeElement extends HTMLElement {
+export class CourierSystemThemeElement extends BaseElement {
 
   // State
   private _currentSystemTheme: SystemThemeMode;

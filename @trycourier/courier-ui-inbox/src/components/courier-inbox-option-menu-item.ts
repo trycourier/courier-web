@@ -1,8 +1,8 @@
-import { CourierIcon, CourierIconSVGs } from "@trycourier/courier-ui-core";
+import { BaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 
-export class CourierInboxOptionMenuItem extends HTMLElement {
+export class CourierInboxOptionMenuItem extends BaseElement {
 
   // State
   private _option: CourierInboxMenuOption;
@@ -124,6 +124,4 @@ export class CourierInboxOptionMenuItem extends HTMLElement {
 
 }
 
-if (!customElements.get('courier-inbox-filter-menu-item')) {
-  customElements.define('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);
-}
+registerElement('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);

@@ -4,13 +4,26 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Web JS",
+      "name": "Run Vanilla Web",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "start"
       ],
       "cwd": "${workspaceFolder}/examples/web-js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Next Latest",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/examples/next-latest",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -107,7 +120,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Refresh Packages",
+      "name": "Sync Packages",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
