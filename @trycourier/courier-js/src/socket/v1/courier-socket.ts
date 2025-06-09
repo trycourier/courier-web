@@ -126,7 +126,7 @@ export abstract class CourierSocket {
     });
   }
 
-  public close(code: number, reason?: string): void {
+  public close(code = CLOSE_CODE_NORMAL_CLOSURE, reason?: string): void {
     if (this.webSocket === null) {
       return;
     }

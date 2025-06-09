@@ -47,12 +47,11 @@ export class CourierInboxSocket extends CourierSocket {
 
     return Promise.resolve();
   }
-  public onClose(event: CloseEvent): Promise<void> {
 
-
+  public onClose(_: CloseEvent): Promise<void> {
     return Promise.resolve();
   }
-  public onError(event: Event): Promise<void> {
+  public onError(_: Event): Promise<void> {
     return Promise.resolve();
   }
 
