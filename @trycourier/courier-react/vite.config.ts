@@ -14,9 +14,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        "react",
-        "react-dom",
-        "react-dom/client",
+        'react',
+        'react-dom',
+        'react-dom/client',
       ],
       output: {
         globals: {
@@ -28,6 +28,7 @@ export default defineConfig({
     },
     sourcemap: true,
     minify: 'terser',
+    target: 'es2018',
   },
   resolve: {
     dedupe: [
@@ -36,7 +37,13 @@ export default defineConfig({
     ],
   },
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+      babel: {
+        plugins: [],
+      },
+      include: ['src/**/*.[jt]sx'],
+    }),
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.tsx'],
@@ -47,7 +54,7 @@ export default defineConfig({
       brotliSize: true,
       template: 'treemap',
       sourcemap: true,
-      filename: 'stats.html'
+      filename: 'stats.html',
     }) as PluginOption,
   ],
 });

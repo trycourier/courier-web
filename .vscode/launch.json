@@ -30,6 +30,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Next 12",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/examples/next-12",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Run React Latest",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

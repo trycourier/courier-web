@@ -10,6 +10,16 @@ export default function App() {
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
       showLogs: false,
+      apiUrls: {
+        courier: {
+          rest: 'string',
+          graphql: 'string',
+        },
+        inbox: {
+          graphql: 'string',
+          webSocket: 'string',
+        },
+      }
     });
   }, []);
 
