@@ -1,6 +1,6 @@
-import { CourierClientOptions } from '../../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../../types/socket/protocol/v1/messages';
-import { UUID } from '../../utils/uuid';
+import { CourierClientOptions } from '../client/courier-client';
+import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../types/socket/protocol/v1/messages';
+import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
 
 /** Application-layer implementation of the Courier WebSocket API for Inbox messages. */

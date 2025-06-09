@@ -1,4 +1,4 @@
-import { CourierInboxSocket } from '../socket/v1/courier-inbox-socket';
+import { CourierInboxSocket } from '../socket/courier-inbox-socket';
 import { CourierGetInboxMessagesResponse } from '../types/inbox';
 import { graphql } from '../utils/request';
 import { Client } from './client';
