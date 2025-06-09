@@ -80,6 +80,7 @@ export interface ServerMessageEnvelope {
 export enum MessageEvent {
   NewMessage = 'message',
   Archive = 'archive',
+  ArchiveAll = 'archive-all',
   ArchiveRead = 'archive-read',
   Clicked = 'clicked',
   MarkAllRead = 'mark-all-read',

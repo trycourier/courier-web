@@ -3,6 +3,7 @@ import { CLOSE_CODE_NORMAL_CLOSURE } from "../../types/socket/protocol/v1/errors
 import { ReconnectMessage, ServerMessageEnvelope } from "../../types/socket/protocol/v1/messages";
 import { MessageEventEnvelope } from "../../types/socket/protocol/v1/messages";
 import { Logger } from "../../utils/logger";
+import { IPW_VERSION } from "./version";
 
 /**
  * Abstract base class for Courier WebSocket implementations.
@@ -11,8 +12,6 @@ import { Logger } from "../../utils/logger";
  * Application-specific logic should be implemented in the concrete classes.
  */
 export abstract class CourierSocket {
-  private static readonly IPW_VERSION = 'v1';
-
   private static readonly BACKOFF_JITTER_FACTOR = 0.5;
   private static readonly MAX_RETRY_ATTEMPTS = 5;
 
@@ -29,6 +28,21 @@ export abstract class CourierSocket {
     240_000, // 4 minutes
     480_000, // 8 minutes
   ];
+
+  /**
+   * The key of the retry after time in the WebSocket close event reason.
+   *
+   * The Courier WebSocket server may send the close event reason in the following format:
+   *
+   * ```json
+   * {
+   *   "Retry-After": "10" // The retry after time in seconds
+   * }
+   * ```
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/reason
+   */
+  private static readonly RETRY_AFTER_KEY = 'Retry-After';
 
   private webSocket: WebSocket | null = null;
   private retryAttempt: number = 0;
@@ -72,11 +86,12 @@ export abstract class CourierSocket {
         resolve();
       });
 
-      this.webSocket.addEventListener('message', (event: MessageEvent) => {
+      this.webSocket.addEventListener('message', async (event: MessageEvent) => {
         try {
           const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope | ReconnectMessage;
           if ('event' in json && json.event === 'reconnect') {
-            this.retryConnection(json.retryAfter * 1000);
+            this.close(CLOSE_CODE_NORMAL_CLOSURE);
+            await this.retryConnection(json.retryAfter * 1000);
             return;
           }
 
@@ -117,6 +132,7 @@ export abstract class CourierSocket {
     }
 
     this.webSocket.close(code, reason);
+    this.webSocket = null;
   }
 
   public send(message: Record<string, any>): void {
@@ -158,7 +174,7 @@ export abstract class CourierSocket {
     const connectionId = this.options.connectionId;
     const userId = this.userId;
 
-    return `${this.url}?auth=${accessToken}&cid=${connectionId}&iwpv=${CourierSocket.IPW_VERSION}&userId=${userId}`;
+    return `${this.url}?auth=${accessToken}&cid=${connectionId}&iwpv=${IPW_VERSION}&userId=${userId}`;
   }
 
   /**
@@ -183,11 +199,11 @@ export abstract class CourierSocket {
 
     try {
       const jsonReason = JSON.parse(closeEvent.reason);
-      if (!jsonReason['Retry-After']) {
+      if (!jsonReason[CourierSocket.RETRY_AFTER_KEY]) {
         return null;
       }
 
-      const retryAfterInMillis = parseInt(jsonReason['Retry-After']) * 1000;
+      const retryAfterInMillis = parseInt(jsonReason[CourierSocket.RETRY_AFTER_KEY]) * 1000;
       if (Number.isNaN(retryAfterInMillis) || retryAfterInMillis < 0) {
         return null;
       }
