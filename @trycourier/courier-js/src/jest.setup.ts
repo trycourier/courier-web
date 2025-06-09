@@ -22,6 +22,6 @@ fetchMock.dontMock();
 
 Object.defineProperty(globalThis, 'crypto', {
   value: {
-    randomUUID: () => crypto.randomUUID()
+    getRandomValues: (buffer: Uint8Array) => crypto.getRandomValues(buffer)
   }
 });

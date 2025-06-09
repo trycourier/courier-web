@@ -1,3 +1,4 @@
+import { MessageEvent } from '../types/socket/protocol/v1/messages';
 import { getClient } from './utils';
 
 describe('InboxClient', () => {
@@ -73,25 +74,12 @@ describe('InboxClient', () => {
   it('Connect to inbox socket', async () => {
     const socket = courierClient.inbox.socket;
 
-    socket.receivedMessage = (message) => {
-      expect(message).toBeDefined();
-    };
+    socket.addMessageEventListener((envelope) => {
+      expect(envelope).toBeDefined();
+      expect(envelope.event).toBe(MessageEvent.NewMessage);
+    });
 
-    socket.receivedMessageEvent = (event) => {
-      expect(event).toBeDefined();
-    };
-
-    socket.onOpen = () => {
-      expect(socket.isConnected).toBe(true);
-    };
-
-    socket.onClose = () => {
-      expect(socket.isConnected).toBe(false);
-    };
-
-    socket.onError = (error) => {
-      expect(error).toBeInstanceOf(Error);
-    };
+    expect(socket.isOpen).toBe(false);
 
     // Connect to the socket
     await socket.connect();
@@ -99,19 +87,13 @@ describe('InboxClient', () => {
     // Subscribe to the socket
     await socket.sendSubscribe();
 
-    // Keep the socket alive
-    socket.keepAlive({ intervalInMillis: 100 });
-
-    // Wait for 1 second to allow keepAlive messages to be sent
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     // Disconnect from the socket
-    socket.disconnect();
+    socket.close();
 
     // Wait for 1 second to ensure socket is fully disconnected
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    expect(socket.isConnected).toBe(false);
+    expect(socket.isOpen).toBe(false);
 
   });
 
@@ -127,19 +109,16 @@ describe('InboxClient', () => {
   it('testing socket events', async () => {
     const socket = courierClient.inbox.socket;
 
-    socket.receivedMessage = (message) => {
-      expect(message).toBeDefined();
-    };
-
-    socket.receivedMessageEvent = (event) => {
-      expect(event).toBeDefined();
-    };
+    socket.addMessageEventListener((envelope) => {
+      expect(envelope).toBeDefined();
+      expect(envelope.event).toBe(MessageEvent.NewMessage);
+    });
 
     await socket.connect();
     await socket.sendSubscribe();
 
     await new Promise(resolve => setTimeout(resolve, 4500));
 
-    socket.disconnect();
+    socket.close();
   }, 6000);
 });

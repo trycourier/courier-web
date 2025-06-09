@@ -1,4 +1,4 @@
-import { InboxSocket } from '../socket/inbox-socket';
+import { CourierInboxSocket } from '../socket/courier-inbox-socket';
 import { CourierGetInboxMessagesResponse } from '../types/inbox';
 import { graphql } from '../utils/request';
 import { Client } from './client';
@@ -6,11 +6,11 @@ import { CourierClientOptions } from './courier-client';
 
 export class InboxClient extends Client {
 
-  readonly socket: InboxSocket;
+  readonly socket: CourierInboxSocket;
 
   constructor(options: CourierClientOptions) {
     super(options);
-    this.socket = new InboxSocket(options);
+    this.socket = new CourierInboxSocket(options);
   }
 
   /**
