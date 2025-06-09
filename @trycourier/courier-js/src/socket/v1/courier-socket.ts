@@ -12,7 +12,18 @@ import { IPW_VERSION } from "./version";
  * Application-specific logic should be implemented in the concrete classes.
  */
 export abstract class CourierSocket {
+  /**
+   * The jitter factor for the backoff intervals.
+   *
+   * Backoff with jitter is calculated as a random value in the range:
+   * [BACKOFF_INTERVAL - BACKOFF_JITTER_FACTOR * BACKOFF_INTERVAL,
+   *  BACKOFF_INTERVAL + BACKOFF_JITTER_FACTOR * BACKOFF_INTERVAL).
+   */
   private static readonly BACKOFF_JITTER_FACTOR = 0.5;
+
+  /**
+   * The maximum number of retry attempts.
+   */
   private static readonly MAX_RETRY_ATTEMPTS = 5;
 
   /**
@@ -44,8 +55,13 @@ export abstract class CourierSocket {
    */
   private static readonly RETRY_AFTER_KEY = 'Retry-After';
 
+  /** The WebSocket instance, which may be null if the connection is not established. */
   private webSocket: WebSocket | null = null;
+
+  /** The number of connection retry attempts so far, reset after a successful connection. */
   private retryAttempt: number = 0;
+
+  /** The timeout ID for the current connectionretry attempt, reset when we attempt to connect. */
   private retryTimeoutId: number | null = null;
 
   private readonly url: string;
@@ -126,6 +142,14 @@ export abstract class CourierSocket {
     });
   }
 
+  /**
+   * Closes the WebSocket connection.
+   *
+   * See {@link https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close} for more details.
+   *
+   * @param code The WebSocket close code. Defaults to {@link CLOSE_CODE_NORMAL_CLOSURE}.
+   * @param reason The WebSocket close reason.
+   */
   public close(code = CLOSE_CODE_NORMAL_CLOSURE, reason?: string): void {
     if (this.webSocket === null) {
       return;
@@ -135,6 +159,11 @@ export abstract class CourierSocket {
     this.webSocket = null;
   }
 
+  /**
+   * Sends a message to the Courier WebSocket server.
+   *
+   * @param message The message to send. The message will be serialized to a JSON string.
+   */
   public send(message: Record<string, any>): void {
     if (this.webSocket === null || this.isConnecting) {
       this.options.logger?.info('Attempted to send a message, but the WebSocket is not yet open.');
@@ -153,22 +182,54 @@ export abstract class CourierSocket {
     return this.options.logger;
   }
 
+  /**
+   * Called when the WebSocket connection is established with the Courier WebSocket server.
+   *
+   * @param event The WebSocket open event.
+   */
   public abstract onOpen(event: Event): Promise<void>;
 
+  /**
+   * Called when a message is received from the Courier WebSocket server.
+   *
+   * @param data The message received.
+   */
   public abstract onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void>;
 
+  /**
+   * Called when the WebSocket connection is closed.
+   *
+   * @param event The WebSocket close event.
+   */
   public abstract onClose(event: CloseEvent): Promise<void>;
 
+  /**
+   * Called when an error occurs on the WebSocket connection.
+   *
+   * @param event The WebSocket error event.
+   */
   public abstract onError(event: Event): Promise<void>;
 
+  /**
+   * Whether the WebSocket connection is currently being established.
+   */
   public get isConnecting(): boolean {
     return this.webSocket !== null && this.webSocket.readyState === WebSocket.CONNECTING;
   }
 
+  /**
+   * Whether the WebSocket connection is currently open.
+   */
   public get isOpen(): boolean {
     return this.webSocket !== null && this.webSocket.readyState === WebSocket.OPEN;
   }
 
+  /**
+   * Constructs the WebSocket URL for the Courier WebSocket server using context
+   * from the {@link CourierClientOptions} passed to the constructor.
+   *
+   * @returns The WebSocket URL
+   */
   private getWebSocketUrl(): string {
     const accessToken = this.options.accessToken;
     const connectionId = this.options.connectionId;
@@ -214,6 +275,9 @@ export abstract class CourierSocket {
     }
   }
 
+  /**
+   * Calculates the retry backoff time in milliseconds based on the current retry attempt.
+   */
   private getBackoffTimeInMillis(): number {
     const backoffIntervalInMillis = CourierSocket.BACKOFF_INTERVALS_IN_MILLIS[this.retryAttempt];
     const lowerBound = backoffIntervalInMillis - (backoffIntervalInMillis * CourierSocket.BACKOFF_JITTER_FACTOR);
@@ -222,6 +286,14 @@ export abstract class CourierSocket {
     return Math.floor(Math.random() * (upperBound - lowerBound) + lowerBound);
   }
 
+  /**
+   * Retries the connection to the Courier WebSocket server after
+   * either {@param suggestedBackoffTimeInMillis} or a random backoff time
+   * calculated using {@link getBackoffTimeInMillis}.
+   *
+   * @param suggestedBackoffTimeInMillis The suggested backoff time in milliseconds.
+   * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
+   */
   private async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
     if (this.retryTimeoutId !== null) {
       this.logger?.debug('Skipping retry attempt because a previous retry is already scheduled.');
@@ -246,6 +318,9 @@ export abstract class CourierSocket {
     this.retryAttempt++;
   }
 
+  /**
+   * Clears the retry timeout if it exists.
+   */
   private clearRetryTimeout(): void {
     if (this.retryTimeoutId !== null) {
       window.clearTimeout(this.retryTimeoutId);
