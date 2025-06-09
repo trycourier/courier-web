@@ -15,7 +15,7 @@ export const getCourierApiUrls = (urls?: CourierApiUrls): CourierApiUrls => ({
     graphql: urls?.courier.graphql || 'https://api.courier.com/client/q',
   },
   inbox: {
-    graphql: urls?.inbox.graphql || 'https://4rq7n8hhjd.execute-api.us-east-1.amazonaws.com/staging/q',
-    webSocket: urls?.inbox.webSocket || 'wss://realtime.courierstaging.com'
+    graphql: urls?.inbox.graphql || 'https://inbox.courier.com/q',
+    webSocket: urls?.inbox.webSocket || 'wss://realtime.courier.io'
   }
 });
