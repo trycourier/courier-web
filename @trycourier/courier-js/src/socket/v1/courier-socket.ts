@@ -1,5 +1,5 @@
 import { CourierClientOptions } from "../../client/courier-client";
-import { CLOSE_CODE_NORMAL_CLOSURE } from "../../types/socket/protocol/v1/errors";
+import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../../types/socket/protocol/v1/errors";
 import { ReconnectMessage, ServerMessageEnvelope } from "../../types/socket/protocol/v1/messages";
 import { MessageEventEnvelope } from "../../types/socket/protocol/v1/messages";
 import { Logger } from "../../utils/logger";
@@ -119,10 +119,10 @@ export abstract class CourierSocket {
 
       this.webSocket.addEventListener('close', (event: CloseEvent) => {
         if (event.code !== CLOSE_CODE_NORMAL_CLOSURE) {
-          const suggestedRetryAfterInMillis = CourierSocket.parseRetryAfterInMillis(event);
+          const courierCloseEvent = CourierSocket.parseCloseEvent(event);
 
-          if (suggestedRetryAfterInMillis) {
-            this.retryConnection(suggestedRetryAfterInMillis);
+          if (courierCloseEvent.retryAfterSeconds) {
+            this.retryConnection(courierCloseEvent.retryAfterSeconds * 1000);
           } else {
             this.retryConnection();
           }
@@ -239,7 +239,10 @@ export abstract class CourierSocket {
   }
 
   /**
-   * Parses the Retry-After time from the WebSocket close event reason.
+   * Parses the Retry-After time from the WebSocket close event reason,
+   * and returns a new {@link CourierCloseEvent} with the retry after time in seconds
+   * if present.
+   *
    * The Courier WebSocket server may send the close event reason in the following format:
    *
    * ```json
@@ -251,27 +254,30 @@ export abstract class CourierSocket {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/reason
    *
    * @param closeEvent The WebSocket close event.
-   * @returns The retry after time in milliseconds or null if the retry after time could not be parsed.
+   * @returns The WebSocket close event with the retry after time in seconds.
    */
-  private static parseRetryAfterInMillis(closeEvent: CloseEvent): number | null {
+  private static parseCloseEvent(closeEvent: CloseEvent): CourierCloseEvent {
     if (closeEvent.reason === null || closeEvent.reason === '') {
-      return null;
+      return closeEvent;
     }
 
     try {
       const jsonReason = JSON.parse(closeEvent.reason);
       if (!jsonReason[CourierSocket.RETRY_AFTER_KEY]) {
-        return null;
+        return closeEvent;
       }
 
-      const retryAfterInMillis = parseInt(jsonReason[CourierSocket.RETRY_AFTER_KEY]) * 1000;
-      if (Number.isNaN(retryAfterInMillis) || retryAfterInMillis < 0) {
-        return null;
+      const retryAfterSeconds = parseInt(jsonReason[CourierSocket.RETRY_AFTER_KEY]);
+      if (Number.isNaN(retryAfterSeconds) || retryAfterSeconds < 0) {
+        return closeEvent;
       }
 
-      return retryAfterInMillis;
+      return {
+        ...closeEvent,
+        retryAfterSeconds,
+      };
     } catch (error) {
-      return null;
+      return closeEvent;
     }
   }
 

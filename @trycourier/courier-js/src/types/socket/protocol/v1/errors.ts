@@ -12,5 +12,5 @@ export const CLOSE_CODE_NORMAL_CLOSURE = 1000;
  */
 export interface CourierCloseEvent extends CloseEvent {
   /** The number of seconds to wait before retrying the connection. */
-  retryAfter?: number;
+  retryAfterSeconds?: number;
 }
