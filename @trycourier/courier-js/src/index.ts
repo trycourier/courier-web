@@ -66,11 +66,11 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  InboxMessageEventEnvelope as MessageEventEnvelope,
+  InboxMessageEventEnvelope,
 };
 
 export {
-  InboxMessageEvent as MessageEvent,
+  InboxMessageEvent,
 };
 
 export {
