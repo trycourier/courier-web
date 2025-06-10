@@ -5,6 +5,7 @@
     "declarationDir": "dist",
     "outDir": "dist",
     "jsx": "react-jsx",
+    "emitDeclarationOnly": false,
     "types": [
       "jest",
       "vite/client",

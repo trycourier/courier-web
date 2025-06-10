@@ -27,15 +27,16 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.tsx"),
       name: "CourierReact",
-      fileName: (format) => `index.${format === "es" ? "mjs" : "js"}`,
-      formats: ["es", "umd"],
+      fileName: (format) => `index.${format === "es" ? "mjs" : "cjs"}`,
+      formats: ["es", "cjs"],
     },
     rollupOptions: {
       external: [
-        /^@trycourier\/.+/,   // any Courier package
+        /^@trycourier\/.+/,
         "react",
         "react-dom",
         "react-dom/client",
+        "react/jsx-runtime",
       ],
       output: {
         globals: {
