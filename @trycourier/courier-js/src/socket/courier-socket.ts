@@ -1,7 +1,7 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/v1/errors";
-import { ReconnectMessage, ServerMessageEnvelope } from "../types/socket/protocol/v1/messages";
-import { MessageEventEnvelope } from "../types/socket/protocol/v1/messages";
+import { Config, ServerActionEnvelope, ServerMessage, ServerResponseEnvelope } from "../types/socket/protocol/v1/messages";
+import { InboxMessageEventEnvelope } from "../types/socket/protocol/v1/messages";
 import { Logger } from "../utils/logger";
 import { IPW_VERSION } from "./version";
 
@@ -104,7 +104,7 @@ export abstract class CourierSocket {
 
       this.webSocket.addEventListener('message', async (event: MessageEvent) => {
         try {
-          const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope | ReconnectMessage;
+          const json = JSON.parse(event.data) as ServerMessage;
           if ('event' in json && json.event === 'reconnect') {
             this.close(CLOSE_CODE_NORMAL_CLOSURE);
             await this.retryConnection(json.retryAfter * 1000);
@@ -194,7 +194,7 @@ export abstract class CourierSocket {
    *
    * @param data The message received.
    */
-  public abstract onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void>;
+  public abstract onMessageReceived(data: ServerMessage): Promise<void>;
 
   /**
    * Called when the WebSocket connection is closed.

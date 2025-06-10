@@ -39,7 +39,7 @@ import {
   InboxAction,
 } from './types/inbox';
 import { CourierSocket } from './socket/courier-socket';
-import { MessageEvent, MessageEventEnvelope } from './types/socket/protocol/v1/messages';
+import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/v1/messages';
 
 // Client
 import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';
@@ -66,11 +66,11 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  MessageEventEnvelope,
+  InboxMessageEventEnvelope as MessageEventEnvelope,
 };
 
 export {
-  MessageEvent,
+  InboxMessageEvent as MessageEvent,
 };
 
 export {
