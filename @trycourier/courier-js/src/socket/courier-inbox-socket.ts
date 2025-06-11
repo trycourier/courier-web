@@ -1,7 +1,9 @@
 import { CourierClientOptions } from '../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, Config, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerMessage } from '../types/socket/protocol/v1/messages';
+import { ClientAction, ClientMessageEnvelope, Config, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerMessage, ServerResponseEnvelope } from '../types/socket/protocol/v1/messages';
 import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
+import { TransactionManager } from './courier-inbox-transaction-manager';
+import { CLOSE_CODE_NORMAL_CLOSURE } from '../types/socket/protocol/v1/errors';
 
 /** Application-layer implementation of the Courier WebSocket API for Inbox messages. */
 export class CourierInboxSocket extends CourierSocket {
@@ -37,28 +39,48 @@ export class CourierInboxSocket extends CourierSocket {
   /** Server-provided configuration for the client. */
   private config: Config | null = null;
 
+  /**
+   * The transaction manager, used to track outstanding requests and responses.
+   */
+  private readonly pingTransactionManager: TransactionManager = new TransactionManager();
+
   constructor(options: CourierClientOptions) {
     super(options);
   }
 
   public onOpen(_: Event): Promise<void> {
+    // Clear any outstanding pings from the previous connection before starting to ping.
+    this.pingTransactionManager.clearOutstandingRequests();
     this.restartPingInterval();
+
+    // Send a request for the client's configuration.
     this.sendGetConfig();
 
     return Promise.resolve();
   }
 
   public onMessageReceived(data: ServerMessage): Promise<void> {
-    // ServerResponseEnvelope
-    // Handle ping/pong messages.
+    // ServerActionEnvelope
+    // Respond to pings.
     if ('action' in data && data.action === ServerAction.Ping) {
       const envelope: ServerActionEnvelope = data as ServerActionEnvelope;
       this.sendPong(envelope);
     }
 
+    // ServerResponseEnvelope
+    // Track pongs.
+    if ('response' in data && data.response === 'pong') {
+      const envelope: ServerResponseEnvelope = data as ServerResponseEnvelope;
+
+      // Keep track of the pong response and clear out any outstanding pings.
+      // We only need to keep track of the most recent missed pings.
+      this.pingTransactionManager.addResponse(envelope.tid, envelope);
+      this.pingTransactionManager.clearOutstandingRequests();
+    }
+
     // ConfigResponseEnvelope
     // Update the client's config.
-    if ('event' in data && data.event === 'config') {
+    if ('response' in data && data.response === 'config') {
       const envelope: ConfigResponseEnvelope = data as ConfigResponseEnvelope;
       this.setConfig(envelope.data);
     }
@@ -137,12 +159,21 @@ export class CourierInboxSocket extends CourierSocket {
    * WebSocket implementation does not support control-level ping/pong.
    */
   private sendPing(): void {
+    if (this.pingTransactionManager.outstandingRequests.length >= this.maxOutstandingPings) {
+      this.logger?.debug('Max outstanding pings reached, retrying connection.');
+      this.close(CLOSE_CODE_NORMAL_CLOSURE, 'Max outstanding pings reached, retrying connection.');
+      this.retryConnection();
+
+      return;
+    }
+
     const envelope: ClientMessageEnvelope = {
       tid: UUID.nanoid(),
       action: ClientAction.Ping,
     };
 
     this.send(envelope);
+    this.pingTransactionManager.addOutstandingRequest(envelope.tid, envelope);
   }
 
   /**

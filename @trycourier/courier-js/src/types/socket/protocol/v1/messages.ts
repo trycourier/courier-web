@@ -141,7 +141,7 @@ export interface ConfigResponseEnvelope {
   /** Transaction ID. */
   tid: string;
 
-  event: 'config';
+  response: 'config';
 
   /** Configuration data for the client. */
   data: Config;
