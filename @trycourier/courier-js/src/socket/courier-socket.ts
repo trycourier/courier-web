@@ -1,7 +1,6 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/v1/errors";
-import { Config, ServerActionEnvelope, ServerMessage, ServerResponseEnvelope } from "../types/socket/protocol/v1/messages";
-import { InboxMessageEventEnvelope } from "../types/socket/protocol/v1/messages";
+import { ServerMessage } from "../types/socket/protocol/v1/messages";
 import { Logger } from "../utils/logger";
 import { IPW_VERSION } from "./version";
 
@@ -300,7 +299,7 @@ export abstract class CourierSocket {
    * @param suggestedBackoffTimeInMillis The suggested backoff time in milliseconds.
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
-  private async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
+  protected async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
     if (this.retryTimeoutId !== null) {
       this.logger?.debug('Skipping retry attempt because a previous retry is already scheduled.');
       return;
