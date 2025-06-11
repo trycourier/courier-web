@@ -17,7 +17,11 @@ export default function Home() {
 
   return (
     <div className='center'>
-      <CourierInboxPopupMenu />
+      <CourierInboxPopupMenu renderPopupMenuButton={() => {
+        return (
+          <div className='test'>Example</div>
+        )
+      }} />
     </div>
   );
 

@@ -11,3 +11,5 @@ export * from './types/inbox-data-set';
 export * from './datastore/datastore';
 export * from './datastore/datastore-listener';
 export * from './datastore/datatore-events';
+
+export * from './components/example-base';

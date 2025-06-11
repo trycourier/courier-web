@@ -5,3 +5,5 @@ import '@trycourier/courier-ui-inbox';
 export * from './hooks/use-courier';
 export * from './components/courier-inbox';
 export * from './components/courier-inbox-popup-menu';
+
+export * from './components/example-react';

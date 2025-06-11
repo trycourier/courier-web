@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useCourier, CourierInbox } from '@trycourier/courier-react';
+import { CourierInboxListItemFactoryProps } from '@trycourier/courier-ui-inbox';
 
 export default function Home() {
 
@@ -15,6 +16,8 @@ export default function Home() {
     });
   }, []);
 
-  return <CourierInbox height='100%' />;
+  return <CourierInbox height='100%' renderListItem={(props: CourierInboxListItemFactoryProps) => {
+    return <li className='test'>{props?.index}</li>
+  }} />;
 
 }
