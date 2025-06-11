@@ -1,4 +1,4 @@
-import { MessageEvent } from '../types/socket/protocol/v1/messages';
+import { InboxMessageEvent } from '../types/socket/protocol/v1/messages';
 import { getClient } from './utils';
 
 describe('InboxClient', () => {
@@ -76,7 +76,7 @@ describe('InboxClient', () => {
 
     socket.addMessageEventListener((envelope) => {
       expect(envelope).toBeDefined();
-      expect(envelope.event).toBe(MessageEvent.NewMessage);
+      expect(envelope.event).toBe(InboxMessageEvent.NewMessage);
     });
 
     expect(socket.isOpen).toBe(false);
@@ -111,7 +111,7 @@ describe('InboxClient', () => {
 
     socket.addMessageEventListener((envelope) => {
       expect(envelope).toBeDefined();
-      expect(envelope.event).toBe(MessageEvent.NewMessage);
+      expect(envelope.event).toBe(InboxMessageEvent.NewMessage);
     });
 
     await socket.connect();
