@@ -224,9 +224,8 @@ export class CourierInboxDatastore {
         }
       });
 
-      // Connect and subscribe to socket
-      await socket.connect()
-      await socket.sendSubscribe();
+      // Connect to the socket. By default, the socket will subscribe to all events for the user after opening.
+      await socket.connect();
       Courier.shared.client?.options.logger?.info(`Inbox socket connected for client ID: [${Courier.shared.client?.options.connectionId}]`);
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
