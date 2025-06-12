@@ -4,6 +4,7 @@ import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
 import { TransactionManager } from './courier-inbox-transaction-manager';
 import { CLOSE_CODE_NORMAL_CLOSURE } from '../types/socket/protocol/v1/errors';
+import { fixMessageEventEnvelope } from './inbox-message-utils';
 
 /** Application-layer implementation of the Courier WebSocket API for Inbox messages. */
 export class CourierInboxSocket extends CourierSocket {
@@ -89,8 +90,9 @@ export class CourierInboxSocket extends CourierSocket {
     // Handle message events, calling all registered listeners.
     if ('event' in data && CourierInboxSocket.isInboxMessageEvent(data.event)) {
       const envelope: InboxMessageEventEnvelope = data as InboxMessageEventEnvelope;
+      const fixedEnvelope = fixMessageEventEnvelope(envelope);
       for (const listener of this.messageEventListeners) {
-        listener(envelope);
+        listener(fixedEnvelope);
       }
     }
 
