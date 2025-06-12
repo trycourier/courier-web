@@ -116,6 +116,8 @@ describe('CourierInboxSocket', () => {
 
       await new Promise((resolve) => setTimeout(resolve, SERVER_PING_INTERVAL_SECONDS * 1000));
 
+      // expect(...).toReceiveMessage() expects the message to be received within 1000ms.
+      // https://www.npmjs.com/package/jest-websocket-mock#run-assertions-on-received-messages
       await expect(mockServer).toReceiveMessage({
         action: ClientAction.Ping,
         tid: expect.any(String),
@@ -160,7 +162,7 @@ describe('CourierInboxSocket', () => {
       await mockServer.connected;
       await expectOpeningMessages(mockServer);
 
-      // Wait for the ping to be sent. toReceiveMessage() expects the message to be received within 1000ms.
+      // Wait for the ping to be sent
       await new Promise((resolve) => setTimeout(resolve, PING_INTERVAL_MILLIS));
 
       await expect(mockServer).toReceiveMessage({
