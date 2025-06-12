@@ -1,10 +1,16 @@
 'use client'
 
 import { ExampleReact } from '@trycourier/courier-react';
-import { ExampleBaseContent } from '@trycourier/courier-ui-inbox';
+import { ExampleBaseListItem } from '@trycourier/courier-ui-inbox';
 
 export default function Home() {
 
-  return <ExampleReact renderContent={(props) => <p>Hey</p>} />;
+  return (
+    <ExampleReact
+      renderItem={(props: ExampleBaseListItem) => {
+        return <p className='test'>{props.index}</p>
+      }}
+    />
+  )
 
 }
