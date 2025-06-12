@@ -56,6 +56,9 @@ export class CourierInboxSocket extends CourierSocket {
     // Send a request for the client's configuration.
     this.sendGetConfig();
 
+    // Subscribe to all events for the user.
+    this.sendSubscribe();
+
     return Promise.resolve();
   }
 
