@@ -171,6 +171,33 @@ describe('CourierSocket', () => {
 
       expect(socket.isOpen).toBe(true);
     });
+
+    it('should stop retrying the connection after the max retry attempts', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+      const onCloseSpy = jest.spyOn(socket, 'onClose')
+          .mockImplementation(() =>
+            Promise.resolve());
+      const connectSpy = jest.spyOn(socket, 'connect');
+
+      // Connect to the server
+      await socket.connect();
+      await mockServer.connected;
+
+      // Close the connection with a non-normal closure code, and don't restart the server
+      mockServer.close({ code: 1012, reason: 'Server is going away!', wasClean: false });
+
+      expect(onCloseSpy).toHaveBeenCalled();
+      expect(socket.isOpen).toBe(false);
+
+      const totalBackoffTimeInMillis = BACKOFF_INTERVALS_IN_MILLIS.reduce((acc, curr) => acc + curr, 0);
+
+      // Wait for the max retry attempts
+      await new Promise((resolve) => setTimeout(resolve, totalBackoffTimeInMillis));
+
+      // 1 initial connection + 2 retries
+      expect(connectSpy).toHaveBeenCalledTimes(MAX_RETRY_ATTEMPTS + 1);
+      expect(socket.isOpen).toBe(false);
+    });
   });
 });
 
