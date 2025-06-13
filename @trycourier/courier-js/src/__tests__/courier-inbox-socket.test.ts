@@ -147,8 +147,16 @@ describe('CourierInboxSocket', () => {
       };
       mockServer.send(messageEvent);
 
-      expect(listener).toHaveBeenCalledWith(messageEvent);
-      expect(listener2).toHaveBeenCalledWith(messageEvent);
+      const messageEventWithCreatedTime = {
+        ...messageEvent,
+        data: {
+          ...messageEvent.data,
+          created: new Date().toISOString(),
+        },
+      };
+
+      expect(listener).toHaveBeenCalledWith(messageEventWithCreatedTime);
+      expect(listener2).toHaveBeenCalledWith(messageEventWithCreatedTime);
     });
   });
 

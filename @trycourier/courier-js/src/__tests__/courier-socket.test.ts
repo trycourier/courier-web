@@ -3,9 +3,18 @@ import { CourierSocket } from "../socket/courier-socket";
 import { CourierApiUrls } from "../types/courier-api-urls";
 import { ServerMessage, ServerResponse } from "../types/socket/protocol/v1/messages";
 import { Logger } from "../utils/logger";
-import { Server } from "mock-socket";
+import WebSocketServer from "jest-websocket-mock";
 
 const WEB_SOCKET_URL = 'ws://localhost:8080';
+
+// Override the backoff intervals and max retry attempts.
+// Fake timers don't work well with jest-websocket-mock,
+// since the underlying mock-socket calls setTimeout frequently.
+const BACKOFF_INTERVALS_IN_MILLIS = [1000, 2000];
+const MAX_RETRY_ATTEMPTS = 2;
+
+// Override the server Retry-After.
+const SERVER_RETRY_AFTER_SECONDS = 0.5;
 
 const API_URLS: CourierApiUrls = {
   inbox: {
@@ -28,18 +37,19 @@ const OPTIONS: CourierClientOptions = {
 
 const TEST_TID = 'test-abcd-1234';
 
-let mockServer: Server;
+let mockServer: WebSocketServer;
 
 describe('CourierSocket', () => {
-
   beforeEach(() => {
-    mockServer = new Server(WEB_SOCKET_URL);
+    (CourierSocket as any).BACKOFF_INTERVALS_IN_MILLIS = BACKOFF_INTERVALS_IN_MILLIS;
+    (CourierSocket as any).MAX_RETRY_ATTEMPTS = MAX_RETRY_ATTEMPTS;
 
+    mockServer = new WebSocketServer(WEB_SOCKET_URL, { jsonProtocol: true });
     jest.clearAllMocks();
   });
 
   afterEach(() => {
-    mockServer.stop();
+    mockServer.close();
   });
 
   describe('connect', () => {
@@ -47,7 +57,7 @@ describe('CourierSocket', () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       socket.connect();
 
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
       expect(socket.isOpen).toBe(true);
     });
@@ -60,12 +70,12 @@ describe('CourierSocket', () => {
           .mockImplementation(() => Promise.resolve());
 
       socket.connect();
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
-      mockServer.emit('message', JSON.stringify({
+      mockServer.send({
         tid: TEST_TID,
         response: ServerResponse.Ack,
-      }));
+      });
 
       expect(onMessageReceivedSpy).toHaveBeenCalledWith({
         tid: TEST_TID,
@@ -73,29 +83,29 @@ describe('CourierSocket', () => {
       });
     });
 
-    // mock-socket doesn't work well with fake timers, so we need to wait for the actual retry-after (1s)
     it('should close and retry the connection when the server sends \'reconnect\'', async () => {
-      const retryAfterSeconds = 1;
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onMessageReceivedSpy = jest.spyOn(socket, 'onMessageReceived')
           .mockImplementation(() => Promise.resolve())
 
       socket.connect();
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
-      mockServer.emit('message', JSON.stringify({
+      mockServer.send({
         event: 'reconnect',
-        retryAfter: retryAfterSeconds,
+        retryAfter: SERVER_RETRY_AFTER_SECONDS,
         code: 1012,
         message: 'Server is going away!',
-      }));
+      });
 
       expect(onMessageReceivedSpy).not.toHaveBeenCalled();
       expect(socket.isOpen).toBe(false);
 
-      // Wait for the reconnect
-      await connectionOpened(mockServer);
+      // Wait for the retry-after to expire
+      await new Promise((resolve) => setTimeout(resolve, 2 * SERVER_RETRY_AFTER_SECONDS * 1000));
 
+      // Wait for the reconnect
+      await mockServer.connected;
       expect(socket.isOpen).toBe(true);
     });
   });
@@ -108,16 +118,15 @@ describe('CourierSocket', () => {
             Promise.resolve());
 
       socket.connect();
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
-      mockServer.close();
+      mockServer.close({ code: 1000, reason: 'Normal closure', wasClean: true });
 
       expect(onCloseSpy).toHaveBeenCalled();
       expect(socket.isOpen).toBe(false);
-      expect(mockServer.clients.length).toBe(0);
+      expect(mockServer.closed).resolves.toBeUndefined();
     });
 
-    // mock-socket doesn't work well with fake timers, so we need to wait for the actual retry-after (5s)
     it('should retry the connection for a non-normal closure and respect the Retry-After reason', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
@@ -126,22 +135,20 @@ describe('CourierSocket', () => {
 
       // Connect to the server
       socket.connect();
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
       // Close the connection with a non-normal closure code
-      mockServer.close({ code: 1012, reason: '{"Retry-After": "5"}', wasClean: false });
+      mockServer.close({ code: 1012, reason: `{"Retry-After": "${SERVER_RETRY_AFTER_SECONDS}"}`, wasClean: false });
 
       expect(onCloseSpy).toHaveBeenCalled();
       expect(socket.isOpen).toBe(false);
 
       // Reset the mock server and wait for a connection
-      mockServer = new Server(WEB_SOCKET_URL);
-      await connectionOpened(mockServer);
-
+      mockServer = new WebSocketServer(WEB_SOCKET_URL, { jsonProtocol: true });
+      await mockServer.connected;
       expect(socket.isOpen).toBe(true);
-    }, 10_000);
+    });
 
-    // mock-socket doesn't work well with fake timers, so we need to wait for the actual retry interval (15-45s)
     it('should retry the connection for a non-normal closure and use the default retry interval', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
@@ -150,7 +157,7 @@ describe('CourierSocket', () => {
 
       // Connect to the server
       socket.connect();
-      await connectionOpened(mockServer);
+      await mockServer.connected;
 
       // Close the connection with a non-normal closure code
       mockServer.close({ code: 1012, reason: 'Server is going away!', wasClean: false });
@@ -159,21 +166,13 @@ describe('CourierSocket', () => {
       expect(socket.isOpen).toBe(false);
 
       // Reset the mock server and wait for a connection
-      mockServer = new Server(WEB_SOCKET_URL);
-      await connectionOpened(mockServer);
+      mockServer = new WebSocketServer(WEB_SOCKET_URL, { jsonProtocol: true });
+      await mockServer.connected;
 
       expect(socket.isOpen).toBe(true);
-    }, 60_000);
-  });
-});
-
-function connectionOpened(server: Server): Promise<void> {
-  return new Promise((resolve) => {
-    server.on('connection', (_) => {
-      resolve();
     });
   });
-}
+});
 
 class CourierSocketTestImplementation extends CourierSocket {
   public onOpen(_: Event): Promise<void> {
