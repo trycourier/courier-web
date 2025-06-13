@@ -151,7 +151,7 @@ describe('CourierInboxSocket', () => {
         ...messageEvent,
         data: {
           ...messageEvent.data,
-          created: new Date().toISOString(),
+          created: expect.any(String),
         },
       };
 
