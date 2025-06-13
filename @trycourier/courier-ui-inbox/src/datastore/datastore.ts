@@ -209,6 +209,9 @@ export class CourierInboxDatastore {
           case InboxMessageEvent.ArchiveRead:
             this.archiveReadMessages({ canCallApi: false });
             break;
+          case InboxMessageEvent.ArchiveAll:
+            this.archiveAllMessages({ canCallApi: false });
+            break;
           case InboxMessageEvent.Clicked:
             if (message) {
               this.clickMessage({ message, canCallApi: false });
