@@ -5,6 +5,7 @@ const mockGetMessages = jest.fn();
 const mockGetArchivedMessages = jest.fn();
 const mockGetUnreadMessageCount = jest.fn();
 const mockArchiveRead = jest.fn();
+const mockArchiveAll = jest.fn();
 
 jest.mock("@trycourier/courier-js", () => ({
   Courier: {
@@ -15,6 +16,7 @@ jest.mock("@trycourier/courier-js", () => ({
           getArchivedMessages: () => mockGetArchivedMessages(),
           getUnreadMessageCount: () => mockGetUnreadMessageCount(),
           archiveRead: () => mockArchiveRead(),
+          archiveAll: () => mockArchiveAll(),
         },
         options: {
           logger: {
@@ -52,6 +54,50 @@ describe("CourierInboxDatastore", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('archiveAllMessages', () => {
+    it('should archive all messages and call the API', async () => {
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 2,
+          messages: {
+            nodes: [READ_MESSAGE, UNREAD_MESSAGE],
+          },
+        },
+      });
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ feedType: "inbox", canUseCache: false });
+      await datastore.load({ feedType: "archive", canUseCache: false });
+
+      await datastore.archiveAllMessages();
+
+      expect(datastore.inboxDataSet.messages.length).toBe(0);
+      expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(mockArchiveAll).toHaveBeenCalled();
+    });
+
+    it('should archive all messages and not call the API if canCallApi is false', async () => {
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 2,
+          messages: {
+            nodes: [READ_MESSAGE, UNREAD_MESSAGE],
+          },
+        },
+      });
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ feedType: "inbox", canUseCache: false });
+      await datastore.load({ feedType: "archive", canUseCache: false });
+
+      await datastore.archiveAllMessages({ canCallApi: false });
+
+      expect(datastore.inboxDataSet.messages.length).toBe(0);
+      expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(mockArchiveAll).not.toHaveBeenCalled();
+    });
   });
 
   describe("archiveReadMessages", () => {
