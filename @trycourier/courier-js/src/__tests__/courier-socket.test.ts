@@ -12,6 +12,7 @@ const WEB_SOCKET_URL = 'ws://localhost:8080';
 // since the underlying mock-socket calls setTimeout frequently.
 const BACKOFF_INTERVALS_IN_MILLIS = [1000, 2000];
 const MAX_RETRY_ATTEMPTS = 2;
+const BACKOFF_JITTER_FACTOR = 0.5;
 
 // Override the server Retry-After.
 const SERVER_RETRY_AFTER_SECONDS = 0.5;
@@ -43,6 +44,7 @@ describe('CourierSocket', () => {
   beforeEach(() => {
     (CourierSocket as any).BACKOFF_INTERVALS_IN_MILLIS = BACKOFF_INTERVALS_IN_MILLIS;
     (CourierSocket as any).MAX_RETRY_ATTEMPTS = MAX_RETRY_ATTEMPTS;
+    (CourierSocket as any).BACKOFF_JITTER_FACTOR = BACKOFF_JITTER_FACTOR;
 
     mockServer = new WebSocketServer(WEB_SOCKET_URL, { jsonProtocol: true });
     jest.clearAllMocks();
@@ -101,10 +103,10 @@ describe('CourierSocket', () => {
       expect(onMessageReceivedSpy).not.toHaveBeenCalled();
       expect(socket.isOpen).toBe(false);
 
-      // Wait for the retry-after to expire
+      // Wait for the Retry-After to expire
       await new Promise((resolve) => setTimeout(resolve, 2 * SERVER_RETRY_AFTER_SECONDS * 1000));
 
-      // Wait for the reconnect
+      // Wait for the reconnect to happen
       await mockServer.connected;
       expect(socket.isOpen).toBe(true);
     });
@@ -191,12 +193,47 @@ describe('CourierSocket', () => {
 
       const totalBackoffTimeInMillis = BACKOFF_INTERVALS_IN_MILLIS.reduce((acc, curr) => acc + curr, 0);
 
-      // Wait for the max retry attempts
-      await new Promise((resolve) => setTimeout(resolve, totalBackoffTimeInMillis));
+      // Wait for the max retry attempts (1.5x to account for potential jitter)
+      await new Promise((resolve) => setTimeout(resolve, totalBackoffTimeInMillis * 1.5));
 
       // 1 initial connection + 2 retries
       expect(connectSpy).toHaveBeenCalledTimes(MAX_RETRY_ATTEMPTS + 1);
       expect(socket.isOpen).toBe(false);
+    });
+
+    it('should retry within the backoff interval with jitter', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+      const connectSpy = jest.spyOn(socket, 'connect');
+      const onCloseSpy = jest.spyOn(socket, 'onClose')
+          .mockImplementation(() =>
+            Promise.resolve());
+
+      // Connect to the server
+      socket.connect();
+      await mockServer.connected;
+
+      // Close the connection with a non-normal closure code
+      mockServer.close({ code: 1012, reason: 'Server is going away!', wasClean: false });
+
+      // The backoff interval starts when close is called
+      expect(onCloseSpy).toHaveBeenCalled();
+      const disconnectTime = Date.now();
+
+      expect(socket.isOpen).toBe(false);
+
+      // Reset the mock server and wait for a connection
+      mockServer = new WebSocketServer(WEB_SOCKET_URL, { jsonProtocol: true });
+      await mockServer.connected;
+
+      // The backoff interval ends when connect is called again
+      expect(connectSpy).toHaveBeenCalledTimes(2);
+      const reconnectTime = Date.now();
+
+      // The reconnect time should be within the backoff interval with jitter
+      expect(reconnectTime - disconnectTime).toBeGreaterThan(BACKOFF_JITTER_FACTOR * BACKOFF_INTERVALS_IN_MILLIS[0]);
+      expect(reconnectTime - disconnectTime).toBeLessThan((1 + BACKOFF_JITTER_FACTOR) * BACKOFF_INTERVALS_IN_MILLIS[0]);
+
+      expect(socket.isOpen).toBe(true);
     });
   });
 });
