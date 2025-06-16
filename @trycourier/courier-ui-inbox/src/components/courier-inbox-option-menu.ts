@@ -1,4 +1,4 @@
-import { BaseElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
@@ -14,7 +14,11 @@ export type CourierInboxMenuOption = {
   onClick: (option: CourierInboxMenuOption) => void;
 };
 
-export class CourierInboxOptionMenu extends BaseElement {
+export class CourierInboxOptionMenu extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-option-menu';
+  }
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -40,17 +44,15 @@ export class CourierInboxOptionMenu extends BaseElement {
     this._selectedIndex = 0;
     this._onMenuOpen = onMenuOpen;
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
     this._menuButton = new CourierIconButton(type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow);
     this._menu = document.createElement('div');
     this._menu.className = `menu ${type}`;
 
     this._style = document.createElement('style');
 
-    shadow.appendChild(this._style);
-    shadow.appendChild(this._menuButton);
-    shadow.appendChild(this._menu);
+    this.appendChild(this._style);
+    this.appendChild(this._menuButton);
+    this.appendChild(this._menu);
 
     this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
@@ -178,4 +180,4 @@ export class CourierInboxOptionMenu extends BaseElement {
   }
 }
 
-registerElement('courier-inbox-option-menu', CourierInboxOptionMenu);
+registerElement(CourierInboxOptionMenu);

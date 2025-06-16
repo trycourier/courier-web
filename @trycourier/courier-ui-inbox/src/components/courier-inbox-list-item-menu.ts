@@ -1,4 +1,4 @@
-import { BaseElement, CourierIconButton, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIconButton, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxIcon, CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxListItemActionMenuOption = {
@@ -7,7 +7,11 @@ export type CourierInboxListItemActionMenuOption = {
   onClick: () => void;
 };
 
-export class CourierInboxListItemMenu extends BaseElement {
+export class CourierInboxListItemMenu extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-list-item-menu';
+  }
 
   // State
   private _theme: CourierInboxTheme;
@@ -19,17 +23,16 @@ export class CourierInboxListItemMenu extends BaseElement {
   constructor(theme: CourierInboxTheme) {
     super();
     this._theme = theme;
-    const shadow = this.attachShadow({ mode: "open" });
 
     // Style
     this._style = document.createElement("style");
     this._style.textContent = this.getStyles();
-    shadow.appendChild(this._style);
+    this.appendChild(this._style);
 
     // Menu container
     const menu = document.createElement("ul");
     menu.className = "menu";
-    shadow.appendChild(menu);
+    this.appendChild(menu);
 
   }
 
@@ -131,4 +134,4 @@ export class CourierInboxListItemMenu extends BaseElement {
   }
 }
 
-registerElement('courier-inbox-list-item-menu', CourierInboxListItemMenu);
+registerElement(CourierInboxListItemMenu);

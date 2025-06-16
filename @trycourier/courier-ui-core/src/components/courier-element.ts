@@ -1,21 +1,19 @@
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
-export class CourierElement extends CourierSystemThemeElement {
-  public readonly shadow: ShadowRoot;
+export class CourierFactoryElement extends CourierSystemThemeElement {
 
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: 'open' });
   }
 
   // Build the element with a factory function
   public build(newElement: HTMLElement | undefined | null) {
     if (newElement === null) {
-      this.shadow.replaceChildren();
+      this.replaceChildren();
       return;
     }
     const element = newElement ?? this.defaultElement();
-    this.shadow.replaceChildren(element);
+    this.replaceChildren(element);
   }
 
   // Default element to be used if no factory is provided

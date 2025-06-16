@@ -57,6 +57,10 @@ export const CourierButtonVariants = {
 
 export class CourierButton extends CourierSystemThemeElement {
 
+  static get id(): string {
+    return 'courier-button';
+  }
+
   // Components
   private _button: HTMLButtonElement;
   private _style: HTMLStyleElement;

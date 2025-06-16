@@ -1,8 +1,12 @@
-import { CourierElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierFactoryElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxSkeletonListItem } from "./courier-inbox-skeleton-list-item";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
-export class CourierInboxSkeletonList extends CourierElement {
+export class CourierInboxSkeletonList extends CourierFactoryElement {
+
+  static get id(): string {
+    return 'courier-inbox-skeleton-list';
+  }
 
   private _theme: CourierInboxTheme;
 
@@ -26,7 +30,7 @@ export class CourierInboxSkeletonList extends CourierElement {
       list.appendChild(skeletonItem);
     }
 
-    this.shadow.appendChild(list);
+    this.appendChild(list);
     return list;
   }
 
@@ -60,4 +64,4 @@ export class CourierInboxSkeletonList extends CourierElement {
   }
 }
 
-registerElement('courier-inbox-skeleton-list', CourierInboxSkeletonList);
+registerElement(CourierInboxSkeletonList);

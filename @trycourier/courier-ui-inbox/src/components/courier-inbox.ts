@@ -1,7 +1,7 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { BaseElement, CourierComponentThemeMode, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
@@ -10,7 +10,11 @@ import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps,
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
-export class CourierInbox extends BaseElement {
+export class CourierInbox extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox';
+  }
 
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
@@ -30,14 +34,13 @@ export class CourierInbox extends BaseElement {
   }
 
   // Components
-  private _shadow: ShadowRoot;
-  private _list: CourierInboxList;
+  private _style?: HTMLStyleElement;
+  private _list?: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
-  private _style: HTMLStyleElement;
 
   // Header
-  private _header: CourierInboxHeader;
+  private _header?: CourierInboxHeader;
   private _headerFactory: ((props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) | undefined | null = undefined;
 
   // List
@@ -59,12 +62,13 @@ export class CourierInbox extends BaseElement {
 
   constructor(themeManager?: CourierInboxThemeManager) {
     super();
-
-    // Attach the shadow DOM
-    this._shadow = this.attachShadow({ mode: 'open' });
-
-    // Theme
     this._themeManager = themeManager ?? new CourierInboxThemeManager(defaultLightTheme);
+  }
+
+  onComponentMounted() {
+
+    // Inject style
+    this._style = injectGlobalStyle(CourierInbox.id, this.getStyles());
 
     // Header
     this._header = new CourierInboxHeader({
@@ -74,7 +78,7 @@ export class CourierInbox extends BaseElement {
       }
     });
     this._header.build(undefined);
-    this._shadow.appendChild(this._header);
+    this.appendChild(this._header);
 
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
@@ -125,44 +129,42 @@ export class CourierInbox extends BaseElement {
       }
     });
 
-    this._style = document.createElement('style');
     this.refreshTheme();
 
-    this._shadow.appendChild(this._style);
-    this._shadow.appendChild(this._list);
+    this.appendChild(this._list);
 
     // Attach the datastore listener
     this._datastoreListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => {
-        this._list.setError(error);
+        this._list?.setError(error);
       },
       onDataSetChange: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
         if (this._currentFeed === feedType) {
-          this._list.setDataSet(dataSet);
+          this._list?.setDataSet(dataSet);
           this.updateHeader();
         }
       },
       onPageAdded: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
         if (this._currentFeed === feedType) {
-          this._list.addPage(dataSet);
+          this._list?.addPage(dataSet);
           this.updateHeader();
         }
       },
       onMessageAdd: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
         if (this._currentFeed === feedType) {
-          this._list.addMessage(message, index);
+          this._list?.addMessage(message, index);
           this.updateHeader();
         }
       },
       onMessageRemove: (_: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
         if (this._currentFeed === feedType) {
-          this._list.removeMessage(index);
+          this._list?.removeMessage(index);
           this.updateHeader();
         }
       },
       onMessageUpdate: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
         if (this._currentFeed === feedType) {
-          this._list.updateMessage(message, index);
+          this._list?.updateMessage(message, index);
           this.updateHeader();
         }
       },
@@ -170,6 +172,7 @@ export class CourierInbox extends BaseElement {
         this.updateHeader();
       }
     });
+
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
     // Refresh the theme on change
@@ -189,21 +192,26 @@ export class CourierInbox extends BaseElement {
 
   }
 
-  private refreshTheme() {
-    this._style.textContent = this.getStyles();
+  onComponentUnmounted() {
+    this._themeManager.cleanup();
+    this._datastoreListener?.remove();
+    this._authListener?.remove();
+    this._style?.remove();
   }
 
-  private getStyles(): string {
+  private refreshTheme() {
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
+  }
+
+  getStyles(): string {
     return `
-      :host {
+      ${CourierInbox.id} {
         display: flex;
         flex-direction: column;
         width: 100%;
         height: ${this._defaultProps.height};
-      }
-
-      courier-inbox-header {
-        flex-shrink: 0;
       }
 
       courier-inbox-list {
@@ -225,23 +233,23 @@ export class CourierInbox extends BaseElement {
   }
 
   public setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
-    this._list.setLoadingStateFactory(factory);
+    this._list?.setLoadingStateFactory(factory);
   }
 
   public setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
-    this._list.setEmptyStateFactory(factory);
+    this._list?.setEmptyStateFactory(factory);
   }
 
   public setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
-    this._list.setErrorStateFactory(factory);
+    this._list?.setErrorStateFactory(factory);
   }
 
   public setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
-    this._list.setListItemFactory(factory);
+    this._list?.setListItemFactory(factory);
   }
 
   public setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
-    this._list.setPaginationItemFactory(factory);
+    this._list?.setPaginationItemFactory(factory);
   }
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
@@ -262,7 +270,7 @@ export class CourierInbox extends BaseElement {
     this._currentFeed = feedType;
 
     // Update components
-    this._list.setFeedType(feedType);
+    this._list?.setFeedType(feedType);
     this.updateHeader();
 
     // Load data
@@ -277,19 +285,19 @@ export class CourierInbox extends BaseElement {
     const props = {
       feedType: this._currentFeed,
       unreadCount: CourierInboxDatastore.shared.unreadCount,
-      messageCount: this._list.messages.length
+      messageCount: this._list?.messages.length ?? 0
     };
 
     switch (this._headerFactory) {
       case undefined:
-        this._header.render(props);
+        this._header?.render(props);
         break;
       case null:
-        this._header.build(null);
+        this._header?.build(null);
         break;
       default:
         const headerElement = this._headerFactory(props);
-        this._header.build(headerElement);
+        this._header?.build(headerElement);
         break;
     }
 
@@ -305,16 +313,6 @@ export class CourierInbox extends BaseElement {
       feedType: this._currentFeed,
       canUseCache: false
     });
-  }
-
-  connectedCallback() {
-    this.refresh();
-  }
-
-  disconnectedCallback() {
-    this._themeManager.cleanup();
-    this._datastoreListener?.remove();
-    this._authListener?.remove();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -375,5 +373,4 @@ export class CourierInbox extends BaseElement {
 
 }
 
-// Register the custom element
-registerElement('courier-inbox', CourierInbox);
+registerElement(CourierInbox);

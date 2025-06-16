@@ -1,7 +1,12 @@
 import { theme } from "../utils/theme";
-import { BaseElement } from "./base-element";
+import { CourierBaseElement } from "./courier-base-element";
 
-export class CourierLink extends BaseElement {
+export class CourierLink extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-link';
+  }
+
   private link: HTMLAnchorElement;
   static observedAttributes = [
     'href',

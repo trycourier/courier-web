@@ -1,7 +1,11 @@
-import { BaseElement } from "./base-element";
+import { CourierBaseElement } from "./courier-base-element";
 import { CourierIcon } from "./courier-icon";
 
-export class CourierIconButton extends BaseElement {
+export class CourierIconButton extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-icon-button';
+  }
 
   // State
   private _backgroundColor?: string;

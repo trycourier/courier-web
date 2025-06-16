@@ -1,8 +1,12 @@
-import { BaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 
-export class CourierInboxOptionMenuItem extends BaseElement {
+export class CourierInboxOptionMenuItem extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-option-menu-item';
+  }
 
   // State
   private _option: CourierInboxMenuOption;
@@ -24,8 +28,6 @@ export class CourierInboxOptionMenuItem extends BaseElement {
     this._option = props.option;
     this._isSelected = props.isSelected;
     this._themeManager = props.themeManager;
-
-    const shadow = this.attachShadow({ mode: 'open' });
 
     this._style = document.createElement('style');
 
@@ -52,8 +54,8 @@ export class CourierInboxOptionMenuItem extends BaseElement {
       this._content.appendChild(this._selectionIcon);
     }
 
-    shadow.appendChild(this._style);
-    shadow.appendChild(this._content);
+    this.appendChild(this._style);
+    this.appendChild(this._content);
 
     this._selectionIcon.style.display = this._isSelected ? 'block' : 'none';
 
@@ -124,4 +126,4 @@ export class CourierInboxOptionMenuItem extends BaseElement {
 
 }
 
-registerElement('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);
+registerElement(CourierInboxOptionMenuItem);

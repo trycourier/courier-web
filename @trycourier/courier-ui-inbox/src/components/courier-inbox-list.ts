@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { BaseElement, CourierColors, CourierInfoState, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierColors, CourierInfoState, registerElement } from "@trycourier/courier-ui-core";
 import { CourierListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
@@ -9,7 +9,11 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
-export class CourierInboxList extends BaseElement {
+export class CourierInboxList extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-list';
+  }
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -62,11 +66,9 @@ export class CourierInboxList extends BaseElement {
     this._onMessageActionClick = props.onMessageActionClick;
     this._onMessageLongPress = props.onMessageLongPress;
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
     const style = document.createElement('style');
     style.textContent = this.getStyles();
-    shadow.appendChild(style);
+    this.appendChild(style);
 
   }
 
@@ -307,4 +309,4 @@ export class CourierInboxList extends BaseElement {
 
 }
 
-registerElement('courier-inbox-list', CourierInboxList);
+registerElement(CourierInboxList);

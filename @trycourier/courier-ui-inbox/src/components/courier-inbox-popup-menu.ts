@@ -10,11 +10,15 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { Courier } from "@trycourier/courier-js";
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
-export class CourierInboxPopupMenu extends BaseElement implements CourierInboxDatastoreEvents {
+export class CourierInboxPopupMenu extends CourierBaseElement implements CourierInboxDatastoreEvents {
+
+  static get id(): string {
+    return 'courier-inbox-popup-menu';
+  }
 
   // State
   private _width: string = '440px';
@@ -58,8 +62,6 @@ export class CourierInboxPopupMenu extends BaseElement implements CourierInboxDa
   constructor() {
     super();
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
     // Create trigger button
     this._triggerButton = new CourierInboxMenuButton(this._themeManager);
     this._triggerButton.build(undefined);
@@ -75,9 +77,9 @@ export class CourierInboxPopupMenu extends BaseElement implements CourierInboxDa
     this._style = document.createElement('style');
     this.refreshTheme();
 
-    shadow.appendChild(this._style);
-    shadow.appendChild(this._triggerButton);
-    shadow.appendChild(this._popup);
+    this.appendChild(this._style);
+    this.appendChild(this._triggerButton);
+    this.appendChild(this._popup);
     this._popup.appendChild(this._inbox);
 
     // Add event listeners
@@ -366,4 +368,4 @@ export class CourierInboxPopupMenu extends BaseElement implements CourierInboxDa
   }
 }
 
-registerElement('courier-inbox-popup-menu', CourierInboxPopupMenu);
+registerElement(CourierInboxPopupMenu);

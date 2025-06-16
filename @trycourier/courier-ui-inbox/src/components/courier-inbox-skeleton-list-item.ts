@@ -1,28 +1,28 @@
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
-export class CourierInboxSkeletonListItem extends BaseElement {
+export class CourierInboxSkeletonListItem extends CourierBaseElement {
 
-  // Shadow root
-  private _shadow: ShadowRoot;
+  static get id(): string {
+    return 'courier-inbox-skeleton-list-item';
+  }
 
   constructor(theme: CourierInboxTheme, opacity: number) {
     super();
-    this._shadow = this.attachShadow({ mode: 'open' });
 
     // Create style element for gap
     const style = document.createElement('style');
     style.textContent = this.getStyles(opacity);
-    this._shadow.appendChild(style);
+    this.appendChild(style);
 
     // Create skeleton items using CourierSkeletonAnimatedRow
     const firstRow = new CourierSkeletonAnimatedRow(theme, 35);
     const secondRow = new CourierSkeletonAnimatedRow(theme, 100);
     const thirdRow = new CourierSkeletonAnimatedRow(theme, 82);
 
-    this._shadow.appendChild(firstRow);
-    this._shadow.appendChild(secondRow);
-    this._shadow.appendChild(thirdRow);
+    this.appendChild(firstRow);
+    this.appendChild(secondRow);
+    this.appendChild(thirdRow);
 
   }
 
@@ -42,23 +42,24 @@ export class CourierInboxSkeletonListItem extends BaseElement {
 }
 
 // Register the custom element
-registerElement('courier-inbox-skeleton-list-item', CourierInboxSkeletonListItem);
+registerElement(CourierInboxSkeletonListItem);
 
-class CourierSkeletonAnimatedRow extends BaseElement {
+class CourierSkeletonAnimatedRow extends CourierBaseElement {
 
-  private _shadow: ShadowRoot;
+  static get id(): string {
+    return 'courier-skeleton-animated-row';
+  }
 
   constructor(theme: CourierInboxTheme, widthPercent: number) {
     super();
-    this._shadow = this.attachShadow({ mode: 'open' });
 
     const style = document.createElement('style');
     style.textContent = this.getStyles(theme, widthPercent);
-    this._shadow.appendChild(style);
+    this.appendChild(style);
 
     const skeletonItem = document.createElement('div');
     skeletonItem.className = 'skeleton-item';
-    this._shadow.appendChild(skeletonItem);
+    this.appendChild(skeletonItem);
   }
 
   private getStyles(theme: CourierInboxTheme, widthPercent: number): string {
@@ -112,4 +113,4 @@ class CourierSkeletonAnimatedRow extends BaseElement {
   }
 }
 
-registerElement('courier-skeleton-animated-row', CourierSkeletonAnimatedRow);
+registerElement(CourierSkeletonAnimatedRow);

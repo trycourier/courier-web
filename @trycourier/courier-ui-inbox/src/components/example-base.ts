@@ -1,8 +1,12 @@
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 
 export type ExampleBaseListItem = { index: number };
 
-export class ExampleBase extends BaseElement {
+export class ExampleBase extends CourierBaseElement {
+
+  static get id(): string {
+    return 'example-base';
+  }
 
   /** User-supplied factory for a single list item */
   private _renderListItem?: (index: number) => HTMLElement;
@@ -49,6 +53,13 @@ export class ExampleBase extends BaseElement {
     this.renderList();
   }
 
+  public getDefaultItem(index: number): HTMLElement {
+    const li = document.createElement("li");
+    li.className = "list-item";
+    li.textContent = `Item ${index}`;
+    return li;
+  }
+
   /* ---------- rendering ---------- */
 
   private renderList(): void {
@@ -71,12 +82,6 @@ export class ExampleBase extends BaseElement {
       : this.getDefaultItem(index);
   }
 
-  public getDefaultItem(index: number): HTMLElement {
-    const li = document.createElement("li");
-    li.className = "list-item";
-    li.textContent = `Item ${index}`;
-    return li;
-  }
 }
 
-registerElement("example-base", ExampleBase);
+registerElement(ExampleBase);

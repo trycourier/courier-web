@@ -1,10 +1,14 @@
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
 export type CourierUnreadCountLocation = 'button' | 'header';
 
-export class CourierUnreadCountBadge extends BaseElement {
+export class CourierUnreadCountBadge extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-unread-count-badge';
+  }
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -27,8 +31,6 @@ export class CourierUnreadCountBadge extends BaseElement {
       this.refreshTheme(this._location);
     });
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
     // Create badge element
     this._badge = document.createElement('span');
     this._badge.className = 'unread-badge';
@@ -37,8 +39,8 @@ export class CourierUnreadCountBadge extends BaseElement {
     this._style = document.createElement('style');
     this._style.textContent = this.getStyles(this._location);
 
-    shadow.appendChild(this._style);
-    shadow.appendChild(this._badge);
+    this.appendChild(this._style);
+    this.appendChild(this._badge);
   }
 
   private getStyles(location: CourierUnreadCountLocation): string {
@@ -100,4 +102,4 @@ export class CourierUnreadCountBadge extends BaseElement {
 
 }
 
-registerElement('courier-unread-count-badge', CourierUnreadCountBadge);
+registerElement(CourierUnreadCountBadge);

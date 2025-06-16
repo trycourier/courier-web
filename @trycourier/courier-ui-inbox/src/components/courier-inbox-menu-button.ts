@@ -1,9 +1,13 @@
-import { CourierColors, CourierElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
-export class CourierInboxMenuButton extends CourierElement {
+export class CourierInboxMenuButton extends CourierFactoryElement {
+
+  static get id(): string {
+    return 'courier-inbox-menu-button';
+  }
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -42,7 +46,7 @@ export class CourierInboxMenuButton extends CourierElement {
     this._container.appendChild(style);
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadCountBadge);
-    this.shadow.appendChild(this._container);
+    this.appendChild(this._container);
 
     // Set the theme of the button
     this.updateTheme();
@@ -92,4 +96,4 @@ export class CourierInboxMenuButton extends CourierElement {
 
 }
 
-registerElement('courier-inbox-menu-button', CourierInboxMenuButton);
+registerElement(CourierInboxMenuButton);

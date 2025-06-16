@@ -1,8 +1,12 @@
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
-export class CourierInboxPaginationListItem extends BaseElement {
+export class CourierInboxPaginationListItem extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-pagination-list-item';
+  }
 
   // Components
   private skeletonLoadingList?: CourierInboxSkeletonList;
@@ -17,15 +21,13 @@ export class CourierInboxPaginationListItem extends BaseElement {
     this.onPaginationTrigger = props.onPaginationTrigger;
     this.customItem = props.customItem;
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
     // Add styles to remove padding/margin and set box-sizing
     const style = document.createElement('style');
     style.textContent = this.getStyles();
-    shadow.appendChild(style);
+    this.appendChild(style);
 
     if (this.customItem) {
-      shadow.appendChild(this.customItem);
+      this.appendChild(this.customItem);
     } else {
       const container = document.createElement('div');
       container.className = 'skeleton-container';
@@ -34,7 +36,7 @@ export class CourierInboxPaginationListItem extends BaseElement {
       this.skeletonLoadingList.build(undefined);
       container.appendChild(this.skeletonLoadingList);
 
-      shadow.appendChild(container);
+      this.appendChild(container);
     }
 
     // Initialize intersection observer
@@ -70,4 +72,4 @@ export class CourierInboxPaginationListItem extends BaseElement {
 
 }
 
-registerElement('courier-inbox-pagination-list-item', CourierInboxPaginationListItem);
+registerElement(CourierInboxPaginationListItem);

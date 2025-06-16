@@ -1,12 +1,17 @@
 import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { BaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
-export class CourierListItem extends BaseElement {
+export class CourierListItem extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-list-item';
+  }
+
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
@@ -35,7 +40,6 @@ export class CourierListItem extends BaseElement {
     super();
     this._theme = theme;
     this._isMobile = 'ontouchstart' in window;
-    const shadow = this.attachShadow({ mode: 'open' });
 
     const contentContainer = document.createElement('div');
     contentContainer.className = 'content-container';
@@ -73,7 +77,7 @@ export class CourierListItem extends BaseElement {
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
-    shadow.append(this._style, this._unreadIndicator, contentContainer, this._timeElement, this._menu);
+    this.append(this._style, this._unreadIndicator, contentContainer, this._timeElement, this._menu);
 
     const cancelPropagation = (e: Event): void => {
       e.stopPropagation();
@@ -446,4 +450,4 @@ export class CourierListItem extends BaseElement {
   }
 }
 
-registerElement('courier-inbox-list-item', CourierListItem);
+registerElement(CourierListItem);
