@@ -212,18 +212,18 @@ export class CourierInboxHeader extends CourierFactoryElement {
       ${CourierInboxHeader.id} {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 10px 10px 10px 16px;
-        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
-        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`};
         flex-shrink: 0;
-        z-index: 100;
       }
 
       ${CourierInboxHeader.id} .header-content {
+        padding: 10px 10px 10px 16px;
+        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
+        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px red`};
         display: flex;
         align-items: center;
+        justify-content: space-between;
         flex: 1;
+        z-index: 100;
       }
 
       ${CourierInboxHeader.id} .spacer {

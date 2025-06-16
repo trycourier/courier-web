@@ -1,4 +1,4 @@
-import { CourierBaseElement, CourierIcon, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 
@@ -18,22 +18,15 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
   private _itemIcon?: CourierIcon;
   private _title?: HTMLParagraphElement;
   private _selectionIcon?: CourierIcon;
-  private _style?: HTMLStyleElement;
-
-  // Theme
-  private _themeManager: CourierInboxThemeManager;
 
   constructor(props: { option: CourierInboxMenuOption, selectable: boolean, isSelected: boolean, themeManager: CourierInboxThemeManager }) {
     super();
     this._option = props.option;
     this._isSelected = props.isSelected;
     this._isSelectedable = props.selectable;
-    this._themeManager = props.themeManager;
   }
 
   onComponentMounted() {
-
-    this._style = injectGlobalStyle(CourierInboxOptionMenuItem.id, this.getStyles());
 
     this._content = document.createElement('div');
     this._content.className = 'menu-item';
@@ -66,61 +59,7 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
 
   }
 
-  onComponentUnmounted() {
-    this._style?.remove();
-  }
-
-  getStyles(): string {
-    const theme = this._themeManager.getTheme();
-
-    return `
-      ${CourierInboxOptionMenuItem.id} {
-        display: flex;
-        flex-direction: row;
-        padding: 6px 12px;
-        cursor: pointer;
-      }
-
-      ${CourierInboxOptionMenuItem.id}:hover {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.hoverBackgroundColor ?? 'red'};
-      }
-
-      ${CourierInboxOptionMenuItem.id}:active {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.activeBackgroundColor ?? 'red'};
-      }
-
-      ${CourierInboxOptionMenuItem.id} .menu-item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        gap: 12px;
-      }
-
-      ${CourierInboxOptionMenuItem.id} .spacer {
-        flex: 1;
-      }
-
-      ${CourierInboxOptionMenuItem.id} p {
-        margin: 0;
-        font-family: ${theme.inbox?.header?.menus?.popup?.list?.font?.family ?? 'inherit'};
-        font-weight: ${theme.inbox?.header?.menus?.popup?.list?.font?.weight ?? 'inherit'};
-        font-size: ${theme.inbox?.header?.menus?.popup?.list?.font?.size ?? '14px'};
-        color: ${theme.inbox?.header?.menus?.popup?.list?.font?.color ?? 'red'};
-        white-space: nowrap;
-      }
-
-      ${CourierInboxOptionMenuItem.id} .check-icon {
-        display: none;
-      }
-    `;
-  }
-
   public refreshTheme() {
-
-    // Update styles
-    if (this._style) {
-      this._style.textContent = this.getStyles();
-    }
 
     // Set selected icon color
     this._selectionIcon?.updateColor(this._option.selectionIcon?.color ?? 'red');
