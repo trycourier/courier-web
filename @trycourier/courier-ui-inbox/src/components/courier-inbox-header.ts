@@ -138,17 +138,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   private refreshTheme() {
-    const theme = this._themeSubscription.manager.getTheme();
 
     if (this._style) {
       this._style.textContent = this.getStyles();
-    }
-
-    // Update header styles
-    const header = this.querySelector('.courier-inbox-header') as HTMLElement;
-    if (header) {
-      header.style.backgroundColor = theme.inbox?.header?.backgroundColor ?? CourierColors.white[500];
-      header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`;
     }
 
     // Update menus
@@ -213,28 +205,32 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   getStyles(): string {
+
+    const theme = this._themeSubscription.manager.getTheme();
+
     return `
       ${CourierInboxHeader.id} {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 10px 10px 10px 16px;
-        background-color: ${CourierColors.white[500]};
-        box-shadow: 0px 1px 0px 0px ${CourierColors.gray[500]};
+        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
+        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`};
         flex-shrink: 0;
+        z-index: 100;
       }
 
-      .header-content {
+      ${CourierInboxHeader.id} .header-content {
         display: flex;
         align-items: center;
         flex: 1;
       }
 
-      .spacer {
+      ${CourierInboxHeader.id} .spacer {
         flex: 1;
       }
 
-      .actions {
+      ${CourierInboxHeader.id} .actions {
         display: flex;
         align-items: center;
         gap: 4px;

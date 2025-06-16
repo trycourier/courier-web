@@ -33,7 +33,6 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
       this.refreshTheme(this._feedType ?? 'inbox');
     });
 
-    this._style = injectGlobalStyle(CourierInboxHeaderTitle.id, this.getStyles());
   }
 
   getStyles(): string {
@@ -47,12 +46,12 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
         position: relative;
       }
 
-      courier-icon {
+      ${CourierInboxHeaderTitle.id} courier-icon {
         display: flex;
         align-items: center;
       }
 
-      h2 {
+      ${CourierInboxHeaderTitle.id} h2 {
         margin: 0;
         font-family: ${theme.inbox?.header?.filters?.font?.family ?? 'inherit'};
         font-size: ${theme.inbox?.header?.filters?.font?.size ?? '18px'};
@@ -60,22 +59,16 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
         color: ${theme.inbox?.header?.filters?.font?.color ?? 'red'};
       }
 
-      courier-unread-count-badge {
+      ${CourierInboxHeaderTitle.id} courier-unread-count-badge {
         margin-left: 4px;
       }
     `;
   }
 
   onComponentMounted() {
-    this.render();
-  }
 
-  onComponentUnmounted() {
-    this._themeSubscription.unsubscribe();
-    this._style?.remove();
-  }
+    this._style = injectGlobalStyle(CourierInboxHeaderTitle.id, this.getStyles());
 
-  private render() {
     this._iconElement = new CourierIcon(undefined, this._option.icon.svg);
     this._titleElement = document.createElement('h2');
     this._unreadBadge = new CourierUnreadCountBadge({
@@ -88,6 +81,12 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this.appendChild(this._unreadBadge);
 
     this.refreshTheme(this._feedType ?? 'inbox');
+
+  }
+
+  onComponentUnmounted() {
+    this._themeSubscription.unsubscribe();
+    this._style?.remove();
   }
 
   private refreshTheme(feedType: CourierInboxFeedType) {

@@ -1,4 +1,4 @@
-import { CourierBaseElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
@@ -31,9 +31,9 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private _onMenuOpen: () => void;
 
   // Components
-  private _menuButton: CourierIconButton;
-  private _menu: HTMLDivElement;
-  private _style: HTMLStyleElement;
+  private _menuButton?: CourierIconButton;
+  private _menu?: HTMLDivElement;
+  private _style?: HTMLStyleElement;
 
   constructor(themeManager: CourierInboxThemeManager, type: CourierInboxMenuOptionType, selectable: boolean, options: CourierInboxMenuOption[], onMenuOpen: () => void) {
     super();
@@ -44,38 +44,46 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     this._selectedIndex = 0;
     this._onMenuOpen = onMenuOpen;
 
-    this._menuButton = new CourierIconButton(type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow);
+    // Handle the theme change
+    this._themeSubscription = themeManager.subscribe((_) => {
+      this.refreshTheme();
+    });
+
+  }
+
+  onComponentMounted() {
+
+    this._style = injectGlobalStyle(CourierInboxOptionMenu.id, this.getStyles());
+
+    this._menuButton = new CourierIconButton(this._type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow);
     this._menu = document.createElement('div');
-    this._menu.className = `menu ${type}`;
+    this._menu.className = `menu ${this._type}`;
 
-    this._style = document.createElement('style');
-
-    this.appendChild(this._style);
     this.appendChild(this._menuButton);
     this.appendChild(this._menu);
 
     this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
-    // Handle the theme change
-    this._themeSubscription = themeManager.subscribe((_) => {
-      this.refreshTheme();
-    });
-
-    // Set the theme
     this.refreshTheme();
+
   }
 
-  private getStyles(): string {
+  onComponentUnmounted() {
+    this._themeSubscription.unsubscribe();
+    this._style?.remove();
+  }
+
+  getStyles(): string {
     const theme = this._themeSubscription.manager.getTheme();
 
     return `
-      :host {
+      ${CourierInboxOptionMenu.id} {
         position: relative;
         display: inline-block;
       }
 
-      .menu {
+      ${CourierInboxOptionMenu.id} .menu {
         display: none;
         position: absolute;
         top: 42px;
@@ -90,11 +98,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         padding: 4px 0;
       }
 
-      courier-inbox-filter-menu-item {
+      ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {
         border-bottom: ${theme.inbox?.header?.menus?.popup?.list?.divider ?? 'none'};
       }
 
-      courier-inbox-filter-menu-item:last-child {
+      ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item:last-child {
         border-bottom: none;
       }
     `;
@@ -102,7 +110,9 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
   private refreshTheme() {
     // Update styles
-    this._style.textContent = this.getStyles();
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
 
     // Get theme
     const theme = this._themeSubscription.manager.getTheme();
@@ -113,11 +123,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
     const defaultIcon = isFilter ? CourierIconSVGs.filter : CourierIconSVGs.overflow;
 
-    this._menuButton.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
-    this._menuButton.updateIconColor(buttonConfig?.icon?.color ?? 'red');
-    this._menuButton.updateBackgroundColor(buttonConfig?.backgroundColor ?? 'transparent');
-    this._menuButton.updateHoverBackgroundColor(buttonConfig?.hoverBackgroundColor ?? 'red');
-    this._menuButton.updateActiveBackgroundColor(buttonConfig?.activeBackgroundColor ?? 'red');
+    this._menuButton?.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
+    this._menuButton?.updateIconColor(buttonConfig?.icon?.color ?? 'red');
+    this._menuButton?.updateBackgroundColor(buttonConfig?.backgroundColor ?? 'transparent');
+    this._menuButton?.updateHoverBackgroundColor(buttonConfig?.hoverBackgroundColor ?? 'red');
+    this._menuButton?.updateActiveBackgroundColor(buttonConfig?.activeBackgroundColor ?? 'red');
 
     // Reload menu items
     this.refreshMenuItems();
@@ -129,7 +139,9 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   private refreshMenuItems() {
-    this._menu.innerHTML = '';
+    if (this._menu) {
+      this._menu.innerHTML = '';
+    }
 
     this._options.forEach((option, index) => {
       const menuItem = new CourierInboxOptionMenuItem({
@@ -146,14 +158,16 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         this.closeMenu();
       });
 
-      this._menu.appendChild(menuItem);
+      this._menu?.appendChild(menuItem);
     });
   }
 
   private toggleMenu(event: Event) {
     event.stopPropagation();
-    const isOpening = this._menu.style.display !== 'block';
-    this._menu.style.display = isOpening ? 'block' : 'none';
+    const isOpening = this._menu?.style.display !== 'block';
+    if (this._menu) {
+      this._menu.style.display = isOpening ? 'block' : 'none';
+    }
 
     if (isOpening) {
       this._onMenuOpen();
@@ -167,7 +181,9 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   public closeMenu() {
-    this._menu.style.display = 'none';
+    if (this._menu) {
+      this._menu.style.display = 'none';
+    }
   }
 
   public selectOption(option: CourierInboxMenuOption) {
@@ -175,9 +191,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     this.refreshMenuItems();
   }
 
-  disconnectedCallback() {
-    this._themeSubscription.unsubscribe();
-  }
 }
 
 registerElement(CourierInboxOptionMenu);

@@ -214,7 +214,7 @@ export class CourierInbox extends CourierBaseElement {
         height: ${this._defaultProps.height};
       }
 
-      courier-inbox-list {
+      ${CourierInbox.id} courier-inbox-list {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;

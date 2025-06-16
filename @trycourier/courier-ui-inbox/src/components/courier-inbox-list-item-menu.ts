@@ -1,5 +1,5 @@
-import { CourierBaseElement, CourierIconButton, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxIcon, CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierBaseElement, CourierIconButton, injectGlobalStyle, registerElement } from '@trycourier/courier-ui-core';
+import { CourierInboxIcon, CourierInboxTheme } from '../types/courier-inbox-theme';
 
 export type CourierInboxListItemActionMenuOption = {
   id: string;
@@ -18,36 +18,39 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   private _options: CourierInboxListItemActionMenuOption[] = [];
 
   // Components
-  private _style: HTMLStyleElement;
+  private _style?: HTMLStyleElement;
 
   constructor(theme: CourierInboxTheme) {
     super();
     this._theme = theme;
+  }
 
-    // Style
-    this._style = document.createElement("style");
-    this._style.textContent = this.getStyles();
-    this.appendChild(this._style);
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierInboxListItemMenu.id, this.getStyles());
 
     // Menu container
-    const menu = document.createElement("ul");
-    menu.className = "menu";
+    const menu = document.createElement('ul');
+    menu.className = 'menu';
     this.appendChild(menu);
 
   }
 
-  private getStyles(): string {
+  onComponentUnmounted() {
+    this._style?.remove();
+  }
 
-    const menu = this._theme.inbox?.list?.item?.menu;
+  getStyles(): string {
+    const theme = this._theme;
+    const menu = theme.inbox?.list?.item?.menu;
 
     return `
-      :host {
+      ${CourierInboxListItemMenu.id} {
         display: block;
         position: absolute;
         background: ${menu?.backgroundColor ?? 'red'};
-        border: ${menu?.border ?? "1px solid red"};
+        border: ${menu?.border ?? '1px solid red'};
         border-radius: ${menu?.borderRadius ?? '0px'};
-        box-shadow: ${menu?.shadow ?? "0 2px 8px red"};
+        box-shadow: ${menu?.shadow ?? '0 2px 8px red'};
         user-select: none;
         opacity: 0;
         pointer-events: none;
@@ -55,12 +58,12 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         overflow: hidden;
       }
 
-      :host(.visible) {
+      ${CourierInboxListItemMenu.id}(.visible) {
         opacity: 1;
         pointer-events: auto;
       }
 
-      ul.menu {
+      ${CourierInboxListItemMenu.id} ul.menu {
         list-style: none;
         margin: 0;
         padding: 0;
@@ -68,7 +71,7 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         flex-direction: row;
       }
 
-      li.menu-item {
+      ${CourierInboxListItemMenu.id} li.menu-item {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -86,9 +89,9 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
 
   private renderMenu() {
     // Clear existing menu items
-    const menu = this.shadowRoot?.querySelector("ul.menu");
+    const menu = this.querySelector('ul.menu');
     if (!menu) return;
-    menu.innerHTML = "";
+    menu.innerHTML = '';
     const menuTheme = this._theme.inbox?.list?.item?.menu;
 
     // Prevent click events from propagating outside of this menu
