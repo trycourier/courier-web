@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { useCourier, CourierInbox } from '@trycourier/courier-react';
-import { CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps } from '@trycourier/courier-ui-inbox';
+import { useCourier, CourierInbox, CourierInboxListItemFactoryProps } from '@trycourier/courier-react';
 
 export default function Home() {
 
@@ -19,11 +18,9 @@ export default function Home() {
   return (
     <CourierInbox
       height='100%'
-      renderListItem={(props: CourierInboxListItemFactoryProps) => (
-        <li className='test'>
-          {props?.index}
-        </li>
-      )}
+      onMessageClick={(props: CourierInboxListItemFactoryProps) => {
+        alert(JSON.stringify(props));
+      }}
     />
   );
 
