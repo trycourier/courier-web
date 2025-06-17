@@ -52,11 +52,17 @@ export function copyInboxAction(action: InboxAction): InboxAction {
  * @param dataSet - The inbox data set to copy
  * @returns A copy of the inbox data set
  */
-export function copyInboxDataSet(dataSet: InboxDataSet): InboxDataSet {
+export function copyInboxDataSet(dataSet?: InboxDataSet): InboxDataSet | undefined {
+
+  if (!dataSet) {
+    return undefined;
+  }
+
   return {
     ...dataSet,
     messages: dataSet.messages.map(message => copyMessage(message)),
   };
+
 }
 
 export function getMessageTime(message: InboxMessage): string {

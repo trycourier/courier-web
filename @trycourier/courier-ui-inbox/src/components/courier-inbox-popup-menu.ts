@@ -299,8 +299,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     // Nodes the click may legally occur inside without closing the popup
     const SAFE_SELECTORS = [
-      'courier-inbox-option-menu',      // a dropdown and everything inside it
-      'courier-inbox-list-item-menu',   // message “...” menus
+      'courier-inbox-option-menu',
     ];
 
     // composedPath() gives us every node (even inside shadow DOMs)
@@ -308,15 +307,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
       .composedPath()
       .some(node => {
         if (!(node instanceof HTMLElement)) return false;
-
-        // 1️⃣ the popup itself
         if (node === this._popup || this._popup!.contains(node)) return true;
-
-        // 2️⃣ any element that matches our “safe” selectors
         return SAFE_SELECTORS.some(sel => node.matches(sel));
       });
 
-    if (clickIsInsideAllowedArea) return;      // Ignore the click
+    if (clickIsInsideAllowedArea) return;
 
     // Otherwise, it really was an outside click – hide the popup
     this._popup.style.display = 'none';

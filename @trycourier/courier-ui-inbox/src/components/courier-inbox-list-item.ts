@@ -322,9 +322,13 @@ export class CourierInboxListItem extends CourierBaseElement {
         onClick: () => {
           if (this._message) {
             if (this._message.read) {
-              CourierInboxDatastore.shared.unreadMessage({ message: this._message });
+              CourierInboxDatastore.shared.unreadMessage({ message: this._message }).then(() => {
+                console.log('DONE!')
+              });
             } else {
-              CourierInboxDatastore.shared.readMessage({ message: this._message });
+              CourierInboxDatastore.shared.readMessage({ message: this._message }).then(() => {
+                console.log('DONE!')
+              });
             }
           }
         },

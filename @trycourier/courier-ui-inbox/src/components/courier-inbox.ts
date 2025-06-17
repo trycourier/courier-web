@@ -186,9 +186,12 @@ export class CourierInbox extends CourierBaseElement {
     });
 
     // Refresh the inbox if the user is already signed in
-    if (Courier.shared.client?.options.userId) {
-      this.refresh();
+    if (!Courier.shared.client?.options.userId) {
+      Courier.shared.client?.options.logger.error('No user signed in. Please call Courier.shared.signIn(...) to load the inbox.')
+      return;
     }
+
+    this.refresh();
 
   }
 
