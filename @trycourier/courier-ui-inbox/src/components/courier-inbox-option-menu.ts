@@ -2,15 +2,15 @@ import { CourierBaseElement, CourierIconButton, CourierIconSVGs, injectGlobalSty
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
-import { CourierInboxIcon } from "../types/courier-inbox-theme";
+import { CourierInboxIconTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxMenuOptionType = 'filters' | 'actions';
 
 export type CourierInboxMenuOption = {
   id: CourierInboxHeaderMenuItemId;
   text: string;
-  icon: CourierInboxIcon;
-  selectionIcon?: CourierInboxIcon | null;
+  icon: CourierInboxIconTheme;
+  selectionIcon?: CourierInboxIconTheme | null;
   onClick: (option: CourierInboxMenuOption) => void;
 };
 
@@ -74,7 +74,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     this._style?.remove();
   }
 
-  getStyles(): string {
+  private getStyles(): string {
     const theme = this._themeSubscription.manager.getTheme();
 
     return `

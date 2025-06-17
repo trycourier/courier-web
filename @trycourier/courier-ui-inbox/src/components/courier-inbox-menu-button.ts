@@ -1,4 +1,4 @@
-import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
@@ -13,15 +13,29 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // Components
+  private _style?: HTMLStyleElement;
   private _container?: HTMLDivElement;
   private _triggerButton?: CourierIconButton;
   private _unreadCountBadge?: CourierUnreadCountBadge;
 
+  get theme(): CourierInboxTheme {
+    return this._themeSubscription.manager.getTheme();
+  }
+
   constructor(themeBus: CourierInboxThemeManager) {
     super();
     this._themeSubscription = themeBus.subscribe((_: CourierInboxTheme) => {
-      this.updateTheme();
+      this.refreshTheme();
     });
+  }
+
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierInboxMenuButton.id, CourierInboxMenuButton.getStyles(this.theme));
+  }
+
+  onComponentUnmounted() {
+    this._themeSubscription.unsubscribe();
+    this._style?.remove();
   }
 
   defaultElement(): HTMLElement {
@@ -40,28 +54,24 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     });
     this._unreadCountBadge.id = 'unread-badge';
 
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
-
-    this._container.appendChild(style);
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadCountBadge);
     this.appendChild(this._container);
 
     // Set the theme of the button
-    this.updateTheme();
+    this.refreshTheme();
 
     return this._container;
   }
 
-  private getStyles(): string {
+  static getStyles(_theme: CourierInboxTheme): string {
     return `
-      .menu-button-container {
+      ${CourierInboxMenuButton.id} .menu-button-container {
         position: relative;
         display: inline-block;
       }
         
-      #unread-badge {
+      ${CourierInboxMenuButton.id} #unread-badge {
         position: absolute;
         top: -8px;
         left: 50%;
@@ -72,26 +82,21 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
 
   public onUnreadCountChange(unreadCount: number): void {
     this._unreadCountBadge?.setCount(unreadCount);
-    this.updateTheme();
+    this.refreshTheme();
   }
 
-  private updateTheme() {
-    const theme = this._themeSubscription.manager.getTheme();
+  private refreshTheme() {
 
     // Trigger button
-    this._triggerButton?.updateIconColor(theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
-    this._triggerButton?.updateIconSVG(theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
-    this._triggerButton?.updateBackgroundColor(theme?.popup?.button?.backgroundColor ?? 'transparent');
-    this._triggerButton?.updateHoverBackgroundColor(theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
-    this._triggerButton?.updateActiveBackgroundColor(theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
+    this._triggerButton?.updateIconColor(this.theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
+    this._triggerButton?.updateIconSVG(this.theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
+    this._triggerButton?.updateBackgroundColor(this.theme?.popup?.button?.backgroundColor ?? 'transparent');
+    this._triggerButton?.updateHoverBackgroundColor(this.theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
+    this._triggerButton?.updateActiveBackgroundColor(this.theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
 
     // Unread count badge
     this._unreadCountBadge?.refreshTheme('button');
 
-  }
-
-  disconnectedCallback() {
-    this._themeSubscription.unsubscribe();
   }
 
 }

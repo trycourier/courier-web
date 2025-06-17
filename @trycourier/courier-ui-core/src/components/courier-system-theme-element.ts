@@ -29,10 +29,9 @@ export class CourierSystemThemeElement extends CourierBaseElement {
     });
   }
 
-  disconnectedCallback() {
-    if (this._systemThemeCleanup) {
-      this._systemThemeCleanup();
-    }
+  protected onComponentUnmounted() {
+    this._systemThemeCleanup?.();
+    super.onComponentUnmounted();
   }
 
   protected onSystemThemeChange(_: SystemThemeMode): void {

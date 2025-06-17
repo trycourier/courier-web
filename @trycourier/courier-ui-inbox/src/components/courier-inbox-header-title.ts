@@ -3,6 +3,7 @@ import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export class CourierInboxHeaderTitle extends CourierBaseElement {
 
@@ -23,6 +24,10 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
   private _iconElement?: CourierIcon;
   private _unreadBadge?: CourierUnreadCountBadge;
 
+  private get theme(): CourierInboxTheme {
+    return this._themeSubscription.manager.getTheme();
+  }
+
   constructor(themeManager: CourierInboxThemeManager, option: CourierInboxMenuOption) {
     super();
 
@@ -35,8 +40,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
   }
 
-  getStyles(): string {
-    const theme = this._themeSubscription.manager.getTheme();
+  static getStyles(theme: CourierInboxTheme): string {
 
     return `
       ${CourierInboxHeaderTitle.id} {
@@ -67,7 +71,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
   onComponentMounted() {
 
-    this._style = injectGlobalStyle(CourierInboxHeaderTitle.id, this.getStyles());
+    this._style = injectGlobalStyle(CourierInboxHeaderTitle.id, CourierInboxHeaderTitle.getStyles(this.theme));
 
     this._iconElement = new CourierIcon(undefined, this._option.icon.svg);
     this._titleElement = document.createElement('h2');
@@ -92,7 +96,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
   private refreshTheme(feedType: CourierInboxFeedType) {
     this._feedType = feedType;
     if (this._style) {
-      this._style.textContent = this.getStyles();
+      this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
     }
     this._unreadBadge?.refreshTheme('header');
     this.updateFilter();

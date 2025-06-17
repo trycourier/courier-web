@@ -205,7 +205,7 @@ export class CourierInbox extends CourierBaseElement {
     }
   }
 
-  getStyles(): string {
+  private getStyles(): string {
     return `
       ${CourierInbox.id} {
         display: flex;

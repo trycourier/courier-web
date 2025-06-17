@@ -1,56 +1,28 @@
-// During SSR there is no HTMLElement, so fall back to a no-op class
-type HTMLElementCtor = {
-  new(): HTMLElement;
-  prototype: HTMLElement;
-};
+export class CourierBaseElement extends HTMLElement {
 
-/**
- * During SSR we fall back to a zero-cost dummy constructor, **but**
- * we still cast it to `HTMLElementCtor` so the *type* remains correct.
- */
-export const CourierBaseElement: HTMLElementCtor = (typeof window === 'undefined'
-  ? class {
-    constructor() {
-      // No-op constructor for SSR
-    }
+  static get id(): string {
+    return 'courier-base-element';
   }
-  : class extends HTMLElement {
 
-    static get id(): string {
-      return 'courier-base-element';
-    }
+  private _isInitialized = false;
 
-    private _isInitialized = false;
+  connectedCallback() {
+    if (this._isInitialized) return;
+    this._isInitialized = true;
+    this.onComponentMounted();
+  }
 
-    constructor() {
-      super();
-    }
+  disconnectedCallback() {
+    this._isInitialized = false;
+    this.onComponentUnmounted();
+  }
 
-    connectedCallback() {
-      if (this._isInitialized) return;
-      this._isInitialized = true;
-      this.onComponentMounted();
-    }
+  protected onComponentMounted() {
+    // Empty. Meant to be overridden.
+  }
 
-    disconnectedCallback() {
-      this._isInitialized = false;
-      this.onComponentUnmounted();
-    }
+  protected onComponentUnmounted() {
+    // Empty. Meant to be overridden.
+  }
 
-    protected onComponentMounted() {
-      // Empty. Meant to be overridden.
-    }
-
-    protected onComponentUnmounted() {
-      // Empty. Meant to be overridden.
-    }
-
-    protected getStyles(): string {
-      return `
-        :host {
-          background-color: red;
-        }
-      `;
-    }
-
-  }) as unknown as HTMLElementCtor;
+}

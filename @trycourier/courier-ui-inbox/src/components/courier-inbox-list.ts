@@ -45,8 +45,14 @@ export class CourierInboxList extends CourierBaseElement {
     return this._messages;
   }
 
+  private get theme(): CourierInboxTheme {
+    return this._themeSubscription.manager.getTheme();
+  }
+
   // Components
-  private _style?: HTMLStyleElement;
+  private _listStyles?: HTMLStyleElement;
+  private _listItemStyles?: HTMLStyleElement;
+  private _listItemMenuStyles?: HTMLStyleElement;
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
@@ -67,29 +73,33 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Initialize the theme subscription
     this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
-      this.refreshTheme();
+      this.render();
     });
 
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxList.id, this.getStyles());
+
+    // Inject styles add head
+    this._listStyles = injectGlobalStyle(CourierInboxList.id, CourierInboxList.getStyles(this.theme));
+    this._listItemStyles = injectGlobalStyle(CourierInboxListItem.id, CourierInboxListItem.getStyles(this.theme));
+    this._listItemMenuStyles = injectGlobalStyle(CourierInboxListItemMenu.id, CourierInboxListItemMenu.getStyles(this.theme));
+
+    // Layout the component
     this.render();
+
   }
 
   onComponentUnmounted() {
     this._themeSubscription.unsubscribe();
-    this._style?.remove();
-
-    // Remove list item styles
-    [CourierInboxListItem.id, CourierInboxListItemMenu.id].forEach(id => {
-      const style = document.head.querySelector(`data-${id}`);
-      style?.remove();
-    });
+    this._listStyles?.remove();
+    this._listItemStyles?.remove();
+    this._listItemMenuStyles?.remove();
   }
 
-  getStyles(): string {
-    const list = this._themeSubscription.manager.getTheme().inbox?.list;
+  static getStyles(theme: CourierInboxTheme): string {
+
+    const list = theme.inbox?.list;
 
     return `
       ${CourierInboxList.id} {
@@ -105,6 +115,7 @@ export class CourierInboxList extends CourierBaseElement {
         height: 100%;
       }
     `;
+
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
@@ -176,15 +187,24 @@ export class CourierInboxList extends CourierBaseElement {
       this.removeChild(this.firstChild);
     }
 
-    const theme = this._themeSubscription.manager.getTheme();
+    // Update list styles
+    if (this._listStyles) {
+      this._listStyles.textContent = CourierInboxList.getStyles(this.theme);
+    }
 
-    if (this._style) {
-      this._style.textContent = this.getStyles();
+    // Update list item styles
+    if (this._listItemStyles) {
+      this._listItemStyles.textContent = CourierInboxListItem.getStyles(this.theme);
+    }
+
+    // Update list item menu styles
+    if (this._listItemMenuStyles) {
+      this._listItemMenuStyles.textContent = CourierInboxListItemMenu.getStyles(this.theme);
     }
 
     // Error state
     if (this._error) {
-      const error = theme.inbox?.error;
+      const error = this.theme.inbox?.error;
       const errorElement = new CourierInfoState({
         title: {
           text: error?.title?.text ?? this._error.message,
@@ -215,7 +235,7 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Loading state
     if (this._isLoading) {
-      const loadingElement = new CourierInboxSkeletonList(theme);
+      const loadingElement = new CourierInboxSkeletonList(this.theme);
       loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
       this.appendChild(loadingElement);
       return;
@@ -223,7 +243,7 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Empty state
     if (this._messages.length === 0) {
-      const empty = theme.inbox?.empty;
+      const empty = this.theme.inbox?.empty;
       const emptyElement = new CourierInfoState({
         title: {
           text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
@@ -263,7 +283,7 @@ export class CourierInboxList extends CourierBaseElement {
         return;
       }
 
-      const listItem = new CourierInboxListItem(theme);
+      const listItem = new CourierInboxListItem(this.theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
@@ -274,7 +294,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Add pagination item if can paginate
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
-        theme: theme,
+        theme: this.theme,
         customItem: this._paginationItemFactory?.({ feedType: this._feedType }),
         onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
       });
@@ -305,10 +325,6 @@ export class CourierInboxList extends CourierBaseElement {
 
   public setPaginationItemFactory(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void {
     this._paginationItemFactory = factory;
-    this.render();
-  }
-
-  public refreshTheme(): void {
     this.render();
   }
 

@@ -1,4 +1,4 @@
-import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 
@@ -8,66 +8,73 @@ export class CourierInboxPaginationListItem extends CourierBaseElement {
     return 'courier-inbox-pagination-list-item';
   }
 
+  // State
+  private _theme: CourierInboxTheme;
+
   // Components
-  private skeletonLoadingList?: CourierInboxSkeletonList;
-  private observer: IntersectionObserver;
-  private customItem?: HTMLElement;
+  private _style?: HTMLStyleElement;
+  private _skeletonLoadingList?: CourierInboxSkeletonList;
+  private _observer?: IntersectionObserver;
+  private _customItem?: HTMLElement;
 
   // Handlers
-  private onPaginationTrigger: () => void;
+  private _onPaginationTrigger: () => void;
 
   constructor(props: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
     super();
-    this.onPaginationTrigger = props.onPaginationTrigger;
-    this.customItem = props.customItem;
+    this._theme = props.theme;
+    this._customItem = props.customItem;
+    this._onPaginationTrigger = props.onPaginationTrigger;
+  }
 
-    // Add styles to remove padding/margin and set box-sizing
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
-    this.appendChild(style);
+  onComponentMounted() {
 
-    if (this.customItem) {
-      this.appendChild(this.customItem);
+    this._style = injectGlobalStyle(CourierInboxPaginationListItem.id, CourierInboxPaginationListItem.getStyles(this._theme));
+
+    if (this._customItem) {
+      this.appendChild(this._customItem);
     } else {
       const container = document.createElement('div');
       container.className = 'skeleton-container';
 
-      this.skeletonLoadingList = new CourierInboxSkeletonList(props.theme);
-      this.skeletonLoadingList.build(undefined);
-      container.appendChild(this.skeletonLoadingList);
+      this._skeletonLoadingList = new CourierInboxSkeletonList(this._theme);
+      this._skeletonLoadingList.build(undefined);
+      container.appendChild(this._skeletonLoadingList);
 
       this.appendChild(container);
     }
 
     // Initialize intersection observer
-    this.observer = new IntersectionObserver((entries) => {
+    this._observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          this.onPaginationTrigger();
+          this._onPaginationTrigger();
         }
       });
     });
 
     // Start observing the element
-    this.observer.observe(this);
+    this._observer.observe(this);
+
   }
 
-  private getStyles(): string {
+  onComponentUnmounted() {
+    this._observer?.disconnect();
+    this._style?.remove();
+  }
+
+  static getStyles(_theme: CourierInboxTheme): string {
     return `
-      :host {
+      ${CourierInboxPaginationListItem.id} {
         padding: 0;
         margin: 0;
         box-sizing: border-box;
       }
 
-      .skeleton-container {
+      ${CourierInboxPaginationListItem.id} .skeleton-container {
         height: 150%;
       }
     `;
-  }
-
-  disconnectedCallback() {
-    this.observer.disconnect();
   }
 
 }

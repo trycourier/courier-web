@@ -5,6 +5,7 @@ import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
 
@@ -34,6 +35,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return ['icon', 'title', 'feed-type'];
   }
 
+  private get theme(): CourierInboxTheme {
+    return this._themeSubscription.manager.getTheme();
+  }
+
   constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
     super();
 
@@ -47,7 +52,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxHeader.id, this.getStyles());
+    this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
   }
 
   onComponentUmounted() {
@@ -140,7 +145,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private refreshTheme() {
 
     if (this._style) {
-      this._style.textContent = this.getStyles();
+      this._style.textContent = CourierInboxHeader.getStyles(this.theme);
     }
 
     // Update menus
@@ -204,9 +209,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return headerContent;
   }
 
-  getStyles(): string {
-
-    const theme = this._themeSubscription.manager.getTheme();
+  static getStyles(theme: CourierInboxTheme): string {
 
     return `
       ${CourierInboxHeader.id} {

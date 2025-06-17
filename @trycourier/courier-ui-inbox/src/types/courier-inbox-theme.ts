@@ -1,37 +1,37 @@
 import { CourierColors, CourierIconSVGs, SystemThemeMode } from "@trycourier/courier-ui-core";
 
-export type CourierInboxFont = {
+export type CourierInboxFontTheme = {
   family?: string;
   weight?: string;
   size?: string;
   color?: string;
 }
 
-export type CourierInboxIcon = {
+export type CourierInboxIconTheme = {
   color?: string;
   svg?: string;
 }
 
-export type CourierInboxFilterItem = {
-  icon?: CourierInboxIcon;
+export type CourierInboxFilterItemTheme = {
+  icon?: CourierInboxIconTheme;
   text?: string;
 }
 
-export type CourierInboxUnreadIndicator = {
-  font?: CourierInboxFont;
+export type CourierInboxUnreadIndicatorTheme = {
+  font?: CourierInboxFontTheme;
   backgroundColor?: string;
   borderRadius?: string;
 }
 
-export type CourierInboxIconButton = {
-  icon?: CourierInboxIcon;
+export type CourierInboxIconButtonTheme = {
+  icon?: CourierInboxIconTheme;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   activeBackgroundColor?: string;
 }
 
-export type CourierInboxButton = {
-  font?: CourierInboxFont;
+export type CourierInboxButtonTheme = {
+  font?: CourierInboxFontTheme;
   text?: string;
   shadow?: string;
   border?: string;
@@ -41,33 +41,33 @@ export type CourierInboxButton = {
   activeBackgroundColor?: string;
 }
 
-export type CourierInboxMenuButton = CourierInboxIconButton & {
-  unreadIndicator?: CourierInboxUnreadIndicator;
+export type CourierInboxMenuButtonTheme = CourierInboxIconButtonTheme & {
+  unreadIndicator?: CourierInboxUnreadIndicatorTheme;
 }
 
-export type CourierInboxPopup = {
+export type CourierInboxPopupTheme = {
   backgroundColor?: string;
   border?: string;
   borderRadius?: string;
   shadow?: string;
   list?: {
-    font?: CourierInboxFont;
-    selectionIcon?: CourierInboxIcon;
+    font?: CourierInboxFontTheme;
+    selectionIcon?: CourierInboxIconTheme;
     hoverBackgroundColor?: string;
     activeBackgroundColor?: string;
     divider?: string;
   };
 }
 
-export type CourierInboxListItem = {
+export type CourierInboxListItemTheme = {
   unreadIndicatorColor?: string;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   activeBackgroundColor?: string;
-  title?: CourierInboxFont;
-  subtitle?: CourierInboxFont;
-  time?: CourierInboxFont;
-  archiveIcon?: CourierInboxIcon;
+  title?: CourierInboxFontTheme;
+  subtitle?: CourierInboxFontTheme;
+  time?: CourierInboxFontTheme;
+  archiveIcon?: CourierInboxIconTheme;
   divider?: string;
   actions?: {
     backgroundColor?: string;
@@ -76,7 +76,7 @@ export type CourierInboxListItem = {
     border?: string;
     borderRadius?: string;
     shadow?: string;
-    font?: CourierInboxFont;
+    font?: CourierInboxFontTheme;
   }
   menu?: {
     enabled?: boolean;
@@ -92,15 +92,15 @@ export type CourierInboxListItem = {
       hoverBackgroundColor?: string;
       activeBackgroundColor?: string;
       borderRadius?: string;
-      read?: CourierInboxIcon;
-      unread?: CourierInboxIcon;
-      archive?: CourierInboxIcon;
-      unarchive?: CourierInboxIcon;
+      read?: CourierInboxIconTheme;
+      unread?: CourierInboxIconTheme;
+      archive?: CourierInboxIconTheme;
+      unarchive?: CourierInboxIconTheme;
     };
   };
 }
 
-export type CourierInboxSkeletonLoadingState = {
+export type CourierInboxSkeletonLoadingStateTheme = {
   animation?: {
     barColor?: string;
     barHeight?: string;
@@ -110,35 +110,35 @@ export type CourierInboxSkeletonLoadingState = {
   divider?: string;
 }
 
-export type CourierInboxInfoState = {
+export type CourierInboxInfoStateTheme = {
   title?: {
-    font?: CourierInboxFont;
+    font?: CourierInboxFontTheme;
     text?: string;
   },
-  button?: CourierInboxButton;
+  button?: CourierInboxButtonTheme;
 }
 
-export type CourierMenuItem = {
-  icon?: CourierInboxIcon;
+export type CourierMenuItemTheme = {
+  icon?: CourierInboxIconTheme;
   text?: string;
 }
 
-export type CourierFilterMenu = {
-  button?: CourierInboxIconButton;
-  inbox?: CourierMenuItem;
-  archive?: CourierMenuItem;
+export type CourierFilterMenuTheme = {
+  button?: CourierInboxIconButtonTheme;
+  inbox?: CourierMenuItemTheme;
+  archive?: CourierMenuItemTheme;
 }
 
-export type CourierActionMenu = {
-  button?: CourierInboxIconButton;
-  markAllRead?: CourierMenuItem;
-  archiveAll?: CourierMenuItem;
-  archiveRead?: CourierMenuItem;
+export type CourierActionMenuTheme = {
+  button?: CourierInboxIconButtonTheme;
+  markAllRead?: CourierMenuItemTheme;
+  archiveAll?: CourierMenuItemTheme;
+  archiveRead?: CourierMenuItemTheme;
 }
 
 export type CourierInboxTheme = {
   popup?: {
-    button?: CourierInboxMenuButton;
+    button?: CourierInboxMenuButtonTheme;
     window?: {
       backgroundColor?: string;
       borderRadius?: string;
@@ -151,24 +151,24 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       shadow?: string;
       filters?: {
-        font?: CourierInboxFont;
-        inbox?: CourierInboxFilterItem;
-        archive?: CourierInboxFilterItem;
-        unreadIndicator?: CourierInboxUnreadIndicator;
+        font?: CourierInboxFontTheme;
+        inbox?: CourierInboxFilterItemTheme;
+        archive?: CourierInboxFilterItemTheme;
+        unreadIndicator?: CourierInboxUnreadIndicatorTheme;
       }
       menus?: {
-        popup?: CourierInboxPopup;
-        filters?: CourierFilterMenu;
-        actions?: CourierActionMenu;
+        popup?: CourierInboxPopupTheme;
+        filters?: CourierFilterMenuTheme;
+        actions?: CourierActionMenuTheme;
       }
     }
     list?: {
       backgroundColor?: string;
-      item?: CourierInboxListItem;
+      item?: CourierInboxListItemTheme;
     },
-    loading?: CourierInboxSkeletonLoadingState,
-    empty?: CourierInboxInfoState,
-    error?: CourierInboxInfoState
+    loading?: CourierInboxSkeletonLoadingStateTheme,
+    empty?: CourierInboxInfoStateTheme,
+    error?: CourierInboxInfoStateTheme
   }
 };
 
@@ -634,7 +634,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
     },
     loading: {
       animation: {
-        barColor: CourierColors.white[500],
+        barColor: CourierColors.gray[400],
         barHeight: '14px',
         barBorderRadius: '14px',
         duration: '2s'

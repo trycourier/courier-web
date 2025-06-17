@@ -1,9 +1,9 @@
-import { CourierBaseElement, CourierIconButton, injectGlobalStyle, registerElement } from '@trycourier/courier-ui-core';
-import { CourierInboxIcon, CourierInboxTheme } from '../types/courier-inbox-theme';
+import { CourierBaseElement, CourierIconButton, registerElement } from '@trycourier/courier-ui-core';
+import { CourierInboxIconTheme, CourierInboxTheme } from '../types/courier-inbox-theme';
 
 export type CourierInboxListItemActionMenuOption = {
   id: string;
-  icon: CourierInboxIcon;
+  icon: CourierInboxIconTheme;
   onClick: () => void;
 };
 
@@ -23,16 +23,13 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   onComponentMounted() {
-    injectGlobalStyle(CourierInboxListItemMenu.id, this.getStyles());
-
-    // Menu container
     const menu = document.createElement('ul');
     menu.className = 'menu';
     this.appendChild(menu);
   }
 
-  getStyles(): string {
-    const theme = this._theme;
+  static getStyles(theme: CourierInboxTheme): string {
+
     const menu = theme.inbox?.list?.item?.menu;
 
     return `

@@ -1,5 +1,5 @@
 import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierButton, CourierIcon, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
@@ -43,8 +43,6 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   private render() {
-
-    injectGlobalStyle(CourierInboxListItem.id, this.getStyles());
 
     const messageAttr = this.getAttribute('message');
     const feedTypeAttr = this.getAttribute('feed-type');
@@ -119,9 +117,9 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   }
 
-  getStyles(): string {
+  static getStyles(theme: CourierInboxTheme): string {
 
-    const list = this._theme.inbox?.list;
+    const list = theme.inbox?.list;
 
     return `
       ${CourierInboxListItem.id} {
@@ -183,7 +181,7 @@ export class CourierInboxListItem extends CourierBaseElement {
         display: none;
       }
 
-      ${CourierInboxListItem.id} .unread .unread-indicator {
+      ${CourierInboxListItem.id}.unread .unread-indicator {
         display: block;
       }
 
