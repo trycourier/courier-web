@@ -1,6 +1,6 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierColors, CourierInfoState, registerElement } from "@trycourier/courier-ui-core";
-import { CourierListItem } from "./courier-inbox-list-item";
+import { CourierBaseElement, CourierInfoState, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -8,6 +8,7 @@ import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps,
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
+import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
 
 export class CourierInboxList extends CourierBaseElement {
 
@@ -44,6 +45,9 @@ export class CourierInboxList extends CourierBaseElement {
     return this._messages;
   }
 
+  // Components
+  private _style?: HTMLStyleElement;
+
   constructor(props: {
     themeManager: CourierInboxThemeManager,
     onRefresh: () => void,
@@ -54,11 +58,6 @@ export class CourierInboxList extends CourierBaseElement {
   }) {
     super();
 
-    // Initialize the theme subscription
-    this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
-      this.refreshTheme();
-    });
-
     // Initialize the callbacks
     this._onRefresh = props.onRefresh;
     this._onPaginationTrigger = props.onPaginationTrigger;
@@ -66,42 +65,46 @@ export class CourierInboxList extends CourierBaseElement {
     this._onMessageActionClick = props.onMessageActionClick;
     this._onMessageLongPress = props.onMessageLongPress;
 
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
-    this.appendChild(style);
+    // Initialize the theme subscription
+    this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
+      this.refreshTheme();
+    });
 
   }
 
-  private getStyles(): string {
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierInboxList.id, this.getStyles());
+    this.render();
+  }
 
+  onComponentUnmounted() {
+    this._themeSubscription.unsubscribe();
+    this._style?.remove();
+
+    // Remove list item styles
+    [CourierInboxListItem.id, CourierInboxListItemMenu.id].forEach(id => {
+      const style = document.head.querySelector(`data-${id}`);
+      style?.remove();
+    });
+  }
+
+  getStyles(): string {
     const list = this._themeSubscription.manager.getTheme().inbox?.list;
 
     return `
-      :host {
+      ${CourierInboxList.id} {
         flex: 1;
         width: 100%;
-        background-color: ${list?.backgroundColor ?? CourierColors.white[500]};
+        background-color: ${list?.backgroundColor ?? 'red'};
       }
 
-      ul {
+      ${CourierInboxList.id} ul {
         list-style: none;
         padding: 0;
         margin: 0;
         height: 100%;
       }
     `;
-  }
-
-  private reset(): void {
-    // Remove any existing elements from the shadow root
-    while (this.shadowRoot?.firstChild) {
-      this.shadowRoot.removeChild(this.shadowRoot.firstChild);
-    }
-
-    // Re-add the style element
-    const style = document.createElement('style');
-    style.textContent = this.getStyles();
-    this.shadowRoot?.appendChild(style);
   }
 
   public setDataSet(dataSet: InboxDataSet): void {
@@ -168,9 +171,16 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   private render(): void {
-    this.reset();
+
+    while (this.firstChild) {
+      this.removeChild(this.firstChild);
+    }
 
     const theme = this._themeSubscription.manager.getTheme();
+
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
 
     // Error state
     if (this._error) {
@@ -199,7 +209,7 @@ export class CourierInboxList extends CourierBaseElement {
       });
       errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
       errorElement.setButtonClickCallback(() => this.handleRetry());
-      this.shadowRoot?.appendChild(errorElement);
+      this.appendChild(errorElement);
       return;
     }
 
@@ -207,7 +217,7 @@ export class CourierInboxList extends CourierBaseElement {
     if (this._isLoading) {
       const loadingElement = new CourierInboxSkeletonList(theme);
       loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
-      this.shadowRoot?.appendChild(loadingElement);
+      this.appendChild(loadingElement);
       return;
     }
 
@@ -238,13 +248,13 @@ export class CourierInboxList extends CourierBaseElement {
       });
       emptyElement.build(this._emptyStateFactory?.({ feedType: this._feedType }));
       emptyElement.setButtonClickCallback(() => this.handleRefresh());
-      this.shadowRoot?.appendChild(emptyElement);
+      this.appendChild(emptyElement);
       return;
     }
 
     // Create list before adding messages
     const list = document.createElement('ul');
-    this.shadowRoot?.appendChild(list);
+    this.appendChild(list);
 
     // Add messages to the list
     this._messages.forEach((message, index) => {
@@ -253,7 +263,7 @@ export class CourierInboxList extends CourierBaseElement {
         return;
       }
 
-      const listItem = new CourierListItem(theme);
+      const listItem = new CourierInboxListItem(theme);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
@@ -300,11 +310,6 @@ export class CourierInboxList extends CourierBaseElement {
 
   public refreshTheme(): void {
     this.render();
-  }
-
-  // Disconnect the theme subscription
-  disconnectedCallback() {
-    this._themeSubscription.unsubscribe();
   }
 
 }

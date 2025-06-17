@@ -17,26 +17,18 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   private _theme: CourierInboxTheme;
   private _options: CourierInboxListItemActionMenuOption[] = [];
 
-  // Components
-  private _style?: HTMLStyleElement;
-
   constructor(theme: CourierInboxTheme) {
     super();
     this._theme = theme;
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxListItemMenu.id, this.getStyles());
+    injectGlobalStyle(CourierInboxListItemMenu.id, this.getStyles());
 
     // Menu container
     const menu = document.createElement('ul');
     menu.className = 'menu';
     this.appendChild(menu);
-
-  }
-
-  onComponentUnmounted() {
-    this._style?.remove();
   }
 
   getStyles(): string {
@@ -45,7 +37,7 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
 
     return `
       ${CourierInboxListItemMenu.id} {
-        display: block;
+        display: none;
         position: absolute;
         background: ${menu?.backgroundColor ?? 'red'};
         border: ${menu?.border ?? '1px solid red'};
@@ -58,7 +50,8 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         overflow: hidden;
       }
 
-      ${CourierInboxListItemMenu.id}(.visible) {
+      ${CourierInboxListItemMenu.id}.visible {
+        display: block;
         opacity: 1;
         pointer-events: auto;
       }
@@ -129,10 +122,12 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   show() {
+    this.style.display = 'block';
     this.classList.add('visible');
   }
 
   hide() {
+    this.style.display = 'none';
     this.classList.remove('visible');
   }
 }
