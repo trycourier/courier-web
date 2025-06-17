@@ -15,13 +15,6 @@ export default function Home() {
     });
   }, []);
 
-  return (
-    <CourierInbox
-      height='100%'
-      onMessageClick={(props: CourierInboxListItemFactoryProps) => {
-        alert(JSON.stringify(props));
-      }}
-    />
-  );
+  return <CourierInbox height='100%' />;
 
 }
