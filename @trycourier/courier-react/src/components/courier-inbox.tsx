@@ -22,7 +22,7 @@ export interface CourierInboxProps {
 }
 
 export const CourierInbox = forwardRef<CourierInboxElement, CourierInboxProps>((props, ref) => {
-  const inboxRef = useRef<CourierInboxElement>(null);
+  const inboxRef = useRef<CourierInboxElement | null>(null);
 
   // Expose the internal ref to the parent if a ref was passed in
   useEffect(() => {
