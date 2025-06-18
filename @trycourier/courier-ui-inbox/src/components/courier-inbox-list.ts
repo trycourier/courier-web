@@ -80,7 +80,9 @@ export class CourierInboxList extends CourierBaseElement {
 
   onComponentMounted() {
 
-    // Inject styles add head
+    // Inject styles at head
+    // Since list items and menus don't listen to theme changes directly, their styles are created
+    // at the parent level, and the parent manages their theming updates.
     this._listStyles = injectGlobalStyle(CourierInboxList.id, CourierInboxList.getStyles(this.theme));
     this._listItemStyles = injectGlobalStyle(CourierInboxListItem.id, CourierInboxListItem.getStyles(this.theme));
     this._listItemMenuStyles = injectGlobalStyle(CourierInboxListItemMenu.id, CourierInboxListItemMenu.getStyles(this.theme));
@@ -183,6 +185,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   private render(): void {
 
+    // Remove all existing elements
     while (this.firstChild) {
       this.removeChild(this.firstChild);
     }
