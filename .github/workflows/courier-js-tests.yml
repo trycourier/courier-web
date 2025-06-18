@@ -1,0 +1,36 @@
+name: Courier JS Tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: '@trycourier/courier-js'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Build courier-js
+        run: npm run build
+      - name: Run courier-js tests
+        run: npm run test
+        env:
+          JWT: ${{ secrets.JWT }}
+          USER_ID: ${{ vars.USER_ID }}
+          COURIER_REST_URL: ${{ vars.COURIER_REST_URL }}
+          COURIER_GRAPHQL_URL: ${{ vars.COURIER_GRAPHQL_URL }}
+          INBOX_GRAPHQL_URL: ${{ vars.INBOX_GRAPHQL_URL }}
+          INBOX_WEBSOCKET_URL: ${{ vars.INBOX_WEBSOCKET_URL }}
+          BRAND_ID: ${{ vars.BRAND_ID }}
+          TOPIC_ID: ${{ vars.TOPIC_ID }}

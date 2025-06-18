@@ -72,6 +72,7 @@ export function getMessageTime(message: InboxMessage): string {
   const messageDate = new Date(message.created);
   const diffInSeconds = Math.floor((now.getTime() - messageDate.getTime()) / 1000);
 
+  if (diffInSeconds < 5) return 'Now';
   if (diffInSeconds < 60) return `${diffInSeconds}s`;
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;

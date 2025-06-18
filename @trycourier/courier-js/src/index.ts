@@ -38,8 +38,7 @@ import {
   InboxMessage,
   InboxAction,
 } from './types/inbox';
-import { CourierSocket } from './socket/courier-socket';
-import { MessageEvent, MessageEventEnvelope } from './types/socket/protocol/messages';
+import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/messages';
 
 // Client
 import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';
@@ -66,11 +65,11 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  MessageEventEnvelope,
+  InboxMessageEventEnvelope,
 };
 
 export {
-  MessageEvent,
+  InboxMessageEvent,
 };
 
 export {
@@ -80,7 +79,6 @@ export {
   PreferenceClient,
   InboxClient,
   ListClient,
-  CourierSocket
 };
 
 // Listeners

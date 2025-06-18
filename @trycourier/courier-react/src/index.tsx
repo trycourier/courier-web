@@ -25,7 +25,7 @@ export type {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
-  MessageEventEnvelope,
+  InboxMessageEventEnvelope,
 } from '@trycourier/courier-js';
 
 // Re-export utility functions from courier-ui-inbox

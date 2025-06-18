@@ -1,7 +1,6 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/errors";
-import { ReconnectMessage, ServerMessageEnvelope } from "../types/socket/protocol/messages";
-import { MessageEventEnvelope } from "../types/socket/protocol/messages";
+import { ServerMessage } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
 import { IPW_VERSION } from "./version";
 
@@ -104,7 +103,7 @@ export abstract class CourierSocket {
 
       this.webSocket.addEventListener('message', async (event: MessageEvent) => {
         try {
-          const json = JSON.parse(event.data) as ServerMessageEnvelope | MessageEventEnvelope | ReconnectMessage;
+          const json = JSON.parse(event.data) as ServerMessage;
           if ('event' in json && json.event === 'reconnect') {
             this.close(CLOSE_CODE_NORMAL_CLOSURE);
             await this.retryConnection(json.retryAfter * 1000);
@@ -194,7 +193,7 @@ export abstract class CourierSocket {
    *
    * @param data The message received.
    */
-  public abstract onMessageReceived(data: ServerMessageEnvelope | MessageEventEnvelope): Promise<void>;
+  public abstract onMessageReceived(data: ServerMessage): Promise<void>;
 
   /**
    * Called when the WebSocket connection is closed.
@@ -300,7 +299,7 @@ export abstract class CourierSocket {
    * @param suggestedBackoffTimeInMillis The suggested backoff time in milliseconds.
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
-  private async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
+  protected async retryConnection(suggestedBackoffTimeInMillis?: number): Promise<void> {
     if (this.retryTimeoutId !== null) {
       this.logger?.debug('Skipping retry attempt because a previous retry is already scheduled.');
       return;
