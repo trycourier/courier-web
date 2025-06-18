@@ -89,7 +89,6 @@ describe("CourierInboxDatastore", () => {
 
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
-      await datastore.load({ canUseCache: false });
 
       await datastore.archiveAllMessages({ canCallApi: false });
 
@@ -112,7 +111,6 @@ describe("CourierInboxDatastore", () => {
 
       // Load the inbox and archive feeds
       const datastore = CourierInboxDatastore.shared;
-      await datastore.load({ canUseCache: false });
       await datastore.load({ canUseCache: false });
 
       await datastore.archiveReadMessages();
@@ -139,7 +137,6 @@ describe("CourierInboxDatastore", () => {
       });
 
       const datastore = CourierInboxDatastore.shared;
-      await datastore.load({ canUseCache: false });
       await datastore.load({ canUseCache: false });
 
       await datastore.archiveReadMessages();

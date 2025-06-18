@@ -85,11 +85,7 @@ export class CourierInboxDatastore {
 
       // If the user is not signed in, return early
       if (!client?.options.userId) {
-
-        // Show this in the console to help the developer know they need to call sign in
-        console.error('No user signed in. Make sure you call Courier.shared.signIn(...) to ensure you have a user that can view the CourierInbox.')
         throw new Error('User is not signed in');
-
       }
 
       // If no props are provided, use the default values
@@ -308,7 +304,7 @@ export class CourierInboxDatastore {
    * @returns True if the datastore is loaded and ready to perform mutations, false otherwise
    */
   private canMutate(): boolean {
-    return Courier.shared.client !== undefined;
+    return !!(Courier.shared.client && this._inboxDataSet && this._archiveDataSet);
   }
 
   async readMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {

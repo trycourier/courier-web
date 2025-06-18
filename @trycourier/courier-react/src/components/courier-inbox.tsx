@@ -14,7 +14,7 @@ export interface CourierInboxProps {
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
   renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => JSX.Element;
-  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => React.ReactElement;
+  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => JSX.Element;
   renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => JSX.Element;
   renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => JSX.Element;
   renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => JSX.Element;

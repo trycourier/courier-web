@@ -1,4 +1,4 @@
-import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -43,22 +43,6 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   private render() {
-
-    const messageAttr = this.getAttribute('message');
-    const feedTypeAttr = this.getAttribute('feed-type');
-
-    if (feedTypeAttr) {
-      this._feedType = feedTypeAttr as CourierInboxFeedType;
-    }
-
-    if (messageAttr) {
-      try {
-        this._message = JSON.parse(messageAttr) as InboxMessage;
-        this._updateContent();
-      } catch (err) {
-        Courier.shared.client?.options.logger?.error('CourierListItem - failed to parse message:', err);
-      }
-    }
 
     const contentContainer = document.createElement('div');
     contentContainer.className = 'content-container';
@@ -322,13 +306,9 @@ export class CourierInboxListItem extends CourierBaseElement {
         onClick: () => {
           if (this._message) {
             if (this._message.read) {
-              CourierInboxDatastore.shared.unreadMessage({ message: this._message }).then(() => {
-                console.log('DONE!')
-              });
+              CourierInboxDatastore.shared.unreadMessage({ message: this._message })
             } else {
-              CourierInboxDatastore.shared.readMessage({ message: this._message }).then(() => {
-                console.log('DONE!')
-              });
+              CourierInboxDatastore.shared.readMessage({ message: this._message })
             }
           }
         },
