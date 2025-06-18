@@ -60,10 +60,6 @@ export class CourierInboxSkeletonList extends CourierFactoryElement {
 
       ${CourierInboxSkeletonList.id} .list > * {
         border-bottom: ${theme.inbox?.loading?.divider ?? '1px solid red'};
-      }
-
-      ${CourierInboxSkeletonList.id} .list > *:first-child {
-        border-bottom: ${theme.inbox?.loading?.divider ?? '1px solid red'};
         opacity: 100%;
       }
 
