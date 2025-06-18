@@ -1,7 +1,7 @@
 import { CourierClientOptions } from "../client/courier-client";
-import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/v1/errors";
-import { ReconnectMessage, ServerMessageEnvelope } from "../types/socket/protocol/v1/messages";
-import { MessageEventEnvelope } from "../types/socket/protocol/v1/messages";
+import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/errors";
+import { ReconnectMessage, ServerMessageEnvelope } from "../types/socket/protocol/messages";
+import { MessageEventEnvelope } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
 import { IPW_VERSION } from "./version";
 

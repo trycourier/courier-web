@@ -1,4 +1,4 @@
-import { InboxMessage } from "../../../inbox";
+import { InboxMessage } from "../../inbox";
 
 /**
  * Client actions.

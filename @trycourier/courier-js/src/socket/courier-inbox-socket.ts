@@ -1,5 +1,5 @@
 import { CourierClientOptions } from '../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../types/socket/protocol/v1/messages';
+import { ClientAction, ClientMessageEnvelope, MessageEventEnvelope, ServerAction, ServerMessageEnvelope } from '../types/socket/protocol/messages';
 import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
 
