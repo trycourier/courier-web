@@ -15,21 +15,21 @@
     import { CourierInbox } from '@trycourier/courier-ui-inbox';
     import { Courier } from '@trycourier/courier-js';
 
-    Courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-      apiUrls: {
-        inbox: {
-          webSocket: import.meta.env.VITE_INBOX_WEBSOCKET_URL,
-          graphql: import.meta.env.VITE_INBOX_GRAPHQL_URL,
-        },
-        courier: {
-          rest: import.meta.env.VITE_COURIER_REST_URL,
-          graphql: import.meta.env.VITE_COURIER_GRAPHQL_URL
-        }
-      },
-      showLogs: true
-    });
+    // Courier.shared.signIn({
+    //   userId: import.meta.env.VITE_USER_ID,
+    //   jwt: import.meta.env.VITE_JWT,
+    //   apiUrls: {
+    //     inbox: {
+    //       webSocket: import.meta.env.VITE_INBOX_WEBSOCKET_URL,
+    //       graphql: import.meta.env.VITE_INBOX_GRAPHQL_URL,
+    //     },
+    //     courier: {
+    //       rest: import.meta.env.VITE_COURIER_REST_URL,
+    //       graphql: import.meta.env.VITE_COURIER_GRAPHQL_URL
+    //     }
+    //   },
+    //   showLogs: true
+    // });
   </script>
 </body>
 

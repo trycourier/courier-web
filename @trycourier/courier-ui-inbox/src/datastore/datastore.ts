@@ -85,7 +85,11 @@ export class CourierInboxDatastore {
 
       // If the user is not signed in, return early
       if (!client?.options.userId) {
+
+        // Show this in the console to help the developer know they need to call sign in
+        console.error('No user signed in. Make sure you call Courier.shared.signIn(...) to ensure you have a user that can view the CourierInbox.')
         throw new Error('User is not signed in');
+
       }
 
       // If no props are provided, use the default values

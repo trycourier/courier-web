@@ -285,7 +285,6 @@ export class CourierInbox extends CourierBaseElement {
 
     // Load data
     this.load({
-      feedType: this._currentFeed,
       canUseCache: true
     });
   }
