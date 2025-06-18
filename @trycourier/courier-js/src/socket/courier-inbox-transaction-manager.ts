@@ -1,4 +1,4 @@
-import { ClientMessageEnvelope, ServerMessage } from "../types/socket/protocol/v1/messages";
+import { ClientMessageEnvelope, ServerMessage } from "../types/socket/protocol/messages";
 
 export class TransactionManager {
   /**

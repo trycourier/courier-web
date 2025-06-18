@@ -3,7 +3,7 @@ import { CourierInboxSocket } from "../socket/courier-inbox-socket";
 import { Logger } from "../utils/logger";
 import { CourierApiUrls } from "../types/courier-api-urls";
 import WebSocketServer from "jest-websocket-mock";
-import { ClientAction, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerResponse } from "../types/socket/protocol/v1/messages";
+import { ClientAction, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerResponse } from "../types/socket/protocol/messages";
 import { UUID } from "../utils/uuid";
 
 const nanoidSpy = jest.spyOn(UUID, 'nanoid');

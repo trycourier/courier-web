@@ -31,3 +31,7 @@ body {
   align-items: center;
   padding: 100px;
 }
+
+.test {
+  color: red;
+}

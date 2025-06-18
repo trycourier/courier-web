@@ -38,7 +38,7 @@ import {
   InboxMessage,
   InboxAction,
 } from './types/inbox';
-import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/v1/messages';
+import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/messages';
 
 // Client
 import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';

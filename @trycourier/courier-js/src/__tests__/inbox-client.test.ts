@@ -1,4 +1,4 @@
-import { InboxMessageEvent } from '../types/socket/protocol/v1/messages';
+import { InboxMessageEvent } from '../types/socket/protocol/messages';
 import { getClient } from './utils';
 
 describe('InboxClient', () => {

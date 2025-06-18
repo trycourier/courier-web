@@ -9,6 +9,6 @@ export type MessageSnapshot = {
 
 export type DataSetSnapshot = {
   unreadCount: number;
-  inbox: InboxDataSet;
-  archive: InboxDataSet;
+  inbox?: InboxDataSet;
+  archive?: InboxDataSet;
 };

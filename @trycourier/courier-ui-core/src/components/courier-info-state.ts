@@ -1,4 +1,4 @@
-import { CourierElement } from "./courier-element";
+import { CourierFactoryElement } from "./courier-element";
 import { CourierButton, CourierButtonProps, CourierButtonVariants } from "./courier-button";
 import { SystemThemeMode } from "../utils/system-theme-mode";
 
@@ -13,7 +13,11 @@ export type CourierInfoStateProps = {
   button: CourierButtonProps;
 };
 
-export class CourierInfoState extends CourierElement {
+export class CourierInfoState extends CourierFactoryElement {
+
+  static get id(): string {
+    return 'courier-info-state';
+  }
 
   // Props
   private _props: CourierInfoStateProps;
@@ -50,7 +54,7 @@ export class CourierInfoState extends CourierElement {
     container.appendChild(this._style);
     container.appendChild(this._title);
     container.appendChild(this._button);
-    this.shadow.appendChild(container);
+    this.appendChild(container);
 
     this._button?.addEventListener('click', () => {
       if (this._buttonClickCallback) {
@@ -84,6 +88,8 @@ export class CourierInfoState extends CourierElement {
         gap: 16px;
         text-align: center;
         padding: 24px;
+        box-sizing: border-box;
+        height: 100%;
       }
 
       .container h2 {

@@ -125,13 +125,9 @@ export class CourierInboxDatastore {
     }
   }
 
-  /** Listen for inbox and archive dataset updates. */
+  // Connect the socket
   public async listenForUpdates() {
     try {
-      // Ensure both datasets are loaded since we may receive updates for messages in either.
-      await this.ensureDataSetsLoaded();
-
-      // Connect to the socket
       await this.connectSocket();
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Error listening for updates:', error);
@@ -139,21 +135,6 @@ export class CourierInboxDatastore {
         listener.events.onError?.(error as Error);
       });
     }
-  }
-
-  /** Fetch either/both datasets if they aren't already loaded. */
-  private async ensureDataSetsLoaded() {
-    let dataSetPromises: Promise<void>[] = [];
-
-    if (!this._inboxDataSet) {
-      dataSetPromises.push(this.load({ feedType: 'inbox', canUseCache: true }));
-    }
-
-    if (!this._archiveDataSet) {
-      dataSetPromises.push(this.load({ feedType: 'archive', canUseCache: true }));
-    }
-
-    await Promise.all(dataSetPromises);
   }
 
   private async connectSocket() {
@@ -327,7 +308,7 @@ export class CourierInboxDatastore {
    * @returns True if the datastore is loaded and ready to perform mutations, false otherwise
    */
   private canMutate(): boolean {
-    return !!(Courier.shared.client && this._inboxDataSet && this._archiveDataSet);
+    return Courier.shared.client !== undefined;
   }
 
   async readMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean; }): Promise<void> {
@@ -336,7 +317,7 @@ export class CourierInboxDatastore {
     }
 
     // Get the datastore snapshot
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     // Copy original message and index
     const snapshot = this.getMessageSnapshot(message);
@@ -375,7 +356,7 @@ export class CourierInboxDatastore {
     }
 
     // Get the datastore snapshot
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     // Save original message and index
     const snapshot = this.getMessageSnapshot(message);
@@ -469,7 +450,7 @@ export class CourierInboxDatastore {
     }
 
     // Get the datastore snapshots
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     try {
 
@@ -501,7 +482,7 @@ export class CourierInboxDatastore {
     }
 
     // Get the datastore snapshots
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     // Get the message snapshot
     const messageSnapshot = this.getMessageSnapshot(message);
@@ -541,7 +522,7 @@ export class CourierInboxDatastore {
     }
 
     // Get snapshot of the inbox data set
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     try {
 
@@ -595,7 +576,7 @@ export class CourierInboxDatastore {
     }
 
     // Get snapshot of the inbox data set
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     try {
 
@@ -652,7 +633,7 @@ export class CourierInboxDatastore {
     }
 
     // Store original state for potential rollback
-    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet!, this._archiveDataSet!);
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
 
     try {
 
@@ -795,8 +776,12 @@ export class CourierInboxDatastore {
 
     // Notify listeners
     this._dataStoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(inbox, 'inbox');
-      listener.events.onDataSetChange?.(archive, 'archive');
+      if (this._inboxDataSet) {
+        listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+      }
+      if (this._archiveDataSet) {
+        listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+      }
       listener.events.onUnreadCountChange?.(unreadCount);
     });
   }
@@ -839,7 +824,7 @@ export class CourierInboxDatastore {
    * @param dataSet - The inbox data set to copy
    * @returns A copy of the inbox data set
    */
-  private getDatastoreSnapshot(unreadCount: number, inboxDataSet: InboxDataSet, archiveDataSet: InboxDataSet): DataSetSnapshot {
+  private getDatastoreSnapshot(unreadCount: number, inboxDataSet?: InboxDataSet, archiveDataSet?: InboxDataSet): DataSetSnapshot {
     return {
       unreadCount,
       inbox: copyInboxDataSet(inboxDataSet),

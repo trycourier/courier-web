@@ -1,15 +1,19 @@
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierIconSVGs, CourierElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierIconSVGs, CourierFactoryElement, registerElement, CourierColors, injectGlobalStyle } from "@trycourier/courier-ui-core";
 import { CourierInboxOptionMenu, CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
-import { CourierColors } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
 
-export class CourierInboxHeader extends CourierElement {
+export class CourierInboxHeader extends CourierFactoryElement {
+
+  static get id(): string {
+    return 'courier-inbox-header';
+  }
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -18,7 +22,44 @@ export class CourierInboxHeader extends CourierElement {
   private _feedType: CourierInboxFeedType = 'inbox';
   private _unreadCount: number = 0;
 
-  // Menu options
+  // Components
+  private _titleSection?: CourierInboxHeaderTitle;
+  private _filterMenu?: CourierInboxOptionMenu;
+  private _actionMenu?: CourierInboxOptionMenu;
+  private _style?: HTMLStyleElement;
+
+  // Callbacks
+  private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
+
+  static get observedAttributes() {
+    return ['icon', 'title', 'feed-type'];
+  }
+
+  private get theme(): CourierInboxTheme {
+    return this._themeSubscription.manager.getTheme();
+  }
+
+  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
+    super();
+
+    // Subscribe to the theme bus
+    this._themeSubscription = props.themeManager.subscribe((_) => {
+      this.refreshTheme();
+    });
+
+    // Set the on feed type change callback
+    this._onFeedTypeChange = props.onFeedTypeChange;
+  }
+
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
+  }
+
+  onComponentUmounted() {
+    this._themeSubscription.unsubscribe();
+    this._style?.remove();
+  }
+
   private getFilterOptions(): CourierInboxMenuOption[] {
     const theme = this._themeSubscription.manager.getTheme();
     const filterMenu = theme.inbox?.header?.menus?.filters;
@@ -58,7 +99,6 @@ export class CourierInboxHeader extends CourierElement {
   }
 
   private getActionOptions(): CourierInboxMenuOption[] {
-
     const theme = this._themeSubscription.manager.getTheme();
     const actionMenu = theme.inbox?.header?.menus?.actions;
 
@@ -102,47 +142,15 @@ export class CourierInboxHeader extends CourierElement {
     ];
   }
 
-  // Components
-  private _titleSection?: CourierInboxHeaderTitle;
-  private _filterMenu?: CourierInboxOptionMenu;
-  private _actionMenu?: CourierInboxOptionMenu;
-  private _style?: HTMLStyleElement;
-
-  // Callbacks
-  private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
-
-  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
-    super();
-
-    // Subscribe to the theme bus
-    this._themeSubscription = props.themeManager.subscribe((_) => {
-      this.refreshTheme();
-    });
-
-    // Set the on feed type change callback
-    this._onFeedTypeChange = props.onFeedTypeChange;
-
-  }
-
-  static get observedAttributes() {
-    return ['icon', 'title', 'feed-type'];
-  }
-
   private refreshTheme() {
 
-    const theme = this._themeSubscription.manager.getTheme();
-
-    // Update header styles
-    const header = this.shadow?.querySelector('.courier-inbox-header') as HTMLElement;
-    if (header) {
-      header.style.backgroundColor = theme.inbox?.header?.backgroundColor ?? CourierColors.white[500];
-      header.style.boxShadow = theme.inbox?.header?.shadow ?? `0px 1px 0px 0px ${CourierColors.gray[500]}`;
+    if (this._style) {
+      this._style.textContent = CourierInboxHeader.getStyles(this.theme);
     }
 
     // Update menus
     this._filterMenu?.setOptions(this.getFilterOptions());
     this._actionMenu?.setOptions(this.getActionOptions());
-
   }
 
   private handleOptionMenuItemClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
@@ -156,10 +164,6 @@ export class CourierInboxHeader extends CourierElement {
   public render(props: CourierInboxHeaderFactoryProps): void {
     this._feedType = props.feedType;
     this._unreadCount = props.unreadCount;
-    this.refreshTitleSection();
-  }
-
-  private refreshTitleSection() {
     const option = this.getFilterOptions().find(opt => ['inbox', 'archive'].includes(opt.id) && opt.id === this._feedType);
     if (option) {
       this._titleSection?.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
@@ -169,19 +173,10 @@ export class CourierInboxHeader extends CourierElement {
 
   build(newElement: HTMLElement | undefined | null) {
     super.build(newElement);
-
-    // This will put the header above the rest of the elements
-    // This is needed incase someone wants to set shadow
-    this._style = document.createElement('style');
-    this._style.textContent = this.getStyles();
-    this.shadow?.appendChild(this._style);
-
     this.refreshTheme();
-
   }
 
   defaultElement(): HTMLElement {
-
     const filterOptions = this.getFilterOptions();
 
     this._titleSection = new CourierInboxHeaderTitle(this._themeSubscription.manager, filterOptions[0]);
@@ -205,41 +200,40 @@ export class CourierInboxHeader extends CourierElement {
     actions.appendChild(this._filterMenu);
     actions.appendChild(this._actionMenu);
 
-    const container = document.createElement('div');
-    container.className = 'courier-inbox-header';
-    container.appendChild(this._titleSection);
-    container.appendChild(spacer);
-    container.appendChild(actions);
+    const headerContent = document.createElement('div');
+    headerContent.className = 'header-content';
+    headerContent.appendChild(this._titleSection);
+    headerContent.appendChild(spacer);
+    headerContent.appendChild(actions);
 
-    return container;
+    return headerContent;
   }
 
-  private getStyles(): string {
+  static getStyles(theme: CourierInboxTheme): string {
+
     return `
-      :host {
-        z-index: 100;
+      ${CourierInboxHeader.id} {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
       }
 
-      .courier-inbox-header {
+      ${CourierInboxHeader.id} .header-content {
+        padding: 10px 10px 10px 16px;
+        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
+        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px red`};
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 10px 10px 16px;
-        background-color: ${CourierColors.white[500]};
-        box-shadow: 0px 1px 0px 0px ${CourierColors.gray[500]};
+        flex: 1;
+        z-index: 100;
       }
 
-      .header-content {
-        display: flex;
-        align-items: center;
+      ${CourierInboxHeader.id} .spacer {
         flex: 1;
       }
 
-      .spacer {
-        flex: 1;
-      }
-
-      .actions {
+      ${CourierInboxHeader.id} .actions {
         display: flex;
         align-items: center;
         gap: 4px;
@@ -247,10 +241,6 @@ export class CourierInboxHeader extends CourierElement {
     `;
   }
 
-  // Disconnect the theme subscription
-  disconnectedCallback() {
-    this._themeSubscription.unsubscribe();
-  }
 }
 
-registerElement('courier-inbox-header', CourierInboxHeader);
+registerElement(CourierInboxHeader);

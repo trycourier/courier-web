@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 
 /**
  * Converts a React node to an HTMLElement.
@@ -11,21 +11,19 @@ import { flushSync } from "react-dom";
 export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
   const container = document.createElement('div');
 
-  // Use flushSync to ensure the DOM is updated synchronously
+  // Use React 18 root
+  const root = createRoot(container);
   flushSync(() => {
-    render(node, container);
+    root.render(node);
   });
 
-  return container;
-}
+  // Wait until React mounts the content synchronously
+  const element = container.firstElementChild;
+  if (!(element instanceof HTMLElement)) {
+    throw new Error(
+      'renderListItem must return a single JSX element that renders to an HTMLElement (e.g., <div>)'
+    );
+  }
 
-/**
- * Render a React node using createRoot.
- * @param node - The React node to render.
- * @param container - The container to render the node into.
- * @returns The rendered node.
- */
-function render(node: ReactNode, container: HTMLElement) {
-  const root = createRoot(container);
-  return root.render(node);
+  return element;
 }

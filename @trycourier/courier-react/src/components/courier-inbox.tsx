@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect, JSX, forwardRef } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
@@ -13,16 +13,25 @@ export interface CourierInboxProps {
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
-  renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => React.ReactNode;
-  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => React.ReactNode;
-  renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => React.ReactNode;
-  renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => React.ReactNode;
-  renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => React.ReactNode;
-  renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => React.ReactNode;
+  renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => JSX.Element;
+  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => React.ReactElement;
+  renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => JSX.Element;
+  renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => JSX.Element;
+  renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => JSX.Element;
+  renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => JSX.Element;
 }
 
-export const CourierInbox = (props: CourierInboxProps) => {
+export const CourierInbox = forwardRef<CourierInboxElement, CourierInboxProps>((props, ref) => {
   const inboxRef = useRef<CourierInboxElement>(null);
+
+  // Expose the internal ref to the parent if a ref was passed in
+  useEffect(() => {
+    if (typeof ref === "function") {
+      ref(inboxRef.current);
+    } else if (ref) {
+      (ref as React.RefObject<CourierInboxElement | null>).current = inboxRef.current;
+    }
+  }, [ref]);
 
   // Handle message click
   useEffect(() => {
@@ -138,4 +147,6 @@ export const CourierInbox = (props: CourierInboxProps) => {
       />
     </CourierClientComponent>
   );
-};
+});
+
+CourierInbox.displayName = 'CourierInbox';

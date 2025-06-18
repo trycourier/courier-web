@@ -1,4 +1,4 @@
-import { ClientAction, ServerResponse, ServerResponseEnvelope } from "../types/socket/protocol/v1/messages";
+import { ClientAction, ServerResponse, ServerResponseEnvelope } from "../types/socket/protocol/messages";
 import { TransactionManager } from "../socket/courier-inbox-transaction-manager";
 
 const TRANSACTION_ID = '123';

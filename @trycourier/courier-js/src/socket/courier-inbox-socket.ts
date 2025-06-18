@@ -1,9 +1,9 @@
 import { CourierClientOptions } from '../client/courier-client';
-import { ClientAction, ClientMessageEnvelope, Config, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerMessage, ServerResponseEnvelope } from '../types/socket/protocol/v1/messages';
+import { CLOSE_CODE_NORMAL_CLOSURE } from '../types/socket/protocol/errors';
+import { ClientAction, ClientMessageEnvelope, Config, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerMessage, ServerResponseEnvelope } from '../types/socket/protocol/messages';
 import { UUID } from '../utils/uuid';
-import { CourierSocket } from './courier-socket';
 import { TransactionManager } from './courier-inbox-transaction-manager';
-import { CLOSE_CODE_NORMAL_CLOSURE } from '../types/socket/protocol/v1/errors';
+import { CourierSocket } from './courier-socket';
 import { fixMessageEventEnvelope } from './inbox-message-utils';
 
 /** Application-layer implementation of the Courier WebSocket API for Inbox messages. */
