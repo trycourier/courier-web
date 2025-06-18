@@ -20,7 +20,8 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: false,
-      },
+        drop_debugger: false
+      }
     },
     sourcemap: true,
     minify: 'terser',

@@ -23,6 +23,12 @@ export default defineConfig({
     },
     sourcemap: true,
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+        drop_debugger: false
+      }
+    },
   },
   plugins: [
     dts({
