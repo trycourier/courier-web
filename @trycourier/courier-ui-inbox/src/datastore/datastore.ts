@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { Courier, CourierGetInboxMessagesResponse, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -41,35 +41,30 @@ export class CourierInboxDatastore {
     this._dataStoreListeners = this._dataStoreListeners.filter(l => l !== listener);
   }
 
-  private async fetchDataSet(props: { feedType: CourierInboxFeedType, canUseCache: boolean }): Promise<InboxDataSet> {
+  private async fetchCachableDataSet(props: { fetch: Promise<CourierGetInboxMessagesResponse>, feedType: CourierInboxFeedType, canUseCache: boolean }): Promise<InboxDataSet> {
 
-    // Return existing dataset if available
+    // If we can return the cached version, return it.
+    // If there is no cache, it will fall through and fetch the latest from the server.
     if (props.canUseCache) {
-      switch (props.feedType) {
-        case 'inbox':
-          if (this._inboxDataSet) {
-            return this._inboxDataSet;
-          }
-          break;
-        case 'archive':
-          if (this._archiveDataSet) {
-            return this._archiveDataSet;
-          }
-          break;
+      if (props.feedType === 'inbox' && this._inboxDataSet) {
+        return this._inboxDataSet;
+      }
+      if (props.feedType === 'archive' && this._archiveDataSet) {
+        return this._archiveDataSet;
       }
     }
 
-    // Otherwise fetch new dataset
-    const response = props.feedType === 'inbox'
-      ? await Courier.shared.client?.inbox.getMessages()
-      : await Courier.shared.client?.inbox.getArchivedMessages();
+    // Perform the fetch
+    const response = await props.fetch;
 
+    // Bundle the data properly
     return {
       feedType: props.feedType,
-      messages: response?.data?.messages?.nodes ?? [],
-      canPaginate: response?.data?.messages?.pageInfo?.hasNextPage ?? false,
-      paginationCursor: response?.data?.messages?.pageInfo?.startCursor ?? null,
+      messages: response.data?.messages?.nodes ?? [],
+      canPaginate: response.data?.messages?.pageInfo?.hasNextPage ?? false,
+      paginationCursor: response.data?.messages?.pageInfo?.startCursor ?? null,
     };
+
   }
 
   private async fetchUnreadCount(props: { canUseCache: boolean }): Promise<number> {
@@ -82,39 +77,40 @@ export class CourierInboxDatastore {
     return unreadCount ?? 0;
   }
 
-  public async load(props?: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
+  public async load(props?: { canUseCache: boolean }) {
 
     try {
 
+      const client = Courier.shared.client;
+
       // If the user is not signed in, return early
-      if (!Courier.shared.client?.options.userId) {
+      if (!client?.options.userId) {
         throw new Error('User is not signed in');
       }
 
       // If no props are provided, use the default values
-      const properties = props ?? { feedType: 'inbox', canUseCache: true };
+      const properties = props ?? { canUseCache: true };
 
-      // Fetch and update the data set and unread count in parallel
-      const [dataSet, unreadCount] = await Promise.all([
-        this.fetchDataSet(properties),
-        this.fetchUnreadCount(properties)
+      // Fetch the data. Done in parallel
+      const [inboxDataSet, archiveDataSet, unreadCount] = await Promise.all([
+        this.fetchCachableDataSet({ fetch: client.inbox.getMessages(), feedType: 'inbox', canUseCache: properties.canUseCache }),
+        this.fetchCachableDataSet({ fetch: client.inbox.getArchivedMessages(), feedType: 'archive', canUseCache: properties.canUseCache }),
+        this.fetchUnreadCount(properties),
       ]);
 
-      switch (properties.feedType) {
-        case 'inbox':
-          this._inboxDataSet = dataSet;
-          break;
-        case 'archive':
-          this._archiveDataSet = dataSet;
-          break;
-      }
-
-      // Update the unread count
+      // Update the local data
+      this._inboxDataSet = inboxDataSet;
+      this._archiveDataSet = archiveDataSet;
       this._unreadCount = unreadCount;
 
       // Notify the listeners
       this._dataStoreListeners.forEach(listener => {
-        listener.events.onDataSetChange?.(dataSet, properties.feedType);
+        if (this._inboxDataSet) {
+          listener.events.onDataSetChange?.(this._inboxDataSet, 'inbox');
+        }
+        if (this._archiveDataSet) {
+          listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
+        }
         listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
       });
     } catch (error) {

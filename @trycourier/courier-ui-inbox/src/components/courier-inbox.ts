@@ -313,14 +313,13 @@ export class CourierInbox extends CourierBaseElement {
 
   }
 
-  private async load(props: { feedType: CourierInboxFeedType, canUseCache: boolean }) {
+  private async load(props: { canUseCache: boolean }) {
     await CourierInboxDatastore.shared.load(props);
     await CourierInboxDatastore.shared.listenForUpdates();
   }
 
   public refresh() {
     this.load({
-      feedType: this._currentFeed,
       canUseCache: false
     });
   }
