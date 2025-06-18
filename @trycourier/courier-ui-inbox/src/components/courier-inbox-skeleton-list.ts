@@ -62,7 +62,7 @@ export class CourierInboxSkeletonList extends CourierFactoryElement {
         border-bottom: ${theme.inbox?.loading?.divider ?? '1px solid red'};
       }
 
-      a${CourierInboxSkeletonList.id} .list > *:first-child {
+      ${CourierInboxSkeletonList.id} .list > *:first-child {
         border-bottom: ${theme.inbox?.loading?.divider ?? '1px solid red'};
         opacity: 100%;
       }
