@@ -1,7 +1,7 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CourierSocket } from "../socket/courier-socket";
 import { CourierApiUrls } from "../types/courier-api-urls";
-import { ServerMessage, ServerResponse } from "../types/socket/protocol/v1/messages";
+import { ServerMessage, ServerResponse } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
 import WebSocketServer from "jest-websocket-mock";
 
@@ -69,7 +69,7 @@ describe('CourierSocket', () => {
     it('should call the onMessageReceived callback when a message is received', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onMessageReceivedSpy = jest.spyOn(socket, 'onMessageReceived')
-          .mockImplementation(() => Promise.resolve());
+        .mockImplementation(() => Promise.resolve());
 
       socket.connect();
       await mockServer.connected;
@@ -88,7 +88,7 @@ describe('CourierSocket', () => {
     it('should close and retry the connection when the server sends \'reconnect\'', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onMessageReceivedSpy = jest.spyOn(socket, 'onMessageReceived')
-          .mockImplementation(() => Promise.resolve())
+        .mockImplementation(() => Promise.resolve())
 
       socket.connect();
       await mockServer.connected;
@@ -116,8 +116,8 @@ describe('CourierSocket', () => {
     it('should not retry the connection for a normal closure', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
-          .mockImplementation(() =>
-            Promise.resolve());
+        .mockImplementation(() =>
+          Promise.resolve());
 
       socket.connect();
       await mockServer.connected;
@@ -132,8 +132,8 @@ describe('CourierSocket', () => {
     it('should retry the connection for a non-normal closure and respect the Retry-After reason', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
-          .mockImplementation(() =>
-            Promise.resolve());
+        .mockImplementation(() =>
+          Promise.resolve());
 
       // Connect to the server
       socket.connect();
@@ -154,8 +154,8 @@ describe('CourierSocket', () => {
     it('should retry the connection for a non-normal closure and use the default retry interval', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
-          .mockImplementation(() =>
-            Promise.resolve());
+        .mockImplementation(() =>
+          Promise.resolve());
 
       // Connect to the server
       socket.connect();
@@ -177,8 +177,8 @@ describe('CourierSocket', () => {
     it('should stop retrying the connection after the max retry attempts', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const onCloseSpy = jest.spyOn(socket, 'onClose')
-          .mockImplementation(() =>
-            Promise.resolve());
+        .mockImplementation(() =>
+          Promise.resolve());
       const connectSpy = jest.spyOn(socket, 'connect');
 
       // Connect to the server
@@ -205,8 +205,8 @@ describe('CourierSocket', () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
       const connectSpy = jest.spyOn(socket, 'connect');
       const onCloseSpy = jest.spyOn(socket, 'onClose')
-          .mockImplementation(() =>
-            Promise.resolve());
+        .mockImplementation(() =>
+          Promise.resolve());
 
       // Connect to the server
       socket.connect();

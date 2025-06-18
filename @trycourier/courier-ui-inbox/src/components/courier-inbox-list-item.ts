@@ -1,12 +1,17 @@
-import { Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { BaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
 
-export class CourierListItem extends BaseElement {
+export class CourierInboxListItem extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-list-item';
+  }
+
   // State
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
@@ -14,13 +19,12 @@ export class CourierListItem extends BaseElement {
   private _isMobile: boolean = false;
 
   // Elements
-  private _titleElement: HTMLParagraphElement;
-  private _subtitleElement: HTMLParagraphElement;
-  private _timeElement: HTMLParagraphElement;
-  private _style: HTMLStyleElement;
-  private _menu: CourierInboxListItemMenu;
-  private _unreadIndicator: HTMLDivElement;
-  private _actionsContainer: HTMLDivElement;
+  private _titleElement?: HTMLParagraphElement;
+  private _subtitleElement?: HTMLParagraphElement;
+  private _timeElement?: HTMLParagraphElement;
+  private _menu?: CourierInboxListItemMenu;
+  private _unreadIndicator?: HTMLDivElement;
+  private _actionsContainer?: HTMLDivElement;
 
   // Touch gestures
   private _longPressTimeout: number | null = null;
@@ -35,18 +39,21 @@ export class CourierListItem extends BaseElement {
     super();
     this._theme = theme;
     this._isMobile = 'ontouchstart' in window;
-    const shadow = this.attachShadow({ mode: 'open' });
+    this.render();
+  }
+
+  private render() {
 
     const contentContainer = document.createElement('div');
     contentContainer.className = 'content-container';
 
     // Title
     this._titleElement = document.createElement('p');
-    this._titleElement.setAttribute('part', 'title');
+    this._titleElement.className = 'title';
 
     // Subtitle
     this._subtitleElement = document.createElement('p');
-    this._subtitleElement.setAttribute('part', 'subtitle');
+    this._subtitleElement.className = 'subtitle';
 
     // Actions
     this._actionsContainer = document.createElement('div');
@@ -58,22 +65,18 @@ export class CourierListItem extends BaseElement {
 
     // Time
     this._timeElement = document.createElement('p');
-    this._timeElement.setAttribute('part', 'time');
+    this._timeElement.className = 'time';
 
     // Unread indicator
     this._unreadIndicator = document.createElement('div');
     this._unreadIndicator.className = 'unread-indicator';
-
-    // Style element
-    this._style = document.createElement('style');
-    this._refreshStyles();
 
     // Action menu
     this._menu = new CourierInboxListItemMenu(this._theme);
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
-    shadow.append(this._style, this._unreadIndicator, contentContainer, this._timeElement, this._menu);
+    this.append(this._unreadIndicator, contentContainer, this._timeElement, this._menu);
 
     const cancelPropagation = (e: Event): void => {
       e.stopPropagation();
@@ -85,7 +88,7 @@ export class CourierListItem extends BaseElement {
     this._menu.addEventListener('click', cancelPropagation);
 
     this.addEventListener('click', (e) => {
-      if (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu)) {
+      if (this._menu && (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu))) {
         return;
       }
       if (this._message && this.onItemClick && !(e.target instanceof CourierIcon) && !this._isLongPress) {
@@ -95,6 +98,137 @@ export class CourierListItem extends BaseElement {
 
     this._setupHoverBehavior();
     this._setupLongPressBehavior();
+
+  }
+
+  static getStyles(theme: CourierInboxTheme): string {
+
+    const list = theme.inbox?.list;
+
+    return `
+      ${CourierInboxListItem.id} {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        border-bottom: ${list?.item?.divider ?? '1px solid red'};
+        font-family: inherit;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 20px;
+        position: relative;
+        background-color: ${list?.item?.backgroundColor ?? 'transparent'};
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        touch-action: manipulation;
+      }
+
+      /* Base hover / active */
+      @media (hover: hover) {
+        ${CourierInboxListItem.id}:hover {
+          background-color: ${list?.item?.hoverBackgroundColor ?? 'red'};
+        }
+      }
+
+      ${CourierInboxListItem.id}:active {
+        background-color: ${list?.item?.activeBackgroundColor ?? 'red'};
+      }
+
+      /* Menu hover / active */
+      @media (hover: hover) {
+        ${CourierInboxListItem.id}:hover:has(courier-inbox-list-item-menu:hover, courier-inbox-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
+          background-color: ${list?.item?.backgroundColor ?? 'transparent'};
+        }
+      }
+
+      ${CourierInboxListItem.id}:active:has(courier-inbox-list-item-menu:active, courier-inbox-list-item-menu *:active, courier-button:active, courier-button *:active) {
+        background-color: ${list?.item?.backgroundColor ?? 'transparent'};
+      }
+
+      ${CourierInboxListItem.id}:last-child {
+        border-bottom: none;
+      }
+
+      ${CourierInboxListItem.id} .unread-indicator {
+        position: absolute;
+        top: 28px;
+        left: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: ${list?.item?.unreadIndicatorColor ?? 'red'};
+        display: none;
+      }
+
+      ${CourierInboxListItem.id}.unread .unread-indicator {
+        display: block;
+      }
+
+      ${CourierInboxListItem.id} .content-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-right: 12px;
+      }
+
+      ${CourierInboxListItem.id} p {
+        margin: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        line-height: 1.4;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        text-align: left;
+      }
+
+      ${CourierInboxListItem.id} .title {
+        font-family: ${list?.item?.title?.family ?? 'inherit'};
+        font-size: ${list?.item?.title?.size ?? '14px'};
+        color: ${list?.item?.title?.color ?? 'red'};
+        margin-bottom: 4px;
+      }
+
+      ${CourierInboxListItem.id} .subtitle {
+        font-family: ${list?.item?.subtitle?.family ?? 'inherit'};
+        font-size: ${list?.item?.subtitle?.size ?? '14px'};
+        color: ${list?.item?.subtitle?.color ?? 'red'};
+      }
+
+      ${CourierInboxListItem.id} .time {
+        font-family: ${list?.item?.time?.family ?? 'inherit'};
+        font-size: ${list?.item?.time?.size ?? '14px'};
+        color: ${list?.item?.time?.color ?? 'red'};
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      ${CourierInboxListItem.id} courier-inbox-list-item-menu {
+        z-index: 1;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: none;
+      }
+
+      ${CourierInboxListItem.id} .actions-container {
+        display: flex;
+        margin-top: 10px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        display: none;
+      }
+    `;
+
   }
 
   private _setupHoverBehavior(): void {
@@ -172,9 +306,9 @@ export class CourierListItem extends BaseElement {
         onClick: () => {
           if (this._message) {
             if (this._message.read) {
-              CourierInboxDatastore.shared.unreadMessage({ message: this._message });
+              CourierInboxDatastore.shared.unreadMessage({ message: this._message })
             } else {
-              CourierInboxDatastore.shared.readMessage({ message: this._message });
+              CourierInboxDatastore.shared.readMessage({ message: this._message })
             }
           }
         },
@@ -205,7 +339,7 @@ export class CourierListItem extends BaseElement {
   private _showMenu(): void {
     const menu = this._theme.inbox?.list?.item?.menu;
 
-    if (menu && menu.enabled) {
+    if (menu && menu.enabled && this._menu && this._timeElement) {
       this._menu.setOptions(this._getMenuOptions());
       this._menu.style.display = 'block';
       this._menu.show();
@@ -216,160 +350,10 @@ export class CourierListItem extends BaseElement {
   private _hideMenu(): void {
     const menu = this._theme.inbox?.list?.item?.menu;
 
-    if (menu && menu.enabled) {
+    if (menu && menu.enabled && this._menu && this._timeElement) {
       this._menu.hide();
       this._menu.style.display = 'none';
       this._timeElement.style.opacity = '1';
-    }
-  }
-
-  private _getStyles(): string {
-    const listItem = this._theme.inbox?.list?.item;
-
-    return `
-      :host {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: space-between;
-        border-bottom: ${listItem?.divider ?? '1px solid red'};
-        font-family: inherit;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px 20px;
-        position: relative;
-        background-color: ${listItem?.backgroundColor ?? 'transparent'};
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        touch-action: manipulation;
-      }
-
-      /* ───────────────────────── Base hover / active ────────────────── */
-      @media (hover: hover) {
-        :host(:hover) {
-          background-color: ${listItem?.hoverBackgroundColor ?? 'red'};
-        }
-      }
-      :host(:active) {
-        background-color: ${listItem?.activeBackgroundColor ?? 'red'};
-      }
-
-      /* ───────────────────────── Menu hover / active ────────────────── */
-      @media (hover: hover) {
-        :host(:hover):has(courier-inbox-list-item-menu:hover, courier-inbox-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
-          background-color: ${listItem?.backgroundColor ?? 'transparent'};
-        }
-      }
-      :host(:active):has(courier-inbox-list-item-menu:active, courier-inbox-list-item-menu *:active, courier-button:active, courier-button *:active) {
-        background-color: ${listItem?.backgroundColor ?? 'transparent'};
-      }
-
-      :host(:last-child) {
-        border-bottom: none;
-      }
-
-      .unread-indicator {
-        position: absolute;
-        top: 28px;
-        left: 6px;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: ${listItem?.unreadIndicatorColor ?? 'red'};
-        display: none;
-      }
-
-      :host(.unread) .unread-indicator {
-        display: block;
-      }
-
-      .content-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        margin-right: 12px;
-      }
-
-      p {
-        margin: 0;
-        overflow-wrap: break-word;
-        word-break: break-word;
-        hyphens: auto;
-        line-height: 1.4;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        text-align: left;
-      }
-
-      p[part='title'] {
-        font-family: ${listItem?.title?.family ?? 'inherit'};
-        font-size: ${listItem?.title?.size ?? '14px'};
-        color: ${listItem?.title?.color ?? 'red'};
-        margin-bottom: 4px;
-      }
-
-      p[part='subtitle'] {
-        font-family: ${listItem?.subtitle?.family ?? 'inherit'};
-        font-size: ${listItem?.subtitle?.size ?? '14px'};
-        color: ${listItem?.subtitle?.color ?? 'red'};
-      }
-
-      p[part='time'] {
-        font-family: ${listItem?.time?.family ?? 'inherit'};
-        font-size: ${listItem?.time?.size ?? '14px'};
-        color: ${listItem?.time?.color ?? 'red'};
-        text-align: right;
-        white-space: nowrap;
-      }
-
-      courier-inbox-list-item-menu {
-        z-index: 1;
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        display: none; /* becomes block while visible */
-      }
-
-      .actions-container {
-        display: flex;
-        margin-top: 10px;
-        flex-wrap: wrap;
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
-        display: none;
-      }
-
-    `;
-  }
-
-  private _refreshStyles(): void {
-    this._style.textContent = this._getStyles();
-  }
-
-  // Lifecycle hooks
-  connectedCallback(): void {
-    const messageAttr = this.getAttribute('message');
-    const feedTypeAttr = this.getAttribute('feed-type');
-
-    if (feedTypeAttr) {
-      this._feedType = feedTypeAttr as CourierInboxFeedType;
-    }
-
-    if (messageAttr) {
-      try {
-        this._message = JSON.parse(messageAttr) as InboxMessage;
-        this._updateContent();
-      } catch (err) {
-        Courier.shared.client?.options.logger?.error('CourierListItem – failed to parse message:', err);
-      }
     }
   }
 
@@ -394,56 +378,68 @@ export class CourierListItem extends BaseElement {
 
   // Content rendering
   private _updateContent(): void {
+
     if (!this._message) {
-      this._titleElement.textContent = '';
-      this._subtitleElement.textContent = '';
+      if (this._titleElement) this._titleElement.textContent = '';
+      if (this._subtitleElement) this._subtitleElement.textContent = '';
       return;
     }
 
     // Unread marker
     this.classList.toggle('unread', !this._message.read && this._feedType !== 'archive');
 
-    this._titleElement.textContent = this._message.title || 'Untitled Message';
-    this._subtitleElement.textContent = this._message.preview || this._message.body || '';
-    this._timeElement.textContent = getMessageTime(this._message);
+    if (this._titleElement) {
+      this._titleElement.textContent = this._message.title || 'Untitled Message';
+    }
+    if (this._subtitleElement) {
+      this._subtitleElement.textContent = this._message.preview || this._message.body || '';
+    }
+    if (this._timeElement) {
+      this._timeElement.textContent = getMessageTime(this._message);
+    }
 
     // Update menu icons (e.g. read/unread)
-    this._menu.setOptions(this._getMenuOptions());
+    if (this._menu) {
+      this._menu.setOptions(this._getMenuOptions());
+    }
 
     // Update actions container
-    const hasActions = this._message?.actions && this._message.actions.length > 0;
-    this._actionsContainer.style.display = hasActions ? 'flex' : 'none';
+    const hasActions = this._message.actions && this._message.actions.length > 0;
+    if (this._actionsContainer) {
+      this._actionsContainer.style.display = hasActions ? 'flex' : 'none';
+    }
 
     const actionsTheme = this._theme.inbox?.list?.item?.actions;
 
     // Add the actions to the actions container
-    this._message?.actions?.forEach(action => {
+    if (this._actionsContainer && this._message.actions) {
+      this._message.actions.forEach(action => {
+        // Create the action element
+        const actionButton = new CourierButton({
+          text: action.content,
+          variant: 'secondary',
+          backgroundColor: actionsTheme?.backgroundColor,
+          hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
+          activeBackgroundColor: actionsTheme?.activeBackgroundColor,
+          border: actionsTheme?.border,
+          borderRadius: actionsTheme?.borderRadius,
+          shadow: actionsTheme?.shadow,
+          fontFamily: actionsTheme?.font?.family,
+          fontSize: actionsTheme?.font?.size,
+          fontWeight: actionsTheme?.font?.weight,
+          textColor: actionsTheme?.font?.color,
+          onClick: () => {
+            if (this._message && this.onItemActionClick) {
+              this.onItemActionClick(this._message, action);
+            }
+          },
+        });
 
-      // Create the action element
-      const actionButton = new CourierButton({
-        text: action.content,
-        variant: 'secondary',
-        backgroundColor: actionsTheme?.backgroundColor,
-        hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
-        activeBackgroundColor: actionsTheme?.activeBackgroundColor,
-        border: actionsTheme?.border,
-        borderRadius: actionsTheme?.borderRadius,
-        shadow: actionsTheme?.shadow,
-        fontFamily: actionsTheme?.font?.family,
-        fontSize: actionsTheme?.font?.size,
-        fontWeight: actionsTheme?.font?.weight,
-        textColor: actionsTheme?.font?.color,
-        onClick: () => {
-          if (this._message && this.onItemActionClick) {
-            this.onItemActionClick(this._message, action);
-          }
-        },
+        // Add the action element to the actions container
+        this._actionsContainer?.appendChild(actionButton);
       });
-
-      // Add the action element to the actions container
-      this._actionsContainer.appendChild(actionButton);
-    });
+    }
   }
 }
 
-registerElement('courier-inbox-list-item', CourierListItem);
+registerElement(CourierInboxListItem);

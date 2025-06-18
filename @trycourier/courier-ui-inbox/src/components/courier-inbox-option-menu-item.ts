@@ -1,33 +1,32 @@
-import { BaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
 
-export class CourierInboxOptionMenuItem extends BaseElement {
+export class CourierInboxOptionMenuItem extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-option-menu-item';
+  }
 
   // State
   private _option: CourierInboxMenuOption;
+  private _isSelectedable: boolean;
   private _isSelected?: boolean;
 
   // Components
-  private _content: HTMLDivElement;
-  private _itemIcon: CourierIcon;
-  private _title: HTMLParagraphElement;
-  private _selectionIcon: CourierIcon;
-  private _style: HTMLStyleElement;
-
-  // Theme
-  private _themeManager: CourierInboxThemeManager;
+  private _content?: HTMLDivElement;
+  private _itemIcon?: CourierIcon;
+  private _title?: HTMLParagraphElement;
+  private _selectionIcon?: CourierIcon;
 
   constructor(props: { option: CourierInboxMenuOption, selectable: boolean, isSelected: boolean, themeManager: CourierInboxThemeManager }) {
     super();
-
     this._option = props.option;
     this._isSelected = props.isSelected;
-    this._themeManager = props.themeManager;
+    this._isSelectedable = props.selectable;
+  }
 
-    const shadow = this.attachShadow({ mode: 'open' });
-
-    this._style = document.createElement('style');
+  onComponentMounted() {
 
     this._content = document.createElement('div');
     this._content.className = 'menu-item';
@@ -48,12 +47,11 @@ export class CourierInboxOptionMenuItem extends BaseElement {
     this._content.appendChild(spacer);
 
     // Add check icon if selectable
-    if (props.selectable) {
+    if (this._isSelectedable) {
       this._content.appendChild(this._selectionIcon);
     }
 
-    shadow.appendChild(this._style);
-    shadow.appendChild(this._content);
+    this.appendChild(this._content);
 
     this._selectionIcon.style.display = this._isSelected ? 'block' : 'none';
 
@@ -61,67 +59,21 @@ export class CourierInboxOptionMenuItem extends BaseElement {
 
   }
 
-  private getStyles(): string {
-
-    const theme = this._themeManager.getTheme();
-
-    return `
-      :host {
-        display: flex;
-        flex-direction: row;
-        padding: 6px 12px;
-        cursor: pointer;
-      }
-
-      :host(:hover) {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.hoverBackgroundColor ?? 'red'};
-      }
-
-      :host(:active) {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.activeBackgroundColor ?? 'red'};
-      }
-
-      .menu-item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        gap: 12px;
-      }
-
-      .spacer {
-        flex: 1;
-      }
-
-      p {
-        margin: 0;
-        font-family: ${theme.inbox?.header?.menus?.popup?.list?.font?.family ?? 'inherit'};
-        font-weight: ${theme.inbox?.header?.menus?.popup?.list?.font?.weight ?? 'inherit'};
-        font-size: ${theme.inbox?.header?.menus?.popup?.list?.font?.size ?? '14px'};
-        color: ${theme.inbox?.header?.menus?.popup?.list?.font?.color ?? 'red'};
-        white-space: nowrap;
-      }
-
-      .check-icon {
-        display: none;
-      }
-    `;
-  }
-
   public refreshTheme() {
 
-    // Update styles
-    this._style.textContent = this.getStyles();
-
     // Set selected icon color
-    this._selectionIcon.updateColor(this._option.selectionIcon?.color ?? 'red');
-    this._selectionIcon.updateSVG(this._option.selectionIcon?.svg ?? CourierIconSVGs.check);
+    this._selectionIcon?.updateColor(this._option.selectionIcon?.color ?? 'red');
+    this._selectionIcon?.updateSVG(this._option.selectionIcon?.svg ?? CourierIconSVGs.check);
 
-    this._title.textContent = this._option.text ?? 'Missing Text';
-    this._itemIcon.updateColor(this._option.icon?.color ?? 'red');
-    this._itemIcon.updateSVG(this._option.icon?.svg ?? CourierIconSVGs.inbox);
+    if (this._title) {
+      this._title.textContent = this._option.text ?? 'Missing Text';
+    }
+
+    this._itemIcon?.updateColor(this._option.icon?.color ?? 'red');
+    this._itemIcon?.updateSVG(this._option.icon?.svg ?? CourierIconSVGs.inbox);
 
   }
 
 }
 
-registerElement('courier-inbox-filter-menu-item', CourierInboxOptionMenuItem);
+registerElement(CourierInboxOptionMenuItem);

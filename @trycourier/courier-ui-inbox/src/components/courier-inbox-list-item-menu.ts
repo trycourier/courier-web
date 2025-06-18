@@ -1,50 +1,45 @@
-import { BaseElement, CourierIconButton, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxIcon, CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierBaseElement, CourierIconButton, registerElement } from '@trycourier/courier-ui-core';
+import { CourierInboxIconTheme, CourierInboxTheme } from '../types/courier-inbox-theme';
 
 export type CourierInboxListItemActionMenuOption = {
   id: string;
-  icon: CourierInboxIcon;
+  icon: CourierInboxIconTheme;
   onClick: () => void;
 };
 
-export class CourierInboxListItemMenu extends BaseElement {
+export class CourierInboxListItemMenu extends CourierBaseElement {
+
+  static get id(): string {
+    return 'courier-inbox-list-item-menu';
+  }
 
   // State
   private _theme: CourierInboxTheme;
   private _options: CourierInboxListItemActionMenuOption[] = [];
 
-  // Components
-  private _style: HTMLStyleElement;
-
   constructor(theme: CourierInboxTheme) {
     super();
     this._theme = theme;
-    const shadow = this.attachShadow({ mode: "open" });
-
-    // Style
-    this._style = document.createElement("style");
-    this._style.textContent = this.getStyles();
-    shadow.appendChild(this._style);
-
-    // Menu container
-    const menu = document.createElement("ul");
-    menu.className = "menu";
-    shadow.appendChild(menu);
-
   }
 
-  private getStyles(): string {
+  onComponentMounted() {
+    const menu = document.createElement('ul');
+    menu.className = 'menu';
+    this.appendChild(menu);
+  }
 
-    const menu = this._theme.inbox?.list?.item?.menu;
+  static getStyles(theme: CourierInboxTheme): string {
+
+    const menu = theme.inbox?.list?.item?.menu;
 
     return `
-      :host {
-        display: block;
+      ${CourierInboxListItemMenu.id} {
+        display: none;
         position: absolute;
         background: ${menu?.backgroundColor ?? 'red'};
-        border: ${menu?.border ?? "1px solid red"};
+        border: ${menu?.border ?? '1px solid red'};
         border-radius: ${menu?.borderRadius ?? '0px'};
-        box-shadow: ${menu?.shadow ?? "0 2px 8px red"};
+        box-shadow: ${menu?.shadow ?? '0 2px 8px red'};
         user-select: none;
         opacity: 0;
         pointer-events: none;
@@ -52,12 +47,13 @@ export class CourierInboxListItemMenu extends BaseElement {
         overflow: hidden;
       }
 
-      :host(.visible) {
+      ${CourierInboxListItemMenu.id}.visible {
+        display: block;
         opacity: 1;
         pointer-events: auto;
       }
 
-      ul.menu {
+      ${CourierInboxListItemMenu.id} ul.menu {
         list-style: none;
         margin: 0;
         padding: 0;
@@ -65,7 +61,7 @@ export class CourierInboxListItemMenu extends BaseElement {
         flex-direction: row;
       }
 
-      li.menu-item {
+      ${CourierInboxListItemMenu.id} li.menu-item {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -83,9 +79,9 @@ export class CourierInboxListItemMenu extends BaseElement {
 
   private renderMenu() {
     // Clear existing menu items
-    const menu = this.shadowRoot?.querySelector("ul.menu");
+    const menu = this.querySelector('ul.menu');
     if (!menu) return;
-    menu.innerHTML = "";
+    menu.innerHTML = '';
     const menuTheme = this._theme.inbox?.list?.item?.menu;
 
     // Prevent click events from propagating outside of this menu
@@ -123,12 +119,14 @@ export class CourierInboxListItemMenu extends BaseElement {
   }
 
   show() {
+    this.style.display = 'block';
     this.classList.add('visible');
   }
 
   hide() {
+    this.style.display = 'none';
     this.classList.remove('visible');
   }
 }
 
-registerElement('courier-inbox-list-item-menu', CourierInboxListItemMenu);
+registerElement(CourierInboxListItemMenu);

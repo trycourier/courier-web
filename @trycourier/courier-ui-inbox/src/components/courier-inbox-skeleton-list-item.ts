@@ -1,67 +1,99 @@
-import { BaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
-export class CourierInboxSkeletonListItem extends BaseElement {
+export class CourierInboxSkeletonListItem extends CourierBaseElement {
 
-  // Shadow root
-  private _shadow: ShadowRoot;
-
-  constructor(theme: CourierInboxTheme, opacity: number) {
-    super();
-    this._shadow = this.attachShadow({ mode: 'open' });
-
-    // Create style element for gap
-    const style = document.createElement('style');
-    style.textContent = this.getStyles(opacity);
-    this._shadow.appendChild(style);
-
-    // Create skeleton items using CourierSkeletonAnimatedRow
-    const firstRow = new CourierSkeletonAnimatedRow(theme, 35);
-    const secondRow = new CourierSkeletonAnimatedRow(theme, 100);
-    const thirdRow = new CourierSkeletonAnimatedRow(theme, 82);
-
-    this._shadow.appendChild(firstRow);
-    this._shadow.appendChild(secondRow);
-    this._shadow.appendChild(thirdRow);
-
+  static get id(): string {
+    return 'courier-inbox-skeleton-list-item';
   }
 
-  private getStyles(opacity: number): string {
+  private _theme: CourierInboxTheme;
+  private _style?: HTMLStyleElement;
+
+  constructor(theme: CourierInboxTheme) {
+    super();
+    this._theme = theme;
+  }
+
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierInboxSkeletonListItem.id, CourierInboxSkeletonListItem.getStyles(this._theme));
+    this.render();
+  }
+
+  onComponentUnmounted() {
+    this._style?.remove();
+  }
+
+  private render() {
+    // Create skeleton items using CourierSkeletonAnimatedRow
+    const firstRow = new CourierSkeletonAnimatedRow(this._theme);
+    const secondRow = new CourierSkeletonAnimatedRow(this._theme);
+    const thirdRow = new CourierSkeletonAnimatedRow(this._theme);
+
+    this.appendChild(firstRow);
+    this.appendChild(secondRow);
+    this.appendChild(thirdRow);
+  }
+
+  static getStyles(_theme: CourierInboxTheme): string {
     return `
-      :host {
+      ${CourierInboxSkeletonListItem.id} {
         display: flex;
         flex-direction: column;
         gap: 12px;
         padding: 12px;
         width: 100%;
         box-sizing: border-box;
-        opacity: ${opacity};
+      }
+
+      ${CourierInboxSkeletonListItem.id} > *:first-child {
+        width: 35%;
+      }
+
+      ${CourierInboxSkeletonListItem.id} > *:nth-child(2) {
+        width: 100%;
+      }
+
+      ${CourierInboxSkeletonListItem.id} > *:nth-child(3) {
+        width: 82%;
       }
     `;
   }
 }
 
 // Register the custom element
-registerElement('courier-inbox-skeleton-list-item', CourierInboxSkeletonListItem);
+registerElement(CourierInboxSkeletonListItem);
 
-class CourierSkeletonAnimatedRow extends BaseElement {
+class CourierSkeletonAnimatedRow extends CourierBaseElement {
 
-  private _shadow: ShadowRoot;
-
-  constructor(theme: CourierInboxTheme, widthPercent: number) {
-    super();
-    this._shadow = this.attachShadow({ mode: 'open' });
-
-    const style = document.createElement('style');
-    style.textContent = this.getStyles(theme, widthPercent);
-    this._shadow.appendChild(style);
-
-    const skeletonItem = document.createElement('div');
-    skeletonItem.className = 'skeleton-item';
-    this._shadow.appendChild(skeletonItem);
+  static get id(): string {
+    return 'courier-skeleton-animated-row';
   }
 
-  private getStyles(theme: CourierInboxTheme, widthPercent: number): string {
+  private _theme: CourierInboxTheme;
+  private _style?: HTMLStyleElement;
+
+  constructor(theme: CourierInboxTheme) {
+    super();
+    this._theme = theme;
+  }
+
+  onComponentMounted() {
+    this._style = injectGlobalStyle(CourierSkeletonAnimatedRow.id, CourierSkeletonAnimatedRow.getStyles(this._theme));
+    this.render();
+  }
+
+  onComponentUnmounted() {
+    this._style?.remove();
+  }
+
+  private render() {
+    const skeletonItem = document.createElement('div');
+    skeletonItem.className = 'skeleton-item';
+    this.appendChild(skeletonItem);
+  }
+
+  static getStyles(theme: CourierInboxTheme): string {
     const color = theme.inbox?.loading?.animation?.barColor ?? '#000';
 
     // Handle both 3 and 6 character hex colors
@@ -78,15 +110,15 @@ class CourierSkeletonAnimatedRow extends BaseElement {
     const colorWithAlpha40 = `rgba(${r}, ${g}, ${b}, 0.4)`; // 40% opacity
 
     return `
-      :host {
+      ${CourierSkeletonAnimatedRow.id} {
         display: flex;
         height: 100%;
-        width: ${widthPercent}%;
+        width: 100%;
         align-items: flex-start;
         justify-content: flex-start;
       }
 
-      .skeleton-item {
+      ${CourierSkeletonAnimatedRow.id} .skeleton-item {
         height: ${theme.inbox?.loading?.animation?.barHeight ?? '14px'};
         width: 100%;
         background: linear-gradient(
@@ -96,11 +128,11 @@ class CourierSkeletonAnimatedRow extends BaseElement {
           ${colorWithAlpha80} 75%
         );
         background-size: 200% 100%;
-        animation: shimmer ${theme.inbox?.loading?.animation?.duration ?? '2s'} ease-in-out infinite;
+        animation: ${CourierSkeletonAnimatedRow.id}-shimmer ${theme.inbox?.loading?.animation?.duration ?? '2s'} ease-in-out infinite;
         border-radius: ${theme.inbox?.loading?.animation?.barBorderRadius ?? '14px'};
       }
 
-      @keyframes shimmer {
+      @keyframes ${CourierSkeletonAnimatedRow.id}-shimmer {
         0% {
           background-position: 200% 0;
         }
@@ -112,4 +144,4 @@ class CourierSkeletonAnimatedRow extends BaseElement {
   }
 }
 
-registerElement('courier-skeleton-animated-row', CourierSkeletonAnimatedRow);
+registerElement(CourierSkeletonAnimatedRow);

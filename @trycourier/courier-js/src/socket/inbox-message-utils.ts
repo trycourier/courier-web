@@ -1,5 +1,5 @@
 import { InboxMessage } from "../types/inbox";
-import { InboxMessageEvent, InboxMessageEventEnvelope } from "../types/socket/protocol/v1/messages";
+import { InboxMessageEvent, InboxMessageEventEnvelope } from "../types/socket/protocol/messages";
 
 /**
  * Ensure the `created` timestamp is set for a new message.

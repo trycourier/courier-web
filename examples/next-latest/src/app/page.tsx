@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { useCourier, CourierInbox } from '@trycourier/courier-react';
+import { useCourier, CourierInbox, CourierInboxListItemFactoryProps } from '@trycourier/courier-react';
 
 export default function Home() {
 
