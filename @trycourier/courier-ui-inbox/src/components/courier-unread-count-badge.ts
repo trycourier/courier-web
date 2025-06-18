@@ -1,4 +1,4 @@
-import { CourierBaseElement, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
@@ -34,12 +34,10 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
   }
 
   onComponentMounted() {
+
     // Create badge element
     this._badge = document.createElement('span');
-    this._badge.className = 'unread-badge';
-
-    // Add styles
-    this._style = injectGlobalStyle(CourierUnreadCountBadge.id, this.getStyles(this._location));
+    this._badge.className = `unread-badge ${this._location}`;
 
     this.appendChild(this._badge);
     this.updateBadge();
@@ -50,34 +48,31 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
     this._style?.remove();
   }
 
-  private getStyles(location: CourierUnreadCountLocation): string {
-    const theme = this._themeSubscription.manager.getTheme();
-
-    // Get the indicator styles
-    const indicator = location === 'button'
-      ? theme.popup?.button?.unreadIndicator
-      : theme.inbox?.header?.filters?.unreadIndicator;
-
-    const backgroundColor = indicator?.backgroundColor;
-    const borderRadius = indicator?.borderRadius;
-    const color = indicator?.font?.color;
-    const fontSize = indicator?.font?.size;
-
-    // Return the styles
+  static getStyles(theme: CourierInboxTheme): string {
     return `
       ${CourierUnreadCountBadge.id} {
         display: inline-block;
       }
 
       ${CourierUnreadCountBadge.id} .unread-badge {
-        background-color: ${backgroundColor};
-        color: ${color};
-        border-radius: ${borderRadius};
         padding: 4px 8px;
-        font-size: ${fontSize};
         text-align: center;
         display: none;
         pointer-events: none;
+      }
+
+      ${CourierUnreadCountBadge.id} .button {
+        background-color: ${theme.popup?.button?.unreadIndicator?.backgroundColor};
+        color: ${theme.popup?.button?.unreadIndicator?.font?.color};
+        border-radius: ${theme.popup?.button?.unreadIndicator?.borderRadius};
+        font-size: ${theme.popup?.button?.unreadIndicator?.font?.size};
+      }
+
+      ${CourierUnreadCountBadge.id} .header {
+        background-color: ${theme.inbox?.header?.filters?.unreadIndicator?.backgroundColor};
+        color: ${theme.inbox?.header?.filters?.unreadIndicator?.font?.color};
+        border-radius: ${theme.inbox?.header?.filters?.unreadIndicator?.borderRadius};
+        font-size: ${theme.inbox?.header?.filters?.unreadIndicator?.font?.size};
       }
     `
   }
@@ -92,9 +87,6 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
     this.updateBadge();
   }
   private updateBadge() {
-    if (this._style) {
-      this._style.textContent = this.getStyles(this._location);
-    }
     if (this._badge) {
       if (this._count > 0) {
         this._badge.textContent = this._count.toString();

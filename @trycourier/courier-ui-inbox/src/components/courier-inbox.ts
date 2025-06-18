@@ -9,6 +9,7 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
+import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
 export class CourierInbox extends CourierBaseElement {
 
@@ -34,7 +35,8 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   // Components
-  private _style?: HTMLStyleElement;
+  private _inboxStyle?: HTMLStyleElement;
+  private _unreadIndicatorStyle?: HTMLStyleElement;
   private _list?: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
@@ -68,7 +70,8 @@ export class CourierInbox extends CourierBaseElement {
   onComponentMounted() {
 
     // Inject style
-    this._style = injectGlobalStyle(CourierInbox.id, this.getStyles());
+    this._inboxStyle = injectGlobalStyle(CourierInbox.id, this.getStyles());
+    this._unreadIndicatorStyle = injectGlobalStyle(CourierUnreadCountBadge.id, CourierUnreadCountBadge.getStyles(this.theme));
 
     // Header
     this._header = new CourierInboxHeader({
@@ -199,12 +202,16 @@ export class CourierInbox extends CourierBaseElement {
     this._themeManager.cleanup();
     this._datastoreListener?.remove();
     this._authListener?.remove();
-    this._style?.remove();
+    this._inboxStyle?.remove();
+    this._unreadIndicatorStyle?.remove();
   }
 
   private refreshTheme() {
-    if (this._style) {
-      this._style.textContent = this.getStyles();
+    if (this._inboxStyle) {
+      this._inboxStyle.textContent = this.getStyles();
+    }
+    if (this._unreadIndicatorStyle) {
+      this._unreadIndicatorStyle.textContent = CourierUnreadCountBadge.getStyles(this.theme);
     }
   }
 
