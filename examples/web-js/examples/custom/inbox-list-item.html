@@ -25,12 +25,12 @@
     const inbox = document.getElementById('inbox');
 
     // Set a custom list item
-    inbox.setListItem(props => {
+    inbox.setListItem(({ message, index }) => {
       const pre = document.createElement('pre');
       pre.style.padding = '24px';
       pre.style.borderBottom = '1px solid #e0e0e0';
       pre.style.margin = '0';
-      pre.textContent = JSON.stringify(props, null, 2);
+      pre.textContent = JSON.stringify(({ message, index }), null, 2);
       return pre;
     });
 

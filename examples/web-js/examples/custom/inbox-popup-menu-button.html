@@ -27,9 +27,9 @@
     const inbox = document.getElementById('inbox');
 
     // Set a custom menu button
-    inbox.setMenuButton(props => {
+    inbox.setMenuButton(({ unreadCount }) => {
       const button = document.createElement('button');
-      button.textContent = `Open the Inbox Popup. Unread message count: ${props.unreadCount}`;
+      button.textContent = `Open the Inbox Popup. Unread message count: ${unreadCount}`;
       return button;
     });
 

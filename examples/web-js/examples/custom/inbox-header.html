@@ -27,14 +27,14 @@
     // Remove the header
     inbox.removeHeader();
 
-    // Set a custom header with an element
-    inbox.setHeader(props => {
+    // Set a custom header
+    inbox.setHeader(({ feedType, unreadCount, messageCount }) => {
       const headerDiv = document.createElement('div');
       headerDiv.style.background = 'red';
       headerDiv.style.fontSize = '24px';
       headerDiv.style.padding = '24px';
       headerDiv.style.width = '100%';
-      headerDiv.textContent = props.feedType;
+      headerDiv.textContent = feedType;
       return headerDiv;
     });
 

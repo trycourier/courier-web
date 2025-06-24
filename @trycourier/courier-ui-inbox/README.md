@@ -2,8 +2,12 @@
 
 Web components for Courier Inbox.
 
-## Installation```sh
-npm i @trycourier/courier-js@1.0.8-beta
+## Installation
+
+> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
+
+```sh
+npm i @trycourier/courier-ui-inbox@1.0.8-beta
 ```
 
 ## Usage
@@ -24,15 +28,18 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
 ```html
 <body>
 
-    <courier-inbox></courier-inbox>
+    <courier-inbox id="inbox"></courier-inbox>
 
     <script type="module">
         import { Courier, CourierInbox } from '@trycourier/courier-ui-inbox';
 
+        // Generate a JWT for your user (do this on your backend server)
+        const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
+
         // Authenticate the user with the inbox
         Courier.shared.signIn({
             userId: 'some_user_id',
-            jwt: 'ey...n0'
+            jwt: jwt
         });
     </script>
 
@@ -53,10 +60,13 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
     <script type="module">
         import { CourierInbox, Courier } from '@trycourier/courier-ui-inbox';
 
+        // Generate a JWT for your user (do this on your backend server)
+        const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
+
         // Authenticate the user with the inbox
         Courier.shared.signIn({
             userId: 'some_user_id',
-            jwt: 'ey...n0'
+            jwt: jwt
         });
     </script>
 
@@ -124,7 +134,7 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
 ```html
 <body>
 
-  <courier-inbox id="inbox"></courier-inbox>
+  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
 
   <script type="module">
     ...
@@ -184,4 +194,155 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
 </body>
 ```
 
+## Custom Elements
 
+Customize the inbox UI with any element you want.
+
+### List Items
+
+// TODO: Image
+
+```html
+<body>
+
+    <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+
+    <script type="module">
+        ...
+
+        // Reference the courier-inbox element
+        const inbox = document.getElementById('inbox');
+
+        // Set a custom list item
+        inbox.setListItem(({ message, index }) => {
+            const pre = document.createElement('pre');
+            pre.style.padding = '24px';
+            pre.style.borderBottom = '1px solid #e0e0e0';
+            pre.style.margin = '0';
+            pre.textContent = JSON.stringify(({ message, index }), null, 2);
+            return pre;
+        });
+    </script>
+
+</body>
+```
+
+### Header
+
+// TODO: Image
+
+```html
+<body>
+
+    <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+
+    <script type="module">
+        ...
+
+        // Reference the courier-inbox element
+        const inbox = document.getElementById('inbox');
+
+        // Remove the header
+        inbox.removeHeader();
+
+        // Set a custom header
+        inbox.setHeader(({ feedType, unreadCount, messageCount }) => {
+            const headerDiv = document.createElement('div');
+            headerDiv.style.background = 'red';
+            headerDiv.style.fontSize = '24px';
+            headerDiv.style.padding = '24px';
+            headerDiv.style.width = '100%';
+            headerDiv.textContent = feedType;
+            return headerDiv;
+        });
+
+        // Change the feed type
+        // "inbox" and "archive" are available
+        inbox.setFeedType('archive');
+    </script>
+
+</body>
+```
+
+### Popup Menu Button
+
+// TODO: Image
+
+```html
+<body>
+
+    <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
+        <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
+    </div>
+
+    <script type="module">
+        ...
+
+        // Reference the courier-inbox element
+        const inbox = document.getElementById('inbox');
+
+        // Set a custom menu button
+        inbox.setMenuButton(({ unreadCount }) => {
+            const button = document.createElement('button');
+            button.textContent = `Open the Inbox Popup. Unread message count: ${unreadCount}`;
+            return button;
+        });
+    </script>
+
+</body>
+```
+
+### Loading, Empty, Error & Pagination
+
+```html
+<body>
+
+    <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+
+    <script type="module">
+        ...
+
+        // Reference the courier-inbox element
+        const inbox = document.getElementById('inbox');
+
+        // Set a custom loading state
+        inbox.setLoadingState(props => {
+            const loading = document.createElement('div');
+            loading.style.padding = '24px';
+            loading.style.background = 'red';
+            loading.textContent = 'Custom Loading State';
+            return loading;
+        });
+
+        // Set a custom empty state
+        inbox.setEmptyState(props => {
+            const empty = document.createElement('div');
+            empty.style.padding = '24px';
+            empty.style.background = 'green';
+            empty.textContent = 'Custom Empty State';
+            return empty;
+        });
+
+        // Set a custom error state
+        inbox.setErrorState(props => {
+            const error = document.createElement('div');
+            error.style.padding = '24px';
+            error.style.background = 'blue';
+            error.textContent = 'Custom Error State';
+            return error;
+        });
+
+        // Set a custom pagination state
+        inbox.setPaginationItem(props => {
+            const pagination = document.createElement('div');
+            pagination.style.padding = '24px';
+            pagination.style.background = 'yellow';
+            pagination.textContent = 'Custom Pagination Item';
+            return pagination;
+        });
+    </script>
+
+</body>
+```
+
+> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
