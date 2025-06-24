@@ -12,9 +12,7 @@ export class PreferenceClient extends Client {
    * @returns Promise resolving to user preferences
    * @see https://www.courier.com/docs/reference/user-preferences/list-all-user-preferences
    */
-  public async getUserPreferences(props?: {
-    paginationCursor?: string;
-  }): Promise<CourierUserPreferences> {
+  public async getUserPreferences(props?: { paginationCursor?: string; }): Promise<CourierUserPreferences> {
     let url = `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/preferences`;
 
     if (props?.paginationCursor) {
@@ -44,9 +42,7 @@ export class PreferenceClient extends Client {
    * @returns Promise resolving to topic preferences
    * @see https://www.courier.com/docs/reference/user-preferences/get-subscription-topic-preferences
    */
-  public async getUserPreferenceTopic(props: {
-    topicId: string;
-  }): Promise<CourierUserPreferencesTopic> {
+  public async getUserPreferenceTopic(props: { topicId: string; }): Promise<CourierUserPreferencesTopic> {
 
     const json = await http({
       options: this.options,
@@ -70,12 +66,7 @@ export class PreferenceClient extends Client {
    * @returns Promise resolving when update is complete
    * @see https://www.courier.com/docs/reference/user-preferences/update-subscription-topic-preferences
    */
-  public async putUserPreferenceTopic(props: {
-    topicId: string;
-    status: CourierUserPreferencesStatus;
-    hasCustomRouting: boolean;
-    customRouting: CourierUserPreferencesChannel[];
-  }): Promise<void> {
+  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
 
     const payload = {
       topic: {

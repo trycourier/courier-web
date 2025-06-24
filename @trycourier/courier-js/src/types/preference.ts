@@ -1,6 +1,6 @@
 export type CourierUserPreferencesStatus = 'OPTED_IN' | 'OPTED_OUT' | 'REQUIRED' | 'UNKNOWN';
 
-export type CourierUserPreferencesChannel = 'direct_message' | 'email' | 'push' | 'sms' | 'webhook' | 'unknown';
+export type CourierUserPreferencesChannel = 'direct_message' | 'inbox' | 'email' | 'push' | 'sms' | 'webhook' | 'unknown';
 
 export interface CourierUserPreferencesPaging {
   cursor?: string;

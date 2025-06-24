@@ -66,4 +66,15 @@ esac
 # Update package.json with new version
 npm version "$new_version" --no-git-tag-version
 
+# Update README.md install line if present
+pkg_name=$(node -p "require('./package.json').name")
+readme_file="../../${pkg_name}/README.md"
+if [ -f "$readme_file" ]; then
+  # Use sed for in-place replacement of the install line
+  sed -i.bak -E "s|(npm i[[:space:]]+$pkg_name@)[^[:space:]'\"]+|\1$new_version|g" "$readme_file" && rm -f "$readme_file.bak"
+  gum style --foreground 46 "Updated README.md install line to $pkg_name@$new_version"
+else
+  gum style --foreground 220 "README.md not found at $readme_file, skipping install line update"
+fi
+
 gum style --foreground 46 "Version incremented to $new_version"
