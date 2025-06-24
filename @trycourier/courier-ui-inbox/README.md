@@ -8,7 +8,7 @@ Web components for Courier Inbox.
 npm i @trycourier/courier-ui-inbox@1.0.8-beta
 ```
 
-> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
+> **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
 
 ## Usage
 
@@ -181,7 +181,7 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
 </body>
 ```
 
-[🎨 All available theme values](./docs/theme.md).
+> **🎨 Theme Reference:** [All available theme values](./docs/theme.md)
 
 ### Popup Alignment, Positioning, and Dimensions
 
@@ -354,4 +354,4 @@ Customize the inbox UI with any element you want.
 </body>
 ```
 
-> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
+> **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
