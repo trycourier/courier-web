@@ -941,7 +941,7 @@
       // Custom inbox list item
       const customInboxMenu = document.getElementById('inbox-menu');
 
-      customInboxMenu.setPopupHeader(props => {
+      customInboxMenu.setHeader(props => {
         const header = document.createElement('custom-header');
         header.setAttribute('data-props', JSON.stringify(props));
 
@@ -954,37 +954,37 @@
         return header;
       });
 
-      customInboxMenu.setPopupLoadingState(props => {
+      customInboxMenu.setLoadingState(props => {
         const loading = document.createElement('custom-loading-state');
         loading.setAttribute('data-props', JSON.stringify(props));
         return loading;
       });
 
-      customInboxMenu.setPopupEmptyState(props => {
+      customInboxMenu.setEmptyState(props => {
         const empty = document.createElement('custom-empty-state');
         empty.setAttribute('data-props', JSON.stringify(props));
         return empty;
       });
 
-      customInboxMenu.setPopupErrorState(props => {
+      customInboxMenu.setErrorState(props => {
         const error = document.createElement('custom-error-state');
         error.setAttribute('data-props', JSON.stringify(props));
         return error;
       });
 
-      customInboxMenu.setPopupListItem(props => {
+      customInboxMenu.setListItem(props => {
         const listItem = document.createElement('custom-list-item');
         listItem.setAttribute('data-props', JSON.stringify(props));
         return listItem;
       });
 
-      customInboxMenu.setPopupPaginationItem(props => {
+      customInboxMenu.setPaginationItem(props => {
         const pagination = document.createElement('custom-pagination-item');
         pagination.setAttribute('data-props', JSON.stringify(props));
         return pagination;
       });
 
-      customInboxMenu.setPopupMenuButton(props => {
+      customInboxMenu.setMenuButton(props => {
         const menuButton = document.createElement('custom-menu-button');
         menuButton.setAttribute('data-props', JSON.stringify(props));
         return menuButton;

@@ -40,9 +40,10 @@
   <script type="module">
     import { Courier, CourierInboxPopupMenu } from '@trycourier/courier-ui-inbox';
 
+    // Authenticate the user with the inbox
     Courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
+      jwt: import.meta.env.VITE_JWT
     });
   </script>
 

@@ -349,35 +349,35 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   // Factory methods
-  public setPopupHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
+  public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setHeader(factory);
   }
 
-  public removePopupHeader() {
+  public removeHeader() {
     this._inbox?.removeHeader();
   }
 
-  public setPopupLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
+  public setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setLoadingState(factory);
   }
 
-  public setPopupEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
+  public setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setEmptyState(factory);
   }
 
-  public setPopupErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
+  public setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setErrorState(factory);
   }
 
-  public setPopupListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
+  public setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setListItem(factory);
   }
 
-  public setPopupPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
+  public setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setPaginationItem(factory);
   }
 
-  public setPopupMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
+  public setMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
     this._popupMenuButtonFactory = factory;
     this.render();
   }

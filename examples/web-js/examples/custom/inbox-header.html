@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Examples / Inbox</title>
+  <title>Web Examples / Full Screen</title>
   <link rel="stylesheet" href="./../../styles.css">
 </head>
 
@@ -24,30 +24,23 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
-    const theme = {
-      inbox: {
-        header: {
-          filters: {
-            unreadIndicator: {
-              backgroundColor: "#8B5CF6"
-            }
-          }
-        },
-        list: {
-          item: {
-            unreadIndicatorColor: "#8B5CF6"
-          }
-        }
-      }
-    }
+    // Remove the header
+    inbox.removeHeader();
 
-    // Set the theme
-    inbox.setLightTheme(theme);
-    inbox.setDarkTheme(theme);
+    // Set a custom header with an element
+    inbox.setHeader(props => {
+      const headerDiv = document.createElement('div');
+      headerDiv.style.background = 'red';
+      headerDiv.style.fontSize = '24px';
+      headerDiv.style.padding = '24px';
+      headerDiv.style.width = '100%';
+      headerDiv.textContent = props.feedType;
+      return headerDiv;
+    });
 
-    // Set the mode
-    // This will force light, dark or system theme mode
-    inbox.setMode('light');
+    // Change the feed type
+    // "inbox" and "archive" are available
+    inbox.setFeedType('archive');
 
   </script>
 

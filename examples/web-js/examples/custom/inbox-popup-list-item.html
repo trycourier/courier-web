@@ -11,8 +11,7 @@
 <body>
 
   <div class="center">
-    <courier-inbox-popup-menu mode="light" popup-alignment="top-center" top="44px" popup-width="340px"
-      popup-height="400px"></courier-inbox-popup-menu>
+    <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
   </div>
 
   <script type="module">
@@ -23,7 +22,22 @@
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT
     });
+
+    // Reference the courier-inbox element
+    const inbox = document.getElementById('inbox');
+
+    // Set a custom list item
+    inbox.setListItem(props => {
+      const pre = document.createElement('pre');
+      pre.style.fontFamily = 'monospace';
+      pre.style.padding = '24px';
+      pre.style.borderBottom = '1px solid #e0e0e0';
+      pre.style.margin = '0';
+      pre.textContent = JSON.stringify(props, null, 2);
+      return pre;
+    });
   </script>
+
 </body>
 
 </html>
