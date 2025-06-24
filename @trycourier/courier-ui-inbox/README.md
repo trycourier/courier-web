@@ -4,11 +4,11 @@ Web components for Courier Inbox.
 
 ## Installation
 
-> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
-
 ```sh
 npm i @trycourier/courier-ui-inbox@1.0.8-beta
 ```
+
+> **Are you using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
 
 ## Usage
 
