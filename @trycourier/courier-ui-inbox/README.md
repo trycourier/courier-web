@@ -31,7 +31,7 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
     <courier-inbox id="inbox"></courier-inbox>
 
     <script type="module">
-        import { Courier, CourierInbox } from '@trycourier/courier-ui-inbox';
+        import { Courier } from '@trycourier/courier-ui-inbox';
 
         // Generate a JWT for your user (do this on your backend server)
         const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
@@ -58,7 +58,7 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
     </div>
 
     <script type="module">
-        import { CourierInbox, Courier } from '@trycourier/courier-ui-inbox';
+        import { Courier } from '@trycourier/courier-ui-inbox';
 
         // Generate a JWT for your user (do this on your backend server)
         const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
@@ -81,7 +81,16 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
     <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
 
     <script type="module">
-        ...
+        import { Courier } from '@trycourier/courier-ui-inbox';
+
+        // Generate a JWT for your user (do this on your backend server)
+        const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
+
+        // Authenticate the user with the inbox
+        Courier.shared.signIn({
+            userId: 'some_user_id',
+            jwt: jwt
+        });
 
         // Reference the element
         const inbox = document.getElementById('inbox');
