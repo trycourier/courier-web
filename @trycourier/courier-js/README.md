@@ -1,5 +1,3 @@
-// TODO: Banner
-
 # `@trycourier/courier-js`
 
 The base API client and shared instance singleton for Courier's JavaScript Browser SDK.
@@ -12,7 +10,7 @@ npm i @trycourier/courier-js@2.0.4-beta
 
 ## Usage
 
-Setup the API client
+Setup the API client.
 
 ```ts
 const courierClient = new CourierClient({
@@ -28,8 +26,7 @@ const courierClient = new CourierClient({
 To authenticate the SDK, generate a JWT for your user.  
 See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-token) for instructions.
 
-**Important:**  
-Always generate JWTs on your backend server, not in client-side code.
+> **Important:** Always generate JWTs on your backend server, not in client-side code.
 
 ### Inbox APIs
 
