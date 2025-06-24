@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Examples / Inbox</title>
+  <link rel="stylesheet" href="./../../styles.css">
+</head>
+
+<body>
+
+  <div class="center">
+    <courier-inbox-popup-menu light-theme='{
+        "popup": {
+          "button": {
+            "unreadIndicator": {
+              "backgroundColor": "#8B5CF6"
+            }
+          }
+        },
+        "inbox": {
+          "header": {
+            "filters": {
+              "unreadIndicator": {
+                "backgroundColor": "#8B5CF6"
+              }
+            }
+          },
+          "list": {
+            "item": {
+              "unreadIndicatorColor": "#8B5CF6"
+            }
+          }
+        }
+      }' mode="light">
+    </courier-inbox-popup-menu>
+  </div>
+
+  <script type="module">
+    import { Courier, CourierInboxPopupMenu } from '@trycourier/courier-ui-inbox';
+
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+    });
+  </script>
+
+</body>
+
+</html>

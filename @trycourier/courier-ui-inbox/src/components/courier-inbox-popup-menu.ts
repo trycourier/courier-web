@@ -43,6 +43,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._themeManager.setDarkTheme(theme);
   }
 
+  public setMode(mode: CourierComponentThemeMode) {
+    this._themeManager.setMode(mode);
+  }
+
   // Components
   private _triggerButton?: CourierInboxMenuButton;
   private _popup?: HTMLDivElement;

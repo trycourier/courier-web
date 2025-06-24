@@ -4,22 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web — Inbox</title>
+  <title>Courier Inbox Web Examples</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-  <courier-inbox></courier-inbox>
+  <h2>Examples</h2>
+  <ul>
+    <li><a href="/examples/default/inbox">Inbox Default</a></li>
+    <li><a href="/examples/default/inbox-popup-menu">Inbox Popup Menu Default</a></li>
+  </ul>
 
-  <script type="module">
-    import { Courier, CourierInbox } from '@trycourier/courier-ui-inbox';
-
-    Courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
-  </script>
+  <h2>Themed Examples</h2>
+  <ul>
+    <li><a href="/examples/themed/inbox-full-screen">Inbox full screen</a></li>
+    <li><a href="/examples/themed/inbox-inline">Inbox with inline theme</a></li>
+    <li><a href="/examples/themed/inbox-js">Inbox with JS theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-inline">Inbox Popup Menu with inline theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-js">Inbox Popup Menu with JS theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-attributes">Inbox Popup Menu with Attributes</a></li>
+  </ul>
 
 </body>
 
