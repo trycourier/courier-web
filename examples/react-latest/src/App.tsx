@@ -1,4 +1,3 @@
-import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Default from './Default';
 import PopupMenu from './PopupMenu';
