@@ -2,7 +2,7 @@
 
 Web components for Courier Inbox.
 
-## Installation
+## Install
 
 ```sh
 npm i @trycourier/courier-ui-inbox@1.0.8-beta
@@ -10,9 +10,7 @@ npm i @trycourier/courier-ui-inbox@1.0.8-beta
 
 > **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
 
-## Usage
-
-### Generate a JWT
+## Authenticate
 
 To authenticate the SDK, generate a JWT for your user.  
 See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-token) for instructions.
