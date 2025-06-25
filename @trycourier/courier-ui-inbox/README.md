@@ -210,8 +210,9 @@ curl --request POST \
 <body>
 
   <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
+    <!-- Available alignments: 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center' -->
     <courier-inbox-popup-menu 
-      popup-alignment="top-right" 
+      popup-alignment="top-right"
       top="44px" 
       right="44px" 
       popup-width="340px"

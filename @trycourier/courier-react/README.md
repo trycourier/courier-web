@@ -183,7 +183,6 @@ export default function App() {
     },
   };
 
-  
   return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />;
 }
 ```
@@ -193,15 +192,23 @@ export default function App() {
 ### Popup Alignment, Positioning, and Dimensions
 
 ```ts
-<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '100px' }}>
-  <CourierInboxPopupMenu
-    popupAlignment="top-right"
-    popupWidth="340px"
-    popupHeight="400px"
-    top="44px"
-    right="44px"
-  />
-</div>
+export default function App() {
+
+  ...
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '100px' }}>
+      <CourierInboxPopupMenu
+        popupAlignment="top-right" // 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center'
+        popupWidth="340px"
+        popupHeight="400px"
+        top="44px"
+        right="44px"
+      />
+    </div>
+  );
+
+}
 ```
 
 ## Custom Elements

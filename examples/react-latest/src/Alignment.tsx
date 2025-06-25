@@ -16,7 +16,7 @@ export default function App() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '100px' }}>
       <CourierInboxPopupMenu
-        popupAlignment="top-right"
+        popupAlignment="top-right" // 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center'
         popupWidth="340px"
         popupHeight="400px"
         top="44px"
