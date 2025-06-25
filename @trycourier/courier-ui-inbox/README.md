@@ -145,7 +145,7 @@ curl --request POST \
 
 ### Custom height `courier-inbox`
 
-// TODO: Image
+<img width="688" alt="Screenshot 2025-06-25 at 2 24 57 PM" src="https://github.com/user-attachments/assets/25a4e96e-490d-4bf0-846b-5e4c30952997" />
 
 > **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
 
