@@ -155,5 +155,17 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Setup Page for Screenshot",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "./scripts/screenshot_launch.sh"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
   ]
 }
