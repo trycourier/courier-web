@@ -13,7 +13,9 @@ npm i @trycourier/courier-ui-inbox@1.0.8-beta
 ## Authenticate
 
 To authenticate the SDK, generate a JWT for your user.  
-See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-token) for instructions.
+See the [Courier JWT Token Endpoint](https://www.courier.com/docs/reference/auth/issue-token) for instructions.
+ 
+You can find and manage your API keys in your [Courier API Keys](https://app.courier.com/settings/api-keys).
 
 > **Important:** Always generate JWTs on your backend server, not in client-side code.
 
@@ -23,7 +25,7 @@ Here is an example cURL you can use to get started:
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
      --header 'Accept: application/json' \
-     --header 'Authorization: Bearer $YOUR_AUTH_KEY' \ # get your API key at https://app.courier.com/settings/api-keys
+     --header 'Authorization: Bearer $YOUR_API_KEY' \
      --header 'Content-Type: application/json' \
      --data \
  '{
@@ -51,7 +53,7 @@ curl --request POST \
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
-      userId: 'some_user_id',
+      userId: $YOUR_USER_ID,
       jwt: jwt
     });
   </script>
@@ -78,7 +80,7 @@ curl --request POST \
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
-      userId: 'some_user_id',
+      userId: $YOUR_USER_ID,
       jwt: jwt
     });
   </script>
@@ -101,7 +103,7 @@ curl --request POST \
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
-      userId: 'some_user_id',
+      userId: $YOUR_USER_ID,
       jwt: jwt
     });
 
