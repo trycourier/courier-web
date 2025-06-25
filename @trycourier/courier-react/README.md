@@ -158,7 +158,7 @@ export default function App() {
 
 ### Light & Dark Themes
 
-// TODO
+<img width="688" alt="Screenshot 2025-06-25 at 5 38 07 PM" src="https://github.com/user-attachments/assets/d1440494-ee66-4ff6-850b-c1a13691cf2f" />
 
 ```ts
 import { CourierInbox, ..., type CourierInboxTheme } from '@trycourier/courier-react';
