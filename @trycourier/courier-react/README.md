@@ -49,15 +49,14 @@ curl --request POST \
 <img width="688" alt="Screenshot 2025-06-25 at 5 17 47 PM" src="https://github.com/user-attachments/assets/1655f43b-cc61-473f-9204-8dffeae21042" />
 
 ```ts
-import { useEffect } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react'
+import { useEffect } from 'react';
+import { CourierInbox, useCourier } from '@trycourier/courier-react';
 
 export default function App() {
 
   const courier = useCourier();
 
   useEffect(() => {
-
     // Generate a JWT for your user (do this on your backend server)
     const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
 
@@ -73,20 +72,19 @@ export default function App() {
 }
 ```
 
-### `courier-inbox-popup-menu`
+### `CourierInboxPopupMenu`
 
 <img width="605" alt="Screenshot 2025-06-25 at 5 21 53 PM" src="https://github.com/user-attachments/assets/1c5497ba-a860-4d7e-8cf7-5b56a65cea51" />
 
 ```ts
-import { useEffect } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react'
+import { useEffect } from 'react';
+import { CourierInbox, useCourier } from '@trycourier/courier-react';
 
 export default function App() {
 
   const courier = useCourier();
 
   useEffect(() => {
-
     // Generate a JWT for your user (do this on your backend server)
     const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
 
@@ -108,108 +106,86 @@ export default function App() {
 
 ## Handle Clicks and Presses
 
-```html
-<body>
+```ts
+import { useEffect } from 'react';
+import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps, type CourierInboxListItemActionFactoryProps } from '@trycourier/courier-react';
 
-  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+export default function App() {
 
-  <script type="module">
-    import { Courier } from '@trycourier/courier-ui-inbox';
+  const courier = useCourier();
 
+  useEffect(() => {
     // Generate a JWT for your user (do this on your backend server)
     const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
 
     // Authenticate the user with the inbox
-    Courier.shared.signIn({
+    courier.shared.signIn({
       userId: $YOUR_USER_ID,
-      jwt: jwt
+      jwt: jwt,
     });
+  }, []);
 
-    // Reference the element
-    const inbox = document.getElementById('inbox');
+  return (
+    <CourierInbox
+      onMessageClick={({ message, index }: CourierInboxListItemFactoryProps) => {
+        alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
+      }}
+      onMessageActionClick={({ message, action, index }: CourierInboxListItemActionFactoryProps) => {
+        alert(
+          "Message action clicked at index " + index + ":\n" +
+          "Action: " + JSON.stringify(action, null, 2) + "\n" +
+          "Message: " + JSON.stringify(message, null, 2)
+        );
+      }}
+      onMessageLongPress={({ message, index }: CourierInboxListItemFactoryProps) => {
+        alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
+      }}
+    />
+  );
 
-    // Handle message clicks
-    inbox.onMessageClick(({ message, index }) => {
-      alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
-    });
-
-    // Handle message action clicks (These are buttons on individial messages)
-    inbox.onMessageActionClick(({ message, action, index }) => {
-      alert(
-        "Message action clicked at index " + index + ":\n" +
-        "Action: " + JSON.stringify(action, null, 2) + "\n" +
-        "Message: " + JSON.stringify(message, null, 2)
-      );
-    });
-
-    // Handle message long presses (Useful for mobile web)
-    inbox.onMessageLongPress(({ message, index }) => {
-      alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
-    });
-  </script>
-
-</body>
+}
 ```
 
 ## Styles and Theming
 
-### Custom height `courier-inbox`
+### Custom height `CourierInbox`
 
-> **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
+> **Important:** The default `CourierInbox` height is auto. It will set it's height based on it's children.
 
-```html
-<body>
-
-  <courier-inbox height="50vh"></courier-inbox>
-
-  ...
-
-</body>
+```ts
+<CourierInbox height='50vh' />
 ```
 
 ### Light & Dark Themes
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 36 20 PM" src="https://github.com/user-attachments/assets/982164fe-fe0d-4e66-82d1-b5a6571f1aa4" />
+// TODO
 
-```html
-<body>
+```ts
+import { CourierInbox, ..., type CourierInboxTheme } from '@trycourier/courier-react';
 
-  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+export default function App() {
+  ...
 
-  <script type="module">
-    ...
-
-    // Reference the element
-    const inbox = document.getElementById('inbox');
-
-    const theme = {
-      inbox: {
-        header: {
-          filters: {
-            unreadIndicator: {
-              backgroundColor: "#8B5CF6"
-            }
-          }
+  const theme: CourierInboxTheme = {
+    inbox: {
+      header: {
+        filters: {
+          unreadIndicator: {
+            backgroundColor: '#8B5CF6',
+          },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: "#8B5CF6"
-          }
-        }
-      }
-    }
+      },
+      list: {
+        item: {
+          unreadIndicatorColor: '#8B5CF6',
+        },
+      },
+    },
+  };
 
-    // Set the theme
-    inbox.setLightTheme(theme);
-    inbox.setDarkTheme(theme);
-
-    // Set the mode
-    // This will force light, dark or system theme mode
-    inbox.setMode('light');
-
-  </script>
-
-</body>
+  
+  return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />;
+}
 ```
 
 > **🎨 Theme Reference:** [All available theme values](./docs/theme.md)
