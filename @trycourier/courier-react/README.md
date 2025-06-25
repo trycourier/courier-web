@@ -46,7 +46,7 @@ curl --request POST \
 
 ### `CourierInbox`
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 32 30 PM" src="https://github.com/user-attachments/assets/93246c34-3c5a-475e-8e83-7df6acf9bdf3" />
+<img width="688" alt="Screenshot 2025-06-25 at 5 17 47 PM" src="https://github.com/user-attachments/assets/1655f43b-cc61-473f-9204-8dffeae21042" />
 
 ```ts
 import { useEffect } from 'react'
@@ -75,7 +75,7 @@ export default function App() {
 
 ### `courier-inbox-popup-menu`
 
-<img width="602" alt="Screenshot 2025-06-25 at 2 33 17 PM" src="https://github.com/user-attachments/assets/c3b7f4cc-26c1-4be6-9ed5-a3fc3c0b335b" />
+<img width="605" alt="Screenshot 2025-06-25 at 5 21 53 PM" src="https://github.com/user-attachments/assets/1c5497ba-a860-4d7e-8cf7-5b56a65cea51" />
 
 ```ts
 import { useEffect } from 'react'
