@@ -19,6 +19,21 @@ See the [Courier JWT Guide](https://www.courier.com/docs/reference/auth/issue-to
 
 > **Important:** Always generate JWTs on your backend server, not in client-side code.
 
+Here is an example cURL you can use to get started:
+
+```sh
+curl --request POST \
+     --url https://api.courier.com/auth/issue-token \
+     --header 'Accept: application/json' \
+     --header 'Authorization: Bearer $YOUR_AUTH_KEY' \ # get your API key at https://app.courier.com/settings/api-keys
+     --header 'Content-Type: application/json' \
+     --data \
+ '{
+    "scope": "user_id:$YOUR_USER_ID write:user-tokens inbox:read:messages inbox:write:events read:preferences write:preferences read:brands",
+    "expires_in": "$YOUR_NUMBER days"
+  }'
+```
+
 ## Add Inbox Component
 
 ### `courier-inbox`
