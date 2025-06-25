@@ -145,8 +145,6 @@ curl --request POST \
 
 ### Custom height `courier-inbox`
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 24 57 PM" src="https://github.com/user-attachments/assets/25a4e96e-490d-4bf0-846b-5e4c30952997" />
-
 > **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
 
 ```html
@@ -161,7 +159,7 @@ curl --request POST \
 
 ### Light & Dark Themes
 
-// TODO Image
+<img width="688" alt="Screenshot 2025-06-25 at 2 24 57 PM" src="https://github.com/user-attachments/assets/25a4e96e-490d-4bf0-846b-5e4c30952997" />
 
 ```html
 <body>
@@ -214,9 +212,9 @@ curl --request POST \
   <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
     <courier-inbox-popup-menu 
       mode="light" 
-      popup-alignment="top-left" 
+      popup-alignment="top-right" 
       top="44px" 
-      left="44px" 
+      right="44px" 
       popup-width="340px"
       popup-height="400px">
     </courier-inbox-popup-menu>
