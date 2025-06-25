@@ -192,22 +192,16 @@ export default function App() {
 
 ### Popup Alignment, Positioning, and Dimensions
 
-```html
-<body>
-
-  <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
-    <courier-inbox-popup-menu 
-      mode="light" 
-      popup-alignment="top-right" 
-      top="44px" 
-      right="44px" 
-      popup-width="340px"
-      popup-height="400px">
-    </courier-inbox-popup-menu>
-  </div>
-
-  ...
-</body>
+```ts
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '100px' }}>
+  <CourierInboxPopupMenu
+    popupAlignment="top-right"
+    popupWidth="340px"
+    popupHeight="400px"
+    top="44px"
+    right="44px"
+  />
+</div>
 ```
 
 ## Custom Elements
@@ -216,7 +210,7 @@ Customize the inbox UI with any element you want.
 
 ### List Items
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 37 29 PM" src="https://github.com/user-attachments/assets/53da26d1-ed9a-461d-ad92-2e74ee3e91bf" />
+// TODO
 
 ```html
 <body>

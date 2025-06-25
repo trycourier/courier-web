@@ -211,7 +211,6 @@ curl --request POST \
 
   <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
     <courier-inbox-popup-menu 
-      mode="light" 
       popup-alignment="top-right" 
       top="44px" 
       right="44px" 

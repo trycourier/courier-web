@@ -5,6 +5,8 @@ import Canvas from './Canvas';
 import InboxActions from './InboxActions';
 import CustomHeight from './CustomHeight';
 import Themes from './Themes';
+import Alignment from './Alignment';
+import CustomListItems from './CustomListItems';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/actions" element={<InboxActions />} />
         <Route path="/custom-height" element={<CustomHeight />} />
         <Route path="/themes" element={<Themes />} />
+        <Route path="/alignment" element={<Alignment />} />
+        <Route path="/custom-list-items" element={<CustomListItems />} />
         <Route path="/canvas" element={<Canvas />} />
       </Routes>
     </BrowserRouter>
