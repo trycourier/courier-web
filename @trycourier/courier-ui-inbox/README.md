@@ -259,7 +259,7 @@ Customize the inbox UI with any element you want.
 
 ### Header
 
-// TODO: Image
+<img width="688" alt="Screenshot 2025-06-25 at 2 38 45 PM" src="https://github.com/user-attachments/assets/d393f77d-695e-4fed-a60a-7f7b59909772" />
 
 ```html
 <body>
