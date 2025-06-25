@@ -71,7 +71,7 @@ curl --request POST \
 
 ### `courier-inbox-popup-menu`
 
-<img width="558" alt="Screenshot 2025-06-25 at 1 26 34 PM" src="https://github.com/user-attachments/assets/1fb307dd-a9ea-492c-baf6-c4ec587d956d" />
+<img width="558" alt="Screenshot 2025-06-25 at 2 01 48 PM" src="https://github.com/user-attachments/assets/990a728e-d95f-4647-aa38-263ada5ad91a" />
 
 ```html
 <body>
