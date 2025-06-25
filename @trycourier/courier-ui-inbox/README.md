@@ -230,7 +230,7 @@ Customize the inbox UI with any element you want.
 
 ### List Items
 
-// TODO: Image
+<img width="688" alt="Screenshot 2025-06-25 at 2 37 29 PM" src="https://github.com/user-attachments/assets/53da26d1-ed9a-461d-ad92-2e74ee3e91bf" />
 
 ```html
 <body>
