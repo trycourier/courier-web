@@ -46,7 +46,7 @@ curl --request POST \
 
 ### `courier-inbox`
 
-<img width="688" alt="Screenshot 2025-06-25 at 1 20 33 PM" src="https://github.com/user-attachments/assets/d45e7369-a62a-46e9-ad6b-aaa45c83fb49" />
+// TODO: Image
 
 ```html
 <body>
@@ -76,7 +76,7 @@ curl --request POST \
 ```html
 <body>
 
-  <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
+  <div style="padding: 24px;">
     <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
   </div>
 
@@ -143,16 +143,16 @@ curl --request POST \
 
 ## Styles and Theming
 
-### Full screen `courier-inbox`
+### Custom height `courier-inbox`
 
 // TODO: Image
 
-> **Important:** The default `courier-inbox` height is 768px.
+> **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
 
 ```html
 <body>
 
-  <courier-inbox height="100%"></courier-inbox>
+  <courier-inbox height="50vh"></courier-inbox>
 
   ...
 
