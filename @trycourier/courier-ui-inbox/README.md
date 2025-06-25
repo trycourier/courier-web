@@ -296,7 +296,7 @@ Customize the inbox UI with any element you want.
 
 ### Popup Menu Button
 
-// TODO: Image
+<img width="688" alt="Screenshot 2025-06-25 at 2 39 49 PM" src="https://github.com/user-attachments/assets/5eeb32ae-13ff-4622-b6ea-b302f04509f3" />
 
 ```html
 <body>
