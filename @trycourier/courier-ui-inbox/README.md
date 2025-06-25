@@ -46,7 +46,7 @@ curl --request POST \
 
 ### `courier-inbox`
 
-// TODO: Image
+<img width="688" alt="Screenshot 2025-06-25 at 1 20 33 PM" src="https://github.com/user-attachments/assets/d45e7369-a62a-46e9-ad6b-aaa45c83fb49" />
 
 ```html
 <body>
