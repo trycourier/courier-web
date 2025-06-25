@@ -115,7 +115,7 @@ export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, Co
     if (!menu || !props.renderErrorState) return;
     queueMicrotask(() => {
       menu.setErrorState((errorStateProps?: CourierInboxStateErrorFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupErrorState!(errorStateProps);
+        const reactNode = props.renderErrorState!(errorStateProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });

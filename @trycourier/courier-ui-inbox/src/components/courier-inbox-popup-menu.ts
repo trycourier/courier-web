@@ -23,7 +23,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   // State
   private _width: string = '440px';
   private _height: string = '440px';
-  private _popupAlignment: CourierInboxPopupAlignment = 'top-right';
+  private _popupAlignment: CourierInboxPopupAlignment = 'top-left';
   private _top: string = '40px';
   private _right: string = '0';
   private _bottom: string = '40px';

@@ -59,7 +59,7 @@ export class CourierInbox extends CourierBaseElement {
     title: 'Inbox',
     icon: CourierIconSVGs.inbox,
     feedType: this._currentFeed,
-    height: '768px'
+    height: 'auto'
   };
 
   static get observedAttributes() {
