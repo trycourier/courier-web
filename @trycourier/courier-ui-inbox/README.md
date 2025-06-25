@@ -159,7 +159,7 @@ curl --request POST \
 
 ### Light & Dark Themes
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 24 57 PM" src="https://github.com/user-attachments/assets/25a4e96e-490d-4bf0-846b-5e4c30952997" />
+<img width="688" alt="Screenshot 2025-06-25 at 2 36 20 PM" src="https://github.com/user-attachments/assets/982164fe-fe0d-4e66-82d1-b5a6571f1aa4" />
 
 ```html
 <body>
