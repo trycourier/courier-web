@@ -188,7 +188,7 @@ export default function App() {
 }
 ```
 
-> **🎨 Theme Reference:** [All available theme values](./docs/theme.md)
+> **🎨 Theme Reference:** [All available theme values](../courier-ui-inbox/docs/theme.md)
 
 ### Popup Alignment, Positioning, and Dimensions
 
