@@ -284,30 +284,32 @@ export default function App() {
 
 ### Popup Menu Button
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 39 49 PM" src="https://github.com/user-attachments/assets/5eeb32ae-13ff-4622-b6ea-b302f04509f3" />
+// TODO
 
-```html
-<body>
+```ts
+import { CourierInboxPopupMenu, ..., type CourierInboxMenuButtonFactoryProps } from '@trycourier/courier-react'
 
-  <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
-    <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
-  </div>
+const CustomMenuButton = ({ unreadCount }: CourierInboxMenuButtonFactoryProps) => (
+  <button>
+    Open the Inbox Popup. Unread message count: {unreadCount}
+  </button>
+);
 
-  <script type="module">
-    ...
+export default function App() {
 
-    // Reference the courier-inbox element
-    const inbox = document.getElementById('inbox');
+  ...
 
-    // Set a custom menu button
-    inbox.setMenuButton(({ unreadCount }) => {
-      const button = document.createElement('button');
-      button.textContent = `Open the Inbox Popup. Unread message count: ${unreadCount}`;
-      return button;
-    });
-  </script>
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInboxPopupMenu
+        renderMenuButton={({ unreadCount }: CourierInboxMenuButtonFactoryProps) => {
+          return <CustomMenuButton unreadCount={unreadCount} />
+        }}
+      />
+    </div>
+  );
 
-</body>
+}å
 ```
 
 ### Loading, Empty, Error & Pagination

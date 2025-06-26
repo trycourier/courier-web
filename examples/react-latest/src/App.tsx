@@ -9,6 +9,7 @@ import Alignment from './Alignment';
 import CustomListItems from './CustomListItems';
 import CustomHeader from './CustomHeader';
 import ElementRef from './ElementRef';
+import CustomMenuButton from './CustomMenuButton';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/custom-list-items" element={<CustomListItems />} />
         <Route path="/custom-header" element={<CustomHeader />} />
         <Route path="/element-ref" element={<ElementRef />} />
+        <Route path="/custom-menu-button" element={<CustomMenuButton />} />
         <Route path="/canvas" element={<Canvas />} />
       </Routes>
     </BrowserRouter>
