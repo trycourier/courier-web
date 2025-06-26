@@ -1,6 +1,4 @@
-# `@trycourier/courier-react`
-
-React components for Courier Inbox.
+<img width="1040" alt="courier-react" src="https://github.com/user-attachments/assets/e487fba4-8050-4ca8-abe8-18fef3df1c90" />
 
 ## 1. Install
 
