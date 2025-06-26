@@ -5,7 +5,7 @@ Web components for Courier Inbox.
 ## 1. Install
 
 ```sh
-npm i @trycourier/courier-ui-inbox@1.0.8-beta
+npm i @trycourier/courier-ui-inbox@1.0.9-beta
 ```
 
 > **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
