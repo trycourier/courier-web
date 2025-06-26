@@ -23,4 +23,4 @@ This will set up your development environment with all the necessary packages an
 | [`courier-js`](./@trycourier/courier-js) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
 | [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
-| [`courier-react`](./@trycourier/courier-react) | Web components for Courier Inbox |
+| [`courier-react`](./@trycourier/courier-react) | React components for Courier Inbox and more |
