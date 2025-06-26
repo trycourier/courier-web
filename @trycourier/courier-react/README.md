@@ -328,7 +328,7 @@ export default function App() {
     </div>
   );
 
-}å
+}
 ```
 
 ### Loading, Empty, Error & Pagination
