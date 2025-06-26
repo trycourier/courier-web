@@ -150,6 +150,10 @@ export default function App() {
 
 ### Light & Dark Themes
 
+The fastest way to style the Inbox to match your app. This example shows unread indicator styling, but you can customize fonts, icons, text, and more.
+
+> **🎨 Theme Reference:** [All available theme values](../courier-ui-inbox/docs/theme.md)
+
 <img width="688" alt="Screenshot 2025-06-25 at 5 38 07 PM" src="https://github.com/user-attachments/assets/d1440494-ee66-4ff6-850b-c1a13691cf2f" />
 
 ```ts
@@ -178,8 +182,6 @@ export default function App() {
   return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />;
 }
 ```
-
-> **🎨 Theme Reference:** [All available theme values](../courier-ui-inbox/docs/theme.md)
 
 ### Popup Alignment, Positioning, and Dimensions
 

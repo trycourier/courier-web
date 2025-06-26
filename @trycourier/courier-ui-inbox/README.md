@@ -145,6 +145,10 @@ curl --request POST \
 
 ### Light & Dark Themes
 
+The fastest way to style the Inbox to match your app. This example shows unread indicator styling, but you can customize fonts, icons, text, and more.
+
+> **🎨 Theme Reference:** [All available theme values](./docs/theme.md)
+
 <img width="688" alt="Screenshot 2025-06-25 at 2 36 20 PM" src="https://github.com/user-attachments/assets/982164fe-fe0d-4e66-82d1-b5a6571f1aa4" />
 
 ```html
@@ -187,8 +191,6 @@ curl --request POST \
 
 </body>
 ```
-
-> **🎨 Theme Reference:** [All available theme values](./docs/theme.md)
 
 ### Popup Alignment, Positioning, and Dimensions
 
