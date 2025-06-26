@@ -1,6 +1,4 @@
-# `@trycourier/courier-ui-inbox`
-
-Web components for Courier Inbox.
+<img width="1040" alt="courier-ui-inbox" src="https://github.com/user-attachments/assets/a6e071b9-da73-467e-a862-932954c8a9e9" />
 
 ## 1. Install
 
