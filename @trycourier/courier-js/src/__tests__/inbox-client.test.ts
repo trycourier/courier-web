@@ -106,7 +106,7 @@ describe('InboxClient', () => {
     expect(result.data?.messages?.pageInfo).toBeDefined();
   });
 
-  const MAX_DELAY = 6000;
+  const MAX_DELAY = 4500;
 
   it('testing socket events', async () => {
     const socket = courierClient.inbox.socket;
