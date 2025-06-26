@@ -9,9 +9,9 @@ import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 
 export interface CourierProps {
+  userId: string;              // User ID for the client. This is normally an ID that matches users in your system
   jwt?: string;                // JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token
   publicApiKey?: string;       // Public API key for authentication
-  userId: string;              // User ID for the client. This is normally an ID that matches users in your system
   connectionId?: string;       // Inbox Websocket connection ID
   tenantId?: string;           // Tenant ID. Used for multi-tenant apps
   showLogs?: boolean;          // Flag to control logging. Logs are prefixed with [COURIER].

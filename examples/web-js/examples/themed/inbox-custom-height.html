@@ -4,26 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vanilla Web</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Courier Inbox</title>
+  <link rel="stylesheet" href="./../../styles.css">
 </head>
 
 <body>
 
-  <div class="center">
-    <courier-inbox-popup-menu></courier-inbox-popup-menu>
-  </div>
+  <courier-inbox height="50vh"></courier-inbox>
 
   <script type="module">
-    import { CourierInbox } from '@trycourier/courier-ui-inbox';
-    import { Courier } from '@trycourier/courier-js';
+    import { Courier } from '@trycourier/courier-ui-inbox';
 
+    // Authenticate the user with the inbox
     Courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
-      showLogs: true
     });
   </script>
+
 </body>
 
 </html>

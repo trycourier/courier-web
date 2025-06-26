@@ -4,33 +4,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vanilla Web</title>
+  <title>Courier Inbox Web Examples</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <courier-inbox height="100%"></courier-inbox>
 
-  <script type="module">
-    import { CourierInbox } from '@trycourier/courier-ui-inbox';
-    import { Courier } from '@trycourier/courier-js';
+  <h2>Examples</h2>
+  <ul>
+    <li><a href="/examples/default/inbox">Inbox Default</a></li>
+    <li><a href="/examples/default/inbox-popup-menu">Inbox Popup Menu Default</a></li>
+  </ul>
 
-    Courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-      apiUrls: {
-        inbox: {
-          webSocket: import.meta.env.VITE_INBOX_WEBSOCKET_URL,
-          graphql: import.meta.env.VITE_INBOX_GRAPHQL_URL,
-        },
-        courier: {
-          rest: import.meta.env.VITE_COURIER_REST_URL,
-          graphql: import.meta.env.VITE_COURIER_GRAPHQL_URL
-        }
-      },
-      showLogs: true
-    });
-  </script>
+  <h2>Themed Examples</h2>
+  <ul>
+    <li><a href="/examples/themed/inbox-custom-height">Inbox Custom Height</a></li>
+    <li><a href="/examples/themed/inbox-inline">Inbox with inline theme</a></li>
+    <li><a href="/examples/themed/inbox-js">Inbox with JS theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-inline">Inbox Popup Menu with inline theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-js">Inbox Popup Menu with JS theme</a></li>
+    <li><a href="/examples/themed/inbox-popup-menu-attributes">Inbox Popup Menu with Attributes</a></li>
+  </ul>
+
+  <h2>Custom Examples</h2>
+  <ul>
+    <li><a href="/examples/custom/inbox-header">Custom Inbox Header</a></li>
+    <li><a href="/examples/custom/inbox-list-item">Custom Inbox List Item</a></li>
+    <li><a href="/examples/custom/inbox-popup-menu-button">Custom Inbox Popup Menu Button</a></li>
+    <li><a href="/examples/custom/inbox-popup-list-item">Custom Inbox Popup List Item</a></li>
+    <li><a href="/examples/custom/inbox-popup-everything-else">Custom Inbox Everything Else</a></li>
+  </ul>
+
 </body>
 
 </html>

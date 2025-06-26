@@ -34,6 +34,10 @@ export class CourierInbox extends CourierBaseElement {
     this._themeManager.setDarkTheme(theme);
   }
 
+  public setMode(mode: CourierComponentThemeMode) {
+    this._themeManager.setMode(mode);
+  }
+
   // Components
   private _inboxStyle?: HTMLStyleElement;
   private _unreadIndicatorStyle?: HTMLStyleElement;
@@ -55,7 +59,7 @@ export class CourierInbox extends CourierBaseElement {
     title: 'Inbox',
     icon: CourierIconSVGs.inbox,
     feedType: this._currentFeed,
-    height: '768px'
+    height: 'auto'
   };
 
   static get observedAttributes() {

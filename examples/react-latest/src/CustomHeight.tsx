@@ -12,6 +12,6 @@ export default function App() {
     });
   }, []);
 
-  return <CourierInbox />;
+  return <CourierInbox height='50vh' />;
 
 }

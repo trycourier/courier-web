@@ -89,7 +89,7 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
   private updateBadge() {
     if (this._badge) {
       if (this._count > 0) {
-        this._badge.textContent = this._count.toString();
+        this._badge.textContent = this._count > 99 ? '99+' : this._count.toString();
         this._badge.style.display = 'block';
       } else {
         this._badge.style.display = 'none';

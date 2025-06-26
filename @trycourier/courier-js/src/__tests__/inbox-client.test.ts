@@ -115,10 +115,11 @@ describe('InboxClient', () => {
     });
 
     await socket.connect();
-    await socket.sendSubscribe();
+    socket.sendSubscribe();
 
-    await new Promise(resolve => setTimeout(resolve, 4500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     socket.close();
   }, 6000);
+
 });

@@ -14,7 +14,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className='center'>
+    <div style={{ padding: '24px' }}>
       <CourierInboxPopupMenu />
     </div>
   );

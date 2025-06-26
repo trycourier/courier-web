@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Vanilla Web",
+      "name": "Run Web",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
@@ -150,6 +150,18 @@
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "deploy.sh"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Setup Page for Screenshot",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "./scripts/screenshot_launch.sh"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

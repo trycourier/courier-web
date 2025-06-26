@@ -24,8 +24,12 @@
       "path": "../examples/vanilla"
     },
     {
-      "name": "react-ts",
-      "path": "../examples/react-ts"
+      "name": "react-latest",
+      "path": "../examples/react-latest"
+    },
+    {
+      "name": "next-latest",
+      "path": "../examples/next-latest"
     },
     {
       "name": "web-js",

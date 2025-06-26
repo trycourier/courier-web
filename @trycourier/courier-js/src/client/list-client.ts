@@ -9,9 +9,7 @@ export class ListClient extends Client {
    * @returns Promise resolving when subscription is complete
    * @see https://www.courier.com/docs/reference/lists/recipient-subscribe
    */
-  public async putSubscription(props: {
-    listId: string;
-  }): Promise<void> {
+  public async putSubscription(props: { listId: string; }): Promise<void> {
     return await http({
       url: `${this.options.apiUrls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
       options: this.options,
@@ -28,9 +26,7 @@ export class ListClient extends Client {
    * @returns Promise resolving when unsubscription is complete
    * @see https://www.courier.com/docs/reference/lists/delete-subscription
    */
-  public async deleteSubscription(props: {
-    listId: string;
-  }): Promise<void> {
+  public async deleteSubscription(props: { listId: string; }): Promise<void> {
     return await http({
       url: `${this.options.apiUrls.courier.rest}/lists/${props.listId}/subscriptions/${this.options.userId}`,
       options: this.options,

@@ -27,9 +27,6 @@ export class CourierInfoState extends CourierFactoryElement {
   private _button?: CourierButton;
   private _style?: HTMLStyleElement;
 
-  // Callbacks
-  private _buttonClickCallback: (() => void) | null = null;
-
   constructor(props: CourierInfoStateProps) {
     super();
     this._props = props;
@@ -55,12 +52,6 @@ export class CourierInfoState extends CourierFactoryElement {
     container.appendChild(this._title);
     container.appendChild(this._button);
     this.appendChild(container);
-
-    this._button?.addEventListener('click', () => {
-      if (this._buttonClickCallback) {
-        this._buttonClickCallback();
-      }
-    });
 
     return container;
   }
@@ -110,10 +101,6 @@ export class CourierInfoState extends CourierFactoryElement {
     if (this._button) {
       this._button.updateButton(props.button);
     }
-  }
-
-  public setButtonClickCallback(callback: () => void) {
-    this._buttonClickCallback = callback;
   }
 
 }

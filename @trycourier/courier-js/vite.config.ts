@@ -30,6 +30,7 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ['src/**/*.ts'],
+      exclude: ['src/__tests__/**'],
     }) as PluginOption,
     visualizer({
       open: false,

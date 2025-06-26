@@ -227,11 +227,11 @@ export class CourierInboxList extends CourierBaseElement {
           fontWeight: error?.button?.font?.weight,
           shadow: error?.button?.shadow,
           border: error?.button?.border,
-          borderRadius: error?.button?.borderRadius
+          borderRadius: error?.button?.borderRadius,
+          onClick: () => this.handleRetry()
         }
       });
       errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
-      errorElement.setButtonClickCallback(() => this.handleRetry());
       this.appendChild(errorElement);
       return;
     }
@@ -266,11 +266,11 @@ export class CourierInboxList extends CourierBaseElement {
           fontWeight: empty?.button?.font?.weight,
           shadow: empty?.button?.shadow,
           border: empty?.button?.border,
-          borderRadius: empty?.button?.borderRadius
-        }
+          borderRadius: empty?.button?.borderRadius,
+          onClick: () => this.handleRefresh()
+        },
       });
       emptyElement.build(this._emptyStateFactory?.({ feedType: this._feedType }));
-      emptyElement.setButtonClickCallback(() => this.handleRefresh());
       this.appendChild(emptyElement);
       return;
     }

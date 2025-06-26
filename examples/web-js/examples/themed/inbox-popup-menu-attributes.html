@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courier Inbox</title>
+  <link rel="stylesheet" href="./../../styles.css">
+</head>
+
+<body>
+
+  <div style="padding: 24px;">
+    <courier-inbox-popup-menu mode="light" popup-alignment="top-left" top="44px" left="44px" popup-width="340px"
+      popup-height="400px"></courier-inbox-popup-menu>
+  </div>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+  </script>
+</body>
+
+</html>

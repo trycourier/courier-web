@@ -19,10 +19,7 @@ export class InboxClient extends Client {
    * @param startCursor - Cursor for pagination
    * @returns Promise resolving to paginated messages response
    */
-  public async getMessages(props?: {
-    paginationLimit?: number;
-    startCursor?: string;
-  }): Promise<CourierGetInboxMessagesResponse> {
+  public async getMessages(props?: { paginationLimit?: number; startCursor?: string; }): Promise<CourierGetInboxMessagesResponse> {
     const query = `
       query GetInboxMessages(
         $params: FilterParamsInput = { ${this.options.tenantId ? `accountId: "${this.options.tenantId}"` : ''} }
@@ -76,10 +73,7 @@ export class InboxClient extends Client {
    * @param startCursor - Cursor for pagination
    * @returns Promise resolving to paginated archived messages response
    */
-  public async getArchivedMessages(props?: {
-    paginationLimit?: number;
-    startCursor?: string;
-  }): Promise<CourierGetInboxMessagesResponse> {
+  public async getArchivedMessages(props?: { paginationLimit?: number; startCursor?: string; }): Promise<CourierGetInboxMessagesResponse> {
     const query = `
       query GetInboxMessages(
         $params: FilterParamsInput = { ${this.options.tenantId ? `accountId: "${this.options.tenantId}"` : ''}, archived: true }
@@ -240,34 +234,6 @@ export class InboxClient extends Client {
   }
 
   /**
-   * Mark all messages as read
-   * @returns Promise resolving when all messages are marked as read
-   */
-  public async readAll(): Promise<void> {
-    const query = `
-      mutation TrackEvent {
-        markAllRead
-      }
-    `;
-
-    const headers: Record<string, string> = {
-      'x-courier-user-id': this.options.userId,
-      'Authorization': `Bearer ${this.options.accessToken}`
-    };
-
-    if (this.options.connectionId) {
-      headers['x-courier-client-source-id'] = this.options.connectionId;
-    }
-
-    await graphql({
-      options: this.options,
-      query,
-      headers,
-      url: this.options.apiUrls.inbox.graphql,
-    });
-  }
-
-  /**
    * Mark a message as opened
    * @param messageId - ID of the message to mark as opened
    * @returns Promise resolving when message is marked as opened
@@ -334,6 +300,34 @@ export class InboxClient extends Client {
     const query = `
       mutation TrackEvent {
         unarchive(messageId: "${props.messageId}")
+      }
+    `;
+
+    const headers: Record<string, string> = {
+      'x-courier-user-id': this.options.userId,
+      'Authorization': `Bearer ${this.options.accessToken}`
+    };
+
+    if (this.options.connectionId) {
+      headers['x-courier-client-source-id'] = this.options.connectionId;
+    }
+
+    await graphql({
+      options: this.options,
+      query,
+      headers,
+      url: this.options.apiUrls.inbox.graphql,
+    });
+  }
+
+  /**
+   * Mark all messages as read
+   * @returns Promise resolving when all messages are marked as read
+   */
+  public async readAll(): Promise<void> {
+    const query = `
+      mutation TrackEvent {
+        markAllRead
       }
     `;
 

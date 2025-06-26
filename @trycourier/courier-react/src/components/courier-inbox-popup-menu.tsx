@@ -1,4 +1,4 @@
-import { useRef, useEffect, JSX, forwardRef } from "react";
+import { useRef, useEffect, forwardRef, ReactNode } from "react";
 import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPopupMenu as CourierInboxPopupMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
@@ -19,13 +19,13 @@ export interface CourierInboxPopupMenuProps {
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
-  renderPopupHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => JSX.Element;
-  renderPopupListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => JSX.Element;
-  renderPopupEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => JSX.Element;
-  renderPopupLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => JSX.Element;
-  renderPopupErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => JSX.Element;
-  renderPopupPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => JSX.Element;
-  renderPopupMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => JSX.Element;
+  renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => ReactNode;
+  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => ReactNode;
+  renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => ReactNode;
+  renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => ReactNode;
+  renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => ReactNode;
+  renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => ReactNode;
+  renderMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => ReactNode;
 }
 
 export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>((props, ref) => {
@@ -64,86 +64,86 @@ export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, Co
   // Render header
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupHeader) return;
+    if (!menu || !props.renderHeader) return;
     queueMicrotask(() => {
-      menu.setPopupHeader((headerProps?: CourierInboxHeaderFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupHeader!(headerProps);
+      menu.setHeader((headerProps?: CourierInboxHeaderFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderHeader!(headerProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupHeader, menuRef]);
+  }, [props.renderHeader, menuRef]);
 
   // Render list item
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupListItem) return;
+    if (!menu || !props.renderListItem) return;
     queueMicrotask(() => {
-      menu.setPopupListItem((itemProps?: CourierInboxListItemFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupListItem!(itemProps);
+      menu.setListItem((itemProps?: CourierInboxListItemFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderListItem!(itemProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupListItem, menuRef]);
+  }, [props.renderListItem, menuRef]);
 
   // Render empty state
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupEmptyState) return;
+    if (!menu || !props.renderEmptyState) return;
     queueMicrotask(() => {
-      menu.setPopupEmptyState((emptyStateProps?: CourierInboxStateEmptyFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupEmptyState!(emptyStateProps);
+      menu.setEmptyState((emptyStateProps?: CourierInboxStateEmptyFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderEmptyState!(emptyStateProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupEmptyState, menuRef]);
+  }, [props.renderEmptyState, menuRef]);
 
   // Render loading state
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupLoadingState) return;
+    if (!menu || !props.renderLoadingState) return;
     queueMicrotask(() => {
-      menu.setPopupLoadingState((loadingStateProps?: CourierInboxStateLoadingFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupLoadingState!(loadingStateProps);
+      menu.setLoadingState((loadingStateProps?: CourierInboxStateLoadingFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderLoadingState!(loadingStateProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupLoadingState, menuRef]);
+  }, [props.renderLoadingState, menuRef]);
 
   // Render error state
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupErrorState) return;
+    if (!menu || !props.renderErrorState) return;
     queueMicrotask(() => {
-      menu.setPopupErrorState((errorStateProps?: CourierInboxStateErrorFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupErrorState!(errorStateProps);
+      menu.setErrorState((errorStateProps?: CourierInboxStateErrorFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderErrorState!(errorStateProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupErrorState, menuRef]);
+  }, [props.renderErrorState, menuRef]);
 
   // Render pagination item
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupPaginationItem) return;
+    if (!menu || !props.renderPaginationItem) return;
     queueMicrotask(() => {
-      menu.setPopupPaginationItem((paginationProps?: CourierInboxPaginationItemFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupPaginationItem!(paginationProps);
+      menu.setPaginationItem((paginationProps?: CourierInboxPaginationItemFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderPaginationItem!(paginationProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupPaginationItem, menuRef]);
+  }, [props.renderPaginationItem, menuRef]);
 
   // Render menu button
   useEffect(() => {
     const menu = menuRef.current;
-    if (!menu || !props.renderPopupMenuButton) return;
+    if (!menu || !props.renderMenuButton) return;
     queueMicrotask(() => {
-      menu.setPopupMenuButton((buttonProps?: CourierInboxMenuButtonFactoryProps | undefined | null): HTMLElement => {
-        const reactNode = props.renderPopupMenuButton!(buttonProps);
+      menu.setMenuButton((buttonProps?: CourierInboxMenuButtonFactoryProps | undefined | null): HTMLElement => {
+        const reactNode = props.renderMenuButton!(buttonProps);
         return reactNodeToHTMLElement(reactNode);
       });
     });
-  }, [props.renderPopupMenuButton, menuRef]);
+  }, [props.renderMenuButton, menuRef]);
 
   // Set feed type
   useEffect(() => {

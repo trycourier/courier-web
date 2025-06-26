@@ -16,13 +16,6 @@ courier-inbox {
   padding: 40px 16px;
 }
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 100px;
-}
-
 .grid-section {
   border-radius: 4px;
   background: #e5e5e5;
