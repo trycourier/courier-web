@@ -66,8 +66,8 @@ const archivedMessages = await courierClient.inbox.getArchivedMessages();
 
 // Click a message
 await courierClient.inbox.click({
-    messageId: '1-678...',  // The message id
-    trackingId: 'u2602...', // The tracking id. There are several to choose from on the InboxMessage object.
+    messageId: '1-678...',  // The message id. (Example: inboxMessages.data.messages.nodes[0].messageId)
+    trackingId: 'u2602...', // The tracking id. There are several to choose from on the InboxMessage object. (Example: inboxMessages.data.messages.nodes[0].trackingIds.clickTrackingId)
 });
 
 // Read a message
