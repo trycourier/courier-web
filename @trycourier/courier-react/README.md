@@ -104,6 +104,25 @@ export default function App() {
 }
 ```
 
+## NextJS & Server Side Rendering Frameworks
+
+`courier-react` only supports client side rendering. You will need to add `'use client'` to the top of any file that will use `CourierInbox` or `CourierInboxPopupMenu`.
+
+```ts
+'use client'
+
+...
+import { ..., CourierInboxPopupMenu } from '@trycourier/courier-react';
+
+export default function Page() {
+
+  ...
+
+  return <CourierInboxPopupMenu />;
+
+}
+```
+
 ## Handle Clicks and Presses
 
 ```ts
