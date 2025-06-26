@@ -251,7 +251,7 @@ export default function App() {
 
 ### Header
 
-// TODO
+<img width="688" alt="Screenshot 2025-06-25 at 6 35 59 PM" src="https://github.com/user-attachments/assets/25d45ac1-32e6-4e98-baf1-d0df34cef72a" />
 
 ```ts
 import { CourierInbox, ..., type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
