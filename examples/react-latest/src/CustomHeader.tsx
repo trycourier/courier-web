@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { CourierInbox, useCourier, type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
 
-const CustomHeader = ({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => (
+const CustomHeader = (props: CourierInboxHeaderFactoryProps) => (
   <div style={{
     background: 'red',
     fontSize: '24px',
     padding: '24px',
     width: '100%'
   }}>
-    {feedType}
+    {props.feedType}
   </div>
 );
 
@@ -26,8 +26,8 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderHeader={({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => {
-        return <CustomHeader feedType={feedType} unreadCount={unreadCount} messageCount={messageCount} />
+      renderHeader={(props: CourierInboxHeaderFactoryProps) => {
+        return <CustomHeader {...props} />
       }}
     />
   );

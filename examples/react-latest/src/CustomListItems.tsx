@@ -25,8 +25,8 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderListItem={({ message, index }: CourierInboxListItemFactoryProps) => {
-        return <CustomListItem message={message} index={index} />
+      renderListItem={(props: CourierInboxListItemFactoryProps) => {
+        return <CustomListItem {...props} />
       }}
     />
   );

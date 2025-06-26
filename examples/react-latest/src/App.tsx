@@ -10,6 +10,7 @@ import CustomListItems from './CustomListItems';
 import CustomHeader from './CustomHeader';
 import ElementRef from './ElementRef';
 import CustomMenuButton from './CustomMenuButton';
+import CustomOther from './CustomOther';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/custom-header" element={<CustomHeader />} />
         <Route path="/element-ref" element={<ElementRef />} />
         <Route path="/custom-menu-button" element={<CustomMenuButton />} />
+        <Route path="/custom-other" element={<CustomOther />} />
         <Route path="/canvas" element={<Canvas />} />
       </Routes>
     </BrowserRouter>

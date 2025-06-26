@@ -240,8 +240,8 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderListItem={({ message, index }: CourierInboxListItemFactoryProps) => {
-        return <CustomListItem message={message} index={index} />
+      renderListItem={(props: CourierInboxListItemFactoryProps) => {
+        return <CustomListItem {...props} />
       }}
     />
   );
@@ -256,14 +256,14 @@ export default function App() {
 ```ts
 import { CourierInbox, ..., type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
 
-const CustomHeader = ({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => (
+const CustomHeader = (props: CourierInboxHeaderFactoryProps) => (
   <div style={{
     background: 'red',
     fontSize: '24px',
     padding: '24px',
     width: '100%'
   }}>
-    {feedType}
+    {props.feedType}
   </div>
 );
 
@@ -273,8 +273,8 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderHeader={({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => {
-        return <CustomHeader feedType={feedType} unreadCount={unreadCount} messageCount={messageCount} />
+      renderHeader={(props: CourierInboxHeaderFactoryProps) => {
+        return <CustomHeader {...props} />
       }}
     />
   );
@@ -302,8 +302,8 @@ export default function App() {
   return (
     <div style={{ padding: '24px' }}>
       <CourierInboxPopupMenu
-        renderMenuButton={({ unreadCount }: CourierInboxMenuButtonFactoryProps) => {
-          return <CustomMenuButton unreadCount={unreadCount} />
+        renderMenuButton={(props: CourierInboxMenuButtonFactoryProps) => {
+          return <CustomMenuButton {...props} />
         }}
       />
     </div>
@@ -314,55 +314,78 @@ export default function App() {
 
 ### Loading, Empty, Error & Pagination
 
-```html
-<body>
+```ts
+import { 
+  CourierInbox, 
+  ..., 
+  type CourierInboxStateEmptyFactoryProps,
+  type CourierInboxStateLoadingFactoryProps,
+  type CourierInboxStateErrorFactoryProps,
+  type CourierInboxPaginationItemFactoryProps
+} from '@trycourier/courier-react'
 
-  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+const CustomLoadingState = ({ feedType }: CourierInboxStateLoadingFactoryProps) => (
+  <div style={{
+    padding: '24px',
+    background: 'red',
+    textAlign: 'center'
+  }}>
+    Custom Loading State
+  </div>
+);
 
-  <script type="module">
-    ...
+const CustomEmptyState = ({ feedType }: CourierInboxStateEmptyFactoryProps) => (
+  <div style={{
+    padding: '24px',
+    background: 'green',
+    textAlign: 'center'
+  }}>
+    Custom Empty State
+  </div>
+);
 
-    // Reference the courier-inbox element
-    const inbox = document.getElementById('inbox');
+const CustomErrorState = ({ feedType, error }: CourierInboxStateErrorFactoryProps) => (
+  <div style={{
+    padding: '24px',
+    background: 'blue',
+    textAlign: 'center'
+  }}>
+    Custom Error State: {error.message}
+  </div>
+);
 
-    // Set a custom loading state
-    inbox.setLoadingState(props => {
-      const loading = document.createElement('div');
-      loading.style.padding = '24px';
-      loading.style.background = 'red';
-      loading.textContent = 'Custom Loading State';
-      return loading;
-    });
+const CustomPaginationItem = ({ feedType }: CourierInboxPaginationItemFactoryProps) => (
+  <div style={{
+    padding: '24px',
+    background: 'yellow',
+    textAlign: 'center'
+  }}>
+    Custom Pagination Item
+  </div>
+);
 
-    // Set a custom empty state
-    inbox.setEmptyState(props => {
-      const empty = document.createElement('div');
-      empty.style.padding = '24px';
-      empty.style.background = 'green';
-      empty.textContent = 'Custom Empty State';
-      return empty;
-    });
+export default function App() {
 
-    // Set a custom error state
-    inbox.setErrorState(props => {
-      const error = document.createElement('div');
-      error.style.padding = '24px';
-      error.style.background = 'blue';
-      error.textContent = 'Custom Error State';
-      return error;
-    });
+  ...
 
-    // Set a custom pagination state
-    inbox.setPaginationItem(props => {
-      const pagination = document.createElement('div');
-      pagination.style.padding = '24px';
-      pagination.style.background = 'yellow';
-      pagination.textContent = 'Custom Pagination Item';
-      return pagination;
-    });
-  </script>
+  return (
+    <CourierInbox
+      renderLoadingState={(props: CourierInboxStateLoadingFactoryProps) => {
+        return <CustomLoadingState {...props} />
+      }}
+      renderEmptyState={(props: CourierInboxStateEmptyFactoryProps) => {
+        return <CustomEmptyState {...props} />
+      }}
+      renderErrorState={(props: CourierInboxStateErrorFactoryProps) => {
+        return <CustomErrorState {...props} />
+      }}
+      renderPaginationItem={(props: CourierInboxPaginationItemFactoryProps) => {
+        return <CustomPaginationItem {...props} />
+      }}
+    />
+  );
 
-</body>
+}
 ```
 
-> **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
+> **Not using React?** We suggest you use [@trycourier/courier-ui-inbox](../courier-ui-inbox/README.md) package instead.
