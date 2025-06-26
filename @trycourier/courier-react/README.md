@@ -221,66 +221,65 @@ Customize the inbox UI with any element you want.
 
 // TODO
 
-```html
-<body>
+```ts
+import { CourierInbox, ..., type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
 
-  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+const CustomListItem = ({ message, index }: CourierInboxListItemFactoryProps) => (
+  <pre style={{
+    padding: '24px',
+    borderBottom: '1px solid #e0e0e0',
+    margin: '0'
+  }}>
+    {JSON.stringify({ message, index }, null, 2)}
+  </pre>
+);
 
-  <script type="module">
-    ...
+export default function App() {
 
-    // Reference the courier-inbox element
-    const inbox = document.getElementById('inbox');
+  ...
 
-    // Set a custom list item
-    inbox.setListItem(({ message, index }) => {
-      const pre = document.createElement('pre');
-      pre.style.padding = '24px';
-      pre.style.borderBottom = '1px solid #e0e0e0';
-      pre.style.margin = '0';
-      pre.textContent = JSON.stringify(({ message, index }), null, 2);
-      return pre;
-    });
-  </script>
+  return (
+    <CourierInbox
+      renderListItem={({ message, index }: CourierInboxListItemFactoryProps) => {
+        return <CustomListItem message={message} index={index} />
+      }}
+    />
+  );
 
-</body>
+}
 ```
 
 ### Header
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 38 45 PM" src="https://github.com/user-attachments/assets/d393f77d-695e-4fed-a60a-7f7b59909772" />
+// TODO
 
-```html
-<body>
+```ts
+import { CourierInbox, ..., type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
 
-  <courier-inbox id="inbox"></courier-inbox> <!-- or use courier-inbox-popup-menu -->
+const CustomHeader = ({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => (
+  <div style={{
+    background: 'red',
+    fontSize: '24px',
+    padding: '24px',
+    width: '100%'
+  }}>
+    {feedType}
+  </div>
+);
 
-  <script type="module">
-    ...
+export default function App() {
 
-    // Reference the courier-inbox element
-    const inbox = document.getElementById('inbox');
+  ...
 
-    // Remove the header
-    inbox.removeHeader();
+  return (
+    <CourierInbox
+      renderHeader={({ feedType, unreadCount, messageCount }: CourierInboxHeaderFactoryProps) => {
+        return <CustomHeader feedType={feedType} unreadCount={unreadCount} messageCount={messageCount} />
+      }}
+    />
+  );
 
-    // Set a custom header
-    inbox.setHeader(({ feedType, unreadCount, messageCount }) => {
-      const headerDiv = document.createElement('div');
-      headerDiv.style.background = 'red';
-      headerDiv.style.fontSize = '24px';
-      headerDiv.style.padding = '24px';
-      headerDiv.style.width = '100%';
-      headerDiv.textContent = feedType;
-      return headerDiv;
-    });
-
-    // Change the feed type
-    // "inbox" and "archive" are available
-    inbox.setFeedType('archive');
-  </script>
-
-</body>
+}
 ```
 
 ### Popup Menu Button

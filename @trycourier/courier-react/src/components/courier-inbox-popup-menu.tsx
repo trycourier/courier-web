@@ -1,4 +1,4 @@
-import { useRef, useEffect, JSX, forwardRef } from "react";
+import { useRef, useEffect, forwardRef, ReactNode } from "react";
 import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPopupMenu as CourierInboxPopupMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
@@ -19,13 +19,13 @@ export interface CourierInboxPopupMenuProps {
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
-  renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => JSX.Element;
-  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => JSX.Element;
-  renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => JSX.Element;
-  renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => JSX.Element;
-  renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => JSX.Element;
-  renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => JSX.Element;
-  renderMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => JSX.Element;
+  renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => ReactNode;
+  renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => ReactNode;
+  renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => ReactNode;
+  renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => ReactNode;
+  renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => ReactNode;
+  renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => ReactNode;
+  renderMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => ReactNode;
 }
 
 export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>((props, ref) => {
