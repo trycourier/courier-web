@@ -1,6 +1,6 @@
 # `courier-web`
 
-Welcome to Courier Web! This monorepo contains all the web-related packages for Courier's browser SDKs.
+A monorepo that contains all packages for Courier's browser SDKs.
 
 ## Getting Started
 
