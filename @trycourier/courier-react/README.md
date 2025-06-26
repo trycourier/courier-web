@@ -148,14 +148,6 @@ export default function App() {
 
 ## Styles and Theming
 
-### Custom height `CourierInbox`
-
-> **Important:** The default `CourierInbox` height is auto. It will set it's height based on it's children.
-
-```ts
-<CourierInbox height='50vh' />
-```
-
 ### Light & Dark Themes
 
 <img width="688" alt="Screenshot 2025-06-25 at 5 38 07 PM" src="https://github.com/user-attachments/assets/d1440494-ee66-4ff6-850b-c1a13691cf2f" />
@@ -209,6 +201,14 @@ export default function App() {
   );
 
 }
+```
+
+### Custom height `CourierInbox`
+
+> **Important:** The default `CourierInbox` height is auto. It will set it's height based on it's children.
+
+```ts
+<CourierInbox height='50vh' />
 ```
 
 ## Custom Elements

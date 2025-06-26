@@ -143,20 +143,6 @@ curl --request POST \
 
 ## Styles and Theming
 
-### Custom height `courier-inbox`
-
-> **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
-
-```html
-<body>
-
-  <courier-inbox height="50vh"></courier-inbox>
-
-  ...
-
-</body>
-```
-
 ### Light & Dark Themes
 
 <img width="688" alt="Screenshot 2025-06-25 at 2 36 20 PM" src="https://github.com/user-attachments/assets/982164fe-fe0d-4e66-82d1-b5a6571f1aa4" />
@@ -221,6 +207,20 @@ curl --request POST \
   </div>
 
   ...
+</body>
+```
+
+### Custom height `courier-inbox`
+
+> **Important:** The default `courier-inbox` height is auto. It will set it's height based on it's children.
+
+```html
+<body>
+
+  <courier-inbox height="50vh"></courier-inbox>
+
+  ...
+
 </body>
 ```
 
