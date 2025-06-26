@@ -284,7 +284,7 @@ export default function App() {
 
 ### Popup Menu Button
 
-// TODO
+<img width="606" alt="Screenshot 2025-06-25 at 6 40 38 PM" src="https://github.com/user-attachments/assets/dfb0daca-f11d-420f-9dc7-0c14b49ab7db" />
 
 ```ts
 import { CourierInboxPopupMenu, ..., type CourierInboxMenuButtonFactoryProps } from '@trycourier/courier-react'
