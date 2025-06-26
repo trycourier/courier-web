@@ -20,7 +20,7 @@ This will set up your development environment with all the necessary packages an
 
 | Package | Description |
 |---------|-------------|
-| [`courier-js`](./@trycourier/courier-js/README.md) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
-| [`courier-ui-core`](./@trycourier/courier-ui-core/README.md) | Web components used in UI level packages |
-| [`courier-ui-inbox`](./@trycourier/courier-ui-inbox/README.md) | Web components for Courier Inbox |
-| [`courier-react`](./@trycourier/courier-react/README.md) | Web components for Courier Inbox |
+| [`courier-js`](./@trycourier/courier-js) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
+| [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
+| [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
+| [`courier-react`](./@trycourier/courier-react) | Web components for Courier Inbox |
