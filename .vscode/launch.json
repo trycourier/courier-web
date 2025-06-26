@@ -158,6 +158,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Example on Phone",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "./scripts/ipqr.sh"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Setup Page for Screenshot",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
