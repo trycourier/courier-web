@@ -6,7 +6,7 @@ A monorepo that contains all packages for Courier's browser SDKs.
 
 ### In VSCode IDEs
 
-1. Open the `.vscode` folder and click **"courier-web.code-workspace"** to load the full project structure
+1. Open the `.vscode` folder, click **`courier-web.code-workspace`** then click the blue "Open Workspace" button
 <img width="977" alt="Screenshot 2025-06-25 at 7 04 53 PM" src="https://github.com/user-attachments/assets/0d7d1a5f-6664-4b9f-8071-26d1e7521cba" />
 
 2. Click the **"Sync Packages"** button to install all dependencies
