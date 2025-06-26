@@ -14,7 +14,7 @@ A monorepo that contains all packages for Courier's browser SDKs.
 
 This will set up your development environment with all the necessary packages and configurations.
 
-> **You may need to click **"Sync Packages"** during development if some local packages get out of sync with each other.
+> You may need to click **"Sync Packages"** during development if some local packages get out of sync with each other.
 
 ## Packages
 
