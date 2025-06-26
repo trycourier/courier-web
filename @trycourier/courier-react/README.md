@@ -219,7 +219,7 @@ Customize the inbox UI with any element you want.
 
 ### List Items
 
-// TODO
+<img width="688" alt="Screenshot 2025-06-25 at 6 25 17 PM" src="https://github.com/user-attachments/assets/075a568b-5538-4116-bb3d-752ecc5dea2c" />
 
 ```ts
 import { CourierInbox, ..., type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
