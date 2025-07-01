@@ -30,6 +30,7 @@
     "@trycourier/courier-ui-core": "1.0.9-beta"
   },
   "devDependencies": {
+    "@types/jest": "29.5.14",
     "@trycourier/courier-js": "file:../@trycourier/courier-js",
     "@trycourier/courier-ui-core": "file:../@trycourier/courier-ui-core",
     "jest": "^29.7.0",
