@@ -1,4 +1,4 @@
-<img width="1040" alt="courier-ui-inbox" src="https://github.com/user-attachments/assets/a6e071b9-da73-467e-a862-932954c8a9e9" />
+<img width="1040" alt="courier-ui-inbox" src="https://github.com/user-attachments/assets/6227249b-d008-4719-bddc-874f34432376" />
 
 ## 1. Install
 
