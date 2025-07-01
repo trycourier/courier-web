@@ -1,4 +1,4 @@
-<img width="1040" alt="courier-react" src="https://github.com/user-attachments/assets/e487fba4-8050-4ca8-abe8-18fef3df1c90" />
+<img width="1040" alt="courier-react" src="https://github.com/user-attachments/assets/e886b445-d106-4dab-afca-82183e0fcbe7" />
 
 ## 1. Install
 
@@ -153,6 +153,7 @@ export default function App() {
         );
       }}
       onMessageLongPress={({ message, index }: CourierInboxListItemFactoryProps) => {
+        // Handle message long presses. **Only works on devices that support javascript's touch events. This will not work with a mouse cursor.**
         alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
       }}
     />
