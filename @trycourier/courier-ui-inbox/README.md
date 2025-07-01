@@ -128,7 +128,7 @@ curl --request POST \
       );
     });
 
-    // Handle message long presses. **Only works on devices that support javascript's touch events. You will not see it work with a cursor and pointer.**
+    // Handle message long presses. **Only works on devices that support javascript's touch events. This will not work with a mouse cursor.**
     inbox.onMessageLongPress(({ message, index }) => {
       alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
     });
