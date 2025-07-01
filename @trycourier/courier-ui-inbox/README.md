@@ -21,8 +21,6 @@ To use the SDK, you need to generate a JWT (JSON Web Token) for your user. **Thi
    - In your backend endpoint, use your [Courier API Key](https://app.courier.com/settings/api-keys) to call the [Courier JWT Token Endpoint](https://www.courier.com/docs/reference/auth/issue-token) and generate a JWT for the user.
    - Your backend then returns the JWT to your frontend.
 
-**Example: Quick Testing with cURL**
-
 To quickly test JWT generation (for development only), you can use the following cURL command to call Courier's API directly. **Do not use this in production or from client-side code.**
 
 ```sh
