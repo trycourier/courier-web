@@ -10,7 +10,7 @@ npm i @trycourier/courier-js@2.0.6-beta
 
 ## Usage
 
-Setup the API client.
+Setup an API client.
 
 ### `CourierClient`
 
