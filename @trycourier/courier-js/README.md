@@ -12,12 +12,35 @@ npm i @trycourier/courier-js@2.0.6-beta
 
 Setup the API client.
 
+### `CourierClient`
+
+A simple api client wrapper for all supported Courier endpoints and sockets.
+
 ```ts
 const courierClient = new CourierClient({
     userId: 'some_user_id', // The user id for your user. This is usually the user id you maintain in your system for a user.
     jwt: 'ey...n0',         // The access token associated with the user.
     tenantId: 'asdf',       // [OPTIONAL] Allows you to scope a client to a specific tenant. If you didn't configure multi-tenant routing, you probably don't need this.
     showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to process.env.NODE_ENV === 'development'.
+});
+```
+
+### `Courier.shared...`
+
+A singleton instance of the `CourierClient` and other logic used to authenticate a single user across multiple requests, websockets, and more.
+
+```ts
+Courier.shared.signIn({
+    userId: 'some_user_id', // The user id for your user. This is usually the user id you maintain in your system for a user.
+    jwt: 'ey...n0',         // The access token associated with the user.
+    tenantId: 'asdf',       // [OPTIONAL] Allows you to scope a client to a specific tenant. If you didn't configure multi-tenant routing, you probably don't need this.
+    showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to process.env.NODE_ENV === 'development'.
+});
+
+Courier.shared.signOut();
+
+Courier.shared.addAuthenticationListener(({ userId }) => {
+    console.log(userId);
 });
 ```
 
