@@ -75,6 +75,29 @@ describe('CourierInboxSocket', () => {
         },
       });
     });
+
+    it('should send a subscribe request with an accountId if a sub-tenant ID is specified', async () => {
+      const subTenantId = 'test-sub-tenant-id';
+      const socket = new CourierInboxSocket({ ...OPTIONS, tenantId: subTenantId });
+
+      socket.connect();
+      await mockServer.connected;
+
+      await expect(mockServer).toReceiveMessage({
+        action: 'get-config',
+        tid: expect.any(String),
+      });
+
+      await expect(mockServer).toReceiveMessage({
+        action: 'subscribe',
+        tid: expect.any(String),
+        data: {
+          channel: 'test',
+          event: '*',
+          accountId: subTenantId,
+        },
+      });
+    });
   });
 
   describe('onMessageReceived', () => {

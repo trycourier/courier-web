@@ -177,6 +177,11 @@ export abstract class CourierSocket {
     return this.options.userId;
   }
 
+  /** The sub-tenant ID, if specified by the user. */
+  protected get subTenantId(): string | undefined {
+    return this.options.tenantId;
+  }
+
   protected get logger(): Logger | undefined {
     return this.options.logger;
   }
