@@ -119,13 +119,20 @@ export class CourierInboxSocket extends CourierSocket {
    * Subscribes to all events for the user.
    */
   public sendSubscribe(): void {
+    const data: Record<string, any> = {
+      channel: this.userId,
+      event: '*',
+    };
+
+    // Set accountId to the sub-tenant ID if it is specified.
+    if (this.subTenantId) {
+      data.accountId = this.subTenantId;
+    }
+
     const envelope: ClientMessageEnvelope = {
       tid: UUID.nanoid(),
       action: ClientAction.Subscribe,
-      data: {
-        channel: this.userId,
-        event: '*'
-      },
+      data,
     };
 
     this.send(envelope);
