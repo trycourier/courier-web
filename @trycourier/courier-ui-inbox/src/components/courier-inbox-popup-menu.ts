@@ -28,6 +28,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private _right: string = '0';
   private _bottom: string = '40px';
   private _left: string = '0';
+  private _canClosePopupOnItemClick: boolean = true;
+  private _canClosePopupOnActionClick: boolean = true;
+  private _canClosePopupOnLongPress: boolean = true;
 
   // Theming
   private _themeManager = new CourierInboxThemeManager(defaultLightTheme);
@@ -45,6 +48,18 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   public setMode(mode: CourierComponentThemeMode) {
     this._themeManager.setMode(mode);
+  }
+
+  public setCanClosePopupOnItemClick(canClosePopup: boolean) {
+    this._canClosePopupOnItemClick = canClosePopup;
+  }
+
+  public setCanClosePopupOnActionClick(canClosePopup: boolean) {
+    this._canClosePopupOnActionClick = canClosePopup;
+  }
+
+  public setCanClosePopupOnLongPress(canClosePopup: boolean) {
+    this._canClosePopupOnLongPress = canClosePopup;
   }
 
   // Components
@@ -214,15 +229,30 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageClick(handler);
+    this._inbox?.onMessageClick((props) => {
+      if (this._canClosePopupOnItemClick) {
+        this.closePopup();
+      }
+      handler?.(props);
+    });
   }
 
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
-    this._inbox?.onMessageActionClick(handler);
+    this._inbox?.onMessageActionClick((props) => {
+      if (this._canClosePopupOnActionClick) {
+        this.closePopup();
+      }
+      handler?.(props);
+    });
   }
 
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageLongPress(handler);
+    this._inbox?.onMessageLongPress((props) => {
+      if (this._canClosePopupOnLongPress) {
+        this.closePopup();
+      }
+      handler?.(props);
+    });
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
@@ -296,6 +326,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     const isVisible = this._popup.style.display === 'block';
     this._popup.style.display = isVisible ? 'none' : 'block';
+  }
+
+  public closePopup() {
+    if (!this._popup) return;
+    this._popup.style.display = 'none';
   }
 
   private handleOutsideClick = (event: MouseEvent) => {
