@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { useCourier, CourierInboxPopupMenu } from '@trycourier/courier-react';
+import { useCourier, CourierInboxPopupMenu, CourierInboxListItemFactoryProps } from '@trycourier/courier-react';
 
 export default function Home() {
 
@@ -17,7 +17,12 @@ export default function Home() {
 
   return (
     <div className='center'>
-      <CourierInboxPopupMenu />
+      <CourierInboxPopupMenu
+        canClosePopupOnItemClick={false}
+        onMessageClick={({ message, index }: CourierInboxListItemFactoryProps) => {
+          console.log('Message clicked at index', index, message);
+        }}
+      />
     </div>
   );
 

@@ -1,18 +1,5 @@
-import { useRef, useEffect, forwardRef, ReactNode, useImperativeHandle } from "react";
-import {
-  CourierInboxFeedType,
-  CourierInboxHeaderFactoryProps,
-  CourierInboxListItemActionFactoryProps,
-  CourierInboxListItemFactoryProps,
-  CourierInboxMenuButtonFactoryProps,
-  CourierInboxPopupMenu as CourierInboxPopupMenuElement,
-  CourierInboxPaginationItemFactoryProps,
-  CourierInboxPopupAlignment,
-  CourierInboxStateEmptyFactoryProps,
-  CourierInboxStateErrorFactoryProps,
-  CourierInboxStateLoadingFactoryProps,
-  CourierInboxTheme
-} from "@trycourier/courier-ui-inbox";
+import { useRef, useEffect, forwardRef, ReactNode } from "react";
+import { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPopupMenu as CourierInboxPopupMenuElement, CourierInboxPaginationItemFactoryProps, CourierInboxPopupAlignment, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from "@trycourier/courier-ui-inbox";
 import { reactNodeToHTMLElement } from "../utils/utils";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
@@ -44,36 +31,16 @@ export interface CourierInboxPopupMenuProps {
   renderMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => ReactNode;
 }
 
-export interface CourierInboxPopupMenuHandle {
-  close: () => void;
-}
-
-export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuHandle, CourierInboxPopupMenuProps>((props, ref) => {
+export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>((props, ref) => {
   const menuRef = useRef<CourierInboxPopupMenuElement>(null);
 
-  // Expose the close function and the internal ref to the parent
-  useImperativeHandle(ref, () => ({
-    close: () => {
-      if (menuRef.current) {
-        menuRef.current.closePopup();
-      }
-    }
-  }), []);
-
-  // Expose the internal ref to the parent if a ref was passed in (legacy support)
-  // (If the parent uses the element ref directly, not the handle)
+  // Expose the internal ref to the parent if a ref was passed in
   useEffect(() => {
     if (typeof ref === "function") {
-      // This will now pass the handle, not the element
-      ref({
-        close: () => {
-          if (menuRef.current) {
-            menuRef.current.closePopup();
-          }
-        }
-      } as CourierInboxPopupMenuHandle);
+      ref(menuRef.current);
+    } else if (ref) {
+      (ref as React.RefObject<CourierInboxPopupMenuElement | null>).current = menuRef.current;
     }
-    // If ref is an object, useImperativeHandle already handles it
   }, [ref]);
 
   // Set whether the popup can close on item click
