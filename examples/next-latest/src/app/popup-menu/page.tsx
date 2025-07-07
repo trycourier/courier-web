@@ -17,12 +17,7 @@ export default function Home() {
 
   return (
     <div className='center'>
-      <CourierInboxPopupMenu
-        canClosePopupOnItemClick={false}
-        onMessageClick={({ message, index }: CourierInboxListItemFactoryProps) => {
-          console.log('Message clicked at index', index, message);
-        }}
-      />
+      <CourierInboxPopupMenu />
     </div>
   );
 
