@@ -102,10 +102,18 @@ export interface InboxMessageEventEnvelope {
   /** Event type indicating a new message, or a mutation to one or more existing messages. */
   event: InboxMessageEvent;
 
-  /** Message ID. */
+  /**
+   * Optional:Message ID.
+   *
+   * messageId is present for events that mutate a single message (e.g. read, unread, archive, etc.).
+   */
   messageId?: string;
 
-  /** Optional: Message data, varying by event. */
+  /** Optional: Message data, varying by event.
+   *
+   * For {@link InboxMessageEvent.NewMessage}, this is an {@link InboxMessage}.
+   * For other events this is undefined.
+   */
   data?: InboxMessage;
 }
 
