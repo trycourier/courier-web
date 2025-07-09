@@ -54,6 +54,24 @@ describe("CourierInboxDatastore", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Default mock responses for the datastore (no messages in the inbox or archive).
+    mockGetMessages.mockResolvedValue({
+      data: {
+        count: 0,
+        messages: {
+          nodes: [],
+        },
+      },
+    });
+    mockGetArchivedMessages.mockResolvedValue({
+      data: {
+        count: 0,
+        messages: {
+          nodes: [],
+        },
+      },
+    });
   });
 
   describe('archiveAllMessages', () => {
