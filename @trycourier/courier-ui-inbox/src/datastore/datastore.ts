@@ -4,6 +4,7 @@ import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { DataSetSnapshot, MessageSnapshot } from "../types/snapshots";
 import { copyInboxDataSet, copyMessage } from "../utils/utils";
+import { CourierInboxSocket } from "@trycourier/courier-js/dist/socket/courier-inbox-socket";
 
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
@@ -133,80 +134,82 @@ export class CourierInboxDatastore {
     }
   }
 
-  private async connectSocket() {
-    const socket = Courier.shared.client?.inbox.socket;
+  private handleSocketMessage = (event: InboxMessageEventEnvelope) => {
+    if (event.event === InboxMessageEvent.NewMessage) {
+      const message = event.data as InboxMessage;
+      this.addMessage(message, 0, 'inbox');
+      return;
+    }
 
+    const message = this.getMessage({ messageId: event.messageId });
+
+    switch (event.event) {
+      case InboxMessageEvent.MarkAllRead:
+        this.readAllMessages({ canCallApi: false });
+        break;
+      case InboxMessageEvent.Read:
+        if (message) {
+          this.readMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.Unread:
+        if (message) {
+          this.unreadMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.Opened:
+        if (message) {
+          this.openMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.Archive:
+        if (message) {
+          this.archiveMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.ArchiveRead:
+        this.archiveReadMessages({ canCallApi: false });
+        break;
+      case InboxMessageEvent.ArchiveAll:
+        this.archiveAllMessages({ canCallApi: false });
+        break;
+      case InboxMessageEvent.Clicked:
+        if (message) {
+          this.clickMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.Unarchive:
+        if (message) {
+          this.unarchiveMessage({ message, canCallApi: false });
+        }
+        break;
+      case InboxMessageEvent.Unopened:
+        break;
+    }
+  };
+
+  // Get the socket instance
+  private get socket(): CourierInboxSocket | undefined {
+    return Courier.shared.client?.inbox.socket;
+  }
+
+  private async connectSocket() {
     try {
+
       // If the socket is not available, return early
-      if (!socket) {
+      if (!this.socket) {
         Courier.shared.client?.options.logger?.info('CourierInbox socket not available');
         return;
       }
 
-      // If the socket is already connecting or open, return early
-      if (socket.isConnecting || socket.isOpen) {
-        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
-        return;
-      }
+      // Register the message event listener for incoming socket messages
+      this.socket.removeMessageAllEventListeners();
+      this.socket.addMessageEventListener(this.handleSocketMessage);
 
-      // Handle message events
-      socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
-        if (event.event === InboxMessageEvent.NewMessage) {
-          const message: InboxMessage = event.data as InboxMessage;
-          this.addMessage(message, 0, 'inbox');
-          return;
-        }
+      // Establish the socket connection; this will also subscribe to all user events after connecting
+      await this.socket.connect();
+      Courier.shared.client?.options.logger?.info(`Inbox socket connected for connection ID: [${Courier.shared.client?.options.connectionId}]`);
 
-        const message = this.getMessage({ messageId: event.messageId });
-
-        switch (event.event) {
-          case InboxMessageEvent.MarkAllRead:
-            this.readAllMessages({ canCallApi: false });
-            break;
-          case InboxMessageEvent.Read:
-            if (message) {
-              this.readMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.Unread:
-            if (message) {
-              this.unreadMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.Opened:
-            if (message) {
-              this.openMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.Archive:
-            if (message) {
-              this.archiveMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.ArchiveRead:
-            this.archiveReadMessages({ canCallApi: false });
-            break;
-          case InboxMessageEvent.ArchiveAll:
-            this.archiveAllMessages({ canCallApi: false });
-            break;
-          case InboxMessageEvent.Clicked:
-            if (message) {
-              this.clickMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.Unarchive:
-            if (message) {
-              this.unarchiveMessage({ message, canCallApi: false });
-            }
-            break;
-          case InboxMessageEvent.Unopened:
-            break;
-        }
-      });
-
-      // Connect to the socket. By default, the socket will subscribe to all events for the user after opening.
-      await socket.connect();
-      Courier.shared.client?.options.logger?.info(`Inbox socket connected for client ID: [${Courier.shared.client?.options.connectionId}]`);
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
     }

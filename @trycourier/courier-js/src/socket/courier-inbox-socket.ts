@@ -166,6 +166,13 @@ export class CourierInboxSocket extends CourierSocket {
   }
 
   /**
+   * Removes all message event listeners.
+   */
+  public removeMessageAllEventListeners(): void {
+    this.messageEventListeners = [];
+  }
+
+  /**
    * Send a ping message to the server.
    *
    * ping/pong is implemented at the application layer since the browser's
