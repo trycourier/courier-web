@@ -11,7 +11,6 @@ export default function Home() {
     courier.shared.signIn({
       userId: process.env.NEXT_PUBLIC_USER_ID!,
       jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
     });
   }, []);
 

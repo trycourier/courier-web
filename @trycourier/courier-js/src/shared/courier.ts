@@ -66,8 +66,15 @@ export class Courier {
    * @param options - The options for the Courier client
    */
   public signIn(props: CourierProps) {
+
+    // Cleanup any existing client
+    this.cleanup();
+
+    // Create a new client
     const connectionId = props.connectionId ?? UUID.nanoid();
     this.instanceClient = new CourierClient({ ...props, connectionId });
+
+    // Notify listeners of the new user
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 
@@ -106,6 +113,13 @@ export class Courier {
    */
   private notifyAuthenticationListeners(props: { userId?: string }) {
     this.authenticationListeners.forEach(listener => listener.callback(props));
+  }
+
+  /**
+   * Cleanup the Courier instance
+   */
+  private cleanup() {
+    this.client?.inbox.socket?.close();
   }
 
 }

@@ -2,7 +2,8 @@ import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/errors";
 import { ServerMessage } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
-import { IPW_VERSION } from "./version";
+import { UUID } from "../utils/uuid";
+import { INBOX_WIRE_PROTOCOL_VERSION } from "./version";
 
 /**
  * Abstract base class for Courier WebSocket implementations.
@@ -11,6 +12,12 @@ import { IPW_VERSION } from "./version";
  * Application-specific logic should be implemented in the concrete classes.
  */
 export abstract class CourierSocket {
+
+  /**
+   * The unique identifier for the WebSocket connection.
+   */
+  public readonly id = UUID.nanoid();
+
   /**
    * The jitter factor for the backoff intervals.
    *
@@ -81,12 +88,12 @@ export abstract class CourierSocket {
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
   public async connect(): Promise<void> {
-    this.clearRetryTimeout();
 
-    if (this.isConnecting || this.isOpen) {
-      this.options.logger?.info('Attempted to open a WebSocket connection, but one already exists.');
-      return Promise.reject(new Error('WebSocket connection already exists'));
-    }
+    // Close any existing connection
+    this.close();
+
+    // Prevent retries
+    this.clearRetryTimeout();
 
     return new Promise((resolve, reject) => {
       this.webSocket = new WebSocket(this.getWebSocketUrl());
@@ -239,7 +246,7 @@ export abstract class CourierSocket {
     const connectionId = this.options.connectionId;
     const userId = this.userId;
 
-    return `${this.url}?auth=${accessToken}&cid=${connectionId}&iwpv=${IPW_VERSION}&userId=${userId}`;
+    return `${this.url}?auth=${accessToken}&cid=${connectionId}&iwpv=${INBOX_WIRE_PROTOCOL_VERSION}&userId=${userId}`;
   }
 
   /**
