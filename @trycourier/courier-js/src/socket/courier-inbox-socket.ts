@@ -106,6 +106,12 @@ export class CourierInboxSocket extends CourierSocket {
   }
 
   public onClose(_: CloseEvent): Promise<void> {
+    this.pingTransactionManager.clearOutstandingRequests();
+
+    if (this.pingIntervalId) {
+      window.clearInterval(this.pingIntervalId);
+    }
+
     return Promise.resolve();
   }
 
@@ -193,6 +199,7 @@ export class CourierInboxSocket extends CourierSocket {
     };
 
     this.send(envelope);
+    console.log('adding outstanding request', envelope);
     this.pingTransactionManager.addOutstandingRequest(envelope.tid, envelope);
   }
 

@@ -9,7 +9,7 @@ export default function Home() {
 
   // Make a render bug that will reload the UI several times
   useEffect(() => {
-    if (count < 50) {
+    if (count < 3) {
       // Sign the user into Courier
       courier.shared.signIn({
         userId: process.env.NEXT_PUBLIC_USER_ID!,
@@ -17,7 +17,9 @@ export default function Home() {
       });
 
       // Increment the count
-      setCount(c => c + 1);
+      setTimeout(() => {
+        setCount(c => c + 1);
+      }, 1);
     }
   }, [count]);
 

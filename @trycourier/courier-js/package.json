@@ -10,8 +10,7 @@
     "build": "vite build",
     "watch": "vite build --watch",
     "preview": "vite preview",
-    "test": "jest",
-    "prepare": "npm run build"
+    "test": "jest"
   },
   "keywords": [
     "courier",

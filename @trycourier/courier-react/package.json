@@ -10,7 +10,6 @@
     "build": "cross-env NODE_ENV=production tsc && vite build --mode production",
     "watch": "vite build --watch",
     "preview": "vite preview",
-    "prepare": "npm run build",
     "test": "echo \"courier-react has no tests\""
   },
   "files": [

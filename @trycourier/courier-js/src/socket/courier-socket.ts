@@ -39,7 +39,7 @@ export abstract class CourierSocket {
    * absolute offset from the initial request time.
    */
   private static readonly BACKOFF_INTERVALS_IN_MILLIS = [
-    30_000,  // 30 seconds
+    1_000,  // 30 seconds
     60_000,  // 1 minute
     120_000, // 2 minutes
     240_000, // 4 minutes
@@ -88,12 +88,13 @@ export abstract class CourierSocket {
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
   public async connect(): Promise<void> {
-
-    // Close any existing connection
-    this.close();
-
-    // Prevent retries
+    // If we're in the process of retrying, clear the timeout to prevent further retries.
     this.clearRetryTimeout();
+
+    if (this.isConnecting || this.isOpen) {
+      this.options.logger?.info('Attempted to open a WebSocket connection, but one already exists.');
+      return Promise.resolve();
+    }
 
     return new Promise((resolve, reject) => {
       this.webSocket = new WebSocket(this.getWebSocketUrl());
@@ -160,6 +161,9 @@ export abstract class CourierSocket {
     if (this.webSocket === null) {
       return;
     }
+
+    this.clearRetryTimeout();
+    this.retryAttempt = 0;
 
     this.webSocket.close(code, reason);
     this.webSocket = null;
@@ -325,6 +329,7 @@ export abstract class CourierSocket {
     const backoffTimeInMillis = suggestedBackoffTimeInMillis ?? this.getBackoffTimeInMillis();
     this.retryTimeoutId = window.setTimeout(async () => {
       try {
+        console.log('retryConnection calling connect', this.retryAttempt);
         await this.connect();
       } catch (error) {
         // connect() will retry if applicable

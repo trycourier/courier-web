@@ -67,8 +67,8 @@ export class Courier {
    */
   public signIn(props: CourierProps) {
 
-    // Cleanup any existing client
-    this.cleanup();
+    // Sign out any existing user.
+    this.signOut();
 
     // Create a new client
     const connectionId = props.connectionId ?? UUID.nanoid();
@@ -82,6 +82,11 @@ export class Courier {
    * Sign out of Courier
    */
   public signOut() {
+
+    // Close the client
+    this.instanceClient?.inbox.socket?.close();
+
+    // Clear the client
     this.instanceClient = undefined;
     this.notifyAuthenticationListeners({ userId: undefined });
   }

@@ -21,26 +21,26 @@ function logRequest(logger: Logger, uid: string, type: 'HTTP' | 'GraphQL', data:
   query?: string;
   variables?: Record<string, any>;
 }) {
-  logger.log(`
-📡 New Courier ${type} Request: ${uid}
-URL: ${data.url}
-${data.method ? `Method: ${data.method}` : ''}
-${data.query ? `Query: ${data.query}` : ''}
-${data.variables ? `Variables: ${JSON.stringify(data.variables, null, 2)}` : ''}
-Headers: ${JSON.stringify(data.headers, null, 2)}
-Body: ${data.body ? JSON.stringify(data.body, null, 2) : 'Empty'}
-  `);
+//   logger.log(`
+// 📡 New Courier ${type} Request: ${uid}
+// URL: ${data.url}
+// ${data.method ? `Method: ${data.method}` : ''}
+// ${data.query ? `Query: ${data.query}` : ''}
+// ${data.variables ? `Variables: ${JSON.stringify(data.variables, null, 2)}` : ''}
+// Headers: ${JSON.stringify(data.headers, null, 2)}
+// Body: ${data.body ? JSON.stringify(data.body, null, 2) : 'Empty'}
+//   `);
 }
 
 function logResponse(logger: Logger, uid: string, type: 'HTTP' | 'GraphQL', data: {
   status: number;
   response: any;
 }) {
-  logger.log(`
-📡 New Courier ${type} Response: ${uid}
-Status Code: ${data.status}
-Response JSON: ${JSON.stringify(data.response, null, 2)}
-  `);
+//   logger.log(`
+// 📡 New Courier ${type} Response: ${uid}
+// Status Code: ${data.status}
+// Response JSON: ${JSON.stringify(data.response, null, 2)}
+//   `);
 }
 
 export async function http(props: {
