@@ -105,6 +105,10 @@ export class CourierInboxThemeManager {
     this.updateTheme();
   }
 
+  public get mode(): CourierComponentThemeMode {
+    return this._userMode;
+  }
+
   /**
    * Subscribe to theme changes
    * @param {Function} callback - Function to run when the theme changes

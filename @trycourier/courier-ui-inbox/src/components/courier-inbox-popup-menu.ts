@@ -53,6 +53,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private _inbox?: CourierInbox;
   private _style?: HTMLStyleElement;
 
+  // Inbox Handlers
+  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
+  private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
+  private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
+
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
@@ -89,6 +94,30 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Create content container
     this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
+
+    // Handle click events
+    if (this._inbox) {
+      this._inbox.onMessageClick((props) => {
+        if (this._onMessageClick) {
+          this._onMessageClick(props);
+        }
+        this.closePopup();
+      });
+
+      this._inbox.onMessageActionClick((props) => {
+        if (this._onMessageActionClick) {
+          this._onMessageActionClick(props);
+        }
+        this.closePopup();
+      });
+
+      this._inbox.onMessageLongPress((props) => {
+        if (this._onMessageLongPress) {
+          this._onMessageLongPress(props);
+        }
+        this.closePopup();
+      });
+    }
 
     this.refreshTheme();
 
@@ -214,15 +243,15 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageClick(handler);
+    this._onMessageClick = handler;
   }
 
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
-    this._inbox?.onMessageActionClick(handler);
+    this._onMessageActionClick = handler;
   }
 
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageLongPress(handler);
+    this._onMessageLongPress = handler;
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
@@ -296,6 +325,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     const isVisible = this._popup.style.display === 'block';
     this._popup.style.display = isVisible ? 'none' : 'block';
+  }
+
+  public closePopup() {
+    if (!this._popup) return;
+    this._popup.style.display = 'none';
   }
 
   private handleOutsideClick = (event: MouseEvent) => {

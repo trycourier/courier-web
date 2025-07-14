@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierInfoState, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, CourierInfoState, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
@@ -53,6 +53,8 @@ export class CourierInboxList extends CourierBaseElement {
   private _listStyles?: HTMLStyleElement;
   private _listItemStyles?: HTMLStyleElement;
   private _listItemMenuStyles?: HTMLStyleElement;
+  private _errorContainer?: CourierInfoState;
+  private _emptyContainer?: CourierInfoState;
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
@@ -183,11 +185,78 @@ export class CourierInboxList extends CourierBaseElement {
     this._onRefresh();
   }
 
+  public refreshInfoStateThemes() {
+    this._emptyContainer?.updateStyles(this.errorProps);
+    this._emptyContainer?.updateStyles(this.emptyProps);
+  }
+
+  get errorProps(): any {
+    const error = this.theme.inbox?.error;
+    const themeMode = this._themeSubscription.manager.mode;
+    return {
+      title: {
+        text: error?.title?.text ?? this._error?.message,
+        textColor: error?.title?.font?.color,
+        fontFamily: error?.title?.font?.family,
+        fontSize: error?.title?.font?.size,
+        fontWeight: error?.title?.font?.weight
+      },
+      button: {
+        mode: themeMode,
+        text: error?.button?.text,
+        backgroundColor: error?.button?.backgroundColor,
+        hoverBackgroundColor: error?.button?.hoverBackgroundColor,
+        activeBackgroundColor: error?.button?.activeBackgroundColor,
+        textColor: error?.button?.font?.color,
+        fontFamily: error?.button?.font?.family,
+        fontSize: error?.button?.font?.size,
+        fontWeight: error?.button?.font?.weight,
+        shadow: error?.button?.shadow,
+        border: error?.button?.border,
+        borderRadius: error?.button?.borderRadius,
+        onClick: () => this.handleRetry()
+      }
+    };
+  }
+
+  get emptyProps(): any {
+    const empty = this.theme.inbox?.empty;
+    const themeMode = this._themeSubscription.manager.mode;
+    return {
+      title: {
+        text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
+        textColor: empty?.title?.font?.color,
+        fontFamily: empty?.title?.font?.family,
+        fontSize: empty?.title?.font?.size,
+        fontWeight: empty?.title?.font?.weight
+      },
+      button: {
+        mode: themeMode,
+        text: empty?.button?.text,
+        backgroundColor: empty?.button?.backgroundColor,
+        hoverBackgroundColor: empty?.button?.hoverBackgroundColor,
+        activeBackgroundColor: empty?.button?.activeBackgroundColor,
+        textColor: empty?.button?.font?.color,
+        fontFamily: empty?.button?.font?.family,
+        fontSize: empty?.button?.font?.size,
+        fontWeight: empty?.button?.font?.weight,
+        shadow: empty?.button?.shadow,
+        border: empty?.button?.border,
+        borderRadius: empty?.button?.borderRadius,
+        onClick: () => this.handleRefresh()
+      },
+    };
+  }
+
   private render(): void {
+
+    const themeMode = this._themeSubscription.manager.mode;
 
     // Remove all existing elements
     while (this.firstChild) {
       this.removeChild(this.firstChild);
+      this._errorContainer = undefined;
+      this._emptyContainer = undefined;
     }
 
     // Update list styles
@@ -207,32 +276,9 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Error state
     if (this._error) {
-      const error = this.theme.inbox?.error;
-      const errorElement = new CourierInfoState({
-        title: {
-          text: error?.title?.text ?? this._error.message,
-          textColor: error?.title?.font?.color,
-          fontFamily: error?.title?.font?.family,
-          fontSize: error?.title?.font?.size,
-          fontWeight: error?.title?.font?.weight
-        },
-        button: {
-          text: error?.button?.text,
-          backgroundColor: error?.button?.backgroundColor,
-          hoverBackgroundColor: error?.button?.hoverBackgroundColor,
-          activeBackgroundColor: error?.button?.activeBackgroundColor,
-          textColor: error?.button?.font?.color,
-          fontFamily: error?.button?.font?.family,
-          fontSize: error?.button?.font?.size,
-          fontWeight: error?.button?.font?.weight,
-          shadow: error?.button?.shadow,
-          border: error?.button?.border,
-          borderRadius: error?.button?.borderRadius,
-          onClick: () => this.handleRetry()
-        }
-      });
-      errorElement.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
-      this.appendChild(errorElement);
+      this._errorContainer = new CourierInfoState(this.errorProps);
+      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
+      this.appendChild(this._errorContainer);
       return;
     }
 
@@ -246,32 +292,9 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Empty state
     if (this._messages.length === 0) {
-      const empty = this.theme.inbox?.empty;
-      const emptyElement = new CourierInfoState({
-        title: {
-          text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
-          textColor: empty?.title?.font?.color,
-          fontFamily: empty?.title?.font?.family,
-          fontSize: empty?.title?.font?.size,
-          fontWeight: empty?.title?.font?.weight
-        },
-        button: {
-          text: empty?.button?.text,
-          backgroundColor: empty?.button?.backgroundColor,
-          hoverBackgroundColor: empty?.button?.hoverBackgroundColor,
-          activeBackgroundColor: empty?.button?.activeBackgroundColor,
-          textColor: empty?.button?.font?.color,
-          fontFamily: empty?.button?.font?.family,
-          fontSize: empty?.button?.font?.size,
-          fontWeight: empty?.button?.font?.weight,
-          shadow: empty?.button?.shadow,
-          border: empty?.button?.border,
-          borderRadius: empty?.button?.borderRadius,
-          onClick: () => this.handleRefresh()
-        },
-      });
-      emptyElement.build(this._emptyStateFactory?.({ feedType: this._feedType }));
-      this.appendChild(emptyElement);
+      this._emptyContainer = new CourierInfoState(this.emptyProps);
+      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._feedType }));
+      this.appendChild(this._emptyContainer);
       return;
     }
 
