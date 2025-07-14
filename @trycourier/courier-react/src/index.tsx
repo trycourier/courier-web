@@ -75,3 +75,8 @@ export {
   defaultDarkTheme,
   mergeTheme
 } from '@trycourier/courier-ui-inbox';
+
+// Re-export types from courier-ui-core
+export type {
+  CourierComponentThemeMode
+} from '@trycourier/courier-ui-core'

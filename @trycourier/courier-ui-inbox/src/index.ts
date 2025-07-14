@@ -35,3 +35,8 @@ export type {
   InboxAction,
   InboxMessageEventEnvelope,
 } from '@trycourier/courier-js';
+
+// Re-export types from courier-ui-core
+export type {
+  CourierComponentThemeMode
+} from '@trycourier/courier-ui-core'
