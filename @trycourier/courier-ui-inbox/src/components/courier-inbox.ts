@@ -211,6 +211,7 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private refreshTheme() {
+    this._list?.refreshInfoStateThemes();
     if (this._inboxStyle) {
       this._inboxStyle.textContent = this.getStyles();
     }

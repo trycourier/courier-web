@@ -1,10 +1,11 @@
-import { SystemThemeMode } from "../utils/system-theme-mode";
+import { CourierComponentThemeMode, SystemThemeMode } from "../utils/system-theme-mode";
 import { theme } from "../utils/theme";
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
 export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary';
 
 export type CourierButtonProps = {
+  mode: CourierComponentThemeMode
   text?: string,
   shadow?: string,
   border?: string,
@@ -26,33 +27,39 @@ const baseButtonStyles = {
 } as const;
 
 export const CourierButtonVariants = {
-  primary: (mode: SystemThemeMode) => ({
-    ...baseButtonStyles,
-    backgroundColor: theme[mode].colors.primary,
-    textColor: theme[mode].colors.secondary,
-    fontWeight: '500',
-    shadow: 'none'
-  }),
+  primary: (mode: SystemThemeMode) => {
+    return {
+      ...baseButtonStyles,
+      backgroundColor: theme[mode].colors.primary,
+      textColor: theme[mode].colors.secondary,
+      fontWeight: '500',
+      shadow: 'none'
+    };
+  },
 
-  secondary: (mode: SystemThemeMode) => ({
-    ...baseButtonStyles,
-    backgroundColor: theme[mode].colors.secondary,
-    textColor: theme[mode].colors.primary,
-    fontWeight: '500',
-    border: `1px solid ${theme[mode].colors.border}`,
-    shadow: mode === 'light'
-      ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
-      : '0px 1px 2px 0px rgba(255, 255, 255, 0.1)'
-  }),
+  secondary: (mode: SystemThemeMode) => {
+    return {
+      ...baseButtonStyles,
+      backgroundColor: theme[mode].colors.secondary,
+      textColor: theme[mode].colors.primary,
+      fontWeight: '500',
+      border: `1px solid ${theme[mode].colors.border}`,
+      shadow: mode === 'light'
+        ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
+        : '0px 1px 2px 0px rgba(255, 255, 255, 0.1)'
+    };
+  },
 
-  tertiary: (mode: SystemThemeMode) => ({
-    ...baseButtonStyles,
-    backgroundColor: theme[mode].colors.border,
-    textColor: theme[mode].colors.primary,
-    fontWeight: '500',
-    border: 'none',
-    shadow: 'none'
-  })
+  tertiary: (mode: SystemThemeMode) => {
+    return {
+      ...baseButtonStyles,
+      backgroundColor: theme[mode].colors.border,
+      textColor: theme[mode].colors.primary,
+      fontWeight: '500',
+      border: 'none',
+      shadow: 'none'
+    };
+  }
 } as const;
 
 export class CourierButton extends CourierSystemThemeElement {
@@ -92,38 +99,40 @@ export class CourierButton extends CourierSystemThemeElement {
 
   private getStyles(props: CourierButtonProps): string {
 
+    const mode = props.mode === 'system' ? this.currentSystemTheme : props.mode;
+
     const defaultTextColor = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.textColor;
     }
 
     const defaultBackgroundColor = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.backgroundColor;
     }
 
     const defaultBorder = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.border;
     }
 
     const defaultShadow = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.shadow;
     }
 
     const defaultBorderRadius = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.borderRadius;
     }
 
     const defaultFontSize = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.fontSize;
     }
 
     const defaultFontWeight = () => {
-      const secondary = CourierButtonVariants.secondary(this.currentSystemTheme);
+      const secondary = CourierButtonVariants.secondary(mode);
       return secondary.fontWeight;
     }
 
