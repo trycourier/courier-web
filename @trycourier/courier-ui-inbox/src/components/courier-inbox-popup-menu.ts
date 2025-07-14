@@ -96,34 +96,28 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._inbox.setAttribute('height', '100%');
 
     // Handle click events
-    this._inbox?.onMessageClick((props) => {
-      if (this._onMessageClick) {
-        this._onMessageClick(props);
-      }
-      this.closePopup();
-    });
+    if (this._inbox) {
+      this._inbox.onMessageClick((props) => {
+        if (this._onMessageClick) {
+          this._onMessageClick(props);
+        }
+        this.closePopup();
+      });
 
-    // Handle click events
-    this._inbox?.onMessageClick((props) => {
-      if (this._onMessageClick) {
-        this._onMessageClick(props);
-      }
-      this.closePopup();
-    });
+      this._inbox.onMessageActionClick((props) => {
+        if (this._onMessageActionClick) {
+          this._onMessageActionClick(props);
+        }
+        this.closePopup();
+      });
 
-    this._inbox?.onMessageActionClick((props) => {
-      if (this._onMessageActionClick) {
-        this._onMessageActionClick(props);
-      }
-      this.closePopup();
-    });
-
-    this._inbox?.onMessageLongPress((props) => {
-      if (this._onMessageLongPress) {
-        this._onMessageLongPress(props);
-      }
-      this.closePopup();
-    });
+      this._inbox.onMessageLongPress((props) => {
+        if (this._onMessageLongPress) {
+          this._onMessageLongPress(props);
+        }
+        this.closePopup();
+      });
+    }
 
     this.refreshTheme();
 
