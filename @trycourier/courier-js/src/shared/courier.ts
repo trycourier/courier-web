@@ -66,6 +66,13 @@ export class Courier {
    * @param options - The options for the Courier client
    */
   public signIn(props: CourierProps) {
+    // Sign out any existing user.
+    if (this.instanceClient) {
+      this.instanceClient.options.logger.warn('Sign in called but there is already a user signed in. Signing out the current user.');
+      this.signOut();
+    }
+
+    // Create a new client.
     const connectionId = props.connectionId ?? UUID.nanoid();
     this.instanceClient = new CourierClient({ ...props, connectionId });
     this.notifyAuthenticationListeners({ userId: props.userId });
@@ -75,6 +82,10 @@ export class Courier {
    * Sign out of Courier
    */
   public signOut() {
+    // Close the socket client.
+    this.instanceClient?.inbox.socket?.close();
+
+    // Clear the client.
     this.instanceClient = undefined;
     this.notifyAuthenticationListeners({ userId: undefined });
   }

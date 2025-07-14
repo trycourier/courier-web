@@ -63,6 +63,24 @@ describe('CourierSocket', () => {
 
       expect(socket.isOpen).toBe(true);
     });
+
+    it('should not connect if the connection is already established', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+
+      // Count the number of connections to the mock server
+      let connectionCount = 0;
+      mockServer.on('connection', (_) => {
+        connectionCount++;
+      });
+
+      socket.connect();
+      await mockServer.connected;
+
+      // Call connect again, which should be a no-op
+      socket.connect();
+
+      expect(connectionCount).toBe(1);
+    });
   });
 
   describe('message listener', () => {
@@ -118,6 +136,7 @@ describe('CourierSocket', () => {
       const onCloseSpy = jest.spyOn(socket, 'onClose')
         .mockImplementation(() =>
           Promise.resolve());
+      const connectSpy = jest.spyOn(socket, 'connect');
 
       socket.connect();
       await mockServer.connected;
@@ -127,7 +146,36 @@ describe('CourierSocket', () => {
       expect(onCloseSpy).toHaveBeenCalled();
       expect(socket.isOpen).toBe(false);
       expect(mockServer.closed).resolves.toBeUndefined();
+
+      // Wait for the retry interval to pass (accounting for 1.5x jitter) and verify no new connection attempts are made
+      // (only 1 initial connection attempt)
+      await new Promise((resolve) => setTimeout(resolve, BACKOFF_INTERVALS_IN_MILLIS[0] * 1.5));
+      expect(connectSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('should not retry the connection if the close event was requested by the application', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+      const onCloseSpy = jest.spyOn(socket, 'onClose')
+        .mockImplementation(() =>
+          Promise.resolve());
+      const connectSpy = jest.spyOn(socket, 'connect');
+
+      socket.connect();
+      await mockServer.connected;
+
+      socket.close();
+      await mockServer.closed;
+
+      expect(onCloseSpy).toHaveBeenCalled();
+      expect(socket.isOpen).toBe(false);
+      expect(mockServer.closed).resolves.toBeUndefined();
+
+      // Wait for the retry interval to pass (accounting for 1.5x jitter) and verify no new connection attempts are made
+      // (only 1 initial connection attempt)
+      await new Promise((resolve) => setTimeout(resolve, BACKOFF_INTERVALS_IN_MILLIS[0] * 1.5));
+      expect(connectSpy).toHaveBeenCalledTimes(1);
+    });
+
 
     it('should retry the connection for a non-normal closure and respect the Retry-After reason', async () => {
       const socket = new CourierSocketTestImplementation(OPTIONS);
@@ -234,6 +282,34 @@ describe('CourierSocket', () => {
       expect(reconnectTime - disconnectTime).toBeLessThan((1 + BACKOFF_JITTER_FACTOR) * BACKOFF_INTERVALS_IN_MILLIS[0]);
 
       expect(socket.isOpen).toBe(true);
+    });
+  });
+
+  describe('error listener', () => {
+    it('should not retry the connection on error event if the close was requested by the client', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+      const onErrorSpy = jest.spyOn(socket, 'onError')
+        .mockImplementation(() =>
+          Promise.resolve());
+      const connectSpy = jest.spyOn(socket, 'connect');
+
+      socket.connect();
+      await mockServer.connected;
+
+      // Client requests a close
+      socket.close();
+
+      // Simulate an error event from the server immediately after the client requests a close
+      mockServer.error();
+
+      expect(onErrorSpy).toHaveBeenCalled();
+      expect(socket.isOpen).toBe(false);
+      expect(mockServer.closed).resolves.toBeUndefined();
+
+      // Wait for the retry interval to pass (accounting for 1.5x jitter) and verify no new connection attempts are made
+      // (only 1 initial connection attempt)
+      await new Promise((resolve) => setTimeout(resolve, BACKOFF_INTERVALS_IN_MILLIS[0] * 1.5));
+      expect(connectSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -63,6 +63,15 @@ export abstract class CourierSocket {
   /** The timeout ID for the current connectionretry attempt, reset when we attempt to connect. */
   private retryTimeoutId: number | null = null;
 
+  /**
+   * Flag indicating the application initiated a {@link CourierSocket#close} call.
+   *
+   * An application-initiated close may look like an abnormal closure (code 1006)
+   * if it occurs before the connection is established. We differentiate to
+   * prevent retrying the connection when the socket is closed intentionally.
+   */
+  private closeRequested: boolean = false;
+
   private readonly url: string;
   private readonly options: CourierClientOptions;
 
@@ -81,12 +90,18 @@ export abstract class CourierSocket {
    * @returns A promise that resolves when the connection is established or rejects if the connection could not be established.
    */
   public async connect(): Promise<void> {
+    if (this.isConnecting || this.isOpen) {
+      this.options.logger?.info(`Attempted to open a WebSocket connection, but one already exists in state '${this.webSocket?.readyState}'.`);
+
+      // This isn't necessarily an error (the result is a no-op), so we resolve the promise.
+      return Promise.resolve();
+    }
+
+    // If we're in the process of retrying, clear the timeout to prevent further retries.
     this.clearRetryTimeout();
 
-    if (this.isConnecting || this.isOpen) {
-      this.options.logger?.info('Attempted to open a WebSocket connection, but one already exists.');
-      return Promise.reject(new Error('WebSocket connection already exists'));
-    }
+    // Reset the close requested flag when we attempt to connect.
+    this.closeRequested = false;
 
     return new Promise((resolve, reject) => {
       this.webSocket = new WebSocket(this.getWebSocketUrl());
@@ -117,7 +132,12 @@ export abstract class CourierSocket {
       });
 
       this.webSocket.addEventListener('close', (event: CloseEvent) => {
-        if (event.code !== CLOSE_CODE_NORMAL_CLOSURE) {
+        // Close events are fired when the connection is closed either normally or abnormally.
+        //
+        // The 'close' event triggers a retry if the 'close' is:
+        //   1) not a normal closure and,
+        //   2) the application did not request the close (see CourierSocket#closeRequested)
+        if (event.code !== CLOSE_CODE_NORMAL_CLOSURE && !this.closeRequested) {
           const courierCloseEvent = CourierSocket.parseCloseEvent(event);
 
           if (courierCloseEvent.retryAfterSeconds) {
@@ -131,7 +151,12 @@ export abstract class CourierSocket {
       });
 
       this.webSocket.addEventListener('error', (event: Event) => {
-        this.retryConnection();
+        // If the closure was requested by the application, don't retry the connection.
+        // The error event may be fired for a normal closure if it occurs before the connection is established.
+        if (!this.closeRequested) {
+          this.retryConnection();
+        }
+
         this.onError(event);
 
         // If the HTTP Upgrade request fails, the WebSocket API fires an error event,
@@ -154,8 +179,14 @@ export abstract class CourierSocket {
       return;
     }
 
+    this.closeRequested = true;
+
+    // Cancel any pending retries and reset the retry attempt counter.
+    this.clearRetryTimeout();
+    this.retryAttempt = 0;
+
     this.webSocket.close(code, reason);
-    this.webSocket = null;
+
   }
 
   /**
