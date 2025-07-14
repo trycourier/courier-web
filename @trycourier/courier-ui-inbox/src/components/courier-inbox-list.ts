@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierComponentThemeMode, CourierInfoState, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierInfoState, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
@@ -250,8 +250,6 @@ export class CourierInboxList extends CourierBaseElement {
 
   private render(): void {
 
-    const themeMode = this._themeSubscription.manager.mode;
-
     // Remove all existing elements
     while (this.firstChild) {
       this.removeChild(this.firstChild);
@@ -309,7 +307,7 @@ export class CourierInboxList extends CourierBaseElement {
         return;
       }
 
-      const listItem = new CourierInboxListItem(this.theme);
+      const listItem = new CourierInboxListItem(this._themeSubscription.manager);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));

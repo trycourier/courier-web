@@ -5,6 +5,7 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
 export class CourierInboxListItem extends CourierBaseElement {
 
@@ -13,6 +14,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // State
+  private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
   private _feedType: CourierInboxFeedType = 'inbox';
@@ -35,9 +37,10 @@ export class CourierInboxListItem extends CourierBaseElement {
   private onItemLongPress: ((message: InboxMessage) => void) | null = null;
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
 
-  constructor(theme: CourierInboxTheme) {
+  constructor(themeManager: CourierInboxThemeManager) {
     super();
-    this._theme = theme;
+    this._themeManager = themeManager;
+    this._theme = themeManager.getTheme();
     this._isMobile = 'ontouchstart' in window;
     this.render();
   }
@@ -416,6 +419,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       this._message.actions.forEach(action => {
         // Create the action element
         const actionButton = new CourierButton({
+          mode: this._themeManager.mode,
           text: action.content,
           variant: 'secondary',
           backgroundColor: actionsTheme?.backgroundColor,
