@@ -3,7 +3,7 @@ import { CourierInboxSocket } from "../socket/courier-inbox-socket";
 import { Logger } from "../utils/logger";
 import { CourierApiUrls } from "../types/courier-api-urls";
 import WebSocketServer from "jest-websocket-mock";
-import { ClientAction, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerResponse } from "../types/socket/protocol/messages";
+import { ClientAction, ClientMessageEnvelope, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerResponse } from "../types/socket/protocol/messages";
 import { UUID } from "../utils/uuid";
 
 const nanoidSpy = jest.spyOn(UUID, 'nanoid');
@@ -180,6 +180,42 @@ describe('CourierInboxSocket', () => {
 
       expect(listener).toHaveBeenCalledWith(messageEventWithCreatedTime);
       expect(listener2).toHaveBeenCalledWith(messageEventWithCreatedTime);
+    });
+  });
+
+  describe('onClose', () => {
+    it('should stop pinging the server', async () => {
+      (CourierInboxSocket as any)['DEFAULT_PING_INTERVAL_MILLIS'] = PING_INTERVAL_MILLIS;
+
+      const socket = new CourierInboxSocket(OPTIONS);
+
+      socket.connect();
+      await mockServer.connected;
+      await expectOpeningMessages(mockServer);
+
+      // Wait for the ping to be sent
+      await new Promise((resolve) => setTimeout(resolve, PING_INTERVAL_MILLIS));
+
+      await expect(mockServer).toReceiveMessage({
+        action: ClientAction.Ping,
+        tid: expect.any(String),
+      });
+
+      socket.close();
+      await mockServer.closed;
+
+      // Wait enough time for the ping interval to pass and verify no ping messages are sent
+      await new Promise((resolve) => setTimeout(resolve, PING_INTERVAL_MILLIS));
+
+      // Check that the socket is closed
+      expect(socket.isOpen).toBe(false);
+
+      // Verify no new pings were received by the server after closing
+      const receivedMessages = mockServer.messages;
+      const pingMessages = receivedMessages.filter((message: any) => (message as ClientMessageEnvelope).action === ClientAction.Ping);
+
+      // Just the 1st ping (before the socket was closed)
+      expect(pingMessages).toHaveLength(1)
     });
   });
 

@@ -106,6 +106,15 @@ export class CourierInboxSocket extends CourierSocket {
   }
 
   public onClose(_: CloseEvent): Promise<void> {
+    // Cancel scheduled pings.
+    this.clearPingInterval();
+
+    // Remove any message event listeners.
+    this.clearMessageEventListeners();
+
+    // Clear any outstanding pings.
+    this.pingTransactionManager.clearOutstandingRequests();
+
     return Promise.resolve();
   }
 
@@ -220,13 +229,17 @@ export class CourierInboxSocket extends CourierSocket {
    * Restart the ping interval, clearing the previous interval if it exists.
    */
   private restartPingInterval(): void {
-    if (this.pingIntervalId) {
-      window.clearInterval(this.pingIntervalId);
-    }
+    this.clearPingInterval();
 
     this.pingIntervalId = window.setInterval(() => {
       this.sendPing();
     }, this.pingInterval);
+  }
+
+  private clearPingInterval(): void {
+    if (this.pingIntervalId) {
+      window.clearInterval(this.pingIntervalId);
+    }
   }
 
   private get pingInterval(): number {
@@ -248,6 +261,13 @@ export class CourierInboxSocket extends CourierSocket {
 
   private setConfig(config: Config): void {
     this.config = config;
+  }
+
+  /**
+   * Removes all message event listeners.
+   */
+  private clearMessageEventListeners(): void {
+    this.messageEventListeners = [];
   }
 
   private static isInboxMessageEvent(event: string): event is InboxMessageEvent {
