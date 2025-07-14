@@ -5,7 +5,7 @@ The base API client and shared instance singleton for Courier's JavaScript Brows
 ## Installation
 
 ```sh
-npm i @trycourier/courier-js@2.0.6-beta
+npm i @trycourier/courier-js@2.0.7-beta
 ```
 
 ## Usage
