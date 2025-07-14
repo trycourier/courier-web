@@ -35,7 +35,6 @@
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
-    "@trycourier/courier-ui-inbox": "file:../@trycourier/courier-ui-inbox",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.0",
     "@vitejs/plugin-react": "4.4.1",
