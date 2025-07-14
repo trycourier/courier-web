@@ -16,9 +16,6 @@ export interface CourierInboxPopupMenuProps {
   darkTheme?: CourierInboxTheme;
   mode?: CourierComponentThemeMode;
   feedType?: CourierInboxFeedType;
-  canClosePopupOnItemClick?: boolean;
-  canClosePopupOnActionClick?: boolean;
-  canClosePopupOnLongPress?: boolean;
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
@@ -42,27 +39,6 @@ export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, Co
       (ref as React.RefObject<CourierInboxPopupMenuElement | null>).current = menuRef.current;
     }
   }, [ref]);
-
-  // Set whether the popup can close on item click
-  useEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-    menu.setCanClosePopupOnItemClick(props.canClosePopupOnItemClick ?? true);
-  }, [props.canClosePopupOnItemClick, menuRef]);
-
-  // Set whether the popup can close on action click
-  useEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-    menu.setCanClosePopupOnActionClick(props.canClosePopupOnActionClick ?? true);
-  }, [props.canClosePopupOnActionClick, menuRef]);
-
-  // Set whether the popup can close on long press
-  useEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-    menu.setCanClosePopupOnLongPress(props.canClosePopupOnLongPress ?? true);
-  }, [props.canClosePopupOnLongPress, menuRef]);
 
   // Handle message click
   useEffect(() => {

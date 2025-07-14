@@ -28,9 +28,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private _right: string = '0';
   private _bottom: string = '40px';
   private _left: string = '0';
-  private _canClosePopupOnItemClick: boolean = true;
-  private _canClosePopupOnActionClick: boolean = true;
-  private _canClosePopupOnLongPress: boolean = true;
 
   // Theming
   private _themeManager = new CourierInboxThemeManager(defaultLightTheme);
@@ -50,23 +47,16 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._themeManager.setMode(mode);
   }
 
-  public setCanClosePopupOnItemClick(canClosePopup: boolean) {
-    this._canClosePopupOnItemClick = canClosePopup;
-  }
-
-  public setCanClosePopupOnActionClick(canClosePopup: boolean) {
-    this._canClosePopupOnActionClick = canClosePopup;
-  }
-
-  public setCanClosePopupOnLongPress(canClosePopup: boolean) {
-    this._canClosePopupOnLongPress = canClosePopup;
-  }
-
   // Components
   private _triggerButton?: CourierInboxMenuButton;
   private _popup?: HTMLDivElement;
   private _inbox?: CourierInbox;
   private _style?: HTMLStyleElement;
+
+  // Inbox Handlers
+  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
+  private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
+  private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
 
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
@@ -104,6 +94,36 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Create content container
     this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
+
+    // Handle click events
+    this._inbox?.onMessageClick((props) => {
+      if (this._onMessageClick) {
+        this._onMessageClick(props);
+      }
+      this.closePopup();
+    });
+
+    // Handle click events
+    this._inbox?.onMessageClick((props) => {
+      if (this._onMessageClick) {
+        this._onMessageClick(props);
+      }
+      this.closePopup();
+    });
+
+    this._inbox?.onMessageActionClick((props) => {
+      if (this._onMessageActionClick) {
+        this._onMessageActionClick(props);
+      }
+      this.closePopup();
+    });
+
+    this._inbox?.onMessageLongPress((props) => {
+      if (this._onMessageLongPress) {
+        this._onMessageLongPress(props);
+      }
+      this.closePopup();
+    });
 
     this.refreshTheme();
 
@@ -229,30 +249,15 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageClick((props) => {
-      if (this._canClosePopupOnItemClick) {
-        this.closePopup();
-      }
-      handler?.(props);
-    });
+    this._onMessageClick = handler;
   }
 
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
-    this._inbox?.onMessageActionClick((props) => {
-      if (this._canClosePopupOnActionClick) {
-        this.closePopup();
-      }
-      handler?.(props);
-    });
+    this._onMessageActionClick = handler;
   }
 
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._inbox?.onMessageLongPress((props) => {
-      if (this._canClosePopupOnLongPress) {
-        this.closePopup();
-      }
-      handler?.(props);
-    });
+    this._onMessageLongPress = handler;
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
