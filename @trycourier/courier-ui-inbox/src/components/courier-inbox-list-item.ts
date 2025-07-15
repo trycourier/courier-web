@@ -20,7 +20,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _feedType: CourierInboxFeedType = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
-  private _canLongPress: boolean = false;
+  private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
 
   // Elements
   private _titleElement?: HTMLParagraphElement;
