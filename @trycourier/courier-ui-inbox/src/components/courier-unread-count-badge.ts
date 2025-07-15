@@ -63,14 +63,6 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
         min-width: 20px;
       }
 
-      ${CourierUnreadCountBadge.id} .button {
-        background-color: ${theme.popup?.button?.unreadIndicator?.backgroundColor};
-        color: ${theme.popup?.button?.unreadIndicator?.font?.color};
-        border-radius: ${theme.popup?.button?.unreadIndicator?.borderRadius};
-        font-size: ${theme.popup?.button?.unreadIndicator?.font?.size};
-        padding: ${theme.popup?.button?.unreadIndicator?.padding};
-      }
-
       ${CourierUnreadCountBadge.id} .header {
         background-color: ${theme.inbox?.header?.filters?.unreadIndicator?.backgroundColor};
         color: ${theme.inbox?.header?.filters?.unreadIndicator?.font?.color};
@@ -90,6 +82,7 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
     this._location = location;
     this.updateBadge();
   }
+
   private updateBadge() {
     if (this._badge) {
       if (this._count > 0) {

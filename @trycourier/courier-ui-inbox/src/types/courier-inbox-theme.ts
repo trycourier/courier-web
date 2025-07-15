@@ -17,7 +17,14 @@ export type CourierInboxFilterItemTheme = {
   text?: string;
 }
 
-export type CourierInboxUnreadIndicatorTheme = {
+export type CourierInboxUnreadDotIndicatorTheme = {
+  backgroundColor?: string;
+  borderRadius?: string;
+  height?: string;
+  width?: string;
+}
+
+export type CourierInboxUnreadCountIndicatorTheme = {
   font?: CourierInboxFontTheme;
   backgroundColor?: string;
   borderRadius?: string;
@@ -43,7 +50,7 @@ export type CourierInboxButtonTheme = {
 }
 
 export type CourierInboxMenuButtonTheme = CourierInboxIconButtonTheme & {
-  unreadIndicator?: CourierInboxUnreadIndicatorTheme;
+  unreadDotIndicator?: CourierInboxUnreadDotIndicatorTheme;
 }
 
 export type CourierInboxPopupTheme = {
@@ -155,7 +162,7 @@ export type CourierInboxTheme = {
         font?: CourierInboxFontTheme;
         inbox?: CourierInboxFilterItemTheme;
         archive?: CourierInboxFilterItemTheme;
-        unreadIndicator?: CourierInboxUnreadIndicatorTheme;
+        unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -183,16 +190,11 @@ export const defaultLightTheme: CourierInboxTheme = {
       backgroundColor: 'transparent',
       hoverBackgroundColor: CourierColors.black[500_10],
       activeBackgroundColor: CourierColors.black[500_20],
-      unreadIndicator: {
-        font: {
-          color: CourierColors.white[500],
-          size: '12px',
-          family: undefined,
-          weight: undefined
-        },
+      unreadDotIndicator: {
         backgroundColor: CourierColors.blue[500],
-        borderRadius: '4px',
-        padding: '2px 6px',
+        borderRadius: '50%',
+        height: '8px',
+        width: '8px',
       }
     },
     window: {
@@ -433,16 +435,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
       backgroundColor: 'transparent',
       hoverBackgroundColor: CourierColors.white[500_10],
       activeBackgroundColor: CourierColors.white[500_20],
-      unreadIndicator: {
-        font: {
-          color: CourierColors.white[500],
-          size: '12px',
-          family: undefined,
-          weight: undefined
-        },
+      unreadDotIndicator: {
         backgroundColor: CourierColors.blue[500],
-        borderRadius: '4px',
-        padding: '2px 6px',
+        borderRadius: '50%',
+        height: '8px',
+        width: '8px',
       }
     },
     window: {
@@ -484,7 +481,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
           },
           backgroundColor: CourierColors.blue[500],
           borderRadius: '4px',
-          padding: '2px 6px',
+          padding: '3px 8px',
         }
       },
       menus: {
@@ -685,9 +682,9 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           ...defaultTheme.popup?.button?.icon,
           ...theme.popup?.button?.icon
         },
-        unreadIndicator: {
-          ...defaultTheme.popup?.button?.unreadIndicator,
-          ...theme.popup?.button?.unreadIndicator
+        unreadDotIndicator: {
+          ...defaultTheme.popup?.button?.unreadDotIndicator,
+          ...theme.popup?.button?.unreadDotIndicator
         }
       },
       window: {
