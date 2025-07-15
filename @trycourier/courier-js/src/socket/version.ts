@@ -1,1 +1,1 @@
-export const IPW_VERSION = 'v1';
+export const INBOX_WIRE_PROTOCOL_VERSION = 'v1';
