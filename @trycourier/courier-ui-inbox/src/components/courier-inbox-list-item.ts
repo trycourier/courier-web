@@ -19,6 +19,8 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _message: InboxMessage | null = null;
   private _feedType: CourierInboxFeedType = 'inbox';
   private _isMobile: boolean = false;
+  private _canClick: boolean = false;
+  private _canLongPress: boolean = false;
 
   // Elements
   private _titleElement?: HTMLParagraphElement;
@@ -37,8 +39,10 @@ export class CourierInboxListItem extends CourierBaseElement {
   private onItemLongPress: ((message: InboxMessage) => void) | null = null;
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
 
-  constructor(themeManager: CourierInboxThemeManager) {
+  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, canLongPress: boolean) {
     super();
+    this._canClick = canClick;
+    this._canLongPress = canLongPress;
     this._themeManager = themeManager;
     this._theme = themeManager.getTheme();
     this._isMobile = 'ontouchstart' in window;
@@ -91,6 +95,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._menu.addEventListener('click', cancelPropagation);
 
     this.addEventListener('click', (e) => {
+      if (!this._canClick) return;
       if (this._menu && (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu))) {
         return;
       }
@@ -102,6 +107,10 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._setupHoverBehavior();
     this._setupLongPressBehavior();
 
+    // Enable clickable class if canClick
+    if (this._canClick) {
+      this.classList.add('clickable');
+    }
   }
 
   static getStyles(theme: CourierInboxTheme): string {
@@ -116,7 +125,7 @@ export class CourierInboxListItem extends CourierBaseElement {
         justify-content: space-between;
         border-bottom: ${list?.item?.divider ?? '1px solid red'};
         font-family: inherit;
-        cursor: pointer;
+        cursor: default;
         transition: background-color 0.2s ease;
         margin: 0;
         width: 100%;
@@ -131,25 +140,27 @@ export class CourierInboxListItem extends CourierBaseElement {
         touch-action: manipulation;
       }
 
-      /* Base hover / active */
+      /* Only apply hover/active background if clickable */
       @media (hover: hover) {
-        ${CourierInboxListItem.id}:hover {
+        ${CourierInboxListItem.id}.clickable:hover {
+          cursor: pointer;
           background-color: ${list?.item?.hoverBackgroundColor ?? 'red'};
         }
       }
 
-      ${CourierInboxListItem.id}:active {
+      ${CourierInboxListItem.id}.clickable:active {
+        cursor: pointer;
         background-color: ${list?.item?.activeBackgroundColor ?? 'red'};
       }
 
       /* Menu hover / active */
       @media (hover: hover) {
-        ${CourierInboxListItem.id}:hover:has(courier-inbox-list-item-menu:hover, courier-inbox-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
+        ${CourierInboxListItem.id}.clickable:hover:has(courier-inbox-list-item-menu:hover, courier-inbox-list-item-menu *:hover, courier-button:hover, courier-button *:hover) {
           background-color: ${list?.item?.backgroundColor ?? 'transparent'};
         }
       }
 
-      ${CourierInboxListItem.id}:active:has(courier-inbox-list-item-menu:active, courier-inbox-list-item-menu *:active, courier-button:active, courier-button *:active) {
+      ${CourierInboxListItem.id}.clickable:active:has(courier-inbox-list-item-menu:active, courier-inbox-list-item-menu *:active, courier-button:active, courier-button *:active) {
         background-color: ${list?.item?.backgroundColor ?? 'transparent'};
       }
 
@@ -235,7 +246,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   private _setupHoverBehavior(): void {
-    // Only show menu on hover for non-mobile devices
+    // Only show menu on hover for non-mobile devices and if canClick
     if (!this._isMobile) {
       this.addEventListener('mouseenter', () => {
         this._isLongPress = false;
@@ -416,6 +427,7 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     // Add the actions to the actions container
     if (this._actionsContainer && this._message.actions) {
+      this._actionsContainer.innerHTML = ""; // Clear previous actions to avoid duplicates
       this._message.actions.forEach(action => {
         // Create the action element
         const actionButton = new CourierButton({

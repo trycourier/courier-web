@@ -25,6 +25,8 @@ export class CourierInboxList extends CourierBaseElement {
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
+  private _canClickListItems = false;
+  private _canLongPressListItems = false;
 
   // Callbacks
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
@@ -58,6 +60,8 @@ export class CourierInboxList extends CourierBaseElement {
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
+    canClickListItems: boolean,
+    canLongPressListItems: boolean,
     onRefresh: () => void,
     onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
@@ -99,6 +103,14 @@ export class CourierInboxList extends CourierBaseElement {
     this._listStyles?.remove();
     this._listItemStyles?.remove();
     this._listItemMenuStyles?.remove();
+  }
+
+  public setCanClickListItems(canClick: boolean) {
+    this._canClickListItems = canClick;
+  }
+
+  public setCanLongPressListItems(canLongPress: boolean) {
+    this._canLongPressListItems = canLongPress;
   }
 
   static getStyles(theme: CourierInboxTheme): string {
@@ -306,8 +318,7 @@ export class CourierInboxList extends CourierBaseElement {
         list.appendChild(this._listItemFactory({ message, index }));
         return;
       }
-
-      const listItem = new CourierInboxListItem(this._themeSubscription.manager);
+      const listItem = new CourierInboxListItem(this._themeSubscription.manager, this._canClickListItems, this._canLongPressListItems);
       listItem.setMessage(message, this._feedType);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));

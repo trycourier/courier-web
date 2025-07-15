@@ -87,9 +87,13 @@ export class CourierInbox extends CourierBaseElement {
     this._header.build(undefined);
     this.appendChild(this._header);
 
+    console.log('CALLED 1', this._onMessageClick);
+
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
       themeManager: this._themeManager,
+      canClickListItems: false,
+      canLongPressListItems: false,
       onRefresh: () => {
         this.refresh();
       },
@@ -269,6 +273,9 @@ export class CourierInbox extends CourierBaseElement {
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageClick = handler;
+
+    // Tell the list if we can click. This will update styles if needed.
+    this._list?.setCanClickListItems(handler !== undefined);
   }
 
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
@@ -277,6 +284,9 @@ export class CourierInbox extends CourierBaseElement {
 
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageLongPress = handler;
+
+    // Tell the list if we can long press. This will update styles if needed.
+    this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
   public setFeedType(feedType: CourierInboxFeedType) {
