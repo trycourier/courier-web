@@ -21,6 +21,7 @@ export type CourierInboxUnreadIndicatorTheme = {
   font?: CourierInboxFontTheme;
   backgroundColor?: string;
   borderRadius?: string;
+  padding?: string;
 }
 
 export type CourierInboxIconButtonTheme = {
@@ -185,12 +186,13 @@ export const defaultLightTheme: CourierInboxTheme = {
       unreadIndicator: {
         font: {
           color: CourierColors.white[500],
-          size: '14px',
+          size: '12px',
           family: undefined,
           weight: undefined
         },
         backgroundColor: CourierColors.blue[500],
-        borderRadius: '12px'
+        borderRadius: '4px',
+        padding: '2px 6px',
       }
     },
     window: {
@@ -228,10 +230,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           font: {
             color: CourierColors.white[500],
             family: undefined,
-            size: '14px'
+            size: '12px'
           },
           backgroundColor: CourierColors.blue[500],
-          borderRadius: '12px'
+          borderRadius: '4px',
+          padding: '2px 6px',
         }
       },
       menus: {
@@ -433,12 +436,13 @@ export const defaultDarkTheme: CourierInboxTheme = {
       unreadIndicator: {
         font: {
           color: CourierColors.white[500],
-          size: '14px',
+          size: '12px',
           family: undefined,
           weight: undefined
         },
         backgroundColor: CourierColors.blue[500],
-        borderRadius: '12px'
+        borderRadius: '4px',
+        padding: '2px 6px',
       }
     },
     window: {
@@ -476,10 +480,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           font: {
             color: CourierColors.white[500],
             family: undefined,
-            size: '14px'
+            size: '12px'
           },
           backgroundColor: CourierColors.blue[500],
-          borderRadius: '12px'
+          borderRadius: '4px',
+          padding: '2px 6px',
         }
       },
       menus: {
