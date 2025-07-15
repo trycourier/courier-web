@@ -55,7 +55,7 @@ git push origin "$current_branch"
 
 # ── GitHub release ────────────────────────────────────────────────────────
 gum style --foreground 46 "Creating GitHub release…"
-gh release create "v$version" \
+gh release create "$package_name@v$version" \
   --title "$package_name@$version" \
   --notes "Release of $package_name@$version"
 
