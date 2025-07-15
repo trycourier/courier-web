@@ -17,9 +17,6 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   private _triggerButton?: CourierIconButton;
   private _unreadBadge?: HTMLDivElement;
 
-  // State
-  private _unreadCount: number = 0;
-
   get theme(): CourierInboxTheme {
     return this._themeSubscription.manager.getTheme();
   }
@@ -52,7 +49,7 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     // Create unread badge (red 4x4 circle)
     this._unreadBadge = document.createElement('div');
     this._unreadBadge.className = 'unread-badge';
-    this._unreadBadge.style.display = "none"; // Hide by default
+    this._unreadBadge.style.display = 'none'; // Hidden by default
 
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadBadge);
@@ -64,7 +61,7 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     return this._container;
   }
 
-  static getStyles(_theme: CourierInboxTheme): string {
+  static getStyles(theme: CourierInboxTheme): string {
     return `
       ${CourierInboxMenuButton.id} .menu-button-container {
         position: relative;
@@ -76,10 +73,10 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
         top: 2px;
         right: 2px;
         pointer-events: none;
-        width: 8px;
-        height: 8px;
-        background: #FF3B30;
-        border-radius: 50%;
+        width: ${theme.popup?.button?.unreadDotIndicator?.height ?? '8px'};
+        height: ${theme.popup?.button?.unreadDotIndicator?.width ?? '8px'};
+        background: ${theme.popup?.button?.unreadDotIndicator?.backgroundColor ?? 'red'};
+        border-radius: ${theme.popup?.button?.unreadDotIndicator?.borderRadius ?? '50%'};
         display: none;
         z-index: 1;
       }
@@ -87,13 +84,8 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   }
 
   public onUnreadCountChange(unreadCount: number): void {
-    this._unreadCount = unreadCount;
     if (this._unreadBadge) {
-      if (unreadCount > 0) {
-        this._unreadBadge.style.display = "block";
-      } else {
-        this._unreadBadge.style.display = "none";
-      }
+      this._unreadBadge.style.display = unreadCount > 0 ? 'block' : 'none';
     }
     // Optionally, update theme if needed
     this.refreshTheme();
