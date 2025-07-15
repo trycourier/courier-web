@@ -1,5 +1,4 @@
 import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
@@ -16,7 +15,10 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   private _style?: HTMLStyleElement;
   private _container?: HTMLDivElement;
   private _triggerButton?: CourierIconButton;
-  private _unreadCountBadge?: CourierUnreadCountBadge;
+  private _unreadBadge?: HTMLDivElement;
+
+  // State
+  private _unreadCount: number = 0;
 
   get theme(): CourierInboxTheme {
     return this._themeSubscription.manager.getTheme();
@@ -47,15 +49,13 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     // Create trigger button
     this._triggerButton = new CourierIconButton(CourierIconSVGs.inbox);
 
-    // Create unread count badge
-    this._unreadCountBadge = new CourierUnreadCountBadge({
-      themeBus: this._themeSubscription.manager,
-      location: 'button'
-    });
-    this._unreadCountBadge.id = 'unread-badge';
+    // Create unread badge (red 4x4 circle)
+    this._unreadBadge = document.createElement('div');
+    this._unreadBadge.className = 'unread-badge';
+    this._unreadBadge.style.display = "none"; // Hide by default
 
     this._container.appendChild(this._triggerButton);
-    this._container.appendChild(this._unreadCountBadge);
+    this._container.appendChild(this._unreadBadge);
     this.appendChild(this._container);
 
     // Set the theme of the button
@@ -71,32 +71,40 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
         display: inline-block;
       }
         
-      ${CourierInboxMenuButton.id} #unread-badge {
+      ${CourierInboxMenuButton.id} .unread-badge {
         position: absolute;
-        top: -8px;
-        left: 50%;
+        top: 2px;
+        right: 2px;
         pointer-events: none;
+        width: 8px;
+        height: 8px;
+        background: #FF3B30;
+        border-radius: 50%;
+        display: none;
+        z-index: 1;
       }
     `;
   }
 
   public onUnreadCountChange(unreadCount: number): void {
-    this._unreadCountBadge?.setCount(unreadCount);
+    this._unreadCount = unreadCount;
+    if (this._unreadBadge) {
+      if (unreadCount > 0) {
+        this._unreadBadge.style.display = "block";
+      } else {
+        this._unreadBadge.style.display = "none";
+      }
+    }
+    // Optionally, update theme if needed
     this.refreshTheme();
   }
 
   private refreshTheme() {
-
-    // Trigger button
     this._triggerButton?.updateIconColor(this.theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
     this._triggerButton?.updateIconSVG(this.theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
     this._triggerButton?.updateBackgroundColor(this.theme?.popup?.button?.backgroundColor ?? 'transparent');
     this._triggerButton?.updateHoverBackgroundColor(this.theme?.popup?.button?.hoverBackgroundColor ?? CourierColors.black[500_10]);
     this._triggerButton?.updateActiveBackgroundColor(this.theme?.popup?.button?.activeBackgroundColor ?? CourierColors.black[500_20]);
-
-    // Unread count badge
-    this._unreadCountBadge?.refreshTheme('button');
-
   }
 
 }
