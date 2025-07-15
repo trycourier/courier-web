@@ -87,8 +87,6 @@ export class CourierInbox extends CourierBaseElement {
     this._header.build(undefined);
     this.appendChild(this._header);
 
-    console.log('CALLED 1', this._onMessageClick);
-
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
       themeManager: this._themeManager,
