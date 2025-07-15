@@ -20,7 +20,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _feedType: CourierInboxFeedType = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
-  private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
+  // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
 
   // Elements
   private _titleElement?: HTMLParagraphElement;
@@ -39,10 +39,10 @@ export class CourierInboxListItem extends CourierBaseElement {
   private onItemLongPress: ((message: InboxMessage) => void) | null = null;
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
 
-  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, canLongPress: boolean) {
+  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, _canLongPress: boolean) {
     super();
     this._canClick = canClick;
-    this._canLongPress = canLongPress;
+    // this._canLongPress = canLongPress;
     this._themeManager = themeManager;
     this._theme = themeManager.getTheme();
     this._isMobile = 'ontouchstart' in window;
