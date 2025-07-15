@@ -3,7 +3,7 @@
 ## 1. Install
 
 ```sh
-npm i @trycourier/courier-react@8.0.21-beta
+npm i @trycourier/courier-react@8.0.22-beta
 ```
 
 > **Not using React?** We suggest you use [@trycourier/courier-ui-inbox](../courier-ui-inbox/README.md) package instead.
