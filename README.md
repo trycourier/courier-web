@@ -7,14 +7,34 @@ A monorepo that contains all packages for Courier's browser SDKs.
 ### In VSCode IDEs
 
 1. Open the `.vscode` folder, click `courier-web.code-workspace` then click the blue **"Open Workspace"** button in the bottom right
-<img width="977" alt="Screenshot 2025-06-25 at 7 04 53 PM" src="https://github.com/user-attachments/assets/0d7d1a5f-6664-4b9f-8071-26d1e7521cba" />
+![VSCode workspace selection](https://github.com/user-attachments/assets/0d7d1a5f-6664-4b9f-8071-26d1e7521cba)
 
 2. Click the **"Sync Packages"** button to install all dependencies
-<img width="977" alt="Screenshot 2025-06-25 at 7 06 04 PM" src="https://github.com/user-attachments/assets/8326a66d-2d8a-4831-880a-d165e48a7fa4" />
+!["Sync Packages" button in VSCode](https://github.com/user-attachments/assets/8326a66d-2d8a-4831-880a-d165e48a7fa4)
 
 This will set up your development environment with all the necessary packages and configurations.
 
 > You may need to click **"Sync Packages"** during development if some local packages get out of sync with each other.
+
+### In the console
+
+The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog/2017/08/02/introducing-workspaces/) to manage dependencies.
+
+Get setup with Node (using [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
+
+```sh
+nvm use
+```
+
+From the `courier-web` directory, install workspace dependencies. This will:
+
+- Install top-level dependencies
+- symlink each workspace into the top-level **node_modules**
+- Install workspaces' dependencies in their respective **node_modules**.
+
+```sh
+yarn install
+```
 
 ## Packages
 

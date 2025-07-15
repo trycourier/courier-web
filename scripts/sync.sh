@@ -4,6 +4,8 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+source "$SCRIPT_DIR/nvm-use.sh"
+
 # Function to clean up dependencies
 cleanup_dependencies() {
     cd "$ROOT_DIR"
@@ -30,6 +32,8 @@ install_example() {
     npm install
     cd "$ROOT_DIR"
 }
+
+nvm_use
 
 # Main execution
 cleanup_dependencies
