@@ -20,21 +20,35 @@ This will set up your development environment with all the necessary packages an
 
 The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog/2017/08/02/introducing-workspaces/) to manage dependencies.
 
-Get setup with Node (using [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
+1. Get setup with Node (using [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
 
-```sh
-nvm use
-```
+    ```sh
+    nvm use
+    ```
 
-From the `courier-web` directory, install workspace dependencies. This will:
+2. From the `courier-web` directory, install workspace dependencies. This will:
 
-- Install top-level dependencies
-- symlink each workspace into the top-level **node_modules**
-- Install workspaces' dependencies in their respective **node_modules**.
+    - Install top-level dependencies
+    - symlink each workspace into the top-level **node_modules**
+    - Install workspaces' dependencies in their respective **node_modules**.
 
-```sh
-yarn install
-```
+    ```sh
+    yarn install
+    ```
+
+3. Build the packages
+
+    ```sh
+    yarn workspace @trycourier/courier-js run build
+    yarn workspace @trycourier/courier-ui-core run build
+    yarn workspace @trycourier/courier-ui-inbox run build
+    yarn workspace @trycourier/courier-react run build
+    ```
+
+    > Note: Here and in [package.json](./package.json), the workspaces are listed in
+    order of lowest to highest level dependency (ex. `courier-react` depends on
+    `courier-ui-inbox`). The **examples** are excluded here but can be built
+     individually.
 
 ## Packages
 
