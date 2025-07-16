@@ -24,10 +24,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private _width: string = '440px';
   private _height: string = '440px';
   private _popupAlignment: CourierInboxPopupAlignment = 'top-left';
-  private _top: string = '40px';
-  private _right: string = '0';
-  private _bottom: string = '40px';
-  private _left: string = '0';
+  private _top?: string = undefined;
+  private _right?: string = undefined;
+  private _bottom?: string = undefined;
+  private _left?: string = undefined;
 
   // Theming
   private _themeManager = new CourierInboxThemeManager(defaultLightTheme);
@@ -262,39 +262,39 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     switch (this._popupAlignment) {
       case 'top-right':
-        this._popup.style.top = this._top;
-        this._popup.style.right = this._right;
+        this._popup.style.top = this._top ?? '40px';
+        this._popup.style.right = this._right ?? '0px';
         break;
       case 'top-left':
-        this._popup.style.top = this._top;
-        this._popup.style.left = this._left;
+        this._popup.style.top = this._top ?? '40px';
+        this._popup.style.left = this._left ?? '0px';
         break;
       case 'top-center':
-        this._popup.style.top = this._top;
+        this._popup.style.top = this._top ?? '40px';
         this._popup.style.left = '50%';
         this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'bottom-right':
-        this._popup.style.bottom = this._bottom;
-        this._popup.style.right = this._right;
+        this._popup.style.bottom = this._bottom ?? '40px';
+        this._popup.style.right = this._right ?? '0px';
         break;
       case 'bottom-left':
-        this._popup.style.bottom = this._bottom;
-        this._popup.style.left = this._left;
+        this._popup.style.bottom = this._bottom ?? '40px';
+        this._popup.style.left = this._left ?? '0px';
         break;
       case 'bottom-center':
-        this._popup.style.bottom = this._bottom;
+        this._popup.style.bottom = this._bottom ?? '40px';
         this._popup.style.left = '50%';
         this._popup.style.transform = 'translateX(-50%)';
         break;
       case 'center-right':
         this._popup.style.top = '50%';
-        this._popup.style.right = this._right;
+        this._popup.style.right = this._right ?? '40px';
         this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-left':
         this._popup.style.top = '50%';
-        this._popup.style.left = this._left;
+        this._popup.style.left = this._left ?? '40px';
         this._popup.style.transform = 'translateY(-50%)';
         break;
       case 'center-center':
