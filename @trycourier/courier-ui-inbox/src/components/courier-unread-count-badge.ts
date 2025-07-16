@@ -60,7 +60,6 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
         text-align: center;
         display: none;
         pointer-events: none;
-        min-width: 20px;
       }
 
       ${CourierUnreadCountBadge.id} .header {
