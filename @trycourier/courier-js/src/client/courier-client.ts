@@ -1,3 +1,4 @@
+
 import { CourierApiUrls, getCourierApiUrls } from '../types/courier-api-urls';
 import { Logger } from '../utils/logger';
 import { BrandClient } from './brand-client';
@@ -9,25 +10,55 @@ import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 
 export interface CourierProps {
-  userId: string;              // User ID for the client. This is normally an ID that matches users in your system
-  jwt?: string;                // JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token
-  publicApiKey?: string;       // Public API key for authentication
-  connectionId?: string;       // Inbox Websocket connection ID
-  tenantId?: string;           // Tenant ID. Used for multi-tenant apps
-  showLogs?: boolean;          // Flag to control logging. Logs are prefixed with [COURIER].
-  apiUrls?: CourierApiUrls;    // Custom API URLs
+  /** User ID for the client. Normally matches the UID in your system */
+  userId: string;
+
+  /** JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token */
+  jwt?: string;
+
+  /** Public API key for testing (use JWTs in prod) */
+  publicApiKey?: string;
+
+  /** Inbox Websocket connection ID */
+  connectionId?: string;
+
+  /** Tenant ID. Used for multi-tenant apps */
+  tenantId?: string;
+
+  /** Flag to control logging. Logs are prefixed with [COURIER]. */
+  showLogs?: boolean;
+
+  /** Custom API URLs */
+  apiUrls?: CourierApiUrls;
 }
 
 export interface CourierClientOptions {
-  readonly jwt?: string;                // JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token
-  readonly publicApiKey?: string;       // Public API key for authentication
-  readonly userId: string;              // User ID for the client. This is normally an ID that matches users in your system
-  readonly connectionId?: string;       // Inbox Websocket connection ID
-  readonly tenantId?: string;           // Tenant ID. Used for multi-tenant apps
-  readonly showLogs?: boolean;          // Flag to control logging. Logs are prefixed with [COURIER].
-  readonly accessToken?: string;        // Combined authentication token (jwt or publicApiKey)
-  readonly logger: Logger;              // Logger instance
-  readonly apiUrls: CourierApiUrls;     // Final API URLs configuration
+  /** JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token */
+  readonly jwt?: string;
+
+  /** Public API key for testing (use JWTs in prod) */
+  readonly publicApiKey?: string;
+
+  /** User ID for the client. Normally matches the UID in your system */
+  readonly userId: string;
+
+  /** Inbox Websocket connection ID */
+  readonly connectionId?: string;
+
+  /** Tenant ID. Used for multi-tenant apps */
+  readonly tenantId?: string;
+
+  /** Flag to control logging. Logs are prefixed with [COURIER]. */
+  readonly showLogs?: boolean;
+
+  /** Combined authentication token (jwt or publicApiKey) */
+  readonly accessToken?: string;
+
+  /** Logger instance */
+  readonly logger: Logger;
+
+  /** Final API URLs configuration */
+  readonly apiUrls: CourierApiUrls;
 }
 
 export class CourierClient extends Client {
@@ -39,7 +70,6 @@ export class CourierClient extends Client {
   public readonly tracking: TrackingClient;
 
   constructor(props: CourierProps) {
-
     // Determine if we should show logs based on props or environment
     const showLogs = props.showLogs !== undefined ? props.showLogs : process.env.NODE_ENV === 'development';
 
@@ -86,7 +116,5 @@ export class CourierClient extends Client {
         'Courier Warning: Both a JWT and a Public API Key were provided. The Public API Key will be ignored.'
       );
     }
-
   }
-
 }
