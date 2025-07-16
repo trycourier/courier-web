@@ -31,18 +31,32 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   // Theming
   private _themeManager = new CourierInboxThemeManager(defaultLightTheme);
+
+  /** Returns the current theme object. */
   get theme() {
     return this._themeManager.getTheme();
   }
 
+  /**
+   * Set the light theme for the popup menu.
+   * @param theme The light theme object to set.
+   */
   public setLightTheme(theme: CourierInboxTheme) {
     this._themeManager.setLightTheme(theme);
   }
 
+  /**
+   * Set the dark theme for the popup menu.
+   * @param theme The dark theme object to set.
+   */
   public setDarkTheme(theme: CourierInboxTheme) {
     this._themeManager.setDarkTheme(theme);
   }
 
+  /**
+   * Set the theme mode (light/dark/system).
+   * @param mode The theme mode to set.
+   */
   public setMode(mode: CourierComponentThemeMode) {
     this._themeManager.setMode(mode);
   }
@@ -209,10 +223,18 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     }
   }
 
+  /**
+   * Called when the unread count changes.
+   * @param _ The new unread count (unused).
+   */
   public onUnreadCountChange(_: number): void {
     this.render();
   }
 
+  /**
+   * Set a handler for message click events.
+   * @param handler The function to call when a message is clicked.
+   */
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._inbox?.onMessageClick((props) => {
       if (handler) {
@@ -222,6 +244,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     });
   }
 
+  /**
+   * Set a handler for message action click events.
+   * @param handler The function to call when a message action is clicked.
+   */
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
     this._inbox?.onMessageActionClick((props) => {
       if (handler) {
@@ -231,6 +257,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     });
   }
 
+  /**
+   * Set a handler for message long press events.
+   * @param handler The function to call when a message is long pressed.
+   */
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._inbox?.onMessageLongPress((props) => {
       if (handler) {
@@ -305,6 +335,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     }
   }
 
+  /**
+   * Toggle the popup menu open/closed.
+   * @param event The click event that triggered the toggle.
+   */
   private togglePopup(event: Event) {
     event.stopPropagation();
     if (!this._popup) return;
@@ -313,6 +347,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._popup.style.display = isVisible ? 'none' : 'block';
   }
 
+  /**
+   * Close the popup menu.
+   */
   public closePopup() {
     if (!this._popup) return;
     this._popup.style.display = 'none';
@@ -341,12 +378,21 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._popup.style.display = 'none';
   };
 
+  /**
+   * Set the content of the popup inbox.
+   * @param element The HTMLElement to set as the content.
+   */
   public setContent(element: HTMLElement) {
     if (!this._inbox) return;
     this._inbox.innerHTML = '';
     this._inbox.appendChild(element);
   }
 
+  /**
+   * Set the size of the popup menu.
+   * @param width The width to set.
+   * @param height The height to set.
+   */
   public setSize(width: string, height: string) {
     this._width = width;
     this._height = height;
@@ -355,6 +401,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._popup.style.height = height;
   }
 
+  /**
+   * Set the popup alignment/position.
+   * @param position The alignment/position to set.
+   */
   public setPosition(position: CourierInboxPopupAlignment) {
     if (this.isValidPosition(position)) {
       this._popupAlignment = position;
@@ -364,39 +414,74 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     }
   }
 
+  /**
+   * Set the feed type for the inbox.
+   * @param feedType The feed type to set.
+   */
   public setFeedType(feedType: CourierInboxFeedType) {
     this._inbox?.setFeedType(feedType);
   }
 
   // Factory methods
+  /**
+   * Set a custom header factory for the inbox.
+   * @param factory The factory function for the header.
+   */
   public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setHeader(factory);
   }
 
+  /**
+   * Remove the custom header from the inbox.
+   */
   public removeHeader() {
     this._inbox?.removeHeader();
   }
 
+  /**
+   * Set a custom loading state factory for the inbox.
+   * @param factory The factory function for the loading state.
+   */
   public setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setLoadingState(factory);
   }
 
+  /**
+   * Set a custom empty state factory for the inbox.
+   * @param factory The factory function for the empty state.
+   */
   public setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setEmptyState(factory);
   }
 
+  /**
+   * Set a custom error state factory for the inbox.
+   * @param factory The factory function for the error state.
+   */
   public setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setErrorState(factory);
   }
 
+  /**
+   * Set a custom list item factory for the inbox.
+   * @param factory The factory function for the list item.
+   */
   public setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setListItem(factory);
   }
 
+  /**
+   * Set a custom pagination item factory for the inbox.
+   * @param factory The factory function for the pagination item.
+   */
   public setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._inbox?.setPaginationItem(factory);
   }
 
+  /**
+   * Set a custom menu button factory for the popup trigger.
+   * @param factory The factory function for the menu button.
+   */
   public setMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
     this._popupMenuButtonFactory = factory;
     this.render();

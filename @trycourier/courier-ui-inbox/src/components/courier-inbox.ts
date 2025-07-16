@@ -21,19 +21,34 @@ export class CourierInbox extends CourierBaseElement {
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
   // Theming
+  // Theme manager instance for handling theming logic
   private _themeManager: CourierInboxThemeManager;
+
+  /** Returns the current theme object. */
   get theme() {
     return this._themeManager.getTheme();
   }
 
+  /**
+   * Set the light theme for the inbox.
+   * @param theme The light theme object to set.
+   */
   public setLightTheme(theme: CourierInboxTheme) {
     this._themeManager.setLightTheme(theme);
   }
 
+  /**
+   * Set the dark theme for the inbox.
+   * @param theme The dark theme object to set.
+   */
   public setDarkTheme(theme: CourierInboxTheme) {
     this._themeManager.setDarkTheme(theme);
   }
 
+  /**
+   * Set the theme mode (light/dark/system).
+   * @param mode The theme mode to set.
+   */
   public setMode(mode: CourierComponentThemeMode) {
     this._themeManager.setMode(mode);
   }
@@ -239,36 +254,67 @@ export class CourierInbox extends CourierBaseElement {
     `;
   }
 
+  /**
+   * Sets a custom header factory for the inbox.
+   * @param factory - A function that returns an HTMLElement to render as the header.
+   */
   public setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) {
     this._headerFactory = factory;
     this.updateHeader();
   }
 
+  /**
+   * Removes the custom header factory from the inbox, reverting to the default header.
+   */
   public removeHeader() {
     this._headerFactory = null;
     this.updateHeader();
   }
 
+  /**
+   * Sets a custom loading state factory for the inbox list.
+   * @param factory - A function that returns an HTMLElement to render as the loading state.
+   */
   public setLoadingState(factory: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement) {
     this._list?.setLoadingStateFactory(factory);
   }
 
+  /**
+   * Sets a custom empty state factory for the inbox list.
+   * @param factory - A function that returns an HTMLElement to render as the empty state.
+   */
   public setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement) {
     this._list?.setEmptyStateFactory(factory);
   }
 
+  /**
+   * Sets a custom error state factory for the inbox list.
+   * @param factory - A function that returns an HTMLElement to render as the error state.
+   */
   public setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement) {
     this._list?.setErrorStateFactory(factory);
   }
 
+  /**
+   * Sets a custom list item factory for the inbox list.
+   * @param factory - A function that returns an HTMLElement to render as a list item.
+   */
   public setListItem(factory: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement) {
     this._list?.setListItemFactory(factory);
   }
 
+  /**
+   * Sets a custom pagination item factory for the inbox list.
+   * @param factory - A function that returns an HTMLElement to render as a pagination item.
+   */
   public setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement) {
     this._list?.setPaginationItemFactory(factory);
   }
 
+  /**
+   * Registers a handler for message click events.
+   * @param handler - A function to be called when a message is clicked.
+   */
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageClick = handler;
 
@@ -276,10 +322,18 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanClickListItems(handler !== undefined);
   }
 
+  /**
+   * Registers a handler for message action click events.
+   * @param handler - A function to be called when a message action is clicked.
+   */
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
     this._onMessageActionClick = handler;
   }
 
+  /**
+   * Registers a handler for message long press events.
+   * @param handler - A function to be called when a message is long-pressed.
+   */
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
     this._onMessageLongPress = handler;
 
@@ -287,6 +341,10 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
+  /**
+   * Sets the feed type for the inbox (e.g., "inbox" or "archive").
+   * @param feedType - The feed type to display.
+   */
   public setFeedType(feedType: CourierInboxFeedType) {
 
     // Update state
@@ -330,6 +388,9 @@ export class CourierInbox extends CourierBaseElement {
     await CourierInboxDatastore.shared.listenForUpdates();
   }
 
+  /**
+   * Forces a reload of the inbox data, bypassing the cache.
+   */
   public refresh() {
     this.load({
       canUseCache: false
