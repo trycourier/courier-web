@@ -11,13 +11,17 @@ export default function Home() {
     courier.shared.signIn({
       userId: process.env.NEXT_PUBLIC_USER_ID!,
       jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
     });
   }, []);
 
+  // Handler for message click
+  const handleMessageClick = (props: any) => {
+    alert(JSON.stringify(props, null, 2));
+  };
+
   return (
     <div className='center'>
-      <CourierInboxPopupMenu />
+      <CourierInboxPopupMenu onMessageClick={handleMessageClick} />
     </div>
   );
 

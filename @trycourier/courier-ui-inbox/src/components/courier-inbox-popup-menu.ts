@@ -53,11 +53,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private _inbox?: CourierInbox;
   private _style?: HTMLStyleElement;
 
-  // Inbox Handlers
-  private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
-  private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
-  private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
-
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
@@ -94,30 +89,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Create content container
     this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
-
-    // Handle click events
-    if (this._inbox) {
-      this._inbox.onMessageClick((props) => {
-        if (this._onMessageClick) {
-          this._onMessageClick(props);
-        }
-        this.closePopup();
-      });
-
-      this._inbox.onMessageActionClick((props) => {
-        if (this._onMessageActionClick) {
-          this._onMessageActionClick(props);
-        }
-        this.closePopup();
-      });
-
-      this._inbox.onMessageLongPress((props) => {
-        if (this._onMessageLongPress) {
-          this._onMessageLongPress(props);
-        }
-        this.closePopup();
-      });
-    }
 
     this.refreshTheme();
 
@@ -243,15 +214,30 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   public onMessageClick(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._onMessageClick = handler;
+    this._inbox?.onMessageClick((props) => {
+      if (handler) {
+        handler(props);
+      }
+      this.closePopup();
+    });
   }
 
   public onMessageActionClick(handler?: (props: CourierInboxListItemActionFactoryProps) => void) {
-    this._onMessageActionClick = handler;
+    this._inbox?.onMessageActionClick((props) => {
+      if (handler) {
+        handler(props);
+      }
+      this.closePopup();
+    });
   }
 
   public onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void) {
-    this._onMessageLongPress = handler;
+    this._inbox?.onMessageLongPress((props) => {
+      if (handler) {
+        handler(props);
+      }
+      this.closePopup();
+    });
   }
 
   private isValidPosition(value: string): value is CourierInboxPopupAlignment {
