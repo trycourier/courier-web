@@ -37,6 +37,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     return this._themeManager.getTheme();
   }
 
+  /** Returns the current feed type. */
+  get currentFeed(): CourierInboxFeedType {
+    return this._inbox?.currentFeed ?? 'inbox';
+  }
+
   /**
    * Set the light theme for the popup menu.
    * @param theme The light theme object to set.

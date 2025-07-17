@@ -77,6 +77,10 @@ export {
   mergeTheme
 } from '@trycourier/courier-ui-inbox';
 
+// Re-export element types from courier-ui-inbox
+export type { CourierInbox as CourierInboxElement } from '@trycourier/courier-ui-inbox';
+export type { CourierInboxPopupMenu as CourierInboxPopupMenuElement } from '@trycourier/courier-ui-inbox';
+
 // Re-export types from courier-ui-core
 export type {
   CourierComponentThemeMode

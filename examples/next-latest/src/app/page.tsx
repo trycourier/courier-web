@@ -14,7 +14,6 @@ export default function Home() {
     });
   }, []);
 
-  // Handler for message click
   const handleMessageClick = (props: any) => {
     alert(JSON.stringify(props, null, 2));
   };

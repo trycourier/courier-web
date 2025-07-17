@@ -20,6 +20,11 @@ export class CourierInbox extends CourierBaseElement {
   // State
   private _currentFeed: CourierInboxFeedType = 'inbox';
 
+  /** Returns the current feed type. */
+  get currentFeed(): CourierInboxFeedType {
+    return this._currentFeed;
+  }
+
   // Theming
   // Theme manager instance for handling theming logic
   private _themeManager: CourierInboxThemeManager;
@@ -346,6 +351,11 @@ export class CourierInbox extends CourierBaseElement {
    * @param feedType - The feed type to display.
    */
   public setFeedType(feedType: CourierInboxFeedType) {
+
+    // Do not swap if current feed is same
+    if (this._currentFeed === feedType) {
+      return;
+    }
 
     // Update state
     this._currentFeed = feedType;
