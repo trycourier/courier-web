@@ -34,10 +34,14 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _longPressTimeout: number | null = null;
   private _isLongPress: boolean = false;
 
+  // Intersection Observer
+  private _observer?: IntersectionObserver;
+
   // Callbacks
   private onItemClick: ((message: InboxMessage) => void) | null = null;
   private onItemLongPress: ((message: InboxMessage) => void) | null = null;
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
+  private onItemVisible: ((message: InboxMessage) => void) | null = null;
 
   constructor(themeManager: CourierInboxThemeManager, canClick: boolean, _canLongPress: boolean) {
     super();
@@ -47,6 +51,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._theme = themeManager.getTheme();
     this._isMobile = 'ontouchstart' in window;
     this.render();
+    this._setupIntersectionObserver();
   }
 
   private render() {
@@ -111,6 +116,32 @@ export class CourierInboxListItem extends CourierBaseElement {
     if (this._canClick) {
       this.classList.add('clickable');
     }
+  }
+
+  private _setupIntersectionObserver(): void {
+    // Only set up if running in browser and IntersectionObserver is available
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    // Clean up any previous observer
+    if (this._observer) {
+      this._observer.disconnect();
+    }
+
+    this._observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.intersectionRatio === 1 && this.onItemVisible && this._message) {
+          this.onItemVisible(this._message);
+        }
+      });
+    }, { threshold: 1.0 });
+
+    this._observer.observe(this);
+  }
+
+  onComponentUnmounted() {
+    this._observer?.disconnect();
   }
 
   static getStyles(theme: CourierInboxTheme): string {
@@ -298,10 +329,6 @@ export class CourierInboxListItem extends CourierBaseElement {
     });
   }
 
-  setOnLongPress(cb: (message: InboxMessage) => void): void {
-    this.onItemLongPress = cb;
-  }
-
   // Helpers
   private _getMenuOptions(): CourierInboxListItemActionMenuOption[] {
     const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
@@ -388,6 +415,10 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   public setOnItemLongPress(cb: (message: InboxMessage) => void): void {
     this.onItemLongPress = cb;
+  }
+
+  public setOnItemVisible(cb: (message: InboxMessage) => void): void {
+    this.onItemVisible = cb;
   }
 
   // Content rendering

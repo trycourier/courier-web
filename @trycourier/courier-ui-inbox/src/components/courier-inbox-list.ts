@@ -9,6 +9,7 @@ import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
+import { openMessage } from "../utils/extensions";
 
 export class CourierInboxList extends CourierBaseElement {
 
@@ -323,6 +324,7 @@ export class CourierInboxList extends CourierBaseElement {
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
       listItem.setOnItemLongPress((message) => this._onMessageLongPress?.(message, index));
+      listItem.setOnItemVisible((message) => this.openVisibleMessage(message))
       list.appendChild(listItem);
     });
 
@@ -334,6 +336,14 @@ export class CourierInboxList extends CourierBaseElement {
         onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
       });
       list.appendChild(paginationItem);
+    }
+  }
+
+  private async openVisibleMessage(message: InboxMessage) {
+    try {
+      await openMessage(message);
+    } catch (error) {
+      // Error ignored. Will get logged in the openMessage function
     }
   }
 
