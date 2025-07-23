@@ -3,7 +3,7 @@
 The theme type used to style the `courier-inbox` and `courier-inbox-popup-menu`.
 
 ```ts
-export type CourierInboxTheme = {
+export interface CourierInboxTheme {
   popup?: {
     button?: {
       icon?: {
@@ -13,15 +13,11 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       hoverBackgroundColor?: string;
       activeBackgroundColor?: string;
-      unreadIndicator?: {
-        font?: {
-          family?: string;
-          weight?: string;
-          size?: string;
-          color?: string;
-        };
+      unreadDotIndicator?: {
         backgroundColor?: string;
         borderRadius?: string;
+        height?: string;
+        width?: string;
       };
     };
     window?: {
@@ -65,6 +61,7 @@ export type CourierInboxTheme = {
           };
           backgroundColor?: string;
           borderRadius?: string;
+          padding?: string;
         };
       };
       menus?: {
@@ -288,5 +285,5 @@ export type CourierInboxTheme = {
       };
     };
   };
-};
+}
 ```
