@@ -28,28 +28,29 @@
   "dependencies": {
     "@trycourier/courier-js": "2.0.9-beta",
     "@trycourier/courier-ui-core": "1.0.11-beta",
-    "@trycourier/courier-ui-inbox": "1.0.14-beta"
+    "@trycourier/courier-ui-inbox": "1.0.14-beta",
+    "@trycourier/courier-react-components": "file:../courier-react-components"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/react": "19.1.0",
-    "@types/react-dom": "19.1.0",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "@vitejs/plugin-react": "4.4.1",
     "cross-env": "^7.0.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "vite": "6.2.6",
     "vite-plugin-dts": "4.5.3"
   },
   "overrides": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "resolutions": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }

@@ -19,7 +19,8 @@ export default defineConfig({
       '@trycourier/courier-react',
       '@trycourier/courier-ui-inbox',
       '@trycourier/courier-js',
-      '@trycourier/courier-ui-core'
+      '@trycourier/courier-ui-core',
+      'object-assign'
     ]
   },
   server: {

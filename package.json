@@ -5,6 +5,7 @@
     "@trycourier/courier-js",
     "@trycourier/courier-ui-core",
     "@trycourier/courier-ui-inbox",
+    "@trycourier/courier-react-components",
     "@trycourier/courier-react",
     "examples/*"
   ],
