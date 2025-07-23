@@ -3,7 +3,7 @@
 ## 1. Install
 
 ```sh
-npm i @trycourier/courier-react@8.0.24-beta
+npm install @trycourier/courier-react@beta
 ```
 
 > **Not using React?** We suggest you use [@trycourier/courier-ui-inbox](../courier-ui-inbox/README.md) package instead.
@@ -14,10 +14,10 @@ To use the SDK, you need to generate a JWT (JSON Web Token) for your user. **Thi
 
 **How it works:**
 
-1. **Your frontend calls your backend:**  
+1. **Your frontend calls your backend:**
    - When your app needs to authenticate a user, your frontend should make a request to your own backend (e.g., `/api/generate-courier-jwt`).
 
-2. **Your backend calls Courier to issue a JWT:**  
+2. **Your backend calls Courier to issue a JWT:**
    - In your backend endpoint, use your [Courier API Key](https://app.courier.com/settings/api-keys) to call the [Courier JWT Token Endpoint](https://www.courier.com/docs/reference/auth/issue-token) and generate a JWT for the user.
    - Your backend then returns the JWT to your frontend.
 
@@ -329,9 +329,9 @@ export default function App() {
 ### Loading, Empty, Error & Pagination
 
 ```ts
-import { 
-  CourierInbox, 
-  ..., 
+import {
+  CourierInbox,
+  ...,
   type CourierInboxStateEmptyFactoryProps,
   type CourierInboxStateLoadingFactoryProps,
   type CourierInboxStateErrorFactoryProps,

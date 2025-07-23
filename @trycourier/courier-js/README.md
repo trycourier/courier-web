@@ -5,7 +5,7 @@ The base API client and shared instance singleton for Courier's JavaScript Brows
 ## Installation
 
 ```sh
-npm i @trycourier/courier-js@2.0.9-beta
+npm install @trycourier/courier-js@beta
 ```
 
 ## Usage
@@ -50,10 +50,10 @@ To use the SDK, you need to generate a JWT (JSON Web Token) for your user. **Thi
 
 **How it works:**
 
-1. **Your frontend calls your backend:**  
+1. **Your frontend calls your backend:**
    - When your app needs to authenticate a user, your frontend should make a request to your own backend (e.g., `/api/generate-courier-jwt`).
 
-2. **Your backend calls Courier to issue a JWT:**  
+2. **Your backend calls Courier to issue a JWT:**
    - In your backend endpoint, use your [Courier API Key](https://app.courier.com/settings/api-keys) to call the [Courier JWT Token Endpoint](https://www.courier.com/docs/reference/auth/issue-token) and generate a JWT for the user.
    - Your backend then returns the JWT to your frontend.
 

@@ -3,7 +3,7 @@
 ## 1. Install
 
 ```sh
-npm i @trycourier/courier-ui-inbox@1.0.14-beta
+npm install @trycourier/courier-ui-inbox@beta
 ```
 
 > **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
@@ -14,10 +14,10 @@ To use the SDK, you need to generate a JWT (JSON Web Token) for your user. **Thi
 
 **How it works:**
 
-1. **Your frontend calls your backend:**  
+1. **Your frontend calls your backend:**
    - When your app needs to authenticate a user, your frontend should make a request to your own backend (e.g., `/api/generate-courier-jwt`).
 
-2. **Your backend calls Courier to issue a JWT:**  
+2. **Your backend calls Courier to issue a JWT:**
    - In your backend endpoint, use your [Courier API Key](https://app.courier.com/settings/api-keys) to call the [Courier JWT Token Endpoint](https://www.courier.com/docs/reference/auth/issue-token) and generate a JWT for the user.
    - Your backend then returns the JWT to your frontend.
 
@@ -193,10 +193,10 @@ The fastest way to style the Inbox to match your app. This example shows unread 
 
   <div style="display: flex; justify-content: center; align-items: center; padding: 100px;">
     <!-- Available alignments: 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center' -->
-    <courier-inbox-popup-menu 
+    <courier-inbox-popup-menu
       popup-alignment="top-right"
-      top="44px" 
-      right="44px" 
+      top="44px"
+      right="44px"
       popup-width="340px"
       popup-height="400px">
     </courier-inbox-popup-menu>
