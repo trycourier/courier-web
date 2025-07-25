@@ -4,7 +4,27 @@ import { CourierInboxPopupMenuComponent, CourierInboxPopupMenuProps, CourierRend
 import { reactNodeToHTMLElement } from "../utils/render";
 
 /**
- * CourierInboxPopupMenu is a wrapper that provides a React 18+ specific render function.
+ * CourierInboxPopupMenu React component.
+ *
+ * This component is used to display a popup menu for a message in the inbox.
+ *
+ * @example
+ * ```tsx
+ * const courier = useCourier();
+ *
+ * useEffect(() => {
+ *   // Generate a JWT for your user (do this on your backend server)
+ *   const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
+ *
+ *   // Authenticate the user with the inbox
+ *   courier.shared.signIn({
+ *     userId: $YOUR_USER_ID,
+ *     jwt: jwt,
+ *   });
+ * }, []);
+ *
+ * return <CourierInboxPopupMenu />;
+ * ```
  */
 export const CourierInboxPopupMenu = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>((props, ref) => {
   return (
