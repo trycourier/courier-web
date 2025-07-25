@@ -1,0 +1,34 @@
+{
+  "name": "@trycourier/courier-react-components",
+  "version": "1.0.0-beta",
+  "private": true,
+  "description": "React components for the Courier web UI",
+  "main": "src/index.tsx",
+  "scripts": {
+    "test": "echo \"courier-react-components has no tests\""
+  },
+  "author": "Courier",
+  "license": "MIT",
+  "peerDependencies": {
+    "@trycourier/courier-js": "2.0.9-beta",
+    "@trycourier/courier-ui-core": "1.0.11-beta",
+    "@trycourier/courier-ui-inbox": "1.0.14-beta"
+  },
+  "devDependencies": {
+    "@trycourier/courier-js": "2.0.9-beta",
+    "@trycourier/courier-ui-core": "1.0.11-beta",
+    "@trycourier/courier-ui-inbox": "1.0.14-beta",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "overrides": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "resolutions": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  }
+}

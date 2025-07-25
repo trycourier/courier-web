@@ -1,6 +1,6 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { CourierInbox, CourierInboxMenu, useCourier } from '@trycourier/courier-react'
+import { CourierInbox, useCourier } from '@trycourier/courier-react'
 import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 
@@ -19,7 +19,7 @@ function App() {
   const theme: CourierInboxTheme = {
     popup: {
       button: {
-        unreadIndicator: {
+        unreadDotIndicator: {
           backgroundColor: '#9b4dca',
         }
       },
@@ -275,7 +275,7 @@ function App() {
       </pre>
 
       <div style={{ padding: '32px' }}>
-        <CourierInboxMenu
+        <CourierInbox
           popupAlignment={'top-center'}
           popupWidth={'500px'}
           popupHeight={'620px'}
@@ -294,14 +294,14 @@ function App() {
           renderPopupErrorState={renderErrorState}
           renderPopupPaginationItem={renderPaginationItem}
           renderPopupMenuButton={renderMenuButton}
-          onMessageClick={({ message, index: _index }) => {
-            !message.read ? courier.inbox.readMessage(message) : courier.inbox.unreadMessage(message);
+          onMessageClick={(props: { message: any; index: number }) => {
+            !props.message.read ? courier.inbox.readMessage(props.message) : courier.inbox.unreadMessage(props.message);
           }}
-          onMessageActionClick={({ message, index, action }) => {
-            alert(JSON.stringify({ message, index, action }));
+          onMessageActionClick={(props: { message: any; index: number; action: any }) => {
+            alert(JSON.stringify({ message: props.message, index: props.index, action: props.action }));
           }}
-          onMessageLongPress={({ message, index }) => {
-            alert(JSON.stringify({ message, index }));
+          onMessageLongPress={(props: { message: any; index: number }) => {
+            alert(JSON.stringify({ message: props.message, index: props.index }));
           }}
         />
       </div>
@@ -321,11 +321,11 @@ function App() {
         onMessageClick={(props: CourierInboxListItemFactoryProps) => {
           !props?.message.read ? courier.inbox.readMessage(props?.message) : courier.inbox.unreadMessage(props?.message);
         }}
-        onMessageActionClick={({ message, index, action }) => {
-          alert(JSON.stringify({ message, index, action }));
+        onMessageActionClick={(props: { message: any; index: number; action: any }) => {
+          alert(JSON.stringify({ message: props.message, index: props.index, action: props.action }));
         }}
-        onMessageLongPress={({ message, index }) => {
-          alert(JSON.stringify({ message, index }));
+        onMessageLongPress={(props: { message: any; index: number }) => {
+          alert(JSON.stringify({ message: props.message, index: props.index }));
         }}
       />
     </div>

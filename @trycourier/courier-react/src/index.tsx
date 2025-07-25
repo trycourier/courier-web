@@ -1,11 +1,12 @@
-// Import core Courier dependencies
-import '@trycourier/courier-js';
-import '@trycourier/courier-ui-inbox';
+export { CourierInbox } from './components/courier-inbox';
+export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
 
-// Export local hooks and components
-export * from './hooks/use-courier';
-export * from './components/courier-inbox';
-export * from './components/courier-inbox-popup-menu';
+export { useCourier } from '@trycourier/courier-react-components';
+
+export type {
+  CourierInboxProps,
+  CourierInboxPopupMenuProps,
+} from '@trycourier/courier-react-components';
 
 // Re-export types from courier-js
 export type {
