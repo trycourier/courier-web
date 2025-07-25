@@ -372,3 +372,7 @@ Customize the inbox UI with any element you want.
 ```
 
 > **Using React?** We suggest you use [@trycourier/courier-react](../courier-react/README.md) package instead.
+
+We are building the best SDKs for handling notifications! Have an idea or feedback about our SDKs? Please let us know:
+
+- [Courier Web Issues](https://github.com/trycourier/courier-web/issues)
