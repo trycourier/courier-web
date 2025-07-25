@@ -246,6 +246,8 @@ export interface CourierBrand {
 
 See more endpoints that aren't in this SDK in the [Courier API Reference](https://www.courier.com/docs/reference/intro).
 
-We are building the best SDKs for handling notifications! Have an idea or feedback about our SDKs? Please let us know:
+# **Share feedback with Courier**
 
-- [Courier Web Issues](https://github.com/trycourier/courier-web/issues)
+We want to make this the best SDK for managing notifications! Have an idea or feedback about our SDKs? Let us know!
+
+[Courier Web Issues](https://github.com/trycourier/courier-web/issues)
