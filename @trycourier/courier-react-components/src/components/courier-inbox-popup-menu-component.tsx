@@ -235,23 +235,25 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
       });
     }, [props.renderMenuButton]);
 
+    const children = (
+      /* @ts-ignore */
+      <courier-inbox-popup-menu
+        ref={handleRef}
+        popup-alignment={props.popupAlignment}
+        popup-width={props.popupWidth}
+        popup-height={props.popupHeight}
+        left={props.left}
+        top={props.top}
+        right={props.right}
+        bottom={props.bottom}
+        light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
+        dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
+        mode={props.mode}
+      />
+    );
+
     return (
-      <CourierClientComponent>
-        {/* @ts-ignore */}
-        <courier-inbox-popup-menu
-          ref={handleRef}
-          popup-alignment={props.popupAlignment}
-          popup-width={props.popupWidth}
-          popup-height={props.popupHeight}
-          left={props.left}
-          top={props.top}
-          right={props.right}
-          bottom={props.bottom}
-          light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
-          dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
-          mode={props.mode}
-        />
-      </CourierClientComponent>
+      <CourierClientComponent children={children} />
     );
   }
 );

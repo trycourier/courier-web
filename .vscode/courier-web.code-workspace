@@ -8,6 +8,10 @@
       "path": "../@trycourier/courier-react"
     },
     {
+      "name": "courier-react-17",
+      "path": "../@trycourier/courier-react-17"
+    },
+    {
       "name": "courier-react-components",
       "path": "../@trycourier/courier-react-components"
     },

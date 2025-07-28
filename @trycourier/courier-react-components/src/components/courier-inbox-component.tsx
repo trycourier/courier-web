@@ -185,16 +185,18 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     });
   }, [props.feedType]);
 
+  const children = (
+    /* @ts-ignore */
+    <courier-inbox
+      ref={handleRef}
+      height={props.height}
+      light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
+      dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
+      mode={props.mode}
+    />
+  );
+
   return (
-    <CourierClientComponent>
-      {/* @ts-ignore */}
-      <courier-inbox
-        ref={handleRef}
-        height={props.height}
-        light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
-        dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
-        mode={props.mode}
-      />
-    </CourierClientComponent>
+    <CourierClientComponent children={children} />
   );
 });
