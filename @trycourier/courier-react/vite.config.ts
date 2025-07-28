@@ -42,7 +42,11 @@ export default defineConfig({
     rollupOptions: {
       // External dependencies that should not be bundled
       external: [
-        /^@trycourier\/.+/,
+        // Explicitly exclude Courier dependencies _except_ courier-react-components,
+        // which is not distributed independently.
+        /^@trycourier\/courier-js/,
+        /^@trycourier\/courier-ui-core/,
+        /^@trycourier\/courier-ui-inbox/,
         "react",
         "react-dom",
         "react-dom/client",
@@ -77,6 +81,7 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       include: ["src/**/*.tsx"],
+      exclude: ['src/__tests__/**'],
     }) as PluginOption,
     // Bundle size visualization
     visualizer({
