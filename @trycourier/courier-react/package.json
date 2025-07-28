@@ -30,7 +30,7 @@
     "@trycourier/courier-js": "2.0.9-beta",
     "@trycourier/courier-ui-core": "1.0.11-beta",
     "@trycourier/courier-ui-inbox": "1.0.14-beta",
-    "@trycourier/courier-react-components": "file:../courier-react-components"
+    "@trycourier/courier-react-components": "1.0.0-beta"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
