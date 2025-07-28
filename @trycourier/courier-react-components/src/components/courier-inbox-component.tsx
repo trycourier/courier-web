@@ -49,46 +49,64 @@ export interface CourierInboxProps {
 }
 
 export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInboxProps>((props, ref) => {
-  const inboxRef = useRef<CourierInboxElement | null>(null);
-
   const render = useContext(CourierRenderContext);
   if (!render) {
     throw new Error("RenderContext not found. Ensure CourierInbox is wrapped in a CourierRenderContext.");
   }
 
-  // Expose the internal ref to the parent if a ref was passed in
-  useEffect(() => {
-    if (typeof ref === "function") {
-      ref(inboxRef.current);
-    } else if (ref) {
-      (ref as React.RefObject<CourierInboxElement | null>).current = inboxRef.current;
+  // Element ref for use in effects, updated by handleRef.
+  const inboxRef = useRef<CourierInboxElement | null>(null);
+
+  // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
+  // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
+  // rendered component. Updating the parent ref via useEffect does not work, since mutating a RefObject
+  // does not trigger useEffect (see https://stackoverflow.com/a/60476525).
+  function handleRef(el: CourierInboxElement | null) {
+    if (ref) {
+
+      // Propagate ref to ref callback functions
+      if (typeof ref === 'function') {
+        ref(el);
+      } else {
+        // Propagate ref to ref objects
+        // @ts-ignore - RefObject.current is readonly in React 17, however it's not frozen and is equivalent the widened type MutableRefObject
+        (ref as React.RefObject<CourierInboxElement | null>).current = el;
+      }
     }
-  }, [ref]);
+
+    // Store the element for use in effects
+    inboxRef.current = el;
+  }
+
+  // Helper to get the current element
+  function getEl(): CourierInboxElement | null {
+    return inboxRef.current;
+  }
 
   // Handle message click
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageClick(props.onMessageClick);
-  }, [props.onMessageClick, inboxRef]);
+  }, [props.onMessageClick]);
 
   // Handle message action click
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageActionClick(props.onMessageActionClick);
-  }, [props.onMessageActionClick, inboxRef]);
+  }, [props.onMessageActionClick]);
 
   // Handle message long press
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageLongPress(props.onMessageLongPress);
-  }, [props.onMessageLongPress, inboxRef]);
+  }, [props.onMessageLongPress]);
 
   // Render header
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderHeader) return;
     queueMicrotask(() => {
       inbox.setHeader((headerProps?: CourierInboxHeaderFactoryProps | undefined | null): HTMLElement => {
@@ -96,11 +114,11 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderHeader, inboxRef]);
+  }, [props.renderHeader]);
 
   // Render list item
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderListItem) return;
     queueMicrotask(() => {
       inbox.setListItem((itemProps?: CourierInboxListItemFactoryProps | undefined | null): HTMLElement => {
@@ -108,11 +126,11 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderListItem, inboxRef]);
+  }, [props.renderListItem]);
 
   // Render empty state
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderEmptyState) return;
     queueMicrotask(() => {
       inbox.setEmptyState((emptyStateProps?: CourierInboxStateEmptyFactoryProps | undefined | null): HTMLElement => {
@@ -120,11 +138,11 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderEmptyState, inboxRef]);
+  }, [props.renderEmptyState]);
 
   // Render loading state
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderLoadingState) return;
     queueMicrotask(() => {
       inbox.setLoadingState((loadingStateProps?: CourierInboxStateLoadingFactoryProps | undefined | null): HTMLElement => {
@@ -132,11 +150,11 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderLoadingState, inboxRef]);
+  }, [props.renderLoadingState]);
 
   // Render error state
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderErrorState) return;
     queueMicrotask(() => {
       inbox.setErrorState((errorStateProps?: CourierInboxStateErrorFactoryProps | undefined | null): HTMLElement => {
@@ -144,11 +162,11 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderErrorState, inboxRef]);
+  }, [props.renderErrorState]);
 
   // Render pagination item
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox || !props.renderPaginationItem) return;
     queueMicrotask(() => {
       inbox.setPaginationItem((paginationProps?: CourierInboxPaginationItemFactoryProps | undefined | null): HTMLElement => {
@@ -156,22 +174,22 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderPaginationItem, inboxRef]);
+  }, [props.renderPaginationItem]);
 
   // Set feed type
   useEffect(() => {
-    const inbox = inboxRef.current;
+    const inbox = getEl();
     if (!inbox) return;
     queueMicrotask(() => {
       inbox.setFeedType(props.feedType || 'inbox');
     });
-  }, [props.feedType, inboxRef]);
+  }, [props.feedType]);
 
   return (
     <CourierClientComponent>
       {/* @ts-ignore */}
       <courier-inbox
-        ref={inboxRef}
+        ref={handleRef}
         height={props.height}
         light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
         dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}

@@ -84,29 +84,35 @@ export interface CourierInboxPopupMenuProps {
 
 export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>(
   (props, ref) => {
-
     const render = useContext(CourierRenderContext);
     if (!render) {
       throw new Error("RenderContext not found. Ensure CourierInboxPopupMenu is wrapped in a CourierRenderContext.");
     }
 
-    // Instead of using useRef and assigning to the custom element,
-    // we use a callback ref to ensure the ref is set as soon as the element is mounted.
+    // Element ref for use in effects, updated by handleRef.
+    const inboxRef = useRef<CourierInboxPopupMenuElement | null>(null);
+
+    // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
+    // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
+    // rendered component. Updating the parent ref via useEffect does not work, since mutating a RefObject
+    // does not trigger useEffect (see https://stackoverflow.com/a/60476525).
     function handleRef(el: CourierInboxPopupMenuElement | null) {
       if (ref) {
         if (typeof ref === 'function') {
           ref(el);
         } else {
+          // @ts-ignore - RefObject.current is readonly in React 17, however it's not frozen and is equivalent the widened type MutableRefObject
           (ref as React.RefObject<CourierInboxPopupMenuElement | null>).current = el;
         }
       }
+
       // Store the element for use in effects
-      (handleRef as any)._el = el;
+      inboxRef.current = el;
     }
 
     // Helper to get the current element
     function getEl(): CourierInboxPopupMenuElement | null {
-      return (handleRef as any)._el ?? null;
+      return inboxRef.current;
     }
 
     // Use a ref to track the last set feedType to prevent duplicate state changes
