@@ -1,6 +1,6 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react'
+import { CourierInbox, useCourier } from '@trycourier/courier-react-17'
 import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 
