@@ -48,7 +48,7 @@ curl --request POST \
 
 ```ts
 import { useEffect } from 'react';
-import { CourierInbox, useCourier } from '@trycourier/courier-react';
+import { CourierInbox, useCourier } from '@trycourier/courier-react-17';
 
 export default function App() {
 
@@ -76,7 +76,7 @@ export default function App() {
 
 ```ts
 import { useEffect } from 'react';
-import { CourierInbox, useCourier } from '@trycourier/courier-react';
+import { CourierInbox, useCourier } from '@trycourier/courier-react-17';
 
 export default function App() {
 
@@ -102,30 +102,15 @@ export default function App() {
 }
 ```
 
-## NextJS & Server Side Rendering Frameworks
+## Server Side Rendering Frameworks
 
-`courier-react` only supports client side rendering. You will need to add `'use client'` to the top of any file that will use `CourierInbox` or `CourierInboxPopupMenu`.
-
-```ts
-'use client'
-
-...
-import { ..., CourierInboxPopupMenu } from '@trycourier/courier-react';
-
-export default function Page() {
-
-  ...
-
-  return <CourierInboxPopupMenu />;
-
-}
-```
+`courier-react-17` only supports client side rendering. Frameworks like Next.js must be explicitly client-side rendered where the Courier components are used.
 
 ## Handle Clicks and Presses
 
 ```ts
 import { useEffect } from 'react';
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps, type CourierInboxListItemActionFactoryProps } from '@trycourier/courier-react';
+import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps, type CourierInboxListItemActionFactoryProps } from '@trycourier/courier-react-17';
 
 export default function App() {
 
@@ -175,7 +160,7 @@ The fastest way to style the Inbox to match your app. This example shows unread 
 <img width="688" alt="Screenshot 2025-06-25 at 5 38 07 PM" src="https://github.com/user-attachments/assets/d1440494-ee66-4ff6-850b-c1a13691cf2f" />
 
 ```ts
-import { CourierInbox, ..., type CourierInboxTheme } from '@trycourier/courier-react';
+import { CourierInbox, ..., type CourierInboxTheme } from '@trycourier/courier-react-17';
 
 export default function App() {
   ...
@@ -240,7 +225,7 @@ Customize the inbox UI with any element you want.
 <img width="688" alt="Screenshot 2025-06-25 at 6 25 17 PM" src="https://github.com/user-attachments/assets/075a568b-5538-4116-bb3d-752ecc5dea2c" />
 
 ```ts
-import { CourierInbox, ..., type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
+import { CourierInbox, ..., type CourierInboxListItemFactoryProps } from '@trycourier/courier-react-17'
 
 const CustomListItem = ({ message, index }: CourierInboxListItemFactoryProps) => (
   <pre style={{
@@ -272,7 +257,7 @@ export default function App() {
 <img width="688" alt="Screenshot 2025-06-25 at 6 35 59 PM" src="https://github.com/user-attachments/assets/25d45ac1-32e6-4e98-baf1-d0df34cef72a" />
 
 ```ts
-import { CourierInbox, ..., type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
+import { CourierInbox, ..., type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react-17'
 
 const CustomHeader = (props: CourierInboxHeaderFactoryProps) => (
   <div style={{
@@ -305,7 +290,7 @@ export default function App() {
 <img width="606" alt="Screenshot 2025-06-25 at 6 40 38 PM" src="https://github.com/user-attachments/assets/dfb0daca-f11d-420f-9dc7-0c14b49ab7db" />
 
 ```ts
-import { CourierInboxPopupMenu, ..., type CourierInboxMenuButtonFactoryProps } from '@trycourier/courier-react'
+import { CourierInboxPopupMenu, ..., type CourierInboxMenuButtonFactoryProps } from '@trycourier/courier-react-17'
 
 const CustomMenuButton = ({ unreadCount }: CourierInboxMenuButtonFactoryProps) => (
   <button>
@@ -340,7 +325,7 @@ import {
   type CourierInboxStateLoadingFactoryProps,
   type CourierInboxStateErrorFactoryProps,
   type CourierInboxPaginationItemFactoryProps
-} from '@trycourier/courier-react'
+} from '@trycourier/courier-react-17'
 
 const CustomLoadingState = ({ feedType }: CourierInboxStateLoadingFactoryProps) => (
   <div style={{
