@@ -1,5 +1,37 @@
 # React + TypeScript + Vite
 
+An example app using React 19 and [`@trycourier/courier-react-17`](../../@trycourier/courier-react-17/) (also API compatible with React 18).
+
+## Development
+
+From the `courier-web` project root:
+
+1. Install dependencies
+
+    ```sh
+    yarn install
+    ```
+
+2. Create an `.env` file in this directory (`react`) with the following variables.
+   See [`@trycourier/courier-react`](../../@trycourier/courier-react/) for more information on authenticating with the Courier SDKs.
+
+    ```sh
+    VITE_USER_ID={YOUR_USER_ID}
+    VITE_JWT={YOUR_JWT}
+    ```
+
+3. Run the example app
+
+    ```sh
+    yarn workspace react-latest run dev
+    ```
+
+4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+Changes made to the app and `@trycourier` modules are hot-reloaded during development.
+
+## Plugins
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

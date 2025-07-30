@@ -1,24 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js (latest)
 
-## Getting Started
+An example app using Next 15 and [`@trycourier/courier-react`](../../@trycourier/courier-react/).
 
-First, run the development server:
+## Development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+From the `courier-web` project root:
+
+1. Install dependencies
+
+    ```sh
+    yarn install
+    ```
+
+2. Create an `.env` file in this directory (`next-latest`) with the following variables.
+   See [`@trycourier/courier-react`](../../@trycourier/courier-react/) for more information on authenticating with the Courier SDKs.
+
+    ```sh
+    NEXT_PUBLIC_USER_ID={YOUR_USER_ID}
+    NEXT_PUBLIC_JWT={YOUR_JWT}
+    ```
+
+3. Run the example app
+
+    ```sh
+    yarn workspace next-latest run dev
+    ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Developing transitive dependencies
+
+While developing transitive dependencies (ex. [`@trycourier/courier-ui-inbox`](../../@trycourier/courier-ui-inbox/)), you'll
+need to manually rebuild the dependency and refresh the web page to see changes. Restarting the Next.js server is not required.
+
+For example, to rebuild the dependency once:
+
+```sh
+yarn workspace @trycourier/courier-ui-inbox run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or to watch for changes and continuously rebuild:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+yarn workspace @trycourier/courier-ui-inbox run watch
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> Rebuilding a direct dependency (ex. `@trycourier/courier-react`) is not required, but you may need to refresh the page to see changes.
 
 ## Learn More
 
