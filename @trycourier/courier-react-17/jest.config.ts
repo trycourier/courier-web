@@ -29,6 +29,11 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
 
   // Module resolution
   moduleDirectories: ['node_modules', 'src'],
+  moduleNameMapper: {
+    '^react$': require.resolve('react'),
+    '^react-dom$': require.resolve('react-dom'),
+    '^react/jsx-runtime$': require.resolve('react/jsx-runtime'),
+  },
 
   // Test environment options
   testEnvironmentOptions: {
