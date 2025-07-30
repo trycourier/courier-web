@@ -1,5 +1,25 @@
 # React + TypeScript + Vite
 
+An example app using React 17.
+
+## Development
+
+From the `courier-web` project root:
+
+1. Install dependencies
+
+    ```sh
+    yarn install
+    ```
+
+2. Run the example app
+
+    ```sh
+    yarn workspace react-17 run dev
+    ```
+
+## Plugins
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
