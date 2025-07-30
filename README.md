@@ -42,6 +42,8 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
     yarn workspace @trycourier/courier-js run build
     yarn workspace @trycourier/courier-ui-core run build
     yarn workspace @trycourier/courier-ui-inbox run build
+    yarn workspace @trycourier/courier-react-components run build
+    yarn workspace @trycourier/courier-react-17 run build
     yarn workspace @trycourier/courier-react run build
     ```
 
@@ -57,4 +59,6 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 | [`courier-js`](./@trycourier/courier-js) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
 | [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
-| [`courier-react`](./@trycourier/courier-react) | React components for Courier Inbox and more |
+| [`courier-react`](./@trycourier/courier-react) | React 18+ components for Courier Inbox |
+| [`courier-react-17`](./@trycourier/courier-react-17/) | React 17 components for Courier Inbox |
+| [`courier-react-components`](./@trycourier/courier-react-components/) | Shared, private package of React components for `courier-react` and `courier-react-17` |

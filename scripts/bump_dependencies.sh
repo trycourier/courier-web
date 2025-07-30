@@ -27,13 +27,13 @@ update_deps () {
 # ── route by the *source* package we just published ─────────────────────
 case "$package_name" in
   "@trycourier/courier-js")
-    update_deps courier-ui-inbox courier-react
+    update_deps courier-ui-inbox courier-react-components courier-react courier-react-17
     ;;
   "@trycourier/courier-ui-core")
-    update_deps courier-ui-inbox courier-react
+    update_deps courier-ui-inbox courier-react-components courier-react courier-react-17
     ;;
   "@trycourier/courier-ui-inbox")
-    update_deps courier-react
+    update_deps courier-react-components courier-react courier-react-17
     ;;
   *)
     gum style --foreground 196 "No dep rules defined for $package_name"
