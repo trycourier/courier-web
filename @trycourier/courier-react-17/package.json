@@ -27,7 +27,7 @@
   "author": "Courier",
   "license": "MIT",
   "dependencies": {
-    "@trycourier/courier-js": "2.0.10",
+    "@trycourier/courier-js": "2.0.11",
     "@trycourier/courier-ui-core": "1.0.12",
     "@trycourier/courier-ui-inbox": "1.0.15"
   },
