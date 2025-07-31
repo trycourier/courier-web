@@ -13,6 +13,7 @@ packages=(
   "courier-ui-core  — Core UI components, styles, colors etc that are shared between packages"
   "courier-ui-inbox — Inbox UI components"
   "courier-react    — React wrapper around UI components"
+  "courier-react-17 — React 17 wrapper around UI components"
 )
 
 # Display deployment header
