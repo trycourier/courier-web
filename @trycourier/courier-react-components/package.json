@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react-components",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "React components for the Courier web UI",
   "main": "dist/index.cjs",
