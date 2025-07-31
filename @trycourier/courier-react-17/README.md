@@ -5,7 +5,7 @@
 ## 1. Install
 
 ```sh
-npm install @trycourier/courier-react-17@beta
+npm install @trycourier/courier-react-17
 ```
 
 > **Using React 18+?** Check out the [@trycourier/courier-react](../courier-react/) package.
