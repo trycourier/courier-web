@@ -64,10 +64,10 @@ gum confirm "Ready to publish to npm?" || { gum style --foreground 196 "npm publ
 
 pushd "$package_dir" >/dev/null
 gum style --foreground 46 "Publishing $package_name@$version to npm…"
-if [[ "$version" == *"-"* ]]; then
-  npm publish --tag beta
+if [[ "$version" == *"-beta"* ]]; then
+  npm publish --access public --tag beta
 else
-  npm publish
+  npm publish --access public
 fi
 popd >/dev/null   # ← we are back in $script_dir
 
