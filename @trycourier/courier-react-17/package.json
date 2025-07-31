@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react-17",
-  "version": "8.0.26",
+  "version": "8.0.27",
   "description": "React 17 components for the Courier web UI",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
