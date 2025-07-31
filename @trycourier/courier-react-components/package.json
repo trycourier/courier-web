@@ -28,5 +28,8 @@
     "@types/react-dom": "17.0.2",
     "react": "17.0.2",
     "react-dom": "17.0.2"
+  },
+  "dependencies": {
+    "@trycourier/courier-js": "2.0.9"
   }
 }

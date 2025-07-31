@@ -26,7 +26,7 @@
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-js": "2.0.9",
+    "@trycourier/courier-js": "2.0.10",
     "@trycourier/courier-ui-core": "1.0.11"
   },
   "devDependencies": {

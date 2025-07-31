@@ -27,10 +27,10 @@
   "author": "Courier",
   "license": "MIT",
   "dependencies": {
-    "@trycourier/courier-js": "2.0.9",
+    "@trycourier/courier-js": "2.0.10",
+    "@trycourier/courier-react-components": "1.0.0",
     "@trycourier/courier-ui-core": "1.0.11",
-    "@trycourier/courier-ui-inbox": "1.0.14",
-    "@trycourier/courier-react-components": "1.0.0"
+    "@trycourier/courier-ui-inbox": "1.0.14"
   },
   "peerDependencies": {
     "react": ">=17.0.0, <18.0.0",
