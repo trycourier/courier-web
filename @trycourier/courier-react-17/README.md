@@ -1,6 +1,7 @@
 # `@trycourier/courier-react-17`
 
-![courier-react-17](https://github.com/user-attachments/assets/e886b445-d106-4dab-afca-82183e0fcbe7)
+![courier-react-17](https://github.com/user-attachments/assets/2f7889b4-0cc6-4ee3-a8d3-8e37385a8ccb)
+
 
 ## 1. Install
 
