@@ -35,6 +35,9 @@ case "$package_name" in
   "@trycourier/courier-ui-inbox")
     update_deps courier-react-components courier-react courier-react-17
     ;;
+  "@trycourier/courier-react-components")
+    update_deps courier-react courier-react-17
+    ;;
   *)
     gum style --foreground 196 "No dep rules defined for $package_name"
     ;;

@@ -14,6 +14,7 @@ packages=(
   "courier-ui-inbox — Inbox UI components"
   "courier-react    — React wrapper around UI components"
   "courier-react-17 — React 17 wrapper around UI components"
+  "courier-react-components — Shared React components for the Courier React packages"
 )
 
 # Display deployment header

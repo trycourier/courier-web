@@ -10,6 +10,7 @@ dist/
 build/
 lib/
 coverage/
+*.tgz
 
 # IDE and Editor files
 *.swp
