@@ -10,17 +10,7 @@ source "$SCRIPT_DIR/nvm-use.sh"
 cleanup_dependencies() {
     cd "$ROOT_DIR"
     rm -rf **/node_modules
-    rm yarn.lock
     yarn install
-}
-
-# Function to build a package
-build_package() {
-    local package_name=$1
-    cd "$ROOT_DIR/$package_name"
-    yarn install
-    yarn build
-    cd "$ROOT_DIR"
 }
 
 nvm_use
