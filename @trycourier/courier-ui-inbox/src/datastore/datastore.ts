@@ -405,7 +405,6 @@ export class CourierInboxDatastore {
 
     try {
       snapshot.message.opened = new Date().toISOString();
-      this.applyMessageSnapshot(snapshot);
       if (canCallApi) {
         await Courier.shared.client?.inbox.open({ messageId: message.messageId });
       }
