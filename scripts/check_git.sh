@@ -25,10 +25,10 @@ if [ "$current_branch" != "main" ]; then
 fi
 
 # Check if there are any changes
-# if [ -n "$(git status --porcelain)" ]; then
-#   gum style --foreground 196 "There are uncommitted changes. Please commit or stash them."
-#   exit 1
-# fi
+if [ -n "$(git status --porcelain)" ]; then
+  gum style --foreground 196 "There are uncommitted changes. Please commit or stash them."
+  exit 1
+fi
 
 # Print success message
 gum style --foreground 46 "Current branch is main and there are no uncommitted changes"
