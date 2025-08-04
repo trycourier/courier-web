@@ -90,7 +90,10 @@ gum style --foreground 208 "Switching back to main branch."
 git checkout main
 
 gum style --foreground 208 "Please review and merge the PR for $release_branch into main:"
+
+# Prints "https://github.com/{org}/{repo}/pulls"
 gum style --foreground 51 "  https://github.com/$(git config --get remote.origin.url | sed -E 's/.*github.com[/:](.*)\.git/\1/')/pulls"
+
 gum confirm "Have you reviewed and merged the PR?" || {
   gum style --foreground 196 "Please review and merge the PR before continuing."
   exit 1
