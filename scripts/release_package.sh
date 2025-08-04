@@ -85,5 +85,16 @@ gum style --border normal --border-foreground 212 --padding "0 1" "$(
   gum style --foreground 212 "   npm i $package_name@$version"
 )"
 
+# ── return to main and prompt to review/merge PR ──────────────────────────
+gum style --foreground 208 "Switching back to main branch."
+git checkout main
+
+gum style --foreground 208 "Please review and merge the PR for $release_branch into main:"
+gum style --foreground 51 "  https://github.com/$(git config --get remote.origin.url | sed -E 's/.*github.com[/:](.*)\.git/\1/')/pulls"
+gum confirm "Have you reviewed and merged the PR?" || {
+  gum style --foreground 196 "Please review and merge the PR before continuing."
+  exit 1
+}
+
 # ── bump internal dependencies ────────────────────────────────────────────
 bash "$script_dir/bump_dependencies.sh" "$package_name"
