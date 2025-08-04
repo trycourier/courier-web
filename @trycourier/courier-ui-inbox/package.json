@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-inbox",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Inbox components for the Courier web UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
