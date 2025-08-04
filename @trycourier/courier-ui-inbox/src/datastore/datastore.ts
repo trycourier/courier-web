@@ -392,13 +392,17 @@ export class CourierInboxDatastore {
       return;
     }
 
-    // Save original message and index
+    const datastoreSnapshot = this.getDatastoreSnapshot(this.unreadCount, this._inboxDataSet, this._archiveDataSet);
+
+    // Mutable copy of the message
     const snapshot = this.getMessageSnapshot(message);
 
+    // If the message is not in the inbox or archive, return
     if (snapshot.inboxIndex === undefined && snapshot.archiveIndex === undefined) {
       return;
     }
 
+    // If the message is already opened, return
     if (snapshot.message.opened) {
       return;
     }
@@ -406,12 +410,13 @@ export class CourierInboxDatastore {
     try {
       snapshot.message.opened = new Date().toISOString();
       this.applyMessageSnapshot(snapshot);
+
       if (canCallApi) {
         await Courier.shared.client?.inbox.open({ messageId: message.messageId });
       }
     } catch (error) {
-      this.applyMessageSnapshot(snapshot);
       Courier.shared.client?.options.logger?.error('Error opening message:', error);
+      this.applyDatastoreSnapshot(datastoreSnapshot);
     }
   }
 
@@ -785,20 +790,12 @@ export class CourierInboxDatastore {
   /**
    * Update a message in the data store
    * @param message - The message to update
-   * @param index - The index of the message
+   * @param index - The index of the message in its respective data set
    * @param feedType - The feed type of the message
    */
   private updateMessage(message: InboxMessage, index: number, feedType: CourierInboxFeedType) {
     switch (feedType) {
       case 'inbox':
-        if (this._unreadCount !== undefined && !message.archived) {
-          if (message.read) {
-            this._unreadCount = Math.max(0, this._unreadCount - 1);
-          }
-          if (!message.read) {
-            this._unreadCount = this._unreadCount + 1;
-          }
-        }
         if (this._inboxDataSet) {
           this._inboxDataSet.messages[index] = message;
         }
