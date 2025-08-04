@@ -24,5 +24,15 @@ if [ "$current_branch" != "main" ]; then
   exit 1
 fi
 
+# Check if there are any changes
+if [ -n "$(git status --porcelain)" ]; then
+  gum style --foreground 196 "There are uncommitted changes. Please commit or stash them."
+  exit 1
+fi
+
 # Print success message
-gum style --foreground 46 "Current branch is main"
+gum style --foreground 46 "Current branch is main and there are no uncommitted changes"
+
+# Pull origin/main
+gum confirm "Running git pull origin main" && git pull origin main
+

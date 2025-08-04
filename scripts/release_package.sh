@@ -37,9 +37,6 @@ fi
 # ── read package version ──────────────────────────────────────────────────
 version=$(node -p "require('$package_dir/package.json').version")
 
-# ── current Git branch ────────────────────────────────────────────────────
-current_branch=$(git branch --show-current)
-
 # ── user confirmation ─────────────────────────────────────────────────────
 gum style --foreground 208 "About to release $package_name@$version. This will:"
 gum style --foreground 208 "  1. Commit & push changes"
@@ -47,11 +44,20 @@ gum style --foreground 208 "  2. Create a GitHub release"
 gum style --foreground 208 "  3. Publish to npm"
 gum confirm "Proceed?" || { gum style --foreground 196 "Release cancelled"; exit 1; }
 
+# ── create release branch ─────────────────────────────────────────────────
+release_branch="release-$package_name-$version"
+gum style --foreground 208 "Creating release branch ($release_branch)."
+git checkout -b "$release_branch"
+
+# ── open PR ───────────────────────────────────────────────────────────────
+gum style --foreground 208 "Opening PR to merge $release_branch into main"
+gh pr create --base main --head "$release_branch" --title "chore: release $package_name@$version" --body "Release of $package_name@$version"
+
 # ── Git commit & push ─────────────────────────────────────────────────────
 gum style --foreground 46 "Pushing changes to git…"
 git add .
 git commit -m "chore: release $package_name@$version" || true  # no-op if nothing to commit
-git push origin "$current_branch"
+git push origin "$release_branch"
 
 # ── GitHub release ────────────────────────────────────────────────────────
 gum style --foreground 46 "Creating GitHub release…"
