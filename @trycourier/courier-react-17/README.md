@@ -392,4 +392,79 @@ export default function App() {
 }
 ```
 
+### Available Hooks
+
+```ts
+import { useCourier } from '@trycourier/courier-react';
+
+const { auth, inbox } = useCourier();
+
+// Sign in & Sign out
+useEffect(() => {
+  auth.signIn({
+    userId: '$YOUR_USER_ID',
+    jwt: jwt,
+  });
+
+  // To sign out, call:
+  auth.signOut();
+}, [auth]);
+
+// Log the signed-in user
+useEffect(() => {
+  console.log('Current Courier User: ', auth.userId);
+}, [auth.userId]);
+
+// Inbox Hooks
+useEffect(() => {
+
+  // Set how many messages get fetched when getting another page
+  inbox.setPaginationLimit(20);
+
+  // Reload a specific dataset in the inbox
+  inbox.load({ feedType: 'inbox', canUseCache: true });
+
+  // Fetch the next page of messages
+  inbox.fetchNextPageOfMessages({ feedType: 'inbox' }).then((data) => {
+    if (data) {
+      console.log('Next page of messages:', data);
+    }
+  });
+
+  // Mark all messages as read
+  inbox.readAllMessages();
+
+  // Log unread count and errors
+  if (inbox.unreadCount !== undefined) {
+    console.log('Unread messages:', inbox.unreadCount);
+  }
+
+  if (inbox.error) {
+    console.error('Inbox error:', inbox.error);
+  }
+
+  // Log inbox and archive datasets
+  if (inbox.inbox) {
+    console.log('Inbox dataset:', inbox.inbox);
+  }
+
+  if (inbox.archive) {
+    console.log('Archive dataset:', inbox.archive);
+  }
+
+}, [
+  inbox,
+  inbox.inbox,
+  inbox.archive,
+  inbox.unreadCount,
+  inbox.error,
+]);
+```
+
 > **Not using React?** We suggest you use [@trycourier/courier-ui-inbox](../courier-ui-inbox/README.md) package instead.
+
+## **Share feedback with Courier**
+
+We want to make this the best SDK for managing notifications! Have an idea or feedback about our SDKs? Let us know!
+
+[Courier Web Issues](https://github.com/trycourier/courier-web/issues)
