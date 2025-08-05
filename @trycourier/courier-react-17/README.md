@@ -463,7 +463,7 @@ useEffect(() => {
 
 > **Not using React?** We suggest you use [@trycourier/courier-ui-inbox](../courier-ui-inbox/README.md) package instead.
 
-# **Share feedback with Courier**
+## **Share feedback with Courier**
 
 We want to make this the best SDK for managing notifications! Have an idea or feedback about our SDKs? Let us know!
 
