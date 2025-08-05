@@ -407,7 +407,7 @@ useEffect(() => {
   });
 
   // To sign out, call:
-  // auth.signOut();
+  auth.signOut();
 }, [auth]);
 
 // Log the signed-in user
