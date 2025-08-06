@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { NextPage } from 'next'
-import { useCourier, CourierInbox } from '@trycourier/courier-react';
+import { useCourier, CourierInbox } from '@trycourier/courier-react-17';
 
 const Home: NextPage = () => {
 
