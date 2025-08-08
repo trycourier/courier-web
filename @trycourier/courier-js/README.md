@@ -21,7 +21,7 @@ const courierClient = new CourierClient({
     userId: 'some_user_id', // The user id for your user. This is usually the user id you maintain in your system for a user.
     jwt: 'ey...n0',         // The access token associated with the user.
     tenantId: 'asdf',       // [OPTIONAL] Allows you to scope a client to a specific tenant. If you didn't configure multi-tenant routing, you probably don't need this.
-    showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to process.env.NODE_ENV === 'development'.
+    showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to `false`.
 });
 ```
 
@@ -34,7 +34,7 @@ Courier.shared.signIn({
     userId: 'some_user_id', // The user id for your user. This is usually the user id you maintain in your system for a user.
     jwt: 'ey...n0',         // The access token associated with the user.
     tenantId: 'asdf',       // [OPTIONAL] Allows you to scope a client to a specific tenant. If you didn't configure multi-tenant routing, you probably don't need this.
-    showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to process.env.NODE_ENV === 'development'.
+    showLogs: true,         // [OPTIONAL] Shows debugging logs from the client. Defaults to `false`.
 });
 
 Courier.shared.signOut();
