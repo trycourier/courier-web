@@ -70,8 +70,8 @@ export class CourierClient extends Client {
   public readonly tracking: TrackingClient;
 
   constructor(props: CourierProps) {
-    // Determine if we should show logs based on props or environment
-    const showLogs = props.showLogs !== undefined ? props.showLogs : process.env.NODE_ENV === 'development';
+    // Determine if we should show logs (default to false)
+    const showLogs = props.showLogs !== undefined ? props.showLogs : false;
 
     // Setup base options with default values
     const baseOptions = {
