@@ -21,7 +21,7 @@ function App() {
   const theme: CourierInboxTheme = {
     popup: {
       button: {
-        unreadIndicator: {
+        unreadDotIndicator: {
           backgroundColor: '#9b4dca',
         }
       },
