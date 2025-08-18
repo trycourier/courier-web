@@ -78,8 +78,9 @@ export default defineConfig({
     // TypeScript declaration files generation
     dts({
       insertTypesEntry: true,
-      include: ["src/**/*.tsx"],
+      include: ["src/**/*.tsx", "src/**/*.ts"],
       exclude: ["src/__tests__/**"],
+      aliasesExclude: ["react", "react-dom"],
     }) as PluginOption,
     // Bundle size visualization
     visualizer({
