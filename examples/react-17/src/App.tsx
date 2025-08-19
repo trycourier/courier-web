@@ -1,6 +1,6 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react-17'
+import { CourierInbox, CourierInboxPopupMenu, useCourier } from '@trycourier/courier-react-17'
 import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 
@@ -275,7 +275,7 @@ function App() {
       </pre>
 
       <div style={{ padding: '32px' }}>
-        <CourierInbox
+        <CourierInboxPopupMenu
           popupAlignment={'top-center'}
           popupWidth={'500px'}
           popupHeight={'620px'}
@@ -287,13 +287,13 @@ function App() {
           lightTheme={theme}
           darkTheme={theme}
           feedType={feedType}
-          renderPopupHeader={renderHeader}
-          renderPopupListItem={renderListItem}
-          renderPopupEmptyState={renderEmptyState}
-          renderPopupLoadingState={renderLoadingState}
-          renderPopupErrorState={renderErrorState}
-          renderPopupPaginationItem={renderPaginationItem}
-          renderPopupMenuButton={renderMenuButton}
+          renderHeader={renderHeader}
+          renderListItem={renderListItem}
+          renderEmptyState={renderEmptyState}
+          renderLoadingState={renderLoadingState}
+          renderErrorState={renderErrorState}
+          renderPaginationItem={renderPaginationItem}
+          renderMenuButton={renderMenuButton}
           onMessageClick={(props: { message: any; index: number }) => {
             !props.message.read ? courier.inbox.readMessage(props.message) : courier.inbox.unreadMessage(props.message);
           }}

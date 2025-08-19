@@ -1561,11 +1561,6 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@trycourier/courier-js@2.0.10":
-  version "2.0.10"
-  resolved "https://registry.npmjs.org/@trycourier/courier-js/-/courier-js-2.0.10.tgz"
-  integrity sha512-K9R1fREbXUa8qTsrI8Fg6f5Wng/KhCN6Ft1FqJVRzLqU/7NQbvxZnMpcvQKqOaSnSI2hJqm2ZrGxh0Y5DIYzqw==
-
 "@trycourier/courier-js@file:@trycourier/courier-js":
   version "2.0.11"
 
@@ -1573,22 +1568,15 @@
   version "8.0.28"
   dependencies:
     "@trycourier/courier-js" "2.0.11"
+    "@trycourier/courier-react-components" "1.0.3"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.0.17"
-
-"@trycourier/courier-react@8.0.26":
-  version "8.0.26"
-  resolved "https://registry.npmjs.org/@trycourier/courier-react/-/courier-react-8.0.26.tgz"
-  integrity sha512-asJJhYPIw6bmol4qIWNs1ZZdyImXPbNMtq3QH+5JjiEml+2o7tQw9klM6kn6VMoyvg6iFalLODCRO95FgwcSUg==
-  dependencies:
-    "@trycourier/courier-js" "2.0.10"
-    "@trycourier/courier-ui-core" "1.0.12"
-    "@trycourier/courier-ui-inbox" "1.0.15"
 
 "@trycourier/courier-react@file:@trycourier/courier-react":
   version "8.0.28"
   dependencies:
     "@trycourier/courier-js" "2.0.11"
+    "@trycourier/courier-react-components" "1.0.3"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.0.17"
 
@@ -1596,21 +1584,9 @@
   version "8.0.28"
   dependencies:
     "@trycourier/courier-js" "2.0.11"
+    "@trycourier/courier-react-components" "1.0.3"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.0.17"
-
-"@trycourier/courier-ui-core@1.0.12":
-  version "1.0.12"
-  resolved "https://registry.npmjs.org/@trycourier/courier-ui-core/-/courier-ui-core-1.0.12.tgz"
-  integrity sha512-3lKrKnueyvkUCYKktZLLU4fyFqVTXqO0vyP0ymClzGr66jhZ44asLjcpCg7fwJks7zphnNYE1g3FFGr8URs6Vg==
-
-"@trycourier/courier-ui-inbox@1.0.15":
-  version "1.0.15"
-  resolved "https://registry.npmjs.org/@trycourier/courier-ui-inbox/-/courier-ui-inbox-1.0.15.tgz"
-  integrity sha512-woV4PQf+7lV4EAlMM1KEoirOBXGKQlOYSEpBiABHU4rXVRIbZc7tUjWyafBeo5QXbjxBZABdKdJp928iTpLS4A==
-  dependencies:
-    "@trycourier/courier-js" "2.0.10"
-    "@trycourier/courier-ui-core" "1.0.12"
 
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
   version "1.0.17"
