@@ -11,6 +11,7 @@ import CustomHeader from './CustomHeader';
 import ElementRef from './ElementRef';
 import CustomMenuButton from './CustomMenuButton';
 import CustomOther from './CustomOther';
+import MarkdownListItemInbox from './MarkdownListItem';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/custom-menu-button" element={<CustomMenuButton />} />
         <Route path="/custom-other" element={<CustomOther />} />
         <Route path="/canvas" element={<Canvas />} />
+        <Route path="/markdown" element={<MarkdownListItemInbox />} />
       </Routes>
     </BrowserRouter>
   )
