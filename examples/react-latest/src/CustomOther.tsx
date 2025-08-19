@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { 
-  CourierInbox, 
-  useCourier, 
+import {
+  CourierInbox,
+  useCourier,
   type CourierInboxStateEmptyFactoryProps,
   type CourierInboxStateLoadingFactoryProps,
   type CourierInboxStateErrorFactoryProps,
@@ -62,16 +62,24 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderLoadingState={(props: CourierInboxStateLoadingFactoryProps) => {
-        return <CustomLoadingState {...props} />
+      renderLoadingState={(props: CourierInboxStateLoadingFactoryProps | null | undefined) => {
+        if (!props) return <></>;
+
+        return <CustomLoadingState {...props} />;
       }}
-      renderEmptyState={(props: CourierInboxStateEmptyFactoryProps) => {
+      renderEmptyState={(props: CourierInboxStateEmptyFactoryProps | null | undefined) => {
+        if (!props) return <></>;
+
         return <CustomEmptyState {...props} />
       }}
-      renderErrorState={(props: CourierInboxStateErrorFactoryProps) => {
+      renderErrorState={(props: CourierInboxStateErrorFactoryProps | null | undefined) => {
+        if (!props) return <></>;
+
         return <CustomErrorState {...props} />
       }}
-      renderPaginationItem={(props: CourierInboxPaginationItemFactoryProps) => {
+      renderPaginationItem={(props: CourierInboxPaginationItemFactoryProps | null | undefined) => {
+        if (!props) return <></>;
+
         return <CustomPaginationItem {...props} />
       }}
     />

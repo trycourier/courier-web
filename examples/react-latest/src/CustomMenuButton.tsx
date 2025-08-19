@@ -22,8 +22,8 @@ export default function App() {
   return (
     <div style={{ padding: '24px' }}>
       <CourierInboxPopupMenu
-        renderMenuButton={({ unreadCount }: CourierInboxMenuButtonFactoryProps) => {
-          return <CustomMenuButton unreadCount={unreadCount} />
+        renderMenuButton={(props: CourierInboxMenuButtonFactoryProps | null | undefined) => {
+          return <CustomMenuButton unreadCount={props?.unreadCount || 0} />
         }}
       />
     </div>
