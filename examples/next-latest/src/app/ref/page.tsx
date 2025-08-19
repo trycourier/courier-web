@@ -7,7 +7,7 @@ export default function Home() {
 
   const courier = useCourier();
   const inboxRef = useRef<CourierInboxPopupMenuElement>(null);
-  const feedType = useState<CourierInboxFeedType>('inbox');
+  const [feedType] = useState<CourierInboxFeedType>('inbox');
 
   useEffect(() => {
     courier.shared.signIn({

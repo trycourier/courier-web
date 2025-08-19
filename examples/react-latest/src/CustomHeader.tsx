@@ -26,8 +26,9 @@ export default function App() {
 
   return (
     <CourierInbox
-      renderHeader={(props: CourierInboxHeaderFactoryProps) => {
-        return <CustomHeader {...props} />
+      renderHeader={(props: CourierInboxHeaderFactoryProps | null | undefined) => {
+        if (!props) return <></>;
+        return <CustomHeader {...props} />;
       }}
     />
   );

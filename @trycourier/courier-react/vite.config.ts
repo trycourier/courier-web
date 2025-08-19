@@ -47,6 +47,7 @@ export default defineConfig({
         /^@trycourier\/courier-js/,
         /^@trycourier\/courier-ui-core/,
         /^@trycourier\/courier-ui-inbox/,
+        '@trycourier/courier-react-components',
         "react",
         "react-dom",
         "react-dom/client",
@@ -60,6 +61,7 @@ export default defineConfig({
           "react-dom/client": "ReactDOMClient",
           "@trycourier/courier-js": "CourierJS",
           "@trycourier/courier-ui-inbox": "CourierInboxUI",
+          "@trycourier/courier-react-components": "CourierReactComponents"
         },
       },
     },
@@ -82,6 +84,7 @@ export default defineConfig({
       insertTypesEntry: true,
       include: ["src/**/*.tsx"],
       exclude: ['src/__tests__/**'],
+      aliasesExclude: ["react", "react-dom"],
     }) as PluginOption,
     // Bundle size visualization
     visualizer({

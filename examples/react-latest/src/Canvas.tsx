@@ -289,13 +289,13 @@ function App() {
           lightTheme={theme}
           darkTheme={theme}
           feedType={feedType}
-          renderPopupHeader={renderHeader}
-          renderPopupListItem={renderListItem}
-          renderPopupEmptyState={renderEmptyState}
-          renderPopupLoadingState={renderLoadingState}
-          renderPopupErrorState={renderErrorState}
-          renderPopupPaginationItem={renderPaginationItem}
-          renderPopupMenuButton={renderMenuButton}
+          renderHeader={renderHeader}
+          renderListItem={renderListItem}
+          renderEmptyState={renderEmptyState}
+          renderLoadingState={renderLoadingState}
+          renderErrorState={renderErrorState}
+          renderPaginationItem={renderPaginationItem}
+          renderMenuButton={renderMenuButton}
           onMessageClick={({ message, index: _index }) => {
             !message.read ? courier.inbox.readMessage(message) : courier.inbox.unreadMessage(message);
           }}

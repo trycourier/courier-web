@@ -84,3 +84,17 @@ export default tseslint.config({
   },
 })
 ```
+
+## Module Resolution
+
+There are multiple versions of React installed in the `courier-web` monorepo to develop, build, and test
+packages that support React 17 and React 18+. To avoid issues that can arise from multiple versions
+of React in the same app, we specify the paths to resolve React dependencies in [tsconfig.app.json](./tsconfig.app.json). This is not typically necessary when using Courier's React packages in production, since they
+do not include `react` or `react-dom` in their `dependencies`.
+
+```json
+"paths": {
+  "react": ["./node_modules/@types/react"],
+  "react-dom": ["./node_modules/@types/react-dom"]
+}
+```
