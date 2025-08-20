@@ -61,4 +61,4 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
 | [`courier-react`](./@trycourier/courier-react) | React 18+ components for Courier Inbox |
 | [`courier-react-17`](./@trycourier/courier-react-17/) | React 17 components for Courier Inbox |
-| [`courier-react-components`](./@trycourier/courier-react-components/) | Shared, private package of React components for `courier-react` and `courier-react-17` |
+| [`courier-react-components`](./@trycourier/courier-react-components/) | Shared package of React components for `courier-react` and `courier-react-17` |
