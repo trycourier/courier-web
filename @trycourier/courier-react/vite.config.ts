@@ -4,6 +4,7 @@ import dts from "vite-plugin-dts";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import visualizer from "rollup-plugin-visualizer";
+import packageJson from "./package.json";
 
 // Get the root directory path of the current file
 const root = dirname(fileURLToPath(import.meta.url));
@@ -14,6 +15,7 @@ const fromRoot = (p: string) => resolve(root, "../../node_modules", p);
 export default defineConfig({
   // Define environment variables and constants for production build
   define: {
+    "__PACKAGE_VERSION__": JSON.stringify(packageJson.version),
     "process.env.NODE_ENV": '"production"',
     "__DEV__": "false",
     "import.meta.env.DEV": "false",
@@ -82,7 +84,7 @@ export default defineConfig({
     // TypeScript declaration files generation
     dts({
       insertTypesEntry: true,
-      include: ["src/**/*.tsx"],
+      include: ["src/**/*.tsx", "src/**/*.ts"],
       exclude: ['src/__tests__/**'],
       aliasesExclude: ["react", "react-dom"],
     }) as PluginOption,

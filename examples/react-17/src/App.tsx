@@ -14,6 +14,8 @@ function App() {
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT
     });
+
+    console.log(courier.shared.telemetry.toWireFormat());
   }, []);
 
   const theme: CourierInboxTheme = {
