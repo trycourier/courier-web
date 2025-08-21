@@ -6,7 +6,7 @@ import packageJson from "./package.json";
 
 export default defineConfig({
   define: {
-    "__PACKAGE_VERSION__": packageJson.version,
+    "__PACKAGE_VERSION__": JSON.stringify(packageJson.version),
   },
   build: {
     lib: {
