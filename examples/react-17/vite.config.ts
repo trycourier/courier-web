@@ -4,10 +4,15 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    // __PACKAGE_VERSION__ is inlined from packages' respective package.json at build time.
+    // We define it here for the example, since we depend on src (rather than the built dist).
+    "__PACKAGE_VERSION__": JSON.stringify("dev-version"),
+  },
   plugins: [react()],
   resolve: {
     alias: {
-      '@trycourier/courier-react': path.resolve(__dirname, '../../@trycourier/courier-react/src'),
+      '@trycourier/courier-react-17': path.resolve(__dirname, '../../@trycourier/courier-react-17/src'),
       '@trycourier/courier-react-components': path.resolve(__dirname, '../../@trycourier/courier-react-components/src'),
       '@trycourier/courier-ui-inbox': path.resolve(__dirname, '../../@trycourier/courier-ui-inbox/src'),
       '@trycourier/courier-js': path.resolve(__dirname, '../../@trycourier/courier-js/src'),
@@ -18,7 +23,7 @@ export default defineConfig({
     force: true,
     include: [
       '@trycourier/courier-react-components',
-      '@trycourier/courier-react',
+      '@trycourier/courier-react-17',
       '@trycourier/courier-ui-inbox',
       '@trycourier/courier-js',
       '@trycourier/courier-ui-core',
@@ -28,7 +33,7 @@ export default defineConfig({
   server: {
     watch: {
       ignored: [
-        '!../../@trycourier/courier-react/src/**',
+        '!../../@trycourier/courier-react-17/src/**',
         '!../../@trycourier/courier-react-components/src/**',
         '!../../@trycourier/courier-ui-inbox/src/**',
         '!../../@trycourier/courier-js/src/**',
