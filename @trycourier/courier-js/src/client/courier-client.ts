@@ -9,6 +9,7 @@ import { Client } from './client';
 import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 import { UUID } from '../utils/uuid';
+import { CourierUserAgent } from '../utils/courier-user-agent';
 
 export interface CourierProps {
   /** User ID for the client. Normally matches the UID in your system */
@@ -28,6 +29,12 @@ export interface CourierProps {
 
   /** Custom API URLs */
   apiUrls?: CourierApiUrls;
+}
+
+export interface CourierInternalProps {
+  courierUserAgentName?: string;
+
+  courierUserAgentVersion?: string;
 }
 
 export interface CourierClientOptions {
@@ -57,9 +64,15 @@ export interface CourierClientOptions {
 
   /** Final API URLs configuration */
   readonly apiUrls: CourierApiUrls;
+
+  /** User agent describing Courier SDK and browser UA. */
+  readonly courierUserAgent: CourierUserAgent;
 }
 
 export class CourierClient extends Client {
+  private static readonly COURIER_JS_NAME = "courier-js";
+  private static readonly COURIER_JS_VERSION = __PACKAGE_VERSION__;
+
   public readonly tokens: TokenClient;
   public readonly brands: BrandClient;
   public readonly preferences: PreferenceClient;
@@ -67,23 +80,31 @@ export class CourierClient extends Client {
   public readonly lists: ListClient;
   public readonly tracking: TrackingClient;
 
-  constructor(props: CourierProps) {
+  constructor(props: CourierProps & CourierInternalProps) {
     // Determine if we should show logs (default to false)
     const showLogs = props.showLogs !== undefined ? props.showLogs : false;
+    const connectionId = UUID.nanoid();
 
     // Setup base options with default values
     const baseOptions = {
       ...props,
       showLogs,
-      connectionId: UUID.nanoid(),
+      connectionId,
       apiUrls: props.apiUrls || getCourierApiUrls(),
       accessToken: props.jwt ?? props.publicApiKey
     };
+
+    const courierUserAgent = new CourierUserAgent(
+      connectionId,
+      props.courierUserAgentName || CourierClient.COURIER_JS_NAME,
+      props.courierUserAgentVersion || CourierClient.COURIER_JS_VERSION
+    );
 
     // Initialize base client with logger and URLs
     super({
       ...baseOptions,
       logger: new Logger(baseOptions.showLogs),
+      courierUserAgent,
       apiUrls: getCourierApiUrls(baseOptions.apiUrls)
     });
 

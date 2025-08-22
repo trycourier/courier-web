@@ -14,8 +14,8 @@ export * from './datastore/datatore-events';
 
 import { Courier } from "@trycourier/courier-js";
 
-Courier.shared.telemetry.callerSdkName = "courier-ui-inbox";
-Courier.shared.telemetry.callerSdkVersion = __PACKAGE_VERSION__;
+Courier.shared.userAgentClientName = "courier-ui-inbox";
+Courier.shared.userAgentClientVersion = __PACKAGE_VERSION__;
 
 // Re-export Courier from courier-js for direct import
 export { Courier };

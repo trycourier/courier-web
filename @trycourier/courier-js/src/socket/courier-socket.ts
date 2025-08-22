@@ -75,15 +75,12 @@ export abstract class CourierSocket {
 
   private readonly url: string;
   private readonly options: CourierClientOptions;
-  private readonly telemetry: CourierUserAgent;
 
   constructor(
-    options: CourierClientOptions,
-    telemetry: CourierUserAgent
+    options: CourierClientOptions
   ) {
     this.url = options.apiUrls.inbox.webSocket;
     this.options = options;
-    this.telemetry = telemetry;
   }
 
   /**
@@ -219,6 +216,10 @@ export abstract class CourierSocket {
 
   protected get logger(): Logger | undefined {
     return this.options.logger;
+  }
+
+  protected get courierUserAgent(): CourierUserAgent {
+    return this.options.courierUserAgent;
   }
 
   /**

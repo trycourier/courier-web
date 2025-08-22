@@ -1,6 +1,5 @@
 import { CourierClient, CourierProps } from "../client/courier-client";
 import { AuthenticationListener } from '../shared/authentication-listener';
-import { CourierUserAgent } from "../utils/courier-user-agent";
 import { UUID } from "../utils/uuid";
 
 /**
@@ -24,6 +23,21 @@ export class Courier {
    * The Courier client instance
    */
   private instanceClient?: CourierClient;
+
+  /**
+   * Client's name reported in the user agent to the Courier backend.
+   *
+   * Other Courier SDKs calling APIs though the courier-js should set this property.
+   */
+  public userAgentClientName?: string;
+
+  /**
+   * Client's version reported in the user agent to the Courier backend.
+   *
+   * Other Courier SDKs calling APIs though the courier-js should set this property.
+   */
+  // __PACKAGE_VERSION__ is overridden from package.json at compile time.
+  public userAgentClientVersion?: string;
 
   /**
    * The pagination limit (min: 1, max: 100)
@@ -51,8 +65,6 @@ export class Courier {
    */
   private authenticationListeners: AuthenticationListener[] = [];
 
-  private _courierUserAgent: CourierUserAgent = new CourierUserAgent(this.id);
-
   /**
    * Get the shared Courier instance
    * @returns The shared Courier instance
@@ -75,8 +87,12 @@ export class Courier {
       this.signOut();
     }
 
-    // Create a new client.
-    this.instanceClient = new CourierClient(props);
+    // Instantiate the client.
+    this.instanceClient = new CourierClient({
+      ...props,
+      courierUserAgentName: this.userAgentClientName,
+      courierUserAgentVersion: this.userAgentClientName
+    });
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 
@@ -119,10 +135,6 @@ export class Courier {
    */
   private notifyAuthenticationListeners(props: { userId?: string }) {
     this.authenticationListeners.forEach(listener => listener.callback(props));
-  }
-
-  public get courierUserAgent(): CourierUserAgent {
-    return this._courierUserAgent;
   }
 
 }

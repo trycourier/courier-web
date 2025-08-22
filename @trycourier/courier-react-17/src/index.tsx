@@ -1,7 +1,7 @@
 import { Courier } from '@trycourier/courier-js';
 
-Courier.shared.telemetry.callerSdkName = "courier-react";
-Courier.shared.telemetry.callerSdkVersion = __PACKAGE_VERSION__;
+Courier.shared.userAgentClientName = "courier-react-17";
+Courier.shared.userAgentClientVersion = __PACKAGE_VERSION__;
 
 export { CourierInbox } from './components/courier-inbox';
 export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
