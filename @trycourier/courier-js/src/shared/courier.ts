@@ -1,5 +1,6 @@
 import { CourierClient, CourierProps } from "../client/courier-client";
 import { AuthenticationListener } from '../shared/authentication-listener';
+import { CourierUserAgent } from "../utils/courier-user-agent";
 import { UUID } from "../utils/uuid";
 
 /**
@@ -50,6 +51,8 @@ export class Courier {
    */
   private authenticationListeners: AuthenticationListener[] = [];
 
+  private _courierUserAgent: CourierUserAgent = new CourierUserAgent(this.id);
+
   /**
    * Get the shared Courier instance
    * @returns The shared Courier instance
@@ -74,7 +77,7 @@ export class Courier {
 
     // Create a new client.
     const connectionId = props.connectionId ?? UUID.nanoid();
-    this.instanceClient = new CourierClient({ ...props, connectionId });
+    this.instanceClient = new CourierClient({ ...props, connectionId, courierUserAgent: this.courierUserAgent });
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 
@@ -117,6 +120,10 @@ export class Courier {
    */
   private notifyAuthenticationListeners(props: { userId?: string }) {
     this.authenticationListeners.forEach(listener => listener.callback(props));
+  }
+
+  public get courierUserAgent(): CourierUserAgent {
+    return this._courierUserAgent;
   }
 
 }

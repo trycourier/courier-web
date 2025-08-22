@@ -4,6 +4,11 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    // __PACKAGE_VERSION__ is inlined from packages' respective package.json at build time.
+    // We define it here for the example, since we depend on src (rather than the built dist).
+    "__PACKAGE_VERSION__": JSON.stringify("dev-version"),
+  },
   plugins: [react()],
   resolve: {
     alias: {

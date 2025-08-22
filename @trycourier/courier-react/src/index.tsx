@@ -1,3 +1,8 @@
+import { Courier } from '@trycourier/courier-js';
+
+Courier.shared.courierUserAgent.callerSdkName = "courier-react";
+Courier.shared.courierUserAgent.callerSdkVersion = __PACKAGE_VERSION__;
+
 export { CourierInbox } from './components/courier-inbox';
 export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
 

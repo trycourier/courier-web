@@ -2,6 +2,7 @@ import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/errors";
 import { ServerMessage } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
+import { CourierUserAgent } from "../utils/courier-user-agent";
 import { INBOX_WIRE_PROTOCOL_VERSION } from "./version";
 
 /**
@@ -215,6 +216,10 @@ export abstract class CourierSocket {
 
   protected get logger(): Logger | undefined {
     return this.options.logger;
+  }
+
+  protected get courierUserAgent(): CourierUserAgent {
+    return this.options.courierUserAgent;
   }
 
   /**

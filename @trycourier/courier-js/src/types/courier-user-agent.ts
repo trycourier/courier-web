@@ -1,0 +1,17 @@
+export const BROWSER_USER_AGENT_KEY = "bua" as const;
+export const SDK_KEY = "sdk" as const;
+export const SDK_VERSION_KEY = "sdkv" as const;
+export const CLIENT_ID_KEY = "cid" as const;
+
+/**
+ * Socket Telemetry object.
+ *
+ * This JSON-serializable object is sent as part of WebSocket messages under
+ * the `stats` key.
+ */
+export interface CourierUserAgent {
+  [BROWSER_USER_AGENT_KEY]: string;
+  [SDK_KEY]: string;
+  [SDK_VERSION_KEY]: string;
+  [CLIENT_ID_KEY]: string;
+}
