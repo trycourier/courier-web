@@ -5,6 +5,7 @@ import { UUID } from '../utils/uuid';
 import { CourierSocket } from './courier-socket';
 import { TransactionManager } from './courier-inbox-transaction-manager';
 import { fixMessageEventEnvelope } from './inbox-message-utils';
+import { CourierUserAgent } from '../utils/courier-user-agent';
 
 /** Application-layer implementation of the Courier WebSocket API for Inbox messages. */
 export class CourierInboxSocket extends CourierSocket {
@@ -45,8 +46,8 @@ export class CourierInboxSocket extends CourierSocket {
    */
   private readonly pingTransactionManager: TransactionManager = new TransactionManager();
 
-  constructor(options: CourierClientOptions) {
-    super(options);
+  constructor(options: CourierClientOptions, telemetry: CourierUserAgent) {
+    super(options, telemetry);
   }
 
   public onOpen(_: Event): Promise<void> {

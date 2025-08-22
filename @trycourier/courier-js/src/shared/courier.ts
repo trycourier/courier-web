@@ -1,6 +1,6 @@
 import { CourierClient, CourierProps } from "../client/courier-client";
 import { AuthenticationListener } from '../shared/authentication-listener';
-import { Telemetry } from "../utils/telemetry";
+import { CourierUserAgent } from "../utils/courier-user-agent";
 import { UUID } from "../utils/uuid";
 
 /**
@@ -51,7 +51,7 @@ export class Courier {
    */
   private authenticationListeners: AuthenticationListener[] = [];
 
-  private _telemetry: Telemetry = new Telemetry(this.id);
+  private _courierUserAgent: CourierUserAgent = new CourierUserAgent(this.id);
 
   /**
    * Get the shared Courier instance
@@ -121,8 +121,8 @@ export class Courier {
     this.authenticationListeners.forEach(listener => listener.callback(props));
   }
 
-  public get telemetry(): Telemetry {
-    return this._telemetry;
+  public get courierUserAgent(): CourierUserAgent {
+    return this._courierUserAgent;
   }
 
 }

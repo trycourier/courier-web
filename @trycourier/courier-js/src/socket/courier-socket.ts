@@ -2,6 +2,7 @@ import { CourierClientOptions } from "../client/courier-client";
 import { CLOSE_CODE_NORMAL_CLOSURE, CourierCloseEvent } from "../types/socket/protocol/errors";
 import { ServerMessage } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
+import { CourierUserAgent } from "../utils/courier-user-agent";
 import { INBOX_WIRE_PROTOCOL_VERSION } from "./version";
 
 /**
@@ -74,12 +75,15 @@ export abstract class CourierSocket {
 
   private readonly url: string;
   private readonly options: CourierClientOptions;
+  private readonly telemetry: CourierUserAgent;
 
   constructor(
-    options: CourierClientOptions
+    options: CourierClientOptions,
+    telemetry: CourierUserAgent
   ) {
     this.url = options.apiUrls.inbox.webSocket;
     this.options = options;
+    this.telemetry = telemetry;
   }
 
   /**
