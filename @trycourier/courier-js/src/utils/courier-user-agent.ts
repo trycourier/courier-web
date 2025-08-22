@@ -1,4 +1,4 @@
-import { CourierUserAgent as TelemetryInterface, BROWSER_USER_AGENT_KEY, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/socket/protocol/courier-user-agent";
+import { CourierUserAgent as TelemetryInterface, BROWSER_USER_AGENT_KEY, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/courier-user-agent";
 
 export class CourierUserAgent {
   private static readonly HTTP_HEADER_KEY: string = "x-courier-user-agent";

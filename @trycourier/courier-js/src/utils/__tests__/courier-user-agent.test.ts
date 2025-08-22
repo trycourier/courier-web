@@ -1,4 +1,4 @@
-import { BROWSER_USER_AGENT_KEY, CLIENT_ID_KEY, SDK_KEY, SDK_VERSION_KEY } from "../../types/socket/protocol/courier-user-agent";
+import { BROWSER_USER_AGENT_KEY, CLIENT_ID_KEY, SDK_KEY, SDK_VERSION_KEY } from "../../types/courier-user-agent";
 import { CourierUserAgent } from "../courier-user-agent";
 
 const MOCK_CLIENT_ID = "test-client-id";

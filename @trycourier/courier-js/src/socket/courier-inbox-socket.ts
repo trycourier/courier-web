@@ -46,8 +46,8 @@ export class CourierInboxSocket extends CourierSocket {
    */
   private readonly pingTransactionManager: TransactionManager = new TransactionManager();
 
-  constructor(options: CourierClientOptions, telemetry: CourierUserAgent) {
-    super(options, telemetry);
+  constructor(options: CourierClientOptions, courierUserAgent: CourierUserAgent) {
+    super(options, courierUserAgent);
   }
 
   public onOpen(_: Event): Promise<void> {
