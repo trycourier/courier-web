@@ -15,7 +15,7 @@ function App() {
       jwt: import.meta.env.VITE_JWT
     });
 
-    console.log(courier.shared.telemetry.toWireFormat());
+    console.log(courier.shared.courierUserAgent.toJsonSerializable());
   }, []);
 
   const theme: CourierInboxTheme = {

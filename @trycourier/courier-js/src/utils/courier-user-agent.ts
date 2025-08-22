@@ -44,8 +44,6 @@ export class CourierUserAgent {
   }
 
   public toHttpHeaderValue(): string {
-    console.log(Object.entries(this.toJsonSerializable()));
-
     return Object.entries(this.toJsonSerializable())
       .map(([key, value]) => `${key}=${value}`)
       .join(',');

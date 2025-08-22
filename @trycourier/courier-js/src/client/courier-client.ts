@@ -8,6 +8,7 @@ import { TokenClient } from './token-client';
 import { Client } from './client';
 import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
+import { CourierUserAgent } from '../utils/courier-user-agent';
 
 export interface CourierProps {
   /** User ID for the client. Normally matches the UID in your system */
@@ -30,6 +31,11 @@ export interface CourierProps {
 
   /** Custom API URLs */
   apiUrls?: CourierApiUrls;
+}
+
+export interface CourierInternalProps {
+
+  courierUserAgent: CourierUserAgent;
 }
 
 export interface CourierClientOptions {
@@ -59,6 +65,9 @@ export interface CourierClientOptions {
 
   /** Final API URLs configuration */
   readonly apiUrls: CourierApiUrls;
+
+  /** User agent describing Courier SDK and browser UA. */
+  readonly courierUserAgent: CourierUserAgent;
 }
 
 export class CourierClient extends Client {
@@ -69,7 +78,7 @@ export class CourierClient extends Client {
   public readonly lists: ListClient;
   public readonly tracking: TrackingClient;
 
-  constructor(props: CourierProps) {
+  constructor(props: CourierProps & CourierInternalProps) {
     // Determine if we should show logs (default to false)
     const showLogs = props.showLogs !== undefined ? props.showLogs : false;
 
