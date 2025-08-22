@@ -9,7 +9,7 @@ export const CLIENT_ID_KEY = "cid" as const;
  * This JSON-serializable object is sent as part of WebSocket messages under
  * the `stats` key.
  */
-export interface Telemetry {
+export interface CourierUserAgent {
   [BROWSER_USER_AGENT_KEY]: string;
   [SDK_KEY]: string;
   [SDK_VERSION_KEY]: string;

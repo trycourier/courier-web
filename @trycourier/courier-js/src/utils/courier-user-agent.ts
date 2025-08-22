@@ -1,6 +1,8 @@
-import { Telemetry as TelemetryInterface, BROWSER_USER_AGENT_KEY, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/socket/protocol/telemetry";
+import { CourierUserAgent as TelemetryInterface, BROWSER_USER_AGENT_KEY, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/socket/protocol/courier-user-agent";
 
-export class Telemetry {
+export class CourierUserAgent {
+  private static readonly HTTP_HEADER_KEY: string = "x-courier-user-agent";
+
   /** Unique identifier for this SDK. */
   private static readonly JS_SDK_NAME: string = "courier-js";
 
@@ -32,13 +34,21 @@ export class Telemetry {
   }
 
   /** Get the telemetry payload as a JSON-serializable object. */
-  public toWireFormat(): TelemetryInterface {
+  public toJsonSerializable(): TelemetryInterface {
     return {
-      [BROWSER_USER_AGENT_KEY]: Telemetry.getEncodedUserAgent(),
+      [BROWSER_USER_AGENT_KEY]: CourierUserAgent.getEncodedUserAgent(),
       [SDK_KEY]: this.sdkName,
       [SDK_VERSION_KEY]: this.sdkVersion,
       [CLIENT_ID_KEY]: this._clientId
     };
+  }
+
+  public toHttpHeaderValue(): string {
+    console.log(Object.entries(this.toJsonSerializable()));
+
+    return Object.entries(this.toJsonSerializable())
+      .map(([key, value]) => `${key}=${value}`)
+      .join(',');
   }
 
   /**
@@ -65,7 +75,7 @@ export class Telemetry {
       return this._callerSdkName;
     }
 
-    return Telemetry.JS_SDK_NAME;
+    return CourierUserAgent.JS_SDK_NAME;
   }
 
   /** The SDK version to report in the telemetry payload. */
@@ -74,7 +84,7 @@ export class Telemetry {
       return this._callerSdkVersion;
     }
 
-    return Telemetry.JS_SDK_VERSION;
+    return CourierUserAgent.JS_SDK_VERSION;
   }
 
   /** Get the url-encoded user agent string from the browser. */

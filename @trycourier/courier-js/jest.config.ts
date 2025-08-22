@@ -21,6 +21,6 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
   setupFiles: ['<rootDir>/src/jest.setup.ts'],
 
   globals: {
-    '__PACKAGE_VERSION__': 'dev-version',
+    '__PACKAGE_VERSION__': 'test-version',
   },
 });
