@@ -1,13 +1,21 @@
 import { CourierClient } from '../index';
+import { UUID } from '../utils/uuid';
+
+const nanoidSpy = jest.spyOn(UUID, "nanoid");
+
+const CONNECTION_ID = "mock-connection-id";
 
 describe('CourierClient', () => {
+
+  beforeEach(() => {
+    nanoidSpy.mockReturnValue(CONNECTION_ID);
+  });
 
   it('should validate client initialization with all options', () => {
     const testClient = new CourierClient({
       userId: process.env.USER_ID!,
       jwt: process.env.JWT!,
       publicApiKey: process.env.PUBLIC_API_KEY!,
-      connectionId: 'test-connection',
       tenantId: process.env.TENANT_ID,
       showLogs: true,
       apiUrls: {
@@ -25,7 +33,7 @@ describe('CourierClient', () => {
     expect(testClient.options.userId).toBe(process.env.USER_ID);
     expect(testClient.options.jwt).toBe(process.env.JWT);
     expect(testClient.options.publicApiKey).toBe(process.env.PUBLIC_API_KEY);
-    expect(testClient.options.connectionId).toBe('test-connection');
+    expect(testClient.options.connectionId).toBe(CONNECTION_ID);
     expect(testClient.options.tenantId).toBe(process.env.TENANT_ID);
     expect(testClient.options.showLogs).toBe(true);
     expect(testClient.options.apiUrls).toEqual({

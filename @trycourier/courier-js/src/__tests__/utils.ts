@@ -6,7 +6,6 @@ export function getClient(tenantId?: string) {
     publicApiKey: process.env.PUBLIC_API_KEY,
     jwt: process.env.JWT,
     tenantId: tenantId,
-    connectionId: process.env.INBOX_SOCKET_ID,
     apiUrls: {
       courier: {
         rest: process.env.COURIER_REST_URL!,
