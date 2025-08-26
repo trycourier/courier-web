@@ -1812,6 +1812,14 @@
 "@trycourier/courier-js@file:@trycourier/courier-js":
   version "2.0.12"
 
+"@trycourier/courier-react-17@file:@trycourier/courier-react-17":
+  version "8.0.29"
+  dependencies:
+    "@trycourier/courier-js" "2.0.12"
+    "@trycourier/courier-react-components" "1.0.4"
+    "@trycourier/courier-ui-core" "1.0.13"
+    "@trycourier/courier-ui-inbox" "1.0.18"
+
 "@trycourier/courier-react@file:@trycourier/courier-react":
   version "8.0.29"
   dependencies:
