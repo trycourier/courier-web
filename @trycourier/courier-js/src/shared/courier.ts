@@ -73,8 +73,7 @@ export class Courier {
     }
 
     // Create a new client.
-    const connectionId = props.connectionId ?? UUID.nanoid();
-    this.instanceClient = new CourierClient({ ...props, connectionId });
+    this.instanceClient = new CourierClient(props);
     this.notifyAuthenticationListeners({ userId: props.userId });
   }
 

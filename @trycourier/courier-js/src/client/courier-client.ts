@@ -8,6 +8,7 @@ import { TokenClient } from './token-client';
 import { Client } from './client';
 import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
+import { UUID } from '../utils/uuid';
 
 export interface CourierProps {
   /** User ID for the client. Normally matches the UID in your system */
@@ -18,9 +19,6 @@ export interface CourierProps {
 
   /** Public API key for testing (use JWTs in prod) */
   publicApiKey?: string;
-
-  /** Inbox Websocket connection ID */
-  connectionId?: string;
 
   /** Tenant ID. Used for multi-tenant apps */
   tenantId?: string;
@@ -43,7 +41,7 @@ export interface CourierClientOptions {
   readonly userId: string;
 
   /** Inbox Websocket connection ID */
-  readonly connectionId?: string;
+  readonly connectionId: string;
 
   /** Tenant ID. Used for multi-tenant apps */
   readonly tenantId?: string;
@@ -77,6 +75,7 @@ export class CourierClient extends Client {
     const baseOptions = {
       ...props,
       showLogs,
+      connectionId: UUID.nanoid(),
       apiUrls: props.apiUrls || getCourierApiUrls(),
       accessToken: props.jwt ?? props.publicApiKey
     };
