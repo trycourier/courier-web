@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "20.4.2",
+    "@changesets/cli": "^2.29.5",
     "concurrently": "8.0.0",
     "rollup-plugin-visualizer": "^5.14.0",
     "ts-node": "10.9.1",
