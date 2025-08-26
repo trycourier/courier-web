@@ -17,6 +17,5 @@ export function getClient(tenantId?: string) {
         webSocket: process.env.INBOX_WEBSOCKET_URL!
       }
     },
-    showLogs: true
   });
 }
