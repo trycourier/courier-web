@@ -51,8 +51,7 @@ describe('CourierClient', () => {
   it('should validate client initialization with minimal options', () => {
     const testClient = new CourierClient({
       userId: process.env.USER_ID!,
-      publicApiKey: process.env.PUBLIC_API_KEY!,
-
+      publicApiKey: process.env.PUBLIC_API_KEY!
     });
 
     expect(testClient.options.userId).toBe(process.env.USER_ID);

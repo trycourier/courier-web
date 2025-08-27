@@ -29,11 +29,23 @@ export interface CourierProps {
 
   /** Custom API URLs */
   apiUrls?: CourierApiUrls;
-}
 
-export interface CourierInternalProps {
+  /**
+   * Optional: The name of the SDK calling courier-js methods.
+   *
+   * This is an internal prop, intended to be set by other Courier SDKs.
+   * If undefined, this defaults to "courier-js".
+   * @ignore
+   */
   courierUserAgentName?: string;
 
+  /**
+   * Optional: The version of the SDK calling courier-js methods.
+   *
+   * This is an internal prop, intended to be set by other Courier SDKs.
+   * If undefined, this defaults to this package's version.
+   * @ignore
+   */
   courierUserAgentVersion?: string;
 }
 
@@ -70,7 +82,13 @@ export interface CourierClientOptions {
 }
 
 export class CourierClient extends Client {
+  /** User-agent reporting name of the courier-js package. */
   private static readonly COURIER_JS_NAME = "courier-js";
+
+  /**
+   * User agent reporting version of the courier-js package.
+   * Inlined from package.json at build time.
+   */
   private static readonly COURIER_JS_VERSION = __PACKAGE_VERSION__;
 
   public readonly tokens: TokenClient;
@@ -80,7 +98,7 @@ export class CourierClient extends Client {
   public readonly lists: ListClient;
   public readonly tracking: TrackingClient;
 
-  constructor(props: CourierProps & CourierInternalProps) {
+  constructor(props: CourierProps) {
     // Determine if we should show logs (default to false)
     const showLogs = props.showLogs !== undefined ? props.showLogs : false;
     const connectionId = UUID.nanoid();
