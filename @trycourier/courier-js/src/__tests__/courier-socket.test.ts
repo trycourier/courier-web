@@ -2,6 +2,7 @@ import { CourierClientOptions } from "../client/courier-client";
 import { CourierSocket } from "../socket/courier-socket";
 import { CourierApiUrls } from "../types/courier-api-urls";
 import { ServerMessage, ServerResponse } from "../types/socket/protocol/messages";
+import { CourierUserAgent } from "../utils/courier-user-agent";
 import { Logger } from "../utils/logger";
 import WebSocketServer from "jest-websocket-mock";
 
@@ -28,12 +29,23 @@ const API_URLS: CourierApiUrls = {
   }
 };
 
+const CONNECTION_ID = 'test';
+const USER_AGENT_CLIENT_NAME = "test-sdk";
+const USER_AGENT_CLIENT_VERSION = "test-sdk-version";
+
+const courierUserAgent = new CourierUserAgent(
+  CONNECTION_ID,
+  USER_AGENT_CLIENT_NAME,
+  USER_AGENT_CLIENT_VERSION
+);
+
 const OPTIONS: CourierClientOptions = {
   accessToken: 'test',
   connectionId: 'test',
   userId: 'test',
   logger: new Logger(false),
   apiUrls: API_URLS,
+  courierUserAgent,
 };
 
 const TEST_TID = 'test-abcd-1234';

@@ -1,6 +1,7 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { Logger } from "./logger";
 import { UUID } from "./uuid";
+import * as CourierUserAgent from "../types/courier-user-agent";
 
 export class CourierRequestError extends Error {
   constructor(
@@ -52,13 +53,17 @@ export async function http(props: {
   validCodes?: number[]
 }): Promise<any> {
   const validCodes = props.validCodes ?? [200];
+
+  // If logs are enabled, add a unique ID to the request and response to match them in the logs.
   const uid = props.options.showLogs ? UUID.nanoid() : undefined;
+  const courierUserAgentHeader = props.options.courierUserAgent.toHttpHeaderValue();
 
   // Create request
   const request = new Request(props.url, {
     method: props.method,
     headers: {
       'Content-Type': 'application/json',
+      [CourierUserAgent.HTTP_HEADER_KEY]: courierUserAgentHeader,
       ...props.headers
     },
     body: props.body ? JSON.stringify(props.body) : undefined
@@ -127,7 +132,9 @@ export async function graphql(props: {
   query: string,
   variables?: Record<string, any>
 }): Promise<any> {
+  // If logs are enabled, add a unique ID to the request and response to match them in the logs.
   const uid = props.options.showLogs ? UUID.nanoid() : undefined;
+  const courierUserAgentHeader = props.options.courierUserAgent.toHttpHeaderValue();
 
   // Log request if enabled
   if (uid) {
@@ -143,6 +150,7 @@ export async function graphql(props: {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      [CourierUserAgent.HTTP_HEADER_KEY]: courierUserAgentHeader,
       ...props.headers
     },
     body: JSON.stringify({

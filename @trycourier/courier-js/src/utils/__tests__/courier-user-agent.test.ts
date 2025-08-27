@@ -1,4 +1,4 @@
-import { BROWSER_USER_AGENT_KEY, CLIENT_ID_KEY, SDK_KEY, SDK_VERSION_KEY } from "../../types/courier-user-agent";
+import { CLIENT_ID_KEY, SDK_KEY, SDK_VERSION_KEY } from "../../types/courier-user-agent";
 import { CourierUserAgent } from "../courier-user-agent";
 
 const MOCK_CLIENT_ID = "test-client-id";
@@ -12,7 +12,6 @@ describe("courier-user-agent", () => {
         const courierUserAgent = new CourierUserAgent(MOCK_CLIENT_ID, CLIENT_SDK_NAME, CLIENT_SDK_VERSION);
 
         expect(courierUserAgent.toJsonSerializable()).toEqual({
-          [BROWSER_USER_AGENT_KEY]: encodeURIComponent(window.navigator.userAgent),
           [SDK_KEY]: CLIENT_SDK_NAME,
           [SDK_VERSION_KEY]: CLIENT_SDK_VERSION,
           [CLIENT_ID_KEY]: MOCK_CLIENT_ID,
@@ -33,9 +32,8 @@ describe("courier-user-agent", () => {
   describe("toHttpHeaderValue", () => {
     it("should format keys/values as key1=value1,key2=value2", () => {
        const courierUserAgent = new CourierUserAgent(MOCK_CLIENT_ID, CLIENT_SDK_NAME, CLIENT_SDK_VERSION);
-       const ua = encodeURIComponent(window.navigator.userAgent);
 
-       expect(courierUserAgent.toHttpHeaderValue()).toEqual(`bua=${ua},sdk=${CLIENT_SDK_NAME},sdkv=${CLIENT_SDK_VERSION},cid=${MOCK_CLIENT_ID}`);
+       expect(courierUserAgent.toHttpHeaderValue()).toEqual(`sdk=${CLIENT_SDK_NAME},sdkv=${CLIENT_SDK_VERSION},cid=${MOCK_CLIENT_ID}`);
     });
   });
 });

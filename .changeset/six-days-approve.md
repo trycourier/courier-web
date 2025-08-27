@@ -5,4 +5,4 @@
 "@trycourier/courier-react-17": patch
 ---
 
-Implement user-agent and SDK telemetry in courier-js and consumers.
+Report the Courier User Agent to WebSocket and HTTP endpoints.

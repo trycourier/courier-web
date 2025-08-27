@@ -29,15 +29,14 @@ export class Courier {
    *
    * Other Courier SDKs calling APIs though the courier-js should set this property.
    */
-  public userAgentClientName?: string;
+  public courierUserAgentName?: string;
 
   /**
    * Client's version reported in the user agent to the Courier backend.
    *
    * Other Courier SDKs calling APIs though the courier-js should set this property.
    */
-  // __PACKAGE_VERSION__ is overridden from package.json at compile time.
-  public userAgentClientVersion?: string;
+  public courierUserAgentVersion?: string;
 
   /**
    * The pagination limit (min: 1, max: 100)
@@ -90,8 +89,8 @@ export class Courier {
     // Instantiate the client.
     this.instanceClient = new CourierClient({
       ...props,
-      courierUserAgentName: this.userAgentClientName,
-      courierUserAgentVersion: this.userAgentClientName
+      courierUserAgentName: this.courierUserAgentName,
+      courierUserAgentVersion: this.courierUserAgentVersion
     });
     this.notifyAuthenticationListeners({ userId: props.userId });
   }

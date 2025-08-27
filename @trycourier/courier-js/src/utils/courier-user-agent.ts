@@ -1,8 +1,6 @@
-import { CourierUserAgent as TelemetryInterface, BROWSER_USER_AGENT_KEY, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/courier-user-agent";
+import { CourierUserAgent as TelemetryInterface, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/courier-user-agent";
 
 export class CourierUserAgent {
-  private static readonly HTTP_HEADER_KEY: string = "x-courier-user-agent";
-
   /** Client ID for this session. */
   private clientId: string;
 
@@ -28,7 +26,6 @@ export class CourierUserAgent {
   /** Get the telemetry payload as a JSON-serializable object. */
   public toJsonSerializable(): TelemetryInterface {
     return {
-      [BROWSER_USER_AGENT_KEY]: CourierUserAgent.getEncodedUserAgent(),
       [SDK_KEY]: this.sdkName,
       [SDK_VERSION_KEY]: this.sdkVersion,
       [CLIENT_ID_KEY]: this.clientId
@@ -39,10 +36,5 @@ export class CourierUserAgent {
     return Object.entries(this.toJsonSerializable())
       .map(([key, value]) => `${key}=${value}`)
       .join(',');
-  }
-
-  /** Get the url-encoded user agent string from the browser. */
-  private static getEncodedUserAgent() {
-    return encodeURIComponent(window.navigator.userAgent);
   }
 }
