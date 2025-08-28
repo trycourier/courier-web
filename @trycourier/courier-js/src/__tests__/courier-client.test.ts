@@ -1,9 +1,12 @@
 import { CourierClient } from '../index';
+import { CLIENT_ID_KEY, SDK_KEY, SDK_VERSION_KEY } from '../types/courier-user-agent';
 import { UUID } from '../utils/uuid';
 
 const nanoidSpy = jest.spyOn(UUID, "nanoid");
 
 const CONNECTION_ID = "mock-connection-id";
+const USER_AGENT_CLIENT_NAME = "test-sdk";
+const USER_AGENT_CLIENT_VERSION = "test-sdk-version";
 
 describe('CourierClient', () => {
 
@@ -46,6 +49,12 @@ describe('CourierClient', () => {
         webSocket: process.env.INBOX_WEBSOCKET_URL!
       }
     });
+    expect(testClient.options.courierUserAgent).toBeDefined();
+    expect(testClient.options.courierUserAgent.toJsonSerializable()).toEqual({
+      [SDK_KEY]: "courier-js",
+      [SDK_VERSION_KEY]: "test-version",  // from <package_root>/jest.config.ts
+      [CLIENT_ID_KEY]: CONNECTION_ID,
+    });
   });
 
   it('should validate client initialization with minimal options', () => {
@@ -57,6 +66,7 @@ describe('CourierClient', () => {
     expect(testClient.options.userId).toBe(process.env.USER_ID);
     expect(testClient.options.publicApiKey).toBe(process.env.PUBLIC_API_KEY);
     expect(testClient.options.showLogs).toBe(false);
+    expect(testClient.options.courierUserAgent).toBeDefined();
   });
 
 });

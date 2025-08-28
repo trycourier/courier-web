@@ -1,20 +1,14 @@
 import { CourierUserAgent as TelemetryInterface, SDK_KEY, SDK_VERSION_KEY, CLIENT_ID_KEY } from "../types/courier-user-agent";
 
+/** Client info reportable to the Courier backend in WebSocket and HTTP requests. */
 export class CourierUserAgent {
   /** Client ID for this session. */
   private clientId: string;
 
-  /**
-   * Implementing SDK name.
-   *
-   * Present if courier-js is used as a dependency in another Courier SDK. */
+  /** Identifier of the SDK making requests to the Courier backend. */
   private sdkName: string;
 
-  /**
-   * Implementing SDK version.
-   *
-   * Present if courier-js is used as a dependency in another Courier SDK.
-   */
+  /** Version of the SDK making requests to the Courier backend. */
   private sdkVersion: string;
 
   constructor(clientId: string, callerSdkName: string, callerSdkVersion: string) {
@@ -32,6 +26,7 @@ export class CourierUserAgent {
     };
   }
 
+  /** Get the telemetry payload as a comma-separated string, where keys and values are joined by `=`. */
   public toHttpHeaderValue(): string {
     return Object.entries(this.toJsonSerializable())
       .map(([key, value]) => `${key}=${value}`)
