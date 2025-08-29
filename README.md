@@ -39,18 +39,8 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 3. Build the packages
 
     ```sh
-    yarn workspace @trycourier/courier-js run build
-    yarn workspace @trycourier/courier-ui-core run build
-    yarn workspace @trycourier/courier-ui-inbox run build
-    yarn workspace @trycourier/courier-react-components run build
-    yarn workspace @trycourier/courier-react-17 run build
-    yarn workspace @trycourier/courier-react run build
+    yarn build-packages
     ```
-
-    > Note: Here and in [package.json](./package.json), the workspaces are listed in
-    order of lowest to highest level dependency (ex. `courier-react` depends on
-    `courier-ui-inbox`). The **examples** are excluded here but can be built
-     individually.
 
 ## Packages
 
@@ -59,9 +49,9 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 | [`courier-js`](./@trycourier/courier-js) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
 | [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
+| [`courier-react-components`](./@trycourier/courier-react-components/) | Shared package of React components for `courier-react` and `courier-react-17` |
 | [`courier-react`](./@trycourier/courier-react) | React 18+ components for Courier Inbox |
 | [`courier-react-17`](./@trycourier/courier-react-17/) | React 17 components for Courier Inbox |
-| [`courier-react-components`](./@trycourier/courier-react-components/) | Shared package of React components for `courier-react` and `courier-react-17` |
 
 ## Versioning and releasing
 
