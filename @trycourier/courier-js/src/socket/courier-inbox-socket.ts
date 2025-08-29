@@ -220,6 +220,9 @@ export class CourierInboxSocket extends CourierSocket {
     const envelope: ClientMessageEnvelope = {
       tid: UUID.nanoid(),
       action: ClientAction.GetConfig,
+      stats: {
+        ua: this.courierUserAgent.toJsonSerializable(),
+      },
     };
 
     this.send(envelope);

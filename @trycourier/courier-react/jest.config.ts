@@ -38,5 +38,9 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
   // Test environment options
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],
-  }
+  },
+
+  globals: {
+    '__PACKAGE_VERSION__': 'dev-version',
+  },
 });

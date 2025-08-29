@@ -12,8 +12,13 @@ export * from './datastore/datastore';
 export * from './datastore/datastore-listener';
 export * from './datastore/datatore-events';
 
+import { Courier } from "@trycourier/courier-js";
+
+Courier.shared.courierUserAgentName = "courier-ui-inbox";
+Courier.shared.courierUserAgentVersion = __PACKAGE_VERSION__;
+
 // Re-export Courier from courier-js for direct import
-export { Courier } from '@trycourier/courier-js';
+export { Courier };
 
 // Re-export types from courier-js
 export type {

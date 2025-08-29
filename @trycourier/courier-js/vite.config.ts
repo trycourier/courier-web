@@ -2,8 +2,12 @@ import { defineConfig, PluginOption } from 'vite';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer'
+import packageJson from "./package.json";
 
 export default defineConfig({
+  define: {
+    "__PACKAGE_VERSION__": JSON.stringify(packageJson.version),
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

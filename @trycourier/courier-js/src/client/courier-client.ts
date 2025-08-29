@@ -9,6 +9,7 @@ import { Client } from './client';
 import { ListClient } from './list-client';
 import { TrackingClient } from './tracking-client';
 import { UUID } from '../utils/uuid';
+import { CourierUserAgent } from '../utils/courier-user-agent';
 
 export interface CourierProps {
   /** User ID for the client. Normally matches the UID in your system */
@@ -28,6 +29,24 @@ export interface CourierProps {
 
   /** Custom API URLs */
   apiUrls?: CourierApiUrls;
+
+  /**
+   * Optional: The name of the SDK calling courier-js methods.
+   *
+   * This is an internal prop, intended to be set by other Courier SDKs.
+   * If undefined, this defaults to "courier-js".
+   * @ignore
+   */
+  courierUserAgentName?: string;
+
+  /**
+   * Optional: The version of the SDK calling courier-js methods.
+   *
+   * This is an internal prop, intended to be set by other Courier SDKs.
+   * If undefined, this defaults to this package's version.
+   * @ignore
+   */
+  courierUserAgentVersion?: string;
 }
 
 export interface CourierClientOptions {
@@ -57,9 +76,21 @@ export interface CourierClientOptions {
 
   /** Final API URLs configuration */
   readonly apiUrls: CourierApiUrls;
+
+  /** User agent describing Courier SDK and browser UA. */
+  readonly courierUserAgent: CourierUserAgent;
 }
 
 export class CourierClient extends Client {
+  /** User-agent reporting name of the courier-js package. */
+  private static readonly COURIER_JS_NAME = "courier-js";
+
+  /**
+   * User agent reporting version of the courier-js package.
+   * Inlined from package.json at build time.
+   */
+  private static readonly COURIER_JS_VERSION = __PACKAGE_VERSION__;
+
   public readonly tokens: TokenClient;
   public readonly brands: BrandClient;
   public readonly preferences: PreferenceClient;
@@ -70,20 +101,28 @@ export class CourierClient extends Client {
   constructor(props: CourierProps) {
     // Determine if we should show logs (default to false)
     const showLogs = props.showLogs !== undefined ? props.showLogs : false;
+    const connectionId = UUID.nanoid();
 
     // Setup base options with default values
     const baseOptions = {
       ...props,
       showLogs,
-      connectionId: UUID.nanoid(),
+      connectionId,
       apiUrls: props.apiUrls || getCourierApiUrls(),
       accessToken: props.jwt ?? props.publicApiKey
     };
+
+    const courierUserAgent = new CourierUserAgent(
+      connectionId,
+      props.courierUserAgentName || CourierClient.COURIER_JS_NAME,
+      props.courierUserAgentVersion || CourierClient.COURIER_JS_VERSION
+    );
 
     // Initialize base client with logger and URLs
     super({
       ...baseOptions,
       logger: new Logger(baseOptions.showLogs),
+      courierUserAgent,
       apiUrls: getCourierApiUrls(baseOptions.apiUrls)
     });
 

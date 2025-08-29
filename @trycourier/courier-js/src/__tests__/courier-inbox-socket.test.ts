@@ -5,6 +5,7 @@ import { CourierApiUrls } from "../types/courier-api-urls";
 import WebSocketServer from "jest-websocket-mock";
 import { ClientAction, ClientMessageEnvelope, ConfigResponseEnvelope, InboxMessageEvent, InboxMessageEventEnvelope, ServerAction, ServerActionEnvelope, ServerResponse } from "../types/socket/protocol/messages";
 import { UUID } from "../utils/uuid";
+import { CourierUserAgent } from "../utils/courier-user-agent";
 
 const nanoidSpy = jest.spyOn(UUID, 'nanoid');
 
@@ -27,12 +28,23 @@ const API_URLS: CourierApiUrls = {
   }
 };
 
+const CONNECTION_ID = 'test';
+const USER_AGENT_CLIENT_NAME = "test-sdk";
+const USER_AGENT_CLIENT_VERSION = "test-sdk-version";
+
+const courierUserAgent = new CourierUserAgent(
+  CONNECTION_ID,
+  USER_AGENT_CLIENT_NAME,
+  USER_AGENT_CLIENT_VERSION
+);
+
 const OPTIONS: CourierClientOptions = {
   accessToken: 'test',
-  connectionId: 'test',
+  connectionId: CONNECTION_ID,
   userId: 'test',
   logger: new Logger(false),
   apiUrls: API_URLS,
+  courierUserAgent
 };
 
 const TID_1 = 'test-tid-1';
@@ -64,6 +76,7 @@ describe('CourierInboxSocket', () => {
       await expect(mockServer).toReceiveMessage({
         action: 'get-config',
         tid: expect.any(String),
+        stats: { ua: courierUserAgent.toJsonSerializable() },
       });
 
       await expect(mockServer).toReceiveMessage({
@@ -86,6 +99,7 @@ describe('CourierInboxSocket', () => {
       await expect(mockServer).toReceiveMessage({
         action: 'get-config',
         tid: expect.any(String),
+        stats: { ua: courierUserAgent.toJsonSerializable() },
       });
 
       await expect(mockServer).toReceiveMessage({
@@ -259,7 +273,7 @@ describe('CourierInboxSocket', () => {
       // since max outstanding pings has been reached.
       await new Promise((resolve) => setTimeout(resolve, PING_INTERVAL_MILLIS));
       expect(socket.isOpen).toBe(false);
-      expect(mockServer.closed).resolves.toBeUndefined();
+      await expect(mockServer.closed).resolves.toBeUndefined();
     });
 
     it('should close the connection if the server-configured max outstanding pings is reached', async () => {
@@ -289,7 +303,7 @@ describe('CourierInboxSocket', () => {
       // since max outstanding pings has been reached.
       await new Promise((resolve) => setTimeout(resolve, SERVER_PING_INTERVAL_SECONDS * 1000));
       expect(socket.isOpen).toBe(false);
-      expect(mockServer.closed).resolves.toBeUndefined();
+      await expect(mockServer.closed).resolves.toBeUndefined();
     });
 
     it('should reset outstanding pings when a pong is received', async () => {
