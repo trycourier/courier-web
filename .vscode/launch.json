@@ -5,12 +5,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Web",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "web-js",
         "run",
-        "start"
+        "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/web-js",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -18,12 +20,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Next Latest",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "next-latest",
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/next-latest",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -31,12 +35,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Next 12",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "next-12",
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/next-12",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -44,12 +50,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run React Latest",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "react-latest",
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/react-latest",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -57,12 +65,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run React 17",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "react-17",
         "run",
         "dev"
       ],
-      "cwd": "${workspaceFolder}/examples/react-17",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -70,12 +80,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Vanilla JS",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "client-ts",
         "run",
         "start:js"
       ],
-      "cwd": "${workspaceFolder}/examples/vanilla",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -83,12 +95,14 @@
       "type": "node",
       "request": "launch",
       "name": "Run Vanilla TS",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "client-ts",
         "run",
         "start:ts"
       ],
-      "cwd": "${workspaceFolder}/examples/vanilla",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -96,12 +110,14 @@
       "type": "node",
       "request": "launch",
       "name": "CourierJS Tests",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "@trycourier/courier-js",
         "run",
         "test"
       ],
-      "cwd": "${workspaceFolder}/@trycourier/courier-js",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -109,12 +125,14 @@
       "type": "node",
       "request": "launch",
       "name": "CourierUIInbox Tests",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
+        "workspace",
+        "@trycourier/courier-js",
         "run",
         "test"
       ],
-      "cwd": "${workspaceFolder}/@trycourier/courier-ui-inbox",
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -122,7 +140,7 @@
       "type": "node",
       "request": "launch",
       "name": "Localhost QR",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "run",
         "ipqr"
@@ -137,6 +155,18 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "sync"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Build Packages",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "build-packages"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

@@ -13,7 +13,7 @@
   "scripts": {
     "build-packages": "yarn exec ./scripts/build-packages",
     "sync": "yarn exec ./scripts/sync",
-    "ipqr": "sh ipqr.sh"
+    "ipqr": "sh ./scripts/ipqr.sh"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
