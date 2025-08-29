@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 echo "Removing the following dist directories:"
 find ./@trycourier -type d -name dist -maxdepth 2 -print

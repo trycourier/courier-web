@@ -12,15 +12,7 @@
   ],
   "scripts": {
     "build-packages": "yarn exec ./scripts/build-packages",
-    "sync": "sh ./scripts/sync.sh",
-    "refresh": "npm run remove-cache && npm run clear && npm i",
-    "reload": "npm run remove-cache && npm run clear && npm run courier-js && npm run courier-ui-core && npm run courier-ui-inbox && npm run courier-web",
-    "courier-web": "npm install",
-    "courier-js": "cd @trycourier/courier-js && npm install && npm run prepare && cd ..",
-    "courier-ui-core": "cd @trycourier/courier-ui-core && npm install && cd ..",
-    "courier-ui-inbox": "cd @trycourier/courier-ui-inbox && npm install && cd ..",
-    "clear": "rm -rf node_modules package-lock.json",
-    "remove-cache": "npm cache clean --force",
+    "sync": "yarn exec ./scripts/sync.sh",
     "ipqr": "sh ipqr.sh"
   },
   "devDependencies": {
