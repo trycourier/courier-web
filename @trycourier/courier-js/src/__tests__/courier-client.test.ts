@@ -50,7 +50,7 @@ describe('CourierClient', () => {
       }
     });
     expect(testClient.options.courierUserAgent).toBeDefined();
-    expect(testClient.options.courierUserAgent.toJsonSerializable()).toEqual({
+    expect(testClient.options.courierUserAgent.getUserAgentInfo()).toEqual({
       [SDK_KEY]: "courier-js",
       [SDK_VERSION_KEY]: "test-version",  // from <package_root>/jest.config.ts
       [CLIENT_ID_KEY]: CONNECTION_ID,

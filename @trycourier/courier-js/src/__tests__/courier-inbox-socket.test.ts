@@ -76,7 +76,6 @@ describe('CourierInboxSocket', () => {
       await expect(mockServer).toReceiveMessage({
         action: 'get-config',
         tid: expect.any(String),
-        stats: { ua: courierUserAgent.toJsonSerializable() },
       });
 
       await expect(mockServer).toReceiveMessage({
@@ -99,7 +98,6 @@ describe('CourierInboxSocket', () => {
       await expect(mockServer).toReceiveMessage({
         action: 'get-config',
         tid: expect.any(String),
-        stats: { ua: courierUserAgent.toJsonSerializable() },
       });
 
       await expect(mockServer).toReceiveMessage({
