@@ -11,7 +11,7 @@ describe("courier-user-agent", () => {
       it("should collect user agent, SDK name, SDK version, client ID", () => {
         const courierUserAgent = new CourierUserAgent(MOCK_CLIENT_ID, CLIENT_SDK_NAME, CLIENT_SDK_VERSION);
 
-        expect(courierUserAgent.toJsonSerializable()).toEqual({
+        expect(courierUserAgent.getUserAgentInfo()).toEqual({
           [SDK_KEY]: CLIENT_SDK_NAME,
           [SDK_VERSION_KEY]: CLIENT_SDK_VERSION,
           [CLIENT_ID_KEY]: MOCK_CLIENT_ID,
@@ -21,7 +21,7 @@ describe("courier-user-agent", () => {
       it("should produce a JSON-serializable object", () => {
         const courierUserAgent = new CourierUserAgent(MOCK_CLIENT_ID, CLIENT_SDK_NAME, CLIENT_SDK_VERSION);
 
-        const json = JSON.stringify(courierUserAgent.toJsonSerializable());
+        const json = JSON.stringify(courierUserAgent.getUserAgentInfo());
         const parsed = JSON.parse(json);
 
         expect(parsed).toBeDefined();

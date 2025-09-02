@@ -93,6 +93,33 @@ describe('CourierSocket', () => {
 
       expect(connectionCount).toBe(1);
     });
+
+    it('should connect with correct URL query parameters', async () => {
+      const socket = new CourierSocketTestImplementation(OPTIONS);
+
+      // Spy on the WebSocket constructor to capture the URL
+      const originalWebSocket = global.WebSocket;
+      let capturedUrl: string = '';
+      global.WebSocket = jest.fn().mockImplementation((url) => {
+        capturedUrl = url;
+        return new originalWebSocket(url);
+      }) as any;
+
+      socket.connect();
+      await mockServer.connected;
+
+      // Restore the original WebSocket
+      global.WebSocket = originalWebSocket;
+
+      // Parse the URL to check query parameters
+      const url = new URL(capturedUrl);
+      expect(url.searchParams.get('auth')).toBe(OPTIONS.accessToken);
+      expect(url.searchParams.get('cid')).toBe(OPTIONS.connectionId);
+      expect(url.searchParams.get('iwpv')).toBe('v1');
+      expect(url.searchParams.get('userId')).toBe(OPTIONS.userId);
+      expect(url.searchParams.get('sdk')).toBe(USER_AGENT_CLIENT_NAME);
+      expect(url.searchParams.get('sdkv')).toBe(USER_AGENT_CLIENT_VERSION);
+    });
   });
 
   describe('message listener', () => {

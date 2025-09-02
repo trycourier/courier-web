@@ -4,6 +4,7 @@ import { ServerMessage } from "../types/socket/protocol/messages";
 import { Logger } from "../utils/logger";
 import { CourierUserAgent } from "../utils/courier-user-agent";
 import { INBOX_WIRE_PROTOCOL_VERSION } from "./version";
+import { SDK_KEY, SDK_VERSION_KEY } from "../types/courier-user-agent";
 
 /**
  * Abstract base class for Courier WebSocket implementations.
@@ -275,7 +276,17 @@ export abstract class CourierSocket {
     const connectionId = this.options.connectionId;
     const userId = this.userId;
 
-    return `${this.url}?auth=${accessToken}&cid=${connectionId}&iwpv=${INBOX_WIRE_PROTOCOL_VERSION}&userId=${userId}`;
+    // Courier User-Agent info
+    const sdkName = this.courierUserAgent.getUserAgentInfo()[SDK_KEY];
+    const sdkVersion = this.courierUserAgent.getUserAgentInfo()[SDK_VERSION_KEY];
+
+    return `${this.url}?`
+      + `auth=${accessToken}&`
+      + `cid=${connectionId}&`
+      + `iwpv=${INBOX_WIRE_PROTOCOL_VERSION}&`
+      + `userId=${userId}&`
+      + `${SDK_KEY}=${sdkName}&`
+      + `${SDK_VERSION_KEY}=${sdkVersion}`;
   }
 
   /**
