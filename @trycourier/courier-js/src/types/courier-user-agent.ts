@@ -1,13 +1,6 @@
 /** HTTP Header key used to report the Courier User-Agent. */
 export const HTTP_HEADER_KEY: string = "x-courier-ua" as const;
 
-/**
- * HTTP query param key used to report the Courier User-Agent.
- *
- * Used in WebSocket Upgrade requests, where custom headers are not possible.
- */
-export const HTTP_QUERY_PARAM_KEY: string = "cua" as const;
-
 export const SDK_KEY = "sdk" as const;
 export const SDK_VERSION_KEY = "sdkv" as const;
 export const CLIENT_ID_KEY = "cid" as const;
