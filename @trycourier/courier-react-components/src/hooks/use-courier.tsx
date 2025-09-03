@@ -74,12 +74,12 @@ export const useCourier = () => {
     // Add inbox data store listener
     const inboxListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => refreshInbox(error),
-      onDataSetChange: () => refreshInbox(),
-      onPageAdded: () => refreshInbox(),
-      onMessageAdd: () => refreshInbox(),
-      onMessageRemove: () => refreshInbox(),
-      onMessageUpdate: () => refreshInbox(),
-      onUnreadCountChange: () => refreshInbox()
+      onDataSetChange: (_: InboxDataSet, __: CourierInboxFeedType) => refreshInbox(),
+      onPageAdded: (_: InboxDataSet, __: CourierInboxFeedType) => refreshInbox(),
+      onMessageAdd: (_: InboxMessage, __: number, ___: CourierInboxFeedType) => refreshInbox(),
+      onMessageRemove: (_: InboxMessage, __: number, ___: CourierInboxFeedType) => refreshInbox(),
+      onMessageUpdate: (_: InboxMessage, __: number, ___: CourierInboxFeedType) => refreshInbox(),
+      onUnreadCountChange: (_: number) => refreshInbox()
     });
     CourierInboxDatastore.shared.addDataStoreListener(inboxListener);
 
