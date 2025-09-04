@@ -13,6 +13,7 @@
   "scripts": {
     "build-packages": "yarn exec ./scripts/build-packages",
     "sync": "yarn exec ./scripts/sync",
+    "release": "yarn build-packages && yarn changeset publish",
     "ipqr": "sh ./scripts/ipqr.sh"
   },
   "devDependencies": {
