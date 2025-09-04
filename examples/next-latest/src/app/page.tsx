@@ -7,11 +7,23 @@ export default function Home() {
 
   const courier = useCourier();
 
-  useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
+  async function getSampleJwt(): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(process.env.NEXT_PUBLIC_JWT!);
+      }, 2000);
     });
+  }
+
+  useEffect(() => {
+    async function signInWithJwt() {
+      const jwt = await getSampleJwt();
+      courier.shared.signIn({
+        userId: process.env.NEXT_PUBLIC_USER_ID!,
+        jwt,
+      });
+    }
+    signInWithJwt();
   }, []);
 
   const handleMessageClick = (props: any) => {
@@ -19,7 +31,10 @@ export default function Home() {
   };
 
   return (
-    <CourierInbox onMessageClick={handleMessageClick} />
+    <div>
+      <h1>{courier.inbox.unreadCount}</h1>
+      <CourierInbox onMessageClick={handleMessageClick} />
+    </div>
   );
 
 }
