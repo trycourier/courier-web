@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courier Inbox</title>
+  <link rel="stylesheet" href="./../../styles.css">
+</head>
+
+<body>
+
+  <courier-inbox-toast id="my-toast"></courier-inbox-toast>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    const toast = document.getElementById("my-toast");
+
+    toast.addInboxMessage({
+      title: 'Lorem ipsum dolor sit',
+      body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
+      messageId: "1"
+    });
+
+    setTimeout(() => {
+      toast.addInboxMessage({
+        title: 'Ut enim ad minim',
+        body: 'Ut enim ad minim veniam, quis Ut enim ad minim veniam, quis',
+        messageId: "2"
+      });
+    }, 2000);
+
+    setTimeout(() => {
+      toast.addInboxMessage({
+        title: 'Duis aute irure dolor',
+        body: 'Duis aute irure dolor in reprehe',
+        messageId: "3"
+      });
+    }, 4000);
+
+    setTimeout(() => {
+      toast.addInboxMessage({
+        title: 'Excepteur sint occaecat',
+        body: 'Excepteur sint occaecat non',
+        messageId: "4"
+      });
+    }, 8000);
+  </script>
+
+</body>
+
+</html>
