@@ -215,22 +215,19 @@ export class CourierInboxToast extends CourierBaseElement {
       ${CourierInboxToastItem.id}:nth-last-child(2) {
         top: 12px;
         bottom: -12px;
-        right: 12px;
-        width: calc(100% - 24px);
+        --scale: 0.95
       }
 
       ${CourierInboxToastItem.id}:nth-last-child(3) {
         top: 24px;
         bottom: -24px;
-        right: 24px;
-        width: calc(100% - 48px);
+        --scale: 0.9;
       }
 
       ${CourierInboxToastItem.id}:nth-last-child(n+4) {
         top: 24px;
         bottom: -24px;
-        right: 24px;
-        width: calc(100% - 48px);
+        --scale: 0.9;
         visibility: hidden;
       }
 
@@ -258,7 +255,7 @@ export class CourierInboxToast extends CourierBaseElement {
         ${this._autoDismiss ? 'overflow: hidden;' : ''}
 
         opacity: 0;
-        transform: translate(0, -10px);
+        transform: translate(0, -10px) scaleX(var(--scale, 1));
         animation: show 0.3s ease-in-out forwards;
       }
 
@@ -273,7 +270,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
         100% {
           opacity: 1;
-          transform: none;
+          transform: scaleX(var(--scale, 1));
         }
       }
 
