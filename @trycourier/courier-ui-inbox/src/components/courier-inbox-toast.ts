@@ -301,12 +301,11 @@ export class CourierInboxToast extends CourierBaseElement {
         opacity: 0%;
         top: -10px;
         right: -10px;
-        background-color: #fff;
+        background-color: ${item?.backgroundColor};
         padding: 3px;
         border-radius: 50%;
         font-size: 12pt;
-        color: rgb(65, 65, 65);
-        box-shadow: 0px 2px 5px lightgrey;
+        box-shadow: ${item?.shadow};
         cursor: pointer;
         transition: 0.2s ease-in-out;
       }
