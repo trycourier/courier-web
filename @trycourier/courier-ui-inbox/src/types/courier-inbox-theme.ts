@@ -693,14 +693,14 @@ export const defaultDarkTheme: CourierInboxTheme = {
   },
   toast: {
     item: {
-      backgroundColor: CourierColors.gray[600],
+      backgroundColor: CourierColors.black[500],
       hoverBackgroundColor: CourierColors.gray[200],
-      shadow: `0px 4px 8px -2px ${CourierColors.black[500]}`,
+      shadow: `0px 4px 8px -2px ${CourierColors.gray[400]}`,
       border: `1px solid ${CourierColors.black[500]}`,
       borderRadius: '8px',
       title: {
         size: '11pt',
-        weight: '400',
+        weight: '600',
         color: CourierColors.white[500],
       },
       body: {
@@ -713,7 +713,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         svg: CourierIconSVGs.inbox,
       },
       dismissIcon: {
-        color: CourierColors.black[500],
+        color: CourierColors.white[500],
         svg: CourierIconSVGs.remove,
       },
       autoDismissColor: CourierColors.blue[400],
