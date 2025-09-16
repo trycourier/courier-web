@@ -191,7 +191,8 @@ export class CourierInboxToast extends CourierBaseElement {
   private getStyles(theme: CourierInboxTheme): string {
     const item = theme.toast?.item;
 
-    return `
+    // Styles for the top-level toast container.
+    const toastStyles = `
       ${CourierInboxToast.id} {
         position: fixed;
         z-index: 999;
@@ -200,7 +201,12 @@ export class CourierInboxToast extends CourierBaseElement {
         width: ${this._defaultProps.width};
         height: ${this._defaultProps.height};
       }
+    `;
 
+    // Stack the three most recently shown toast items and hide all others.
+    // Content is transparent for all but the most recent (top) toast item
+    // since it otherwise peeks out in the visible stack items.
+    const toastStackStyles = `
       ${CourierInboxToastItem.id}:last-child {
         top: 0;
         right: 0;
@@ -232,7 +238,14 @@ export class CourierInboxToast extends CourierBaseElement {
       ${CourierInboxToastItem.id}:nth-last-child(n+2) > .content > .text-content > .body {
         color: rgba(255, 255, 255, 0);
       }
+    `;
 
+    // Styles for the visible toast item.
+    // `opacity` and `transform` are the initial states before
+    // the keyframed `animation` show is applied.
+    // The class `dismissing` is added to trigger the `animation` hide
+    // before removing an item.
+    const toastItemStyles = `
       ${CourierInboxToastItem.id} {
         position: absolute;
         box-sizing: border-box;
@@ -253,6 +266,35 @@ export class CourierInboxToast extends CourierBaseElement {
         animation: hide 0.3s ease-in-out forwards;
       }
 
+      @keyframes show {
+        0% {
+          opacity: 0;
+        }
+
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @keyframes hide {
+        0% {
+          opacity: 1;
+          transform: none;
+        }
+
+        100% {
+          opacity: 0;
+          transform: none;
+        }
+      }
+    `;
+
+    // A dismiss icon is visible when the top toast item is in the :hover state.
+    // Auto-dismiss styles are added, but unused if the auto-dismiss progress
+    // bar  is not added in the courier-inbox-toast-item element
+    // (i.e. when auto-dismiss is disabled).
+    const dismissStyles = `
       ${CourierInboxToastItem.id} > .content > .dismiss {
         position: absolute;
         visibility: hidden;
@@ -282,6 +324,15 @@ export class CourierInboxToast extends CourierBaseElement {
         animation: auto-dismiss ${this._autoDismissTimeoutMs}ms ease-in-out forwards;
       }
 
+      @keyframes auto-dismiss {
+        100% {
+          width: 0px;
+        }
+      }
+    `;
+
+    // Styles for the text and icon content.
+    const contentStyles = `
       ${CourierInboxToastItem.id} > .content {
         display: flex;
         gap: 12px;
@@ -311,36 +362,15 @@ export class CourierInboxToast extends CourierBaseElement {
         font-size: ${item?.body?.size};
         color: ${item?.body?.color};
       }
-
-      @keyframes show {
-        0% {
-          opacity: 0;
-        }
-
-        100% {
-          opacity: 1;
-          transform: none;
-        }
-      }
-
-      @keyframes hide {
-        0% {
-          opacity: 1;
-          transform: none;
-        }
-
-        100% {
-          opacity: 0;
-          transform: none;
-        }
-      }
-
-      @keyframes auto-dismiss {
-        100% {
-          width: 0px;
-        }
-      }
     `;
+
+    return [
+      toastStyles,
+      toastStackStyles,
+      toastItemStyles,
+      dismissStyles,
+      contentStyles,
+    ].join('');
   }
 
   /** Get the top item's (i.e. the visible item's) height. */
