@@ -1,4 +1,4 @@
-import { CourierBaseElement, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
@@ -27,7 +27,13 @@ export class CourierInboxToast extends CourierBaseElement {
     right: '30px',
   };
 
-  static observedAttributes = ['auto-dismiss', 'auto-dismiss-timeout-ms'];
+  static observedAttributes = [
+    'auto-dismiss',
+    'auto-dismiss-timeout-ms',
+    'light-theme',
+    'dark-theme',
+    'mode',
+  ];
 
   constructor(props: {
     themeManager?: CourierInboxThemeManager
@@ -41,11 +47,12 @@ export class CourierInboxToast extends CourierBaseElement {
   }
 
   /**
-   * Add an {@link InboxMessage} toast.
+   * Add and immediately show an {@link InboxMessage} toast item.
    *
    * <p>Useful to send test messages while developing with the Courier SDK.</p>
    *
    * <p>Example:</p>
+   *
    * <pre>
    * const toast = document.getElementById("my-toast");
    *
@@ -55,6 +62,8 @@ export class CourierInboxToast extends CourierBaseElement {
    *  messageId: '1'
    * });
    * </pre>
+   *
+   * @param message The message to add as a toast item.
    */
   public addInboxMessage(message: InboxMessage) {
     this.addItem(message);
@@ -76,14 +85,66 @@ export class CourierInboxToast extends CourierBaseElement {
     this._themeManager.cleanup();
   }
 
+  /** Enable auto-dismiss for toast items. */
+  public enableAutoDismiss() {
+    this._autoDismiss = true;
+  }
+
+  /** Disable auto-dismiss for toast items. */
+  public disableAutoDismiss() {
+    this._autoDismiss = false;
+  }
+
+  /**
+   * Set the timeout before auto-dismissing toasts.
+   * Only applicable if auto-dismiss is enabled.
+   * @param timeoutMs The timeout in milliseconds before a toast is dismissed.
+   */
+  public setAutoDismissTimeoutMs(timeoutMs: number) {
+    this._autoDismissTimeoutMs = timeoutMs;
+  }
+
+  /**
+   * Set the light theme for the inbox.
+   * @param theme The light theme object to set.
+   */
+  public setLightTheme(theme: CourierInboxTheme) {
+    this._themeManager.setLightTheme(theme);
+  }
+
+  /**
+   * Set the dark theme for the inbox.
+   * @param theme The dark theme object to set.
+   */
+  public setDarkTheme(theme: CourierInboxTheme) {
+    this._themeManager.setDarkTheme(theme);
+  }
+
   /** @override */
   protected attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
       case 'auto-dismiss':
-        this._autoDismiss = newValue !== 'false';
+        if (newValue && newValue !== 'false') {
+          this.enableAutoDismiss();
+        } else {
+          this.disableAutoDismiss();
+        }
         break;
       case 'auto-dismiss-timeout-ms':
-        this._autoDismissTimeoutMs = parseInt(newValue, /* base= */ 10);
+        this.setAutoDismissTimeoutMs(parseInt(newValue, /* base= */ 10));
+        break;
+      case 'light-theme':
+        if (newValue) {
+          this.setLightTheme(JSON.parse(newValue));
+        }
+        break;
+      case 'dark-theme':
+        if (newValue) {
+          this.setDarkTheme(JSON.parse(newValue));
+        }
+        break;
+      case 'mode':
+        this._themeManager.setMode(newValue as CourierComponentThemeMode);
         break;
     }
   }
