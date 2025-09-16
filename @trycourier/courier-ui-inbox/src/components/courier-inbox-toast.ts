@@ -124,10 +124,10 @@ export class CourierInboxToast extends CourierBaseElement {
   protected attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
       case 'auto-dismiss':
-        if (newValue && newValue !== 'false') {
-          this.enableAutoDismiss();
-        } else {
+        if (newValue === 'false') {
           this.disableAutoDismiss();
+        } else {
+          this.enableAutoDismiss();
         }
         break;
       case 'auto-dismiss-timeout-ms':
@@ -302,6 +302,7 @@ export class CourierInboxToast extends CourierBaseElement {
         top: -10px;
         right: -10px;
         background-color: ${item?.backgroundColor};
+        border: ${item?.border};
         padding: 3px;
         border-radius: 50%;
         font-size: 12pt;
@@ -310,7 +311,7 @@ export class CourierInboxToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id}:last-child:hover > .content > .dismiss {
+      ${CourierInboxToastItem.id}:last-child > .content > .dismiss {
         visibility: visible;
         opacity: 100%;
         transition: 0.2s ease-in-out;
