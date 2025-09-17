@@ -402,8 +402,12 @@ export class CourierInboxToast extends CourierBaseElement {
 
   /** Get the top item's (i.e. the visible item's) height. */
   get topStackItemHeight(): string {
-    const height = (this.lastChild as HTMLDivElement).getBoundingClientRect().height;
-    return `${height}px`;
+    if (this.lastChild) {
+      const height = (this.lastChild as HTMLDivElement).getBoundingClientRect().height;
+      return `${height}px`;
+    }
+
+    return '0px';
   }
 
   /** @override */
