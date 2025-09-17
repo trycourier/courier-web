@@ -29,6 +29,14 @@
       messageId: "1"
     });
 
+    toast.setOnItemDismiss((message) => {
+      console.log(message);
+    });
+
+    toast.setOnItemClick((message) => {
+      console.log(message);
+    });
+
     setTimeout(() => {
       toast.addInboxMessage({
         title: 'Ut enim ad minim',
@@ -48,7 +56,7 @@
     setTimeout(() => {
       toast.addInboxMessage({
         title: 'Excepteur sint occaecat',
-        body: 'Excepteur sint occaecat non',
+        body: 'Excepteur sint occaecat non Excepteur sint occaecat non Excepteur sint occaecat non',
         messageId: "4"
       });
     }, 8000);

@@ -20,6 +20,10 @@ export class CourierInboxToast extends CourierBaseElement {
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
 
+  // Callbacks
+  private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
+  private onItemClickCallback: ((message: InboxMessage) => void) | null = null;
+
   private _defaultProps = {
     width: '380px',
     height: '100px',
@@ -83,6 +87,14 @@ export class CourierInboxToast extends CourierBaseElement {
     this._authListener?.remove();
     this._toastStyle?.remove();
     this._themeManager.cleanup();
+  }
+
+  public setOnItemDismiss(cb: (message: InboxMessage) => void): void {
+    this.onItemDismissCallback = cb;
+  }
+
+  public setOnItemClick(cb: (message: InboxMessage) => void): void {
+    this.onItemClickCallback = cb;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -172,9 +184,17 @@ export class CourierInboxToast extends CourierBaseElement {
       themeManager: this._themeManager
     });
     item.setMessage(message);
+
+    if (this.onItemClickCallback) {
+      item.setOnItemClick(this.onItemClickCallback);
+    }
+
     item.setOnItemDismiss((_) => {
-      item.remove();
       stack.style.height = this.topStackItemHeight;
+
+      if (this.onItemDismissCallback) {
+        this.onItemDismissCallback(message);
+      }
     });
     this.appendChild(item);
     this.style.height = this.topStackItemHeight;
@@ -253,6 +273,7 @@ export class CourierInboxToast extends CourierBaseElement {
         border-radius: ${item?.borderRadius};
         transition: 0.2s ease-in-out;
         ${this._autoDismiss ? 'overflow: hidden;' : ''}
+        cursor: default;
 
         opacity: 0;
         transform: translate(0, -10px) scaleX(var(--scale, 1));
@@ -284,6 +305,10 @@ export class CourierInboxToast extends CourierBaseElement {
           opacity: 0;
           transform: none;
         }
+      }
+
+      ${CourierInboxToastItem.id}.clickable {
+        cursor: pointer;
       }
     `;
 
