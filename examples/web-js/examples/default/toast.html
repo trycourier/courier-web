@@ -23,8 +23,22 @@
 
     const toast = document.getElementById("my-toast");
 
-    toast.setOnItemClick((message) => {
-      console.log(message);
+    // toast.setToastItemContent((props) => {
+    //   const el = document.createElement('div');
+    //   el.textContent = props.message.title;
+    //   return el;
+    // });
+
+    toast.setOnItemAdd((el, message) => {
+      console.log('Added', el, message);
+
+      setTimeout(() => {
+        el.dismiss();
+      }, 1000)
+    });
+
+    toast.setOnItemClick((el, message) => {
+      console.log('Clicked', el, message);
     });
 
     toast.addInboxMessage({
