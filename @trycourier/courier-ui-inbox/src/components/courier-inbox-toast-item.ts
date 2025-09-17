@@ -13,7 +13,9 @@ export class CourierInboxToastItem extends CourierBaseElement {
   private readonly _autoDismiss: boolean;
   private readonly _autoDismissTimeoutMs?: number;
 
-  private onItemDismiss: ((message: InboxMessage) => void) | null = null;
+  // Callbacks
+  private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
+  private onItemClickCallback: ((message: InboxMessage) => void) | null = null;
 
   constructor(props: {
     autoDismiss: boolean,
@@ -74,6 +76,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
     while (this.firstChild) {
       this.removeChild(this.firstChild);
     }
+    this.removeEventListener('click', this.onClick);
 
     if (this._autoDismiss) {
       const autoDismiss = document.createElement('div');
@@ -82,6 +85,12 @@ export class CourierInboxToastItem extends CourierBaseElement {
 
       setTimeout(this.dismiss.bind(this, CourierInboxToastItem.dismissAnimationTimeoutMs), this._autoDismissTimeoutMs);
     }
+
+    if (this._message?.actions && this._message.actions.length > 0) {
+      this.classList.add('clickable');
+    }
+
+    this.addEventListener('click', this.onClick);
 
     const content = document.createElement('div');
     content.classList.add('content');
@@ -115,8 +124,10 @@ export class CourierInboxToastItem extends CourierBaseElement {
     dismiss.classList.add('dismiss');
     dismiss.addEventListener('click', (event) => {
       event.stopPropagation();
-      if (this._message && this.onItemDismiss) {
-        this.onItemDismiss(this._message);
+      this.remove();
+
+      if (this._message && this.onItemDismissCallback) {
+        this.onItemDismissCallback(this._message);
       }
     });
     content.appendChild(dismiss);
@@ -128,12 +139,28 @@ export class CourierInboxToastItem extends CourierBaseElement {
   }
 
   public setOnItemDismiss(cb: (message: InboxMessage) => void): void {
-    this.onItemDismiss = cb;
+    this.onItemDismissCallback = cb;
+  }
+
+  public setOnItemClick(cb: (message: InboxMessage) => void): void {
+    this.onItemClickCallback = cb;
   }
 
   private dismiss(timeoutMs: number) {
     this.classList.add('dismissing');
     setTimeout(this.remove.bind(this), timeoutMs);
+  }
+
+  private onClick(event: Event) {
+    event.stopPropagation();
+    if (this._message && this.onItemClickCallback) {
+      this.onItemClickCallback(this._message);
+    }
+
+    if (this._message?.actions && this._message.actions.length > 0) {
+      const url = this._message.actions[0].href;
+      window.open(url);
+    }
   }
 }
 
