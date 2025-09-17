@@ -1,19 +1,22 @@
-import { CourierBaseElement, CourierIcon, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxToastItemFactoryProps } from "../types/factories";
 
 export class CourierInboxToastItem extends CourierBaseElement {
+  /** The animation duration to fade out a dismissed toast before its element is removed. */
   private static readonly dismissAnimationTimeoutMs = 300;
 
   private _themeManager: CourierInboxThemeManager;
   private _themeSubscription: CourierInboxThemeSubscription;
-  private _toastItemStyle?: HTMLStyleElement;
   private _message?: InboxMessage;
   private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
 
+  /** Whether this toast item is auto-dismissed. */
   private readonly _autoDismiss: boolean;
+
+  /** The timeout before the toast item is auto-dismissed, applicable if _autoDismiss is true. */
   private readonly _autoDismissTimeoutMs?: number;
 
   // Callbacks
@@ -36,29 +39,73 @@ export class CourierInboxToastItem extends CourierBaseElement {
     });
   }
 
+  /**
+   * Set the message for this toast item.
+   *
+   * @param message The {@link InboxMessage} to render in this toast item.
+   */
+  public setMessage(message: InboxMessage) {
+    this._message = message;
+    this.render();
+  }
+
+  /**
+   * Registers a handler called when the item is dismissed.
+   *
+   * @param handler A function to be called when the item is dismissed.
+   */
+  public setOnItemDismiss(handler: (message: InboxMessage) => void): void {
+    this.onItemDismissCallback = handler;
+  }
+
+  /**
+   * Registers a handler for item click events.
+   *
+   * @param handler A function to be called when the item is clicked.
+   */
+  public setOnItemClick(handler: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
+    this.onItemClickCallback = handler;
+  }
+
+  /**
+   * Set a custom content element for the toast item, reusing the {@link CourierInboxToastItem}
+   * container, which provides styling, animations, and event handling.
+   *
+   * @param factory Function that returns an {@link HTMLElement} to render as the content.
+   */
+  public setToastItemContent(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+    this._customToastItemContent = factory;
+  }
+
+  /**
+   * Dismiss the toast item.
+   *
+   * <p>By default the toast fades out before it's removed. Set {@param timeoutMs} to
+   * `0` to remove the item immediately.
+   *
+   * @param timeoutMs the animation duration to fade out the toast item
+   */
+  public dismiss(timeoutMs: number = CourierInboxToastItem.dismissAnimationTimeoutMs) {
+    this.classList.add('dismissing');
+    setTimeout(this.remove.bind(this), timeoutMs);
+
+    if (this._message && this.onItemDismissCallback) {
+      this.onItemDismissCallback(this._message);
+    }
+  }
+
   /** @override */
   protected onComponentMounted(): void {
-    this._toastItemStyle = injectGlobalStyle(CourierInboxToastItem.id, this.getStyles(this.theme));
-
     this.render();
   }
 
   /** @override */
   protected onComponentUnmounted(): void {
-    this._toastItemStyle?.remove();
     this._themeSubscription.unsubscribe();
   }
 
   get theme(): CourierInboxTheme {
     return this._themeManager.getTheme();
-  }
-
-  private getStyles(theme: CourierInboxTheme): string {
-    const item = theme.toast?.item;
-
-    return `
-
-    `;
   }
 
   /**
@@ -75,6 +122,14 @@ export class CourierInboxToastItem extends CourierBaseElement {
     return [];
   }
 
+  /**
+   * Render a toast item, either with default content or custom content if
+   * a content factory function is provided.
+   *
+   * Note: Styles for the toast item are set in {@link CourierInboxToast} since
+   * toasts are ephemeral by nature and we want to avoid adding/removing/duplicating
+   * styles as {@link CourierInboxToastItem}s enter/exit.
+   */
   private render(): void {
     // Reset existing content and top-level listeners
     while (this.firstChild) {
@@ -126,6 +181,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
     this.appendChild(dismiss);
   }
 
+  /** Create the default content for this item. */
   private createDefaultContent(): HTMLElement {
     const content = document.createElement('div');
     content.classList.add('content');
@@ -152,32 +208,6 @@ export class CourierInboxToastItem extends CourierBaseElement {
     body.textContent = this._message?.preview ?? this._message?.body ?? '';
     textContent.appendChild(body);
     return content;
-  }
-
-  public setMessage(message: InboxMessage) {
-    this._message = message;
-    this.render();
-  }
-
-  public setOnItemDismiss(cb: (message: InboxMessage) => void): void {
-    this.onItemDismissCallback = cb;
-  }
-
-  public setOnItemClick(cb: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
-    this.onItemClickCallback = cb;
-  }
-
-  public setToastItemContent(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
-    this._customToastItemContent = factory;
-  }
-
-  public dismiss(timeoutMs: number = CourierInboxToastItem.dismissAnimationTimeoutMs) {
-    this.classList.add('dismissing');
-    setTimeout(this.remove.bind(this), timeoutMs);
-
-    if (this._message && this.onItemDismissCallback) {
-      this.onItemDismissCallback(this._message);
-    }
   }
 
   private onClick(event: Event) {
