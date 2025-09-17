@@ -6,6 +6,7 @@ import { CourierInboxToastItem } from "./courier-inbox-toast-item";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxToastItemFactoryProps } from "../types/factories";
 
 export class CourierInboxToast extends CourierBaseElement {
 
@@ -19,10 +20,13 @@ export class CourierInboxToast extends CourierBaseElement {
 
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
+  private _customToastItem?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
+  private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
 
   // Callbacks
   private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
-  private onItemClickCallback: ((message: InboxMessage) => void) | null = null;
+  private onItemClickCallback: ((toastItem: CourierInboxToastItem, message: InboxMessage) => void) | null = null;
+  private onItemAddCallback: ((toastItem: CourierInboxToastItem | HTMLElement, message: InboxMessage) => void) | null = null;
 
   private _defaultProps = {
     width: '380px',
@@ -77,8 +81,12 @@ export class CourierInboxToast extends CourierBaseElement {
     this.onItemDismissCallback = cb;
   }
 
-  public setOnItemClick(cb: (message: InboxMessage) => void): void {
+  public setOnItemClick(cb: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
     this.onItemClickCallback = cb;
+  }
+
+  public setOnItemAdd(cb: (toastItem: CourierInboxToastItem | HTMLElement, message: InboxMessage) => void): void {
+    this.onItemAddCallback = cb;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -116,8 +124,21 @@ export class CourierInboxToast extends CourierBaseElement {
     this._themeManager.setDarkTheme(theme);
   }
 
+  /**
+   * Set the theme mode manually.
+   *
+   * @param mode The theme mode, one of "dark", "light", or "system".
+   */
   public setMode(mode: CourierComponentThemeMode) {
     this._themeManager.setMode(mode);
+  }
+
+  public setToastItem(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+    this._customToastItem = factory;
+  }
+
+  public setToastItemContent(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+    this._customToastItemContent = factory;
   }
 
   /** @override */
@@ -187,19 +208,40 @@ export class CourierInboxToast extends CourierBaseElement {
     }
   }
 
-  private addItem(message: InboxMessage) {
-    const stack = this;
+  private addItem(message: InboxMessage): void {
+    const item = this.getToastItem(message);
+    this.appendChild(item);
+    this.style.height = this.topStackItemHeight;
+
+    if (this.onItemAddCallback) {
+      this.onItemAddCallback(item, message);
+    }
+  }
+
+  private getToastItem(message: InboxMessage): CourierInboxToastItem | HTMLElement {
+    if (this._customToastItem) {
+      return this._customToastItem({
+        message,
+      });
+    }
+
     const item = new CourierInboxToastItem({
       autoDismiss: this._autoDismiss,
       autoDismissTimeoutMs: this._autoDismissTimeoutMs,
       themeManager: this._themeManager
     });
+
+    if (this._customToastItemContent) {
+      item.setToastItemContent(this._customToastItemContent);
+    }
+
     item.setMessage(message);
 
     if (this.onItemClickCallback) {
       item.setOnItemClick(this.onItemClickCallback);
     }
 
+    const stack = this;
     item.setOnItemDismiss((_) => {
       stack.style.height = this.topStackItemHeight;
 
@@ -207,8 +249,8 @@ export class CourierInboxToast extends CourierBaseElement {
         this.onItemDismissCallback(message);
       }
     });
-    this.appendChild(item);
-    this.style.height = this.topStackItemHeight;
+
+    return item;
   }
 
   private datastoreAddMessageListener(message: InboxMessage, _: number, feedType: CourierInboxFeedType) {
@@ -333,7 +375,7 @@ export class CourierInboxToast extends CourierBaseElement {
     // bar  is not added in the courier-inbox-toast-item element
     // (i.e. when auto-dismiss is disabled).
     const dismissStyles = `
-      ${CourierInboxToastItem.id} > .content > .dismiss {
+      ${CourierInboxToastItem.id} > .dismiss {
         position: absolute;
         visibility: hidden;
         opacity: 0%;
@@ -349,7 +391,7 @@ export class CourierInboxToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id}:last-child > .content > .dismiss {
+      ${CourierInboxToastItem.id}:last-child > .dismiss {
         visibility: visible;
         opacity: 100%;
         transition: 0.2s ease-in-out;

@@ -2,6 +2,7 @@ import { CourierBaseElement, CourierIcon, injectGlobalStyle, registerElement } f
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { InboxMessage } from "@trycourier/courier-js";
+import { CourierInboxToastItemFactoryProps } from "../types/factories";
 
 export class CourierInboxToastItem extends CourierBaseElement {
   private static readonly dismissAnimationTimeoutMs = 300;
@@ -10,12 +11,14 @@ export class CourierInboxToastItem extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
   private _toastItemStyle?: HTMLStyleElement;
   private _message?: InboxMessage;
+  private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
+
   private readonly _autoDismiss: boolean;
   private readonly _autoDismissTimeoutMs?: number;
 
   // Callbacks
   private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
-  private onItemClickCallback: ((message: InboxMessage) => void) | null = null;
+  private onItemClickCallback: ((toastItem: CourierInboxToastItem, message: InboxMessage) => void) | null = null;
 
   constructor(props: {
     autoDismiss: boolean,
@@ -73,11 +76,17 @@ export class CourierInboxToastItem extends CourierBaseElement {
   }
 
   private render(): void {
+    // Reset existing content and top-level listeners
     while (this.firstChild) {
       this.removeChild(this.firstChild);
     }
     this.removeEventListener('click', this.onClick);
 
+    if (!this._message) {
+      return;
+    }
+
+    // Auto-dismiss
     if (this._autoDismiss) {
       const autoDismiss = document.createElement('div');
       autoDismiss.classList.add('auto-dismiss');
@@ -86,12 +95,38 @@ export class CourierInboxToastItem extends CourierBaseElement {
       setTimeout(this.dismiss.bind(this, CourierInboxToastItem.dismissAnimationTimeoutMs), this._autoDismissTimeoutMs);
     }
 
+    // Click-ability
     if (this.onItemClickCallback) {
       this.classList.add('clickable');
     }
 
     this.addEventListener('click', this.onClick);
 
+    // Content
+    if (this._customToastItemContent) {
+      this.appendChild(this._customToastItemContent({ message: this._message }));
+    } else {
+      this.appendChild(this.createDefaultContent());
+    }
+
+    // Dismiss button
+    const dismiss = new CourierIcon(
+      this.theme.toast?.item?.dismissIcon?.color,
+      this.theme.toast?.item?.dismissIcon?.svg,
+    );
+    dismiss.classList.add('dismiss');
+    dismiss.addEventListener('click', (event) => {
+      event.stopPropagation();
+      this.remove();
+
+      if (this._message && this.onItemDismissCallback) {
+        this.onItemDismissCallback(this._message);
+      }
+    });
+    this.appendChild(dismiss);
+  }
+
+  private createDefaultContent(): HTMLElement {
     const content = document.createElement('div');
     content.classList.add('content');
     this.append(content);
@@ -116,21 +151,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
     body.classList.add('body');
     body.textContent = this._message?.preview ?? this._message?.body ?? '';
     textContent.appendChild(body);
-
-    const dismiss = new CourierIcon(
-      this.theme.toast?.item?.dismissIcon?.color,
-      this.theme.toast?.item?.dismissIcon?.svg,
-    );
-    dismiss.classList.add('dismiss');
-    dismiss.addEventListener('click', (event) => {
-      event.stopPropagation();
-      this.remove();
-
-      if (this._message && this.onItemDismissCallback) {
-        this.onItemDismissCallback(this._message);
-      }
-    });
-    content.appendChild(dismiss);
+    return content;
   }
 
   public setMessage(message: InboxMessage) {
@@ -142,19 +163,27 @@ export class CourierInboxToastItem extends CourierBaseElement {
     this.onItemDismissCallback = cb;
   }
 
-  public setOnItemClick(cb: (message: InboxMessage) => void): void {
+  public setOnItemClick(cb: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
     this.onItemClickCallback = cb;
   }
 
-  private dismiss(timeoutMs: number) {
+  public setToastItemContent(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+    this._customToastItemContent = factory;
+  }
+
+  public dismiss(timeoutMs: number = CourierInboxToastItem.dismissAnimationTimeoutMs) {
     this.classList.add('dismissing');
     setTimeout(this.remove.bind(this), timeoutMs);
+
+    if (this._message && this.onItemDismissCallback) {
+      this.onItemDismissCallback(this._message);
+    }
   }
 
   private onClick(event: Event) {
     event.stopPropagation();
     if (this._message && this.onItemClickCallback) {
-      this.onItemClickCallback(this._message);
+      this.onItemClickCallback(this, this._message);
     }
   }
 }

@@ -44,3 +44,8 @@ export type CourierInboxPaginationItemFactoryProps = {
 export type CourierInboxMenuButtonFactoryProps = {
   unreadCount: number;
 }
+
+// Toast Item
+export type CourierInboxToastItemFactoryProps = {
+  message: InboxMessage;
+}
