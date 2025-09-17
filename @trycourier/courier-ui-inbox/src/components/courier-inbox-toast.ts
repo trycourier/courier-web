@@ -262,6 +262,7 @@ export class CourierInboxToast extends CourierBaseElement {
     // the keyframed `animation` show is applied.
     // The class `dismissing` is added to trigger the `animation` hide
     // before removing an item.
+    // Only the top item is clickable.
     const toastItemStyles = `
       ${CourierInboxToastItem.id} {
         position: absolute;
@@ -307,8 +308,12 @@ export class CourierInboxToast extends CourierBaseElement {
         }
       }
 
-      ${CourierInboxToastItem.id}.clickable {
+      ${CourierInboxToastItem.id}.clickable:last-child {
         cursor: pointer;
+      }
+
+      ${CourierInboxToastItem.id}.clickable:nth-last-child(n+2) {
+        pointer-events: none;
       }
     `;
 

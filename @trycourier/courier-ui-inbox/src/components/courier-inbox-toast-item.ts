@@ -86,7 +86,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
       setTimeout(this.dismiss.bind(this, CourierInboxToastItem.dismissAnimationTimeoutMs), this._autoDismissTimeoutMs);
     }
 
-    if (this._message?.actions && this._message.actions.length > 0) {
+    if (this.onItemClickCallback) {
       this.classList.add('clickable');
     }
 
@@ -155,11 +155,6 @@ export class CourierInboxToastItem extends CourierBaseElement {
     event.stopPropagation();
     if (this._message && this.onItemClickCallback) {
       this.onItemClickCallback(this._message);
-    }
-
-    if (this._message?.actions && this._message.actions.length > 0) {
-      const url = this._message.actions[0].href;
-      window.open(url);
     }
   }
 }
