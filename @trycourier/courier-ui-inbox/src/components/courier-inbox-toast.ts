@@ -46,7 +46,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     this._themeManager = props?.themeManager ?? new CourierInboxThemeManager(defaultLightTheme);
     this._themeSubscription = this._themeManager.subscribe((_: CourierInboxTheme) => {
-      // this.render();
+      this.refreshStyles();
     });
   }
 
@@ -71,22 +71,6 @@ export class CourierInboxToast extends CourierBaseElement {
    */
   public addInboxMessage(message: InboxMessage) {
     this.addItem(message);
-  }
-
-  /** @override */
-  protected onComponentMounted(): void {
-    this._toastStyle = injectGlobalStyle(CourierInboxToast.id, this.getStyles(this.theme));
-
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
-    Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
-  }
-
-  /** @override */
-  protected onComponentUnmounted(): void {
-    this._datastoreListener.remove();
-    this._authListener?.remove();
-    this._toastStyle?.remove();
-    this._themeManager.cleanup();
   }
 
   public setOnItemDismiss(cb: (message: InboxMessage) => void): void {
@@ -132,6 +116,27 @@ export class CourierInboxToast extends CourierBaseElement {
     this._themeManager.setDarkTheme(theme);
   }
 
+  public setMode(mode: CourierComponentThemeMode) {
+    this._themeManager.setMode(mode);
+  }
+
+  /** @override */
+  protected onComponentMounted(): void {
+    this._toastStyle = injectGlobalStyle(CourierInboxToast.id, this.getStyles(this.theme));
+
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+    Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
+  }
+
+  /** @override */
+  protected onComponentUnmounted(): void {
+    this._datastoreListener.remove();
+    this._authListener?.remove();
+    this._toastStyle?.remove();
+    this._themeManager.cleanup();
+    this._themeSubscription.unsubscribe();
+  }
+
   /** @override */
   protected attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
@@ -161,8 +166,14 @@ export class CourierInboxToast extends CourierBaseElement {
     }
   }
 
-  get theme(): CourierInboxTheme {
+  private get theme(): CourierInboxTheme {
     return this._themeManager.getTheme();
+  }
+
+  private refreshStyles() {
+    if (this._toastStyle) {
+      this._toastStyle.textContent = this.getStyles(this.theme);
+    }
   }
 
   private authChangedCallback() {
@@ -172,7 +183,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
   private removeAllItems(): void {
     while (this.firstChild) {
-      this.firstChild.remove();
+      this.removeChild(this.firstChild);
     }
   }
 
@@ -401,7 +412,7 @@ export class CourierInboxToast extends CourierBaseElement {
   }
 
   /** Get the top item's (i.e. the visible item's) height. */
-  get topStackItemHeight(): string {
+  private get topStackItemHeight(): string {
     if (this.lastChild) {
       const height = (this.lastChild as HTMLDivElement).getBoundingClientRect().height;
       return `${height}px`;
