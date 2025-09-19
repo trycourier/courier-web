@@ -2,7 +2,7 @@ import { CourierBaseElement, CourierIcon, registerElement } from "@trycourier/co
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxToastItemFactoryProps } from "../types/factories";
+import { CourierInboxToastItemClickedEvent, CourierInboxToastItemDismissedEvent, CourierInboxToastItemFactoryProps } from "../types/factories";
 
 export class CourierInboxToastItem extends CourierBaseElement {
   /** The animation duration to fade out a dismissed toast before its element is removed. */
@@ -20,8 +20,8 @@ export class CourierInboxToastItem extends CourierBaseElement {
   private readonly _autoDismissTimeoutMs?: number;
 
   // Callbacks
-  private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
-  private onItemClickCallback: ((toastItem: CourierInboxToastItem, message: InboxMessage) => void) | null = null;
+  private onItemDismissCallback: ((props: CourierInboxToastItemDismissedEvent) => void) | null = null;
+  private onItemClickCallback: ((props: CourierInboxToastItemClickedEvent) => void) | null = null;
 
   constructor(props: {
     autoDismiss: boolean,
@@ -54,7 +54,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
    *
    * @param handler A function to be called when the item is dismissed.
    */
-  public setOnItemDismiss(handler: (message: InboxMessage) => void): void {
+  public onItemDismissed(handler: (props: CourierInboxToastItemDismissedEvent) => void): void {
     this.onItemDismissCallback = handler;
   }
 
@@ -63,7 +63,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
    *
    * @param handler A function to be called when the item is clicked.
    */
-  public setOnItemClick(handler: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
+  public onItemClicked(handler: (props: CourierInboxToastItemClickedEvent) => void): void {
     this.onItemClickCallback = handler;
   }
 
@@ -90,7 +90,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
     setTimeout(this.remove.bind(this), timeoutMs);
 
     if (this._message && this.onItemDismissCallback) {
-      this.onItemDismissCallback(this._message);
+      this.onItemDismissCallback({ message: this._message });
     }
   }
 
@@ -141,13 +141,26 @@ export class CourierInboxToastItem extends CourierBaseElement {
       return;
     }
 
+    // Content and the auto-dismiss bar are wrapped in a container that hides overflow.
+    // The standard dismiss button overflows the toast.
+    const overflowHiddenContainer = document.createElement('div');
+    overflowHiddenContainer.classList.add('overflow-hidden-container');
+    this.appendChild(overflowHiddenContainer);
+
     // Auto-dismiss
     if (this._autoDismiss) {
       const autoDismiss = document.createElement('div');
       autoDismiss.classList.add('auto-dismiss');
-      this.append(autoDismiss);
+      overflowHiddenContainer.append(autoDismiss);
 
       setTimeout(this.dismiss.bind(this, CourierInboxToastItem.dismissAnimationTimeoutMs), this._autoDismissTimeoutMs);
+    }
+
+    // Content
+    if (this._customToastItemContent) {
+      overflowHiddenContainer.appendChild(this._customToastItemContent({ message: this._message }));
+    } else {
+      overflowHiddenContainer.appendChild(this.createDefaultContent());
     }
 
     // Click-ability
@@ -156,13 +169,6 @@ export class CourierInboxToastItem extends CourierBaseElement {
     }
 
     this.addEventListener('click', this.onClick);
-
-    // Content
-    if (this._customToastItemContent) {
-      this.appendChild(this._customToastItemContent({ message: this._message }));
-    } else {
-      this.appendChild(this.createDefaultContent());
-    }
 
     // Dismiss button
     const dismiss = new CourierIcon(
@@ -175,7 +181,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
       this.remove();
 
       if (this._message && this.onItemDismissCallback) {
-        this.onItemDismissCallback(this._message);
+        this.onItemDismissCallback({ message: this._message });
       }
     });
     this.appendChild(dismiss);
@@ -213,7 +219,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
   private onClick(event: Event) {
     event.stopPropagation();
     if (this._message && this.onItemClickCallback) {
-      this.onItemClickCallback(this, this._message);
+      this.onItemClickCallback({ toastItem: this, message: this._message });
     }
   }
 }
