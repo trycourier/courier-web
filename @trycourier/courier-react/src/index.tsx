@@ -5,6 +5,7 @@ Courier.shared.courierUserAgentVersion = __PACKAGE_VERSION__;
 
 export { CourierInbox } from './components/courier-inbox';
 export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
+export { CourierToast } from './components/courier-toast';
 
 export { useCourier } from '@trycourier/courier-react-components';
 

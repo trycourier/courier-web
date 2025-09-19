@@ -8,6 +8,7 @@ export { useCourier } from './hooks/use-courier';
 // Export components and their props
 export { CourierInboxComponent } from './components/courier-inbox-component';
 export { CourierInboxPopupMenuComponent } from './components/courier-inbox-popup-menu-component';
+export { CourierToastComponent } from './components/courier-toast-component';
 
 export type {
   CourierInboxProps
@@ -16,6 +17,10 @@ export type {
 export type {
   CourierInboxPopupMenuProps,
 } from './components/courier-inbox-popup-menu-component';
+
+export type {
+  CourierToastProps,
+} from './components/courier-toast-component';
 
 // Export render context, to be provided by dependent components
 export { CourierRenderContext } from './context/render-context';

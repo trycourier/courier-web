@@ -6,7 +6,7 @@ import { CourierInboxToastItem } from "./courier-inbox-toast-item";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxToastItemFactoryProps } from "../types/factories";
+import { CourierInboxToastItemAddedEvent, CourierInboxToastItemClickedEvent, CourierInboxToastItemDismissedEvent, CourierInboxToastItemFactoryProps } from "../types/factories";
 
 export class CourierInboxToast extends CourierBaseElement {
 
@@ -24,9 +24,9 @@ export class CourierInboxToast extends CourierBaseElement {
   private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
 
   // Callbacks
-  private onItemDismissCallback: ((message: InboxMessage) => void) | null = null;
-  private onItemClickCallback: ((toastItem: CourierInboxToastItem, message: InboxMessage) => void) | null = null;
-  private onItemAddCallback: ((toastItem: CourierInboxToastItem | HTMLElement, message: InboxMessage) => void) | null = null;
+  private onItemDismissedCallback?: ((props: CourierInboxToastItemDismissedEvent) => void);
+  private onItemClickedCallback?: ((props: CourierInboxToastItemClickedEvent) => void);
+  private onItemAddedCallback?: ((props: CourierInboxToastItemAddedEvent) => void);
 
   private _defaultProps = {
     width: '380px',
@@ -74,19 +74,19 @@ export class CourierInboxToast extends CourierBaseElement {
    * @param message The message to add as a toast item.
    */
   public addInboxMessage(message: InboxMessage) {
-    this.addItem(message);
+    this.addToastItem(message);
   }
 
-  public setOnItemDismiss(cb: (message: InboxMessage) => void): void {
-    this.onItemDismissCallback = cb;
+  public onToastItemDismissed(cb?: (props: CourierInboxToastItemDismissedEvent) => void): void {
+    this.onItemDismissedCallback = cb;
   }
 
-  public setOnItemClick(cb: (toastItem: CourierInboxToastItem, message: InboxMessage) => void): void {
-    this.onItemClickCallback = cb;
+  public onToastItemClicked(cb?: (props: CourierInboxToastItemClickedEvent) => void): void {
+    this.onItemClickedCallback = cb;
   }
 
-  public setOnItemAdd(cb: (toastItem: CourierInboxToastItem | HTMLElement, message: InboxMessage) => void): void {
-    this.onItemAddCallback = cb;
+  public onToastItemAdded(cb?: (props: CourierInboxToastItemAddedEvent) => void): void {
+    this.onItemAddedCallback = cb;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -147,6 +147,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
     Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
+    CourierInboxDatastore.shared.listenForUpdates();
   }
 
   /** @override */
@@ -208,13 +209,13 @@ export class CourierInboxToast extends CourierBaseElement {
     }
   }
 
-  private addItem(message: InboxMessage): void {
-    const item = this.getToastItem(message);
-    this.appendChild(item);
+  private addToastItem(message: InboxMessage): void {
+    const toastItem = this.getToastItem(message);
+    this.appendChild(toastItem);
     this.style.height = this.topStackItemHeight;
 
-    if (this.onItemAddCallback) {
-      this.onItemAddCallback(item, message);
+    if (this.onItemAddedCallback) {
+      this.onItemAddedCallback({ toastItem, message });
     }
   }
 
@@ -237,16 +238,16 @@ export class CourierInboxToast extends CourierBaseElement {
 
     item.setMessage(message);
 
-    if (this.onItemClickCallback) {
-      item.setOnItemClick(this.onItemClickCallback);
+    if (this.onItemClickedCallback) {
+      item.onItemClicked(this.onItemClickedCallback);
     }
 
     const stack = this;
-    item.setOnItemDismiss((_) => {
+    item.onItemDismissed((_) => {
       stack.style.height = this.topStackItemHeight;
 
-      if (this.onItemDismissCallback) {
-        this.onItemDismissCallback(message);
+      if (this.onItemDismissedCallback) {
+        this.onItemDismissedCallback({ message });
       }
     });
 
@@ -258,7 +259,7 @@ export class CourierInboxToast extends CourierBaseElement {
       return;
     }
 
-    this.addItem(message);
+    this.addToastItem(message);
   }
 
   private getStyles(theme: CourierInboxTheme): string {
@@ -304,8 +305,8 @@ export class CourierInboxToast extends CourierBaseElement {
         visibility: hidden;
       }
 
-      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .content > .text-content > .title,
-      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .content > .text-content > .body {
+      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .title,
+      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .body {
         color: rgba(255, 255, 255, 0);
       }
     `;
@@ -326,12 +327,18 @@ export class CourierInboxToast extends CourierBaseElement {
         border: ${item?.border};
         border-radius: ${item?.borderRadius};
         transition: 0.2s ease-in-out;
-        ${this._autoDismiss ? 'overflow: hidden;' : ''}
         cursor: default;
 
         opacity: 0;
         transform: translate(0, -10px) scaleX(var(--scale, 1));
         animation: show 0.3s ease-in-out forwards;
+      }
+
+      ${CourierInboxToastItem.id} > .overflow-hidden-container {
+        height: 100%;
+        width: 100%;
+        border-radius: ${item?.borderRadius};
+        overflow: hidden;
       }
 
       ${CourierInboxToastItem.id}.dismissing {
@@ -391,13 +398,13 @@ export class CourierInboxToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id}:last-child > .dismiss {
+      ${CourierInboxToastItem.id}${this._autoDismiss ? ':hover' : ''}:last-child > .dismiss {
         visibility: visible;
         opacity: 100%;
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id} > .auto-dismiss {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .auto-dismiss {
         width: 100%;
         height: 5px;
         background-color: ${item?.autoDismissColor};
@@ -413,7 +420,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     // Styles for the text and icon content.
     const contentStyles = `
-      ${CourierInboxToastItem.id} > .content {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content {
         display: flex;
         gap: 12px;
         align-items: center;
@@ -422,21 +429,21 @@ export class CourierInboxToast extends CourierBaseElement {
         padding: 16px;
       }
 
-      ${CourierInboxToastItem.id} > .content > .text-content {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content {
         line-height: 150%;
       }
 
-      ${CourierInboxToastItem.id} > .content > .icon {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .icon {
       }
 
-      ${CourierInboxToastItem.id} > .content > .text-content > .title {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content > .title {
         margin: 0;
         font-weight: ${item?.title?.weight};
         font-size: ${item?.title?.size};
         color: ${item?.title?.color};
       }
 
-      ${CourierInboxToastItem.id} > .content > .text-content > .body {
+      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content > .body {
         margin: 0;
         font-weight: ${item?.body?.weight};
         font-size: ${item?.body?.size};
