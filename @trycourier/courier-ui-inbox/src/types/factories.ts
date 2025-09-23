@@ -1,6 +1,6 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
-import { CourierInboxToastItem } from "../components/courier-inbox-toast-item";
+import { CourierInboxToastItem } from "../components/courier-toast-item";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
