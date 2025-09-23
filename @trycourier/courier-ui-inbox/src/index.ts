@@ -10,6 +10,7 @@ export * from './types/feed-type';
 export * from './types/courier-inbox-theme';
 export * from './types/courier-inbox-theme-manager';
 export * from './types/inbox-data-set';
+export * from './types/toast';
 export * from './datastore/datastore';
 export * from './datastore/datastore-listener';
 export * from './datastore/datatore-events';

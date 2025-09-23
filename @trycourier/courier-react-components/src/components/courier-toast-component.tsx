@@ -1,18 +1,29 @@
-import { useRef, useEffect, forwardRef, ReactNode, useContext } from "react";
+import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties } from "react";
 import { CourierInboxTheme, CourierInboxToast as CourierInboxToastElement, CourierInboxToastItemFactoryProps, CourierInboxToastItemAddedEvent, CourierInboxToastItemDismissedEvent } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
+import { CourierToastDismissButtonOption } from "@trycourier/courier-ui-inbox/dist/types/toast";
 
 export interface CourierToastProps {
-  /** Height of the toast container. Defaults to "auto" and will resize itself based on it's children. */
-  height?: string;
-
-  width?: string;
-
-  top?: string;
-
-  right?: string;
+  /**
+   * Styles applied to the {@link CourierToast} component.
+   *
+   * By default, the component has the following styles:
+   *
+   * ```css
+   * position: 'fixed';
+   * width: '380px';
+   * top: '30px';
+   * right: '30px';
+   * z-index: 999;
+   * ```
+   *
+   * Setting styles directly on the component is useful to customize the component's
+   * position and layout. Setting `height` is effectively a no-op, as `height`
+   * will be dynamically set by the component as toast items are added and removed.
+   */
+  style?: CSSProperties;
 
   /** Theme object for light mode */
   lightTheme?: CourierInboxTheme;
@@ -23,9 +34,13 @@ export interface CourierToastProps {
   /** Theme mode: "light", "dark", or "system". Defaults to "system" */
   mode?: CourierComponentThemeMode;
 
+  /** Enable toasts to auto-dismiss, including a timer bar at the top of the toast. Defaults to false. */
   autoDismiss?: boolean;
 
+  /** The timeout before a toast auto-dismisses, if {@link CourierToastProps.autoDismiss} is enabled. Defaults to 5000ms. */
   autoDismissTimeoutMs?: number;
+
+  dismissButton?: CourierToastDismissButtonOption;
 
   /** Callback fired when a message is clicked. */
   onToastItemClick?: (props: CourierInboxToastItemAddedEvent) => void;
@@ -50,7 +65,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
   }
 
   // Element ref for use in effects, updated by handleRef.
-  const inboxRef = useRef<CourierInboxToastElement | null>(null);
+  const toastRef = useRef<CourierInboxToastElement | null>(null);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -65,46 +80,46 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
       } else {
         // Propagate ref to ref objects
         // @ts-ignore - RefObject.current is readonly in React 17, however it's not frozen and is equivalent the widened type MutableRefObject
-        (ref as React.RefObject<CourierInboxElement | null>).current = el;
+        (ref as React.RefObject<CourierInboxToastElement | null>).current = el;
       }
     }
 
     // Store the element for use in effects
-    inboxRef.current = el;
+    toastRef.current = el;
   }
 
   // Helper to get the current element
   function getEl(): CourierInboxToastElement | null {
-    return inboxRef.current;
+    return toastRef.current;
   }
 
   // Handle toast item clicked
   useEffect(() => {
-    const inbox = getEl();
-    if (!inbox) return;
-    inbox.onToastItemClicked(props.onToastItemClick);
+    const toast = getEl();
+    if (!toast) return;
+    toast.onToastItemClicked(props.onToastItemClick);
   }, [props.onToastItemClick]);
 
   // Handle toast item dismissed
   useEffect(() => {
-    const inbox = getEl();
-    if (!inbox) return;
-    inbox.onToastItemDismissed(props.onToastItemDismissed);
+    const toast = getEl();
+    if (!toast) return;
+    toast.onToastItemDismissed(props.onToastItemDismissed);
   }, [props.onToastItemDismissed]);
 
   // Handle toast item added
   useEffect(() => {
-    const inbox = getEl();
-    if (!inbox) return;
-    inbox.onToastItemAdded(props.onToastItemAdded);
+    const toast = getEl();
+    if (!toast) return;
+    toast.onToastItemAdded(props.onToastItemAdded);
   }, [props.onToastItemAdded]);
 
   // Render toast item
   useEffect(() => {
-    const inbox = getEl();
-    if (!inbox || !props.renderToastItem) return;
+    const toast = getEl();
+    if (!toast || !props.renderToastItem) return;
     queueMicrotask(() => {
-      inbox.setToastItem((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItem((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
         const reactNode = props.renderToastItem!(itemProps);
         return render(reactNode);
       });
@@ -113,10 +128,10 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
 
   // Render toast item content
   useEffect(() => {
-    const inbox = getEl();
-    if (!inbox || !props.renderToastItemContent) return;
+    const toast = getEl();
+    if (!toast || !props.renderToastItemContent) return;
     queueMicrotask(() => {
-      inbox.setToastItemContent((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItemContent((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
         const reactNode = props.renderToastItemContent!(itemProps);
         return render(reactNode);
       });
@@ -127,15 +142,13 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
     /* @ts-ignore */
     <courier-inbox-toast
       ref={handleRef}
-      height={props.height}
-      width={props.width}
-      top={props.top}
-      right={props.right}
+      style={props.style}
       light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
       dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
       mode={props.mode}
       auto-dismiss={props.autoDismiss}
       auto-dismiss-timeout-ms={props.autoDismissTimeoutMs}
+      dismiss-button={props.dismissButton}
     />
   );
 
