@@ -2,14 +2,14 @@ import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, regis
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxToastItem } from "./courier-toast-item";
+import { CourierToastItem } from "./courier-toast-item";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierInboxToastItemAddedEvent, CourierInboxToastItemClickedEvent, CourierInboxToastItemDismissedEvent, CourierInboxToastItemFactoryProps } from "../types/factories";
+import { CourierToastItemAddedEvent, CourierToastItemClickedEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/factories";
 import { CourierToastDismissButtonOption, CourierToastLayoutProps } from "../types/toast";
 
-export class CourierInboxToast extends CourierBaseElement {
+export class CourierToast extends CourierBaseElement {
 
   private _themeManager: CourierInboxThemeManager;
   private _themeSubscription: CourierInboxThemeSubscription;
@@ -22,13 +22,13 @@ export class CourierInboxToast extends CourierBaseElement {
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
   private _dismissButtonOption: CourierToastDismissButtonOption = 'auto';
-  private _customToastItem?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
-  private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
+  private _customToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
+  private _customToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
 
   // Callbacks
-  private onItemDismissedCallback?: ((props: CourierInboxToastItemDismissedEvent) => void);
-  private onItemClickedCallback?: ((props: CourierInboxToastItemClickedEvent) => void);
-  private onItemAddedCallback?: ((props: CourierInboxToastItemAddedEvent) => void);
+  private onItemDismissedCallback?: ((props: CourierToastItemDismissedEvent) => void);
+  private onItemClickedCallback?: ((props: CourierToastItemClickedEvent) => void);
+  private onItemAddedCallback?: ((props: CourierToastItemAddedEvent) => void);
 
   /** Defauly layout props. */
   private readonly _defaultLayoutProps: CourierToastLayoutProps = {
@@ -87,15 +87,15 @@ export class CourierInboxToast extends CourierBaseElement {
     this.addToastItem(message);
   }
 
-  public onToastItemDismissed(cb?: (props: CourierInboxToastItemDismissedEvent) => void): void {
+  public onToastItemDismissed(cb?: (props: CourierToastItemDismissedEvent) => void): void {
     this.onItemDismissedCallback = cb;
   }
 
-  public onToastItemClicked(cb?: (props: CourierInboxToastItemClickedEvent) => void): void {
+  public onToastItemClicked(cb?: (props: CourierToastItemClickedEvent) => void): void {
     this.onItemClickedCallback = cb;
   }
 
-  public onToastItemAdded(cb?: (props: CourierInboxToastItemAddedEvent) => void): void {
+  public onToastItemAdded(cb?: (props: CourierToastItemAddedEvent) => void): void {
     this.onItemAddedCallback = cb;
   }
 
@@ -153,11 +153,11 @@ export class CourierInboxToast extends CourierBaseElement {
     this._themeManager.setMode(mode);
   }
 
-  public setToastItem(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+  public setToastItem(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
     this._customToastItem = factory;
   }
 
-  public setToastItemContent(factory: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement) {
+  public setToastItemContent(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
     this._customToastItemContent = factory;
   }
 
@@ -166,7 +166,7 @@ export class CourierInboxToast extends CourierBaseElement {
    * @inheritdoc
    */
   protected onComponentMounted(): void {
-    this._toastStyle = injectGlobalStyle(CourierInboxToast.id, this.getStyles(this.theme));
+    this._toastStyle = injectGlobalStyle(CourierToast.id, this.getStyles(this.theme));
 
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
     Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
@@ -203,7 +203,7 @@ export class CourierInboxToast extends CourierBaseElement {
         this.setAutoDismissTimeoutMs(parseInt(newValue, /* base= */ 10));
         break;
       case 'dismiss-button':
-        if (newValue && CourierInboxToast.isDismissButtonOption(newValue)) {
+        if (newValue && CourierToast.isDismissButtonOption(newValue)) {
           this.setDismissButton(newValue as CourierToastDismissButtonOption);
         } else {
           this.setDismissButton('auto');
@@ -260,14 +260,14 @@ export class CourierInboxToast extends CourierBaseElement {
     }
   }
 
-  private getToastItem(message: InboxMessage): CourierInboxToastItem | HTMLElement {
+  private getToastItem(message: InboxMessage): CourierToastItem | HTMLElement {
     if (this._customToastItem) {
       return this._customToastItem({
         message,
       });
     }
 
-    const item = new CourierInboxToastItem({
+    const item = new CourierToastItem({
       autoDismiss: this._autoDismiss,
       autoDismissTimeoutMs: this._autoDismissTimeoutMs,
       themeManager: this._themeManager
@@ -308,7 +308,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     // Styles for the top-level toast container.
     const toastStyles = `
-      ${CourierInboxToast.id} {
+      ${CourierToast.id} {
         position: ${this._defaultLayoutProps.position};
         z-index: ${this._defaultLayoutProps.zIndex};
         top: ${this._defaultLayoutProps.top};
@@ -322,32 +322,32 @@ export class CourierInboxToast extends CourierBaseElement {
     // Content is transparent for all but the most recent (top) toast item
     // since it otherwise peeks out in the visible stack items.
     const toastStackStyles = `
-      ${CourierInboxToastItem.id}:last-child {
+      ${CourierToastItem.id}:last-child {
         top: 0;
         right: 0;
       }
 
-      ${CourierInboxToastItem.id}:nth-last-child(2) {
+      ${CourierToastItem.id}:nth-last-child(2) {
         top: 12px;
         bottom: -12px;
         --scale: 0.95
       }
 
-      ${CourierInboxToastItem.id}:nth-last-child(3) {
+      ${CourierToastItem.id}:nth-last-child(3) {
         top: 24px;
         bottom: -24px;
         --scale: 0.9;
       }
 
-      ${CourierInboxToastItem.id}:nth-last-child(n+4) {
+      ${CourierToastItem.id}:nth-last-child(n+4) {
         top: 24px;
         bottom: -24px;
         --scale: 0.9;
         visibility: hidden;
       }
 
-      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .title,
-      ${CourierInboxToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .body {
+      ${CourierToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .title,
+      ${CourierToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .body {
         color: rgba(255, 255, 255, 0);
       }
     `;
@@ -359,7 +359,7 @@ export class CourierInboxToast extends CourierBaseElement {
     // before removing an item.
     // Only the top item is clickable.
     const toastItemStyles = `
-      ${CourierInboxToastItem.id} {
+      ${CourierToastItem.id} {
         position: absolute;
         box-sizing: border-box;
         width: 100%;
@@ -375,14 +375,14 @@ export class CourierInboxToast extends CourierBaseElement {
         animation: show 0.3s ease-in-out forwards;
       }
 
-      ${CourierInboxToastItem.id} > .overflow-hidden-container {
+      ${CourierToastItem.id} > .overflow-hidden-container {
         height: 100%;
         width: 100%;
         border-radius: ${item?.borderRadius};
         overflow: hidden;
       }
 
-      ${CourierInboxToastItem.id}.dismissing {
+      ${CourierToastItem.id}.dismissing {
         animation: hide 0.3s ease-in-out forwards;
       }
 
@@ -409,11 +409,11 @@ export class CourierInboxToast extends CourierBaseElement {
         }
       }
 
-      ${CourierInboxToastItem.id}.clickable:last-child {
+      ${CourierToastItem.id}.clickable:last-child {
         cursor: pointer;
       }
 
-      ${CourierInboxToastItem.id}.clickable:nth-last-child(n+2) {
+      ${CourierToastItem.id}.clickable:nth-last-child(n+2) {
         pointer-events: none;
       }
     `;
@@ -423,7 +423,7 @@ export class CourierInboxToast extends CourierBaseElement {
     // bar  is not added in the courier-toast-item element
     // (i.e. when auto-dismiss is disabled).
     const dismissStyles = `
-      ${CourierInboxToastItem.id} > .dismiss {
+      ${CourierToastItem.id} > .dismiss {
         position: absolute;
         visibility: hidden;
         opacity: 0%;
@@ -439,7 +439,7 @@ export class CourierInboxToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id}:last-child${this.showDismissOnHover ? ':hover' : ''} > .dismiss {
+      ${CourierToastItem.id}:last-child${this.showDismissOnHover ? ':hover' : ''} > .dismiss {
         visibility: ${this.showDismiss ? 'visible' : 'hidden'};
         opacity: 100%;
         transition: 0.2s ease-in-out;
@@ -447,7 +447,7 @@ export class CourierInboxToast extends CourierBaseElement {
     `;
 
     const autoDismissStyles = `
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .auto-dismiss {
+      ${CourierToastItem.id} > .overflow-hidden-container > .auto-dismiss {
         width: 100%;
         height: 5px;
         background-color: ${item?.autoDismissColor};
@@ -463,7 +463,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     // Styles for the text and icon content.
     const contentStyles = `
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content {
+      ${CourierToastItem.id} > .overflow-hidden-container > .content {
         display: flex;
         gap: 12px;
         align-items: center;
@@ -472,21 +472,21 @@ export class CourierInboxToast extends CourierBaseElement {
         padding: 16px;
       }
 
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content {
+      ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content {
         line-height: 150%;
       }
 
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .icon {
+      ${CourierToastItem.id} > .overflow-hidden-container > .content > .icon {
       }
 
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content > .title {
+      ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .title {
         margin: 0;
         font-weight: ${item?.title?.weight};
         font-size: ${item?.title?.size};
         color: ${item?.title?.color};
       }
 
-      ${CourierInboxToastItem.id} > .overflow-hidden-container > .content > .text-content > .body {
+      ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .body {
         margin: 0;
         font-weight: ${item?.body?.weight};
         font-size: ${item?.body?.size};
@@ -549,4 +549,4 @@ export class CourierInboxToast extends CourierBaseElement {
   }
 }
 
-registerElement(CourierInboxToast);
+registerElement(CourierToast);

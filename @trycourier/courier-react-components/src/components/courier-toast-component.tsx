@@ -1,5 +1,5 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties } from "react";
-import { CourierInboxTheme, CourierInboxToast as CourierInboxToastElement, CourierInboxToastItemFactoryProps, CourierInboxToastItemAddedEvent, CourierInboxToastItemDismissedEvent } from "@trycourier/courier-ui-inbox";
+import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps, CourierToastItemAddedEvent, CourierToastItemDismissedEvent } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
@@ -43,35 +43,35 @@ export interface CourierToastProps {
   dismissButton?: CourierToastDismissButtonOption;
 
   /** Callback fired when a message is clicked. */
-  onToastItemClick?: (props: CourierInboxToastItemAddedEvent) => void;
+  onToastItemClick?: (props: CourierToastItemAddedEvent) => void;
 
   /** Callback fired when a message is clicked. */
-  onToastItemDismissed?: (props: CourierInboxToastItemDismissedEvent) => void;
+  onToastItemDismissed?: (props: CourierToastItemDismissedEvent) => void;
 
   /** Callback fired when a message is clicked. */
-  onToastItemAdded?: (props: CourierInboxToastItemAddedEvent) => void;
+  onToastItemAdded?: (props: CourierToastItemAddedEvent) => void;
 
   /** Allows you to pass a custom component as the list item. */
-  renderToastItem?: (props: CourierInboxToastItemFactoryProps | undefined | null) => ReactNode;
+  renderToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
 
   /** Allows you to pass a custom component as the list item. */
-  renderToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => ReactNode;
+  renderToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
 }
 
-export const CourierToastComponent = forwardRef<CourierInboxToastElement, CourierToastProps>((props, ref) => {
+export const CourierToastComponent = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
   const render = useContext(CourierRenderContext);
   if (!render) {
     throw new Error("RenderContext not found. Ensure CourierToast is wrapped in a CourierRenderContext.");
   }
 
   // Element ref for use in effects, updated by handleRef.
-  const toastRef = useRef<CourierInboxToastElement | null>(null);
+  const toastRef = useRef<CourierToastElement | null>(null);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
   // rendered component. Updating the parent ref via useEffect does not work, since mutating a RefObject
   // does not trigger useEffect (see https://stackoverflow.com/a/60476525).
-  function handleRef(el: CourierInboxToastElement | null) {
+  function handleRef(el: CourierToastElement | null) {
     if (ref) {
 
       // Propagate ref to ref callback functions
@@ -80,7 +80,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
       } else {
         // Propagate ref to ref objects
         // @ts-ignore - RefObject.current is readonly in React 17, however it's not frozen and is equivalent the widened type MutableRefObject
-        (ref as React.RefObject<CourierInboxToastElement | null>).current = el;
+        (ref as React.RefObject<CourierToastElement | null>).current = el;
       }
     }
 
@@ -89,7 +89,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
   }
 
   // Helper to get the current element
-  function getEl(): CourierInboxToastElement | null {
+  function getEl(): CourierToastElement | null {
     return toastRef.current;
   }
 
@@ -119,7 +119,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
     const toast = getEl();
     if (!toast || !props.renderToastItem) return;
     queueMicrotask(() => {
-      toast.setToastItem((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItem((itemProps?: CourierToastItemFactoryProps | undefined | null): HTMLElement => {
         const reactNode = props.renderToastItem!(itemProps);
         return render(reactNode);
       });
@@ -131,7 +131,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
     const toast = getEl();
     if (!toast || !props.renderToastItemContent) return;
     queueMicrotask(() => {
-      toast.setToastItemContent((itemProps?: CourierInboxToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItemContent((itemProps?: CourierToastItemFactoryProps | undefined | null): HTMLElement => {
         const reactNode = props.renderToastItemContent!(itemProps);
         return render(reactNode);
       });
