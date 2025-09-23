@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { CourierInboxToast as CourierInboxToastElement } from "@trycourier/courier-ui-inbox";
+import { CourierToast as CourierToastElement } from "@trycourier/courier-ui-inbox";
 import { CourierToastComponent, CourierToastProps, CourierRenderContext } from "@trycourier/courier-react-components";
 import { reactNodeToHTMLElement } from "../utils/render";
 
@@ -24,7 +24,7 @@ import { reactNodeToHTMLElement } from "../utils/render";
  * return <CourierInbox />;
  * ```
  */
-export const CourierToast = forwardRef<CourierInboxToastElement, CourierToastProps>((props, ref) => {
+export const CourierToast = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
   return (
     <CourierRenderContext.Provider value={reactNodeToHTMLElement}>
       <CourierToastComponent {...props} ref={ref} />
