@@ -7,6 +7,7 @@ import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxToastItemAddedEvent, CourierInboxToastItemClickedEvent, CourierInboxToastItemDismissedEvent, CourierInboxToastItemFactoryProps } from "../types/factories";
+import { CourierToastDismissButtonOption, CourierToastLayoutProps } from "../types/toast";
 
 export class CourierInboxToast extends CourierBaseElement {
 
@@ -20,6 +21,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
+  private _dismissButtonOption: CourierToastDismissButtonOption = 'auto';
   private _customToastItem?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
   private _customToastItemContent?: (props: CourierInboxToastItemFactoryProps | undefined | null) => HTMLElement;
 
@@ -28,16 +30,25 @@ export class CourierInboxToast extends CourierBaseElement {
   private onItemClickedCallback?: ((props: CourierInboxToastItemClickedEvent) => void);
   private onItemAddedCallback?: ((props: CourierInboxToastItemAddedEvent) => void);
 
-  private _defaultProps = {
+  /** Defauly layout props. */
+  private readonly _defaultLayoutProps: CourierToastLayoutProps = {
+    position: 'fixed',
     width: '380px',
     height: '100px',
     top: '30px',
     right: '30px',
+    zIndex: '999',
   };
 
+  /**
+   * The names of all attributes for which the web component needs change notifications.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes
+   */
   static observedAttributes = [
     'auto-dismiss',
     'auto-dismiss-timeout-ms',
+    'dismiss-button',
     'light-theme',
     'dark-theme',
     'mode',
@@ -59,9 +70,8 @@ export class CourierInboxToast extends CourierBaseElement {
    *
    * <p>Useful to send test messages while developing with the Courier SDK.</p>
    *
-   * <p>Example:</p>
-   *
-   * <pre>
+   * @example
+   * ```
    * const toast = document.getElementById("my-toast");
    *
    * toast.addInboxMessage({
@@ -69,7 +79,7 @@ export class CourierInboxToast extends CourierBaseElement {
    *  body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
    *  messageId: '1'
    * });
-   * </pre>
+   * ```
    *
    * @param message The message to add as a toast item.
    */
@@ -125,6 +135,16 @@ export class CourierInboxToast extends CourierBaseElement {
   }
 
   /**
+   * Set the dismiss button display option.
+   *
+   * @param option a value of {@link CourierToastDismissButtonOption}
+   */
+  public setDismissButton(option: CourierToastDismissButtonOption) {
+    this._dismissButtonOption = option;
+    this.refreshStyles();
+  }
+
+  /**
    * Set the theme mode manually.
    *
    * @param mode The theme mode, one of "dark", "light", or "system".
@@ -141,7 +161,10 @@ export class CourierInboxToast extends CourierBaseElement {
     this._customToastItemContent = factory;
   }
 
-  /** @override */
+  /**
+   * @override
+   * @inheritdoc
+   */
   protected onComponentMounted(): void {
     this._toastStyle = injectGlobalStyle(CourierInboxToast.id, this.getStyles(this.theme));
 
@@ -150,7 +173,10 @@ export class CourierInboxToast extends CourierBaseElement {
     CourierInboxDatastore.shared.listenForUpdates();
   }
 
-  /** @override */
+  /**
+   * @override
+   * @inheritdoc
+   */
   protected onComponentUnmounted(): void {
     this._datastoreListener.remove();
     this._authListener?.remove();
@@ -159,7 +185,11 @@ export class CourierInboxToast extends CourierBaseElement {
     this._themeSubscription.unsubscribe();
   }
 
-  /** @override */
+  /**
+   * Lifecycle callback invoked when an observed attribute changes.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes
+   */
   protected attributeChangedCallback(name: string, _: string, newValue: string) {
     switch (name) {
       case 'auto-dismiss':
@@ -171,6 +201,13 @@ export class CourierInboxToast extends CourierBaseElement {
         break;
       case 'auto-dismiss-timeout-ms':
         this.setAutoDismissTimeoutMs(parseInt(newValue, /* base= */ 10));
+        break;
+      case 'dismiss-button':
+        if (newValue && CourierInboxToast.isDismissButtonOption(newValue)) {
+          this.setDismissButton(newValue as CourierToastDismissButtonOption);
+        } else {
+          this.setDismissButton('auto');
+        }
         break;
       case 'light-theme':
         if (newValue) {
@@ -192,6 +229,7 @@ export class CourierInboxToast extends CourierBaseElement {
     return this._themeManager.getTheme();
   }
 
+  /** Refresh the styles tag, if it exists, with the current theme. */
   private refreshStyles() {
     if (this._toastStyle) {
       this._toastStyle.textContent = this.getStyles(this.theme);
@@ -210,9 +248,12 @@ export class CourierInboxToast extends CourierBaseElement {
   }
 
   private addToastItem(message: InboxMessage): void {
+    // Append the toast item and resize the toast container
+    // so previous toast items can stack underneath at fixed offsets
+    // from the top item.
     const toastItem = this.getToastItem(message);
     this.appendChild(toastItem);
-    this.style.height = this.topStackItemHeight;
+    this.resizeContainerToHeight(this.topStackItemHeight);
 
     if (this.onItemAddedCallback) {
       this.onItemAddedCallback({ toastItem, message });
@@ -244,7 +285,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     const stack = this;
     item.onItemDismissed((_) => {
-      stack.style.height = this.topStackItemHeight;
+      stack.resizeContainerToHeight(stack.topStackItemHeight);
 
       if (this.onItemDismissedCallback) {
         this.onItemDismissedCallback({ message });
@@ -268,12 +309,12 @@ export class CourierInboxToast extends CourierBaseElement {
     // Styles for the top-level toast container.
     const toastStyles = `
       ${CourierInboxToast.id} {
-        position: fixed;
-        z-index: 999;
-        top: ${this._defaultProps.top};
-        right: ${this._defaultProps.right};
-        width: ${this._defaultProps.width};
-        height: ${this._defaultProps.height};
+        position: ${this._defaultLayoutProps.position};
+        z-index: ${this._defaultLayoutProps.zIndex};
+        top: ${this._defaultLayoutProps.top};
+        right: ${this._defaultLayoutProps.right};
+        width: ${this._defaultLayoutProps.width};
+        height: ${this._defaultLayoutProps.height};
       }
     `;
 
@@ -398,12 +439,14 @@ export class CourierInboxToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
-      ${CourierInboxToastItem.id}${this._autoDismiss ? ':hover' : ''}:last-child > .dismiss {
-        visibility: visible;
+      ${CourierInboxToastItem.id}:last-child${this.showDismissOnHover ? ':hover' : ''} > .dismiss {
+        visibility: ${this.showDismiss ? 'visible' : 'hidden'};
         opacity: 100%;
         transition: 0.2s ease-in-out;
       }
+    `;
 
+    const autoDismissStyles = `
       ${CourierInboxToastItem.id} > .overflow-hidden-container > .auto-dismiss {
         width: 100%;
         height: 5px;
@@ -456,6 +499,7 @@ export class CourierInboxToast extends CourierBaseElement {
       toastStackStyles,
       toastItemStyles,
       dismissStyles,
+      autoDismissStyles,
       contentStyles,
     ].join('');
   }
@@ -470,9 +514,38 @@ export class CourierInboxToast extends CourierBaseElement {
     return '0px';
   }
 
+  private resizeContainerToHeight(height: string) {
+    this.style.height = height;
+  }
+
+  /** Whether the dismiss button should only be shown on hover. */
+  private get showDismissOnHover(): boolean {
+    // Auto-dismiss is enabled and button is using 'auto' behavior (show w/o auto-dismiss, show on hover w/ auto-dismiss).
+    if (this._autoDismiss && this._dismissButtonOption === 'auto') {
+      return true;
+    }
+
+    // Explicitly set to show on hover
+    if (this._dismissButtonOption === 'hover') {
+      return true;
+    }
+
+    return false;
+  }
+
+  /** Whether to show the dismiss button. The button is visible (either always or on hover) if not explicitly disabled. */
+  private get showDismiss(): boolean {
+    return this._dismissButtonOption !== 'disabled';
+  }
+
   /** @override */
   static get id() {
     return 'courier-inbox-toast';
+  }
+
+  static isDismissButtonOption(value: string): value is CourierToastDismissButtonOption {
+    const validOptions: CourierToastDismissButtonOption[] = ['enabled', 'disabled', 'hover', 'auto'];
+    return validOptions.includes(value as CourierToastDismissButtonOption);
   }
 }
 
