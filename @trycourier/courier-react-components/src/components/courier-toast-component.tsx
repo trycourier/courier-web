@@ -140,7 +140,7 @@ export const CourierToastComponent = forwardRef<CourierInboxToastElement, Courie
 
   const children = (
     /* @ts-ignore */
-    <courier-inbox-toast
+    <courier-toast
       ref={handleRef}
       style={props.style}
       light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}

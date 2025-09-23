@@ -112,7 +112,7 @@ export class CourierInboxToastItem extends CourierBaseElement {
    * @override
    */
   static get id(): string {
-    return 'courier-inbox-toast-item';
+    return 'courier-toast-item';
   }
 
   /**

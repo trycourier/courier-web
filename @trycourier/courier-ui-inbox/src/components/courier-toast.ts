@@ -2,7 +2,7 @@ import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, regis
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxToastItem } from "./courier-inbox-toast-item";
+import { CourierInboxToastItem } from "./courier-toast-item";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -420,7 +420,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
     // A dismiss icon is visible when the top toast item is in the :hover state.
     // Auto-dismiss styles are added, but unused if the auto-dismiss progress
-    // bar  is not added in the courier-inbox-toast-item element
+    // bar  is not added in the courier-toast-item element
     // (i.e. when auto-dismiss is disabled).
     const dismissStyles = `
       ${CourierInboxToastItem.id} > .dismiss {
@@ -540,7 +540,7 @@ export class CourierInboxToast extends CourierBaseElement {
 
   /** @override */
   static get id() {
-    return 'courier-inbox-toast';
+    return 'courier-toast';
   }
 
   static isDismissButtonOption(value: string): value is CourierToastDismissButtonOption {
