@@ -52,8 +52,8 @@ export class CourierToast extends CourierBaseElement {
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
   private _dismissButtonOption: CourierToastDismissButtonOption = 'auto';
-  private _customToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
-  private _customToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
+  private _customToastItem?: (props: CourierToastItemFactoryProps ) => HTMLElement;
+  private _customToastItemContent?: (props: CourierToastItemFactoryProps ) => HTMLElement;
 
   // Consumer-provided callbacks
   private _onItemDismissed?: ((props: CourierToastItemDismissedEvent) => void);
@@ -115,8 +115,8 @@ export class CourierToast extends CourierBaseElement {
    *
    * @param message The message to add as a toast item.
    */
-  public addInboxMessage(message: InboxMessage) {
-    this.addToastItem(message);
+  public addInboxMessage(message: InboxMessage): CourierToastItem | HTMLElement {
+    return this.addToastItem(message);
   }
 
   /** Set the handler invoked when a toast item is dismissed. */
@@ -195,7 +195,7 @@ export class CourierToast extends CourierBaseElement {
    * See {@link setToastItemContent} to set the content while preserving the toast item's
    * container, stack, auto-dismiss, dismiss button, and all events.
    */
-  public setToastItem(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
+  public setToastItem(factory?: (props: CourierToastItemFactoryProps | undefined ) => HTMLElement) {
     this._customToastItem = factory;
   }
 
@@ -209,7 +209,7 @@ export class CourierToast extends CourierBaseElement {
    * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
    * its container.
    */
-  public setToastItemContent(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
+  public setToastItemContent(factory?: (props: CourierToastItemFactoryProps ) => HTMLElement) {
     this._customToastItemContent = factory;
   }
 
@@ -299,7 +299,7 @@ export class CourierToast extends CourierBaseElement {
     }
   }
 
-  private addToastItem(message: InboxMessage): void {
+  private addToastItem(message: InboxMessage): CourierToastItem | HTMLElement {
     // Append the toast item and resize the toast container
     // so previous toast items can stack underneath at fixed offsets
     // from the top item.
@@ -310,6 +310,8 @@ export class CourierToast extends CourierBaseElement {
     if (this._onItemAdded) {
       this._onItemAdded({ toastItem, message });
     }
+
+    return toastItem;
   }
 
   private getToastItem(message: InboxMessage): CourierToastItem | HTMLElement {
