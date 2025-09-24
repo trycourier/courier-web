@@ -13,6 +13,7 @@ import CustomMenuButton from './CustomMenuButton';
 import CustomOther from './CustomOther';
 import MarkdownListItemInbox from './MarkdownListItem';
 import DatastoreListener from './DatastoreListener';
+import Toast from './Toast';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/canvas" element={<Canvas />} />
         <Route path="/markdown" element={<MarkdownListItemInbox />} />
         <Route path="/datastore-listener" element={<DatastoreListener />} />
+        <Route path="/toast" element={<Toast />} />
       </Routes>
     </BrowserRouter>
   )
