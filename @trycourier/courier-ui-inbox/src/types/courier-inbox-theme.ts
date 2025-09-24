@@ -169,9 +169,6 @@ export type CourierInboxTheme = {
   }
   toast?: {
     item?: CourierToastItemTheme;
-    stack?: {
-
-    }
   }
 };
 
