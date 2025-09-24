@@ -3,7 +3,7 @@ import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastIte
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
-import { CourierToastDismissButtonOption } from "@trycourier/courier-ui-inbox/dist/types/toast";
+import { CourierToastDismissButtonOption, CourierToastItemClickEvent } from "@trycourier/courier-ui-inbox/dist/types/toast";
 
 /** Props that may be passed to the {@link CourierToast} component. */
 export interface CourierToastProps {
@@ -53,7 +53,7 @@ export interface CourierToastProps {
   dismissButton?: CourierToastDismissButtonOption;
 
   /** Callback function invoked when a toast item is clicked. */
-  onToastItemClick?: (props: CourierToastItemAddedEvent) => void;
+  onToastItemClick?: (props: CourierToastItemClickEvent) => void;
 
   /** Callback function invoked when a toast item is dismissed. */
   onToastItemDismissed?: (props: CourierToastItemDismissedEvent) => void;
@@ -62,7 +62,7 @@ export interface CourierToastProps {
   onToastItemAdded?: (props: CourierToastItemAddedEvent) => void;
 
   /** Render prop specifying how to render an entire toast item. */
-  renderToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
+  renderToastItem?: (props?: CourierToastItemFactoryProps) => ReactNode;
 
   /**
    * Render prop specifying how to render a toast item's content.
@@ -74,7 +74,7 @@ export interface CourierToastProps {
    * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
    * its container.
    */
-  renderToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
+  renderToastItemContent?: (props?: CourierToastItemFactoryProps) => ReactNode;
 }
 
 export const CourierToastComponent = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
@@ -138,7 +138,7 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
     const toast = getEl();
     if (!toast || !props.renderToastItem) return;
     queueMicrotask(() => {
-      toast.setToastItem((itemProps?: CourierToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItem((itemProps?: CourierToastItemFactoryProps): HTMLElement => {
         const reactNode = props.renderToastItem!(itemProps);
         return render(reactNode);
       });
@@ -150,7 +150,7 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
     const toast = getEl();
     if (!toast || !props.renderToastItemContent) return;
     queueMicrotask(() => {
-      toast.setToastItemContent((itemProps?: CourierToastItemFactoryProps | undefined | null): HTMLElement => {
+      toast.setToastItemContent((itemProps?: CourierToastItemFactoryProps): HTMLElement => {
         const reactNode = props.renderToastItemContent!(itemProps);
         return render(reactNode);
       });
