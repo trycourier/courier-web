@@ -86,8 +86,6 @@ export class Courier {
       this.signOut();
     }
 
-    console.log("signing in with props:", props);
-
     // Instantiate the client.
     this.instanceClient = new CourierClient({
       ...props,

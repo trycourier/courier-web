@@ -5,6 +5,7 @@ import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
 import { CourierToastDismissButtonOption } from "@trycourier/courier-ui-inbox/dist/types/toast";
 
+/** Props that may be passed to the {@link CourierToast} component. */
 export interface CourierToastProps {
   /**
    * Styles applied to the {@link CourierToast} component.
@@ -12,10 +13,10 @@ export interface CourierToastProps {
    * By default, the component has the following styles:
    *
    * ```css
-   * position: 'fixed';
-   * width: '380px';
-   * top: '30px';
-   * right: '30px';
+   * position: "fixed";
+   * width: "380px";
+   * top: "30px";
+   * right: "30px";
    * z-index: 999;
    * ```
    *
@@ -25,36 +26,54 @@ export interface CourierToastProps {
    */
   style?: CSSProperties;
 
-  /** Theme object for light mode */
+  /** Theme object used to render the component when light mode is used. */
   lightTheme?: CourierInboxTheme;
 
-  /** Theme object for dark mode */
+  /** Theme object used to render the component when dark mode is used. */
   darkTheme?: CourierInboxTheme;
 
-  /** Theme mode: "light", "dark", or "system". Defaults to "system" */
+  /** Manually set the theme mode to one of "light", "dark", or "system". Defaults to "system". */
   mode?: CourierComponentThemeMode;
 
   /** Enable toasts to auto-dismiss, including a timer bar at the top of the toast. Defaults to false. */
   autoDismiss?: boolean;
 
-  /** The timeout before a toast auto-dismisses, if {@link CourierToastProps.autoDismiss} is enabled. Defaults to 5000ms. */
+  /**
+   * The timeout before a toast auto-dismisses, if {@link CourierToastProps.autoDismiss} is enabled.
+   * Defaults to 5000ms.
+   */
   autoDismissTimeoutMs?: number;
 
+  /**
+   * Set the dismiss button's visibility.
+   *
+   * Defaults to "auto", which makes the button always visible if `autoDismiss` is false
+   * and visible on hover if `autoDismiss` is true.
+   */
   dismissButton?: CourierToastDismissButtonOption;
 
-  /** Callback fired when a message is clicked. */
+  /** Callback function invoked when a toast item is clicked. */
   onToastItemClick?: (props: CourierToastItemAddedEvent) => void;
 
-  /** Callback fired when a message is clicked. */
+  /** Callback function invoked when a toast item is dismissed. */
   onToastItemDismissed?: (props: CourierToastItemDismissedEvent) => void;
 
-  /** Callback fired when a message is clicked. */
+  /** Callback function invoked when a toast item is added. */
   onToastItemAdded?: (props: CourierToastItemAddedEvent) => void;
 
-  /** Allows you to pass a custom component as the list item. */
+  /** Render prop specifying how to render an entire toast item. */
   renderToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
 
-  /** Allows you to pass a custom component as the list item. */
+  /**
+   * Render prop specifying how to render a toast item's content.
+   *
+   * The toast item's container, including the stack, auto-dismiss timer, and dismiss button
+   * are still present when this prop is set.
+   *
+   * See {@link CourierToastProps.dismissButton} to customize the dismiss button's visibility and
+   * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
+   * its container.
+   */
   renderToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => ReactNode;
 }
 
@@ -97,7 +116,7 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   useEffect(() => {
     const toast = getEl();
     if (!toast) return;
-    toast.onToastItemClicked(props.onToastItemClick);
+    toast.onToastItemClick(props.onToastItemClick);
   }, [props.onToastItemClick]);
 
   // Handle toast item dismissed

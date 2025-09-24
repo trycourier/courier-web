@@ -2,7 +2,7 @@ import { CourierBaseElement, CourierIcon, registerElement } from "@trycourier/co
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierToastItemClickedEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/factories";
+import { CourierToastItemClickEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/toast";
 
 export class CourierToastItem extends CourierBaseElement {
   /** The animation duration to fade out a dismissed toast before its element is removed. */
@@ -21,7 +21,7 @@ export class CourierToastItem extends CourierBaseElement {
 
   // Callbacks
   private onItemDismissCallback: ((props: CourierToastItemDismissedEvent) => void) | null = null;
-  private onItemClickCallback: ((props: CourierToastItemClickedEvent) => void) | null = null;
+  private onItemClickCallback: ((props: CourierToastItemClickEvent) => void) | null = null;
 
   constructor(props: {
     autoDismiss: boolean,
@@ -63,7 +63,7 @@ export class CourierToastItem extends CourierBaseElement {
    *
    * @param handler A function to be called when the item is clicked.
    */
-  public onItemClicked(handler: (props: CourierToastItemClickedEvent) => void): void {
+  public onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void {
     this.onItemClickCallback = handler;
   }
 

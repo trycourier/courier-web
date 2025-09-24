@@ -1,6 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxFeedType } from "./feed-type";
-import { CourierToastItem } from "../components/courier-toast-item";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
@@ -44,24 +43,4 @@ export type CourierInboxPaginationItemFactoryProps = {
 // Menu Button
 export type CourierInboxMenuButtonFactoryProps = {
   unreadCount: number;
-}
-
-// Toast Item
-export type CourierToastItemFactoryProps = {
-  message: InboxMessage;
-}
-
-// Toast Item Event Props
-export type CourierToastItemAddedEvent = {
-  message: InboxMessage;
-  toastItem: CourierToastItem | HTMLElement;
-}
-
-export type CourierToastItemClickedEvent = {
-  message: InboxMessage;
-  toastItem: CourierToastItem;
-}
-
-export type CourierToastItemDismissedEvent = {
-  message: InboxMessage;
 }

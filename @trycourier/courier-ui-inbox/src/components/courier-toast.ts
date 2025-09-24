@@ -6,38 +6,67 @@ import { CourierToastItem } from "./courier-toast-item";
 import { CourierInboxDatastore } from "../datastore/datastore";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { CourierToastItemAddedEvent, CourierToastItemClickedEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/factories";
-import { CourierToastDismissButtonOption, CourierToastLayoutProps } from "../types/toast";
+import { CourierToastItemAddedEvent, CourierToastItemClickEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/toast";
+import { CourierToastDismissButtonOption } from "../types/toast";
 
+/** Default set of CSS properties used to layout CourierToast. */
+type CourierToastLayoutProps = {
+  position?: string;
+  width?: string;
+  top?: string;
+  right?: string;
+  zIndex?: number;
+}
+
+/**
+ * An embeddable and customizable toast component, fed by data from Courier Inbox.
+ *
+ * @example
+ *
+ * Embedding the default toast component on a webpage.
+ * ```
+ * <html>
+ * <body>
+ * <courier-toast></courier-toast>
+ *
+ * <script type="module">
+ * import { Courier } from "@trycourier/courier-ui-inbox";
+ *
+ * // Authenticate the user with the inbox
+ * Courier.shared.signIn({ userId, jwt });
+ * </script>
+ * </body>
+ * </html>
+ * ```
+ */
 export class CourierToast extends CourierBaseElement {
 
+  // Internally-maintained state
   private _themeManager: CourierInboxThemeManager;
   private _themeSubscription: CourierInboxThemeSubscription;
   private _toastStyle?: HTMLStyleElement;
   private _authListener?: AuthenticationListener;
-  private _datastoreListener: CourierInboxDataStoreListener = new CourierInboxDataStoreListener({
-    onMessageAdd: this.datastoreAddMessageListener.bind(this),
-  });
+  private _datastoreListener: CourierInboxDataStoreListener;
 
+  // Consumer-provided options
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
   private _dismissButtonOption: CourierToastDismissButtonOption = 'auto';
   private _customToastItem?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
   private _customToastItemContent?: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement;
 
-  // Callbacks
-  private onItemDismissedCallback?: ((props: CourierToastItemDismissedEvent) => void);
-  private onItemClickedCallback?: ((props: CourierToastItemClickedEvent) => void);
-  private onItemAddedCallback?: ((props: CourierToastItemAddedEvent) => void);
+  // Consumer-provided callbacks
+  private _onItemDismissed?: ((props: CourierToastItemDismissedEvent) => void);
+  private _onItemClick?: ((props: CourierToastItemClickEvent) => void);
+  private _onItemAdded?: ((props: CourierToastItemAddedEvent) => void);
 
-  /** Defauly layout props. */
+  /** Default layout props. */
   private readonly _defaultLayoutProps: CourierToastLayoutProps = {
     position: 'fixed',
     width: '380px',
-    height: '100px',
     top: '30px',
     right: '30px',
-    zIndex: '999',
+    zIndex: 999,
   };
 
   /**
@@ -63,6 +92,9 @@ export class CourierToast extends CourierBaseElement {
     this._themeSubscription = this._themeManager.subscribe((_: CourierInboxTheme) => {
       this.refreshStyles();
     });
+    this._datastoreListener = new CourierInboxDataStoreListener({
+      onMessageAdd: this.datastoreAddMessageListener.bind(this),
+    });
   }
 
   /**
@@ -87,16 +119,19 @@ export class CourierToast extends CourierBaseElement {
     this.addToastItem(message);
   }
 
-  public onToastItemDismissed(cb?: (props: CourierToastItemDismissedEvent) => void): void {
-    this.onItemDismissedCallback = cb;
+  /** Set the handler invoked when a toast item is dismissed. */
+  public onToastItemDismissed(handler?: (props: CourierToastItemDismissedEvent) => void): void {
+    this._onItemDismissed = handler;
   }
 
-  public onToastItemClicked(cb?: (props: CourierToastItemClickedEvent) => void): void {
-    this.onItemClickedCallback = cb;
+  /** Set the handler invoked when a toast item is clicked. */
+  public onToastItemClick(handler?: (props: CourierToastItemClickEvent) => void): void {
+    this._onItemClick = handler;
   }
 
-  public onToastItemAdded(cb?: (props: CourierToastItemAddedEvent) => void): void {
-    this.onItemAddedCallback = cb;
+  /** Set the handler invoked when a toast item is added. */
+  public onToastItemAdded(handler?: (props: CourierToastItemAddedEvent) => void): void {
+    this._onItemAdded = handler;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -145,7 +180,7 @@ export class CourierToast extends CourierBaseElement {
   }
 
   /**
-   * Set the theme mode manually.
+   * Set the theme mode.
    *
    * @param mode The theme mode, one of "dark", "light", or "system".
    */
@@ -153,10 +188,27 @@ export class CourierToast extends CourierBaseElement {
     this._themeManager.setMode(mode);
   }
 
+  /**
+   * Set a factory function that renders a toast item.
+   *
+   * Custom toast items fire the "added" event, but not "clicked" or "dismissed".
+   * See {@link setToastItemContent} to set the content while preserving the toast item's
+   * container, stack, auto-dismiss, dismiss button, and all events.
+   */
   public setToastItem(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
     this._customToastItem = factory;
   }
 
+  /**
+   * Set a factory function that renders a toast item's content.
+   *
+   * The toast item's container, including the stack, auto-dismiss timer, and dismiss button
+   * and all events are still present when custom content is set.
+   *
+   * See {@link CourierToastProps.dismissButton} to customize the dismiss button's visibility and
+   * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
+   * its container.
+   */
   public setToastItemContent(factory: (props: CourierToastItemFactoryProps | undefined | null) => HTMLElement) {
     this._customToastItemContent = factory;
   }
@@ -255,8 +307,8 @@ export class CourierToast extends CourierBaseElement {
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
 
-    if (this.onItemAddedCallback) {
-      this.onItemAddedCallback({ toastItem, message });
+    if (this._onItemAdded) {
+      this._onItemAdded({ toastItem, message });
     }
   }
 
@@ -279,16 +331,16 @@ export class CourierToast extends CourierBaseElement {
 
     item.setMessage(message);
 
-    if (this.onItemClickedCallback) {
-      item.onItemClicked(this.onItemClickedCallback);
+    if (this._onItemClick) {
+      item.onItemClicked(this._onItemClick);
     }
 
     const stack = this;
     item.onItemDismissed((_) => {
       stack.resizeContainerToHeight(stack.topStackItemHeight);
 
-      if (this.onItemDismissedCallback) {
-        this.onItemDismissedCallback({ message });
+      if (this._onItemDismissed) {
+        this._onItemDismissed({ message });
       }
     });
 
@@ -314,7 +366,6 @@ export class CourierToast extends CourierBaseElement {
         top: ${this._defaultLayoutProps.top};
         right: ${this._defaultLayoutProps.right};
         width: ${this._defaultLayoutProps.width};
-        height: ${this._defaultLayoutProps.height};
       }
     `;
 
@@ -504,7 +555,7 @@ export class CourierToast extends CourierBaseElement {
     ].join('');
   }
 
-  /** Get the top item's (i.e. the visible item's) height. */
+  /** Get the top item's (i.e. the fully visible item's) height. */
   private get topStackItemHeight(): string {
     if (this.lastChild) {
       const height = (this.lastChild as HTMLDivElement).getBoundingClientRect().height;
