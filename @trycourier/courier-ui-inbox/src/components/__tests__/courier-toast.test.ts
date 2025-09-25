@@ -67,13 +67,17 @@ describe("courier-toast", () => {
 
   describe("onToastItemDismissed", () => {
     it("should call the handler with the dismissed message", () => {
+      jest.useFakeTimers()
       const dismissedCallback = jest.fn();
       toast.onToastItemDismissed(dismissedCallback);
 
       const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
       item.dismiss();
 
+      // Dismiss has a timer set for the item to animate out
+      jest.advanceTimersByTime(1000);
       expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
+      jest.useRealTimers()
     });
   });
 
@@ -351,6 +355,41 @@ describe("courier-toast", () => {
       toast.addInboxMessage(INBOX_MESSAGE);
 
       expect(document.querySelector("courier-toast-item #test-content")).toBeNull();
+    });
+  });
+
+  describe("dismissToastForMessage", () => {
+    it("should dismiss the toast item matching the message's messageId", () => {
+      jest.useFakeTimers()
+      toast.addInboxMessage(INBOX_MESSAGE);
+      const added = document.querySelector("courier-toast-item") as HTMLElement;
+      expect(added).not.toBeNull()
+      expect(added.dataset.courierMessageId).toBe("1");
+
+      toast.dismissToastForMessage(INBOX_MESSAGE);
+
+      // Dismiss has a timer set for the item to animate out
+      jest.advanceTimersByTime(1000);
+      const removed = document.querySelector("courier-toast-item") as HTMLElement;
+      expect(removed).toBeNull();
+      jest.useRealTimers();
+    });
+
+    it("should not dismiss toast items that do not match the message's messageId", () => {
+      jest.useFakeTimers()
+      toast.addInboxMessage(INBOX_MESSAGE);
+      const elementBeforeDismiss = document.querySelector("courier-toast-item") as HTMLElement;
+      expect(elementBeforeDismiss).not.toBeNull()
+      expect(elementBeforeDismiss.dataset.courierMessageId).toBe("1");
+
+      toast.dismissToastForMessage({...INBOX_MESSAGE, messageId: "2"});
+
+      // Dismiss has a timer set for the item to animate out
+      jest.advanceTimersByTime(1000);
+      const elementAfterDismiss = document.querySelector("courier-toast-item") as HTMLElement;
+      expect(elementAfterDismiss).not.toBeNull()
+      expect(elementAfterDismiss.dataset.courierMessageId).toBe("1");
+      jest.useRealTimers();
     });
   });
 
