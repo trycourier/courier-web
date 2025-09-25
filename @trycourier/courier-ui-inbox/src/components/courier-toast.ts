@@ -216,7 +216,7 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Dismiss the toast item(s) associated with a particular {@link InboxMessage}.
    *
-   * Toast items are matches to messages by the field {@link InboxMessage.messageId}.
+   * Toast items are matched to messages by the field {@link InboxMessage.messageId}.
    * If the item is an instance of {@link CourierToastItem} it will be animated out
    * before removal, otherwise custom items are removed immediately.
    *
