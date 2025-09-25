@@ -134,6 +134,37 @@ describe("courier-toast", () => {
 
       jest.useRealTimers();
     });
+
+    it("should automatically dismiss a custom toast item and call onToastItemDismissed", () => {
+      jest.useFakeTimers();
+
+      const dismissedCallback = jest.fn();
+      toast.onToastItemDismissed(dismissedCallback);
+
+      const customItemFactory = () => {
+        const el = document.createElement("div");
+        el.id = "test-content";
+        return el;
+      };
+
+      toast.setToastItemContent(customItemFactory);
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      const item = toast.addInboxMessage(INBOX_MESSAGE) as HTMLElement;
+
+      // Verify the item is initially in the DOM
+      expect(document.body.contains(item)).toBe(true);
+
+      // Fast-forward time past auto-dismiss timeout
+      jest.advanceTimersByTime(6000);
+
+      // Verify the item is no longer in the DOM
+      expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
+      expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
   });
 
   describe("disableAutoDismiss", () => {
