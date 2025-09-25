@@ -11,7 +11,7 @@ export class CourierToastItem extends CourierBaseElement {
   private _themeManager: CourierInboxThemeManager;
   private _themeSubscription: CourierInboxThemeSubscription;
   private _message?: InboxMessage;
-  private _customToastItemContent?: (props: CourierToastItemFactoryProps ) => HTMLElement;
+  private _customToastItemContent?: (props: CourierToastItemFactoryProps) => HTMLElement;
 
   /** Whether this toast item is auto-dismissed. */
   private readonly _autoDismiss: boolean;
@@ -73,7 +73,7 @@ export class CourierToastItem extends CourierBaseElement {
    *
    * @param factory Function that returns an {@link HTMLElement} to render as the content.
    */
-  public setToastItemContent(factory: (props: CourierToastItemFactoryProps ) => HTMLElement) {
+  public setToastItemContent(factory: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItemContent = factory;
   }
 
@@ -87,11 +87,13 @@ export class CourierToastItem extends CourierBaseElement {
    */
   public dismiss(timeoutMs: number = CourierToastItem.dismissAnimationTimeoutMs) {
     this.classList.add('dismissing');
-    setTimeout(this.remove.bind(this), timeoutMs);
 
-    if (this._message && this.onItemDismissCallback) {
-      this.onItemDismissCallback({ message: this._message });
-    }
+    setTimeout(() => {
+      this.remove();
+      if (this._message && this.onItemDismissCallback) {
+        this.onItemDismissCallback({ message: this._message });
+      }
+    }, timeoutMs);
   }
 
   /** @override */
