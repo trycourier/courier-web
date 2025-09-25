@@ -195,7 +195,7 @@ export class CourierToast extends CourierBaseElement {
    * See {@link setToastItemContent} to set the content while preserving the toast item's
    * container, stack, auto-dismiss, dismiss button, and all events.
    */
-  public setToastItem(factory?: (props: CourierToastItemFactoryProps | undefined ) => HTMLElement) {
+  public setToastItem(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItem = factory;
   }
 
@@ -209,7 +209,7 @@ export class CourierToast extends CourierBaseElement {
    * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
    * its container.
    */
-  public setToastItemContent(factory?: (props: CourierToastItemFactoryProps ) => HTMLElement) {
+  public setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItemContent = factory;
   }
 
@@ -343,7 +343,7 @@ export class CourierToast extends CourierBaseElement {
     // Append the toast item and resize the toast container
     // so previous toast items can stack underneath at fixed offsets
     // from the top item.
-    const toastItem = this.getToastItem(message);
+    const toastItem = this.createToastItem(message);
     toastItem.dataset.courierMessageId = message.messageId;
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
@@ -355,39 +355,64 @@ export class CourierToast extends CourierBaseElement {
     return toastItem;
   }
 
-  private getToastItem(message: InboxMessage): CourierToastItem | HTMLElement {
+  private createToastItem(message: InboxMessage): CourierToastItem | HTMLElement {
     if (this._customToastItem) {
-      return this._customToastItem({
-        message,
-      });
+      return this.createCustomToastItem(message);
     }
 
+    return this.createDefaultToastItem(message);
+  }
+
+  private createDefaultToastItem(message: InboxMessage) {
     const item = new CourierToastItem({
       autoDismiss: this._autoDismiss,
       autoDismissTimeoutMs: this._autoDismissTimeoutMs,
       themeManager: this._themeManager
     });
 
-    if (this._customToastItemContent) {
-      item.setToastItemContent(this._customToastItemContent);
-    }
-
     item.setMessage(message);
 
-    if (this._onItemClick) {
-      item.onItemClicked(this._onItemClick);
-    }
-
-    const stack = this;
     item.onItemDismissed((_) => {
-      stack.resizeContainerToHeight(stack.topStackItemHeight);
+      this.resizeContainerToHeight(this.topStackItemHeight);
 
       if (this._onItemDismissed) {
         this._onItemDismissed({ message });
       }
     });
 
+    if (this._customToastItemContent) {
+      item.setToastItemContent(this._customToastItemContent);
+    }
+
+    if (this._onItemClick) {
+      item.onItemClicked(this._onItemClick);
+    }
+
+    if (this._autoDismiss) {
+      setTimeout(item.dismiss.bind(item), this._autoDismissTimeoutMs);
+    }
+
     return item;
+  }
+
+  private createCustomToastItem(message: InboxMessage) {
+    if (!this._customToastItem) {
+      throw Error("Attempted to create customToastItem, but none is set");
+    }
+
+    const customItem = this._customToastItem({
+      message,
+      autoDismiss: this._autoDismiss,
+      autoDismissTimeoutMs: this._autoDismissTimeoutMs,
+    });
+
+    if (this._autoDismiss) {
+      setTimeout(() => {
+        this.removeChild(customItem);
+      }, this._autoDismissTimeoutMs);
+    }
+
+    return customItem;
   }
 
   private datastoreAddMessageListener(message: InboxMessage, _: number, feedType: CourierInboxFeedType) {

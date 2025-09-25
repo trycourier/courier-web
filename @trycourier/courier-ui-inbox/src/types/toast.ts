@@ -15,6 +15,12 @@ export type CourierToastDismissButtonOption = 'enabled' | 'disabled' | 'hover' |
 export type CourierToastItemFactoryProps = {
   /** The message for which the toast item is being created. */
   message: InboxMessage;
+
+  /** Whether a toast item will be auto-dismissed after {@link CourierToastItemFactoryProps.autoDismissTimeoutMs} ms. */
+  autoDismiss: boolean;
+
+  /** The timeout before a toast item is auto-dismissed, if {@link CourierToastItemFactoryProps.autoDismiss} is true. */
+  autoDismissTimeoutMs: number;
 };
 
 /** Event metadata passed to the callback for {@link CourierToast.onToastItemAdded}. */

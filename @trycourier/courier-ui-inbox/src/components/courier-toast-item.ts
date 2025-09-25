@@ -17,7 +17,7 @@ export class CourierToastItem extends CourierBaseElement {
   private readonly _autoDismiss: boolean;
 
   /** The timeout before the toast item is auto-dismissed, applicable if _autoDismiss is true. */
-  private readonly _autoDismissTimeoutMs?: number;
+  private readonly _autoDismissTimeoutMs: number;
 
   // Callbacks
   private onItemDismissCallback: ((props: CourierToastItemDismissedEvent) => void) | null = null;
@@ -25,7 +25,7 @@ export class CourierToastItem extends CourierBaseElement {
 
   constructor(props: {
     autoDismiss: boolean,
-    autoDismissTimeoutMs?: number,
+    autoDismissTimeoutMs: number,
     themeManager: CourierInboxThemeManager,
   }) {
 
@@ -154,13 +154,11 @@ export class CourierToastItem extends CourierBaseElement {
       const autoDismiss = document.createElement('div');
       autoDismiss.classList.add('auto-dismiss');
       overflowHiddenContainer.append(autoDismiss);
-
-      setTimeout(this.dismiss.bind(this, CourierToastItem.dismissAnimationTimeoutMs), this._autoDismissTimeoutMs);
     }
 
     // Content
     if (this._customToastItemContent) {
-      overflowHiddenContainer.appendChild(this._customToastItemContent({ message: this._message }));
+      overflowHiddenContainer.appendChild(this._customToastItemContent({ message: this._message, autoDismiss: this._autoDismiss, autoDismissTimeoutMs: this._autoDismissTimeoutMs }));
     } else {
       overflowHiddenContainer.appendChild(this.createDefaultContent());
     }

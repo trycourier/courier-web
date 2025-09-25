@@ -1,18 +1,30 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CourierToast, useCourier } from '@trycourier/courier-react'
-import type { CourierToast as CourierToastElement } from '@trycourier/courier-ui-inbox';
+import type { CourierToast as CourierToastElement, CourierToastItemFactoryProps } from '@trycourier/courier-ui-inbox';
+
+function customElement(props: CourierToastItemFactoryProps) {
+  return (
+    <div>
+      <p>{props.message.title}</p>
+    </div>
+  )
+}
 
 export default function App() {
 
   const courier = useCourier();
   const el = useRef<CourierToastElement>(null);
 
+  const [toastReady, setToastReady] = useState(false);
+
   useEffect(() => {
+    if (!toastReady) return;
+
     courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
     });
-  }, []);
+  }, [toastReady]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -39,13 +51,10 @@ export default function App() {
       });
     }, 8000);
 
-    setTimeout(() => {
-      el.current?.dismissToastForMessage({ messageId: "3" });
-    }, 10000);
-
   }, []);
 
-  return <CourierToast ref={el} />;
+  return <CourierToast ref={el} autoDismiss={true} autoDismissTimeoutMs={10000} renderToastItem={customElement} onReady={setToastReady} />;
 
 
 }
+

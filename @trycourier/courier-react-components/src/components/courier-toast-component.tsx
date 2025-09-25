@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties } from "react";
+import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties, useState } from "react";
 import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps, CourierToastItemAddedEvent, CourierToastItemDismissedEvent } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
@@ -61,8 +61,30 @@ export interface CourierToastProps {
   /** Callback function invoked when a toast item is added. */
   onToastItemAdded?: (props: CourierToastItemAddedEvent) => void;
 
+  /**
+   * Callback function invoked when the component is ready to receive messages.
+   *
+   * Use onReady to ensure CourierToast has applied event listeners and
+   * render props passed to the component before toasts are presented.
+   *
+   * @example
+   * ```tsx
+   * const [toastReady, setToastReady] = useState(false);
+   * const courier = useCourier();
+   *
+   * useEffect(() => {
+   *   if (toastReady) {
+   *     courier.shared.signIn({ userId, jwt });
+   *   }
+   * }, [toastReady]);
+   *
+   * return <CourierToast onReady={setToastReady} renderToastItem={myCustomItem} />
+   * ```
+   */
+  onReady?: (ready: boolean) => void;
+
   /** Render prop specifying how to render an entire toast item. */
-  renderToastItem?: (props?: CourierToastItemFactoryProps) => ReactNode;
+  renderToastItem?: (props: CourierToastItemFactoryProps) => ReactNode;
 
   /**
    * Render prop specifying how to render a toast item's content.
@@ -74,7 +96,7 @@ export interface CourierToastProps {
    * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
    * its container.
    */
-  renderToastItemContent?: (props?: CourierToastItemFactoryProps) => ReactNode;
+  renderToastItemContent?: (props: CourierToastItemFactoryProps) => ReactNode;
 }
 
 export const CourierToastComponent = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
@@ -82,6 +104,19 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   if (!render) {
     throw new Error("RenderContext not found. Ensure CourierToast is wrapped in a CourierRenderContext.");
   }
+
+  // Track ready state for each of the useEffects that is called for a prop set on CourierToastComponent
+  // which must be translated into an imperative call on <courier-toast>.
+  // When all the steps are complete, props.onReady is called to indicate the component is ready to receive toasts.
+  const [setupSteps, setSetupSteps] = useState({
+    elementMounted: false,
+    onClickSet: false,
+    onDismissedSet: false,
+    onAddedSet: false,
+    renderToastItemSet: false,
+    renderToastItemContentSet: false
+  });
+  const [elementReady, setElementReady] = useState(false);
 
   // Element ref for use in effects, updated by handleRef.
   const toastRef = useRef<CourierToastElement | null>(null);
@@ -105,6 +140,9 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
 
     // Store the element for use in effects
     toastRef.current = el;
+
+    // Update element ready state
+    setElementReady(!!el);
   }
 
   // Helper to get the current element
@@ -112,50 +150,78 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
     return toastRef.current;
   }
 
+  // Check if all setup steps are complete and fire onReady
+  useEffect(() => {
+    const allStepsComplete = Object.values(setupSteps).every(step => step);
+    if (allStepsComplete && props.onReady) {
+      props.onReady(true);
+    }
+  }, [setupSteps, props.onReady]);
+
+  // Track when element is mounted
+  useEffect(() => {
+    if (elementReady) {
+      setSetupSteps(prev => ({ ...prev, elementMounted: true }));
+    }
+  }, [elementReady]);
+
   // Handle toast item clicked
   useEffect(() => {
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemClick(props.onToastItemClick);
-  }, [props.onToastItemClick]);
+    setSetupSteps(prev => ({ ...prev, onClickSet: true }));
+  }, [props.onToastItemClick, elementReady]);
 
   // Handle toast item dismissed
   useEffect(() => {
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemDismissed(props.onToastItemDismissed);
-  }, [props.onToastItemDismissed]);
+    setSetupSteps(prev => ({ ...prev, onDismissedSet: true }));
+  }, [props.onToastItemDismissed, elementReady]);
 
   // Handle toast item added
   useEffect(() => {
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemAdded(props.onToastItemAdded);
-  }, [props.onToastItemAdded]);
+    setSetupSteps(prev => ({ ...prev, onAddedSet: true }));
+  }, [props.onToastItemAdded, elementReady]);
 
   // Render toast item
   useEffect(() => {
     const toast = getEl();
-    if (!toast || !props.renderToastItem) return;
+    if (!toast || !props.renderToastItem) {
+      setSetupSteps(prev => ({ ...prev, renderToastItemSet: true }));
+      return;
+    }
+
     queueMicrotask(() => {
-      toast.setToastItem((itemProps?: CourierToastItemFactoryProps): HTMLElement => {
+      toast.setToastItem((itemProps: CourierToastItemFactoryProps): HTMLElement => {
         const reactNode = props.renderToastItem!(itemProps);
         return render(reactNode);
       });
     });
-  }, [props.renderToastItem]);
+    setSetupSteps(prev => ({ ...prev, renderToastItemSet: true }));
+
+  }, [props.renderToastItem, elementReady]);
 
   // Render toast item content
   useEffect(() => {
     const toast = getEl();
-    if (!toast || !props.renderToastItemContent) return;
+    if (!toast || !props.renderToastItemContent) {
+      setSetupSteps(prev => ({ ...prev, renderToastItemContentSet: true }));
+      return;
+    }
     queueMicrotask(() => {
-      toast.setToastItemContent((itemProps?: CourierToastItemFactoryProps): HTMLElement => {
+      toast.setToastItemContent((itemProps: CourierToastItemFactoryProps): HTMLElement => {
         const reactNode = props.renderToastItemContent!(itemProps);
         return render(reactNode);
       });
+      setSetupSteps(prev => ({ ...prev, renderToastItemContentSet: true }));
     });
-  }, [props.renderToastItemContent]);
+  }, [props.renderToastItemContent, elementReady]);
 
   const children = (
     /* @ts-ignore */
