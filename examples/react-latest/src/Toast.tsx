@@ -25,7 +25,7 @@ export default function App() {
 
     setTimeout(() => {
       el.current?.addInboxMessage({
-        messageId: "1",
+        messageId: "2",
         title: "A bit of the same...",
         body: "But a whole lot that's new"
       });
@@ -33,15 +33,19 @@ export default function App() {
 
     setTimeout(() => {
       el.current?.addInboxMessage({
-        messageId: "1",
+        messageId: "3",
         title: "Re-introducing Toasts",
         body: "Dismissible in-app messages, fully customizable and synced with Courier Inbox"
       });
     }, 8000);
 
+    setTimeout(() => {
+      el.current?.dismissToastForMessage({ messageId: "3" });
+    }, 10000);
+
   }, []);
 
-  return <CourierToast autoDismiss={true} ref={el} autoDismissTimeoutMs={10000} />;
+  return <CourierToast ref={el} />;
 
 
 }

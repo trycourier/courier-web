@@ -52,8 +52,8 @@ export class CourierToast extends CourierBaseElement {
   private _autoDismiss: boolean = false;
   private _autoDismissTimeoutMs: number = 5000;
   private _dismissButtonOption: CourierToastDismissButtonOption = 'auto';
-  private _customToastItem?: (props: CourierToastItemFactoryProps ) => HTMLElement;
-  private _customToastItemContent?: (props: CourierToastItemFactoryProps ) => HTMLElement;
+  private _customToastItem?: (props: CourierToastItemFactoryProps) => HTMLElement;
+  private _customToastItemContent?: (props: CourierToastItemFactoryProps) => HTMLElement;
 
   // Consumer-provided callbacks
   private _onItemDismissed?: ((props: CourierToastItemDismissedEvent) => void);
@@ -214,6 +214,46 @@ export class CourierToast extends CourierBaseElement {
   }
 
   /**
+   * Dismiss the toast item(s) associated with a particular {@link InboxMessage}.
+   *
+   * Toast items are matches to messages by the field {@link InboxMessage.messageId}.
+   * If the item is an instance of {@link CourierToastItem} it will be animated out
+   * before removal, otherwise custom items are removed immediately.
+   *
+   * If there are multiple toast items matching the message, all items will be dismissed.
+   *
+   * @example
+   * Using dismissToastForMessage with setToastItem to dismiss a custom element.
+   * ```ts
+   * // Get a reference to the toast component
+   * const toast = document.getElementById("my-toast");
+   *
+   * toast.setToastItem((props) => {
+   *   const el = document.createElement("div");
+   *   el.addEventListener("click", () => toast.dismissToastForMessage(props.message));
+   *   return el;
+   * });
+   * ```
+   *
+   * @param message the {@link InboxMessage} for which toast items should be dismissed
+   */
+  public dismissToastForMessage(message: InboxMessage) {
+    this.childNodes.forEach(node => {
+      const nodeMessageId = (node as HTMLElement).dataset.courierMessageId;
+
+      if (nodeMessageId !== message.messageId) {
+        return;
+      }
+
+      if (node instanceof CourierToastItem) {
+        node.dismiss();
+      } else {
+        node.remove();
+      }
+    });
+  }
+
+  /**
    * @override
    * @inheritdoc
    */
@@ -304,6 +344,7 @@ export class CourierToast extends CourierBaseElement {
     // so previous toast items can stack underneath at fixed offsets
     // from the top item.
     const toastItem = this.getToastItem(message);
+    toastItem.dataset.courierMessageId = message.messageId;
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
 
@@ -596,7 +637,7 @@ export class CourierToast extends CourierBaseElement {
     return 'courier-toast';
   }
 
-  static isDismissButtonOption(value: string): value is CourierToastDismissButtonOption {
+  private static isDismissButtonOption(value: string): value is CourierToastDismissButtonOption {
     const validOptions: CourierToastDismissButtonOption[] = ['enabled', 'disabled', 'hover', 'auto'];
     return validOptions.includes(value as CourierToastDismissButtonOption);
   }
