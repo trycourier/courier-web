@@ -1,4 +1,4 @@
-import { useEffect, useRef, forwardRef, ReactNode, useContext } from 'react';
+import { useEffect, useRef, forwardRef, ReactNode, useContext, useState } from 'react';
 import {
   CourierInboxFeedType,
   CourierInboxHeaderFactoryProps,
@@ -91,6 +91,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
 
     // Element ref for use in effects, updated by handleRef.
     const inboxRef = useRef<CourierInboxPopupMenuElement | null>(null);
+    const [elementReady, setElementReady] = useState(false);
 
     // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
     // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -108,6 +109,9 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
 
       // Store the element for use in effects
       inboxRef.current = el;
+
+      // Update element ready state
+      setElementReady(!!el);
     }
 
     // Helper to get the current element
@@ -128,28 +132,28 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           menu.setFeedType?.(props.feedType ?? 'inbox');
         });
       }
-    }, [props.feedType]);
+    }, [props.feedType, elementReady]);
 
     // Handle message click
     useEffect(() => {
       const menu = getEl();
       if (!menu) return;
       menu.onMessageClick(props.onMessageClick);
-    }, [props.onMessageClick]);
+    }, [props.onMessageClick, elementReady]);
 
     // Handle message action click
     useEffect(() => {
       const menu = getEl();
       if (!menu) return;
       menu.onMessageActionClick(props.onMessageActionClick);
-    }, [props.onMessageActionClick]);
+    }, [props.onMessageActionClick, elementReady]);
 
     // Handle message long press
     useEffect(() => {
       const menu = getEl();
       if (!menu) return;
       menu.onMessageLongPress(props.onMessageLongPress);
-    }, [props.onMessageLongPress]);
+    }, [props.onMessageLongPress, elementReady]);
 
     // Render header
     useEffect(() => {
@@ -161,7 +165,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderHeader]);
+    }, [props.renderHeader, elementReady]);
 
     // Render list item
     useEffect(() => {
@@ -173,7 +177,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderListItem]);
+    }, [props.renderListItem, elementReady]);
 
     // Render empty state
     useEffect(() => {
@@ -185,7 +189,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderEmptyState]);
+    }, [props.renderEmptyState, elementReady]);
 
     // Render loading state
     useEffect(() => {
@@ -197,7 +201,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderLoadingState]);
+    }, [props.renderLoadingState, elementReady]);
 
     // Render error state
     useEffect(() => {
@@ -209,7 +213,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderErrorState]);
+    }, [props.renderErrorState, elementReady]);
 
     // Render pagination item
     useEffect(() => {
@@ -221,7 +225,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderPaginationItem]);
+    }, [props.renderPaginationItem, elementReady]);
 
     // Render menu button
     useEffect(() => {
@@ -233,7 +237,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
           return render(reactNode);
         });
       });
-    }, [props.renderMenuButton]);
+    }, [props.renderMenuButton, elementReady]);
 
     const children = (
       /* @ts-ignore */
