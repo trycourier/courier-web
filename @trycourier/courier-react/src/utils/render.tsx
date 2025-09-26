@@ -17,13 +17,7 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
     root.render(node);
   });
 
-  // Wait until React mounts the content synchronously
-  const element = container.firstElementChild;
-  if (!(element instanceof HTMLElement)) {
-    throw new Error(
-      'renderListItem must return a single JSX element that renders to an HTMLElement (e.g., <div>)'
-    );
-  }
-
-  return element;
+  // Return the container to preserve React's event handling
+  // The container maintains the React root and event delegation
+  return container;
 }

@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, ReactNode, useContext } from "react";
+import { useRef, useEffect, forwardRef, ReactNode, useContext, useState } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
@@ -56,6 +56,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
 
   // Element ref for use in effects, updated by handleRef.
   const inboxRef = useRef<CourierInboxElement | null>(null);
+  const [elementReady, setElementReady] = useState(false);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -76,6 +77,9 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
 
     // Store the element for use in effects
     inboxRef.current = el;
+
+    // Update element ready state
+    setElementReady(!!el);
   }
 
   // Helper to get the current element
@@ -88,21 +92,21 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageClick(props.onMessageClick);
-  }, [props.onMessageClick]);
+  }, [props.onMessageClick, elementReady]);
 
   // Handle message action click
   useEffect(() => {
     const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageActionClick(props.onMessageActionClick);
-  }, [props.onMessageActionClick]);
+  }, [props.onMessageActionClick, elementReady]);
 
   // Handle message long press
   useEffect(() => {
     const inbox = getEl();
     if (!inbox) return;
     inbox.onMessageLongPress(props.onMessageLongPress);
-  }, [props.onMessageLongPress]);
+  }, [props.onMessageLongPress, elementReady]);
 
   // Render header
   useEffect(() => {
@@ -114,7 +118,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderHeader]);
+  }, [props.renderHeader, elementReady]);
 
   // Render list item
   useEffect(() => {
@@ -126,7 +130,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderListItem]);
+  }, [props.renderListItem, elementReady]);
 
   // Render empty state
   useEffect(() => {
@@ -138,7 +142,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderEmptyState]);
+  }, [props.renderEmptyState, elementReady]);
 
   // Render loading state
   useEffect(() => {
@@ -150,7 +154,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderLoadingState]);
+  }, [props.renderLoadingState, elementReady]);
 
   // Render error state
   useEffect(() => {
@@ -162,7 +166,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderErrorState]);
+  }, [props.renderErrorState, elementReady]);
 
   // Render pagination item
   useEffect(() => {
@@ -174,7 +178,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
         return render(reactNode);
       });
     });
-  }, [props.renderPaginationItem]);
+  }, [props.renderPaginationItem, elementReady]);
 
   // Set feed type
   useEffect(() => {
@@ -183,7 +187,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     queueMicrotask(() => {
       inbox.setFeedType(props.feedType || 'inbox');
     });
-  }, [props.feedType]);
+  }, [props.feedType, elementReady]);
 
   const children = (
     /* @ts-ignore */
