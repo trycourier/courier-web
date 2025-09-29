@@ -65,6 +65,9 @@ export class CourierToastItem extends CourierBaseElement {
    */
   public onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void {
     this.onItemClickCallback = handler;
+
+    // Re-render to set/un-set the .clickable class
+    this.render();
   }
 
   /**
@@ -73,7 +76,7 @@ export class CourierToastItem extends CourierBaseElement {
    *
    * @param factory Function that returns an {@link HTMLElement} to render as the content.
    */
-  public setToastItemContent(factory: (props: CourierToastItemFactoryProps) => HTMLElement) {
+  public setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItemContent = factory;
   }
 
