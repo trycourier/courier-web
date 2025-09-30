@@ -18,18 +18,10 @@
     // Authenticate the user with the inbox
     Courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT
+      jwt: import.meta.env.VITE_JWT,
     });
 
     const toast = document.getElementById("my-toast");
-
-    toast.onToastItemAdded((el, message) => {
-      console.log('Added', el, message);
-    });
-
-    toast.onToastItemClicked((el, message) => {
-      console.log('Clicked', el, message);
-    });
 
     toast.addInboxMessage({
       title: 'Lorem ipsum dolor sit',
@@ -37,7 +29,7 @@
       messageId: "1"
     });
 
-    toast.onItemDismissed((message) => {
+    toast.onToastItemDismissed((message) => {
       console.log('Dismissed', message);
     });
 
