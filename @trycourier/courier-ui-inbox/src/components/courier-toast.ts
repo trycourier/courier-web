@@ -3,11 +3,10 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItem } from "./courier-toast-item";
-import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierToastItemAddedEvent, CourierToastItemClickEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/toast";
 import { CourierToastDismissButtonOption } from "../types/toast";
+import { CourierToastDatastoreListener } from "../datastore/toast-datastore-listener";
+import { CourierToastDatastore } from "../datastore/toast-datastore";
 
 /** Default set of CSS properties used to layout CourierToast. */
 type CourierToastLayoutProps = {
@@ -46,7 +45,7 @@ export class CourierToast extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
   private _toastStyle?: HTMLStyleElement;
   private _authListener?: AuthenticationListener;
-  private _datastoreListener: CourierInboxDataStoreListener;
+  private _datastoreListener: CourierToastDatastoreListener;
 
   // Consumer-provided options
   private _autoDismiss: boolean = false;
@@ -92,7 +91,7 @@ export class CourierToast extends CourierBaseElement {
     this._themeSubscription = this._themeManager.subscribe((_: CourierInboxTheme) => {
       this.refreshStyles();
     });
-    this._datastoreListener = new CourierInboxDataStoreListener({
+    this._datastoreListener = new CourierToastDatastoreListener({
       onMessageAdd: this.datastoreAddMessageListener.bind(this),
     });
   }
@@ -260,9 +259,9 @@ export class CourierToast extends CourierBaseElement {
   protected onComponentMounted(): void {
     this._toastStyle = injectGlobalStyle(CourierToast.id, this.getStyles(this.theme));
 
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+    CourierToastDatastore.shared.addDatastoreListener(this._datastoreListener);
     Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
-    CourierInboxDatastore.shared.listenForUpdates();
+    CourierToastDatastore.shared.listenForMessages();
   }
 
   /**
@@ -328,9 +327,13 @@ export class CourierToast extends CourierBaseElement {
     }
   }
 
-  private authChangedCallback() {
+  private authChangedCallback(props: { userId?: string }) {
+    console.log("auth changed", props.userId);
     this.removeAllItems();
-    CourierInboxDatastore.shared.listenForUpdates();
+
+    // If re-auth'ing logged the user out and closed the WebSocket connection,
+    // we'll open a new connection. If one is already open, this is a no-op.
+    CourierToastDatastore.shared.listenForMessages();
   }
 
   private removeAllItems(): void {
@@ -415,11 +418,7 @@ export class CourierToast extends CourierBaseElement {
     return customItem;
   }
 
-  private datastoreAddMessageListener(message: InboxMessage, _: number, feedType: CourierInboxFeedType) {
-    if (feedType !== 'inbox') {
-      return;
-    }
-
+  private datastoreAddMessageListener(message: InboxMessage) {
     this.addToastItem(message);
   }
 
