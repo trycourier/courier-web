@@ -93,6 +93,7 @@ export class CourierToast extends CourierBaseElement {
     });
     this._datastoreListener = new CourierToastDatastoreListener({
       onMessageAdd: this.datastoreAddMessageListener.bind(this),
+      onMessageRemove: this.datastoreRemoveMessageListener.bind(this),
     });
   }
 
@@ -114,7 +115,7 @@ export class CourierToast extends CourierBaseElement {
    *
    * @param message The message to add as a toast item.
    */
-  public addInboxMessage(message: InboxMessage): CourierToastItem | HTMLElement {
+  private addInboxMessage(message: InboxMessage): CourierToastItem | HTMLElement {
     return this.addToastItem(message);
   }
 
@@ -236,7 +237,7 @@ export class CourierToast extends CourierBaseElement {
    *
    * @param message the {@link InboxMessage} for which toast items should be dismissed
    */
-  public dismissToastForMessage(message: InboxMessage) {
+  private dismissToastForMessage(message: InboxMessage) {
     this.childNodes.forEach(node => {
       const nodeMessageId = (node as HTMLElement).dataset.courierMessageId;
 
@@ -420,6 +421,10 @@ export class CourierToast extends CourierBaseElement {
 
   private datastoreAddMessageListener(message: InboxMessage) {
     this.addToastItem(message);
+  }
+
+  private datastoreRemoveMessageListener(message: InboxMessage) {
+    this.dismissToastForMessage(message);
   }
 
   private getStyles(theme: CourierInboxTheme): string {

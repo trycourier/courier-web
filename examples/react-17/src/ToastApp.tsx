@@ -24,7 +24,7 @@ export function ToastApp() {
 
   useEffect(() => {
     setTimeout(() => {
-      el.current?.addInboxMessage({
+      courier.toast.addMessage({
         messageId: "1",
         title: "Hi I'm a message!",
         body: "👀"

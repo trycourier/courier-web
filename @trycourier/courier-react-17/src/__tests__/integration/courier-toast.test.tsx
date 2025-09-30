@@ -26,7 +26,7 @@ describe('CourierToast', () => {
       expect((ref as React.RefObject<CourierToastElement | null>).current).not.toBeNull();
 
       // We can access the CourierToasts Web Component's properties/methods
-      expect((ref as React.RefObject<CourierToastElement | null>).current?.addInboxMessage).toBeDefined();
+      expect((ref as React.RefObject<CourierToastElement | null>).current?.setToastItem).toBeDefined();
     });
   });
 });

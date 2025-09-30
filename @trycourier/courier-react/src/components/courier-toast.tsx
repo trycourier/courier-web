@@ -4,7 +4,7 @@ import { CourierToastComponent, CourierToastProps, CourierRenderContext } from "
 import { reactNodeToHTMLElement } from "../utils/render";
 
 /**
- * CourierInbox React component.
+ * CourierToast React component.
  *
  * @example
  * ```tsx
@@ -21,7 +21,7 @@ import { reactNodeToHTMLElement } from "../utils/render";
  *   });
  * }, []);
  *
- * return <CourierInbox />;
+ * return <CourierToast />;
  * ```
  */
 export const CourierToast = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
