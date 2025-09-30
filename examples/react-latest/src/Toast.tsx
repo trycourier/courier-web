@@ -28,7 +28,7 @@ export default function App() {
 
   useEffect(() => {
     setTimeout(() => {
-      el.current?.addInboxMessage({
+      courier.toast.addMessage({
         messageId: "1",
         title: "We've been working on something...",
         body: "👀"
@@ -36,7 +36,7 @@ export default function App() {
     }, 2000);
 
     setTimeout(() => {
-      el.current?.addInboxMessage({
+      courier.toast.addMessage({
         messageId: "2",
         title: "A bit of the same...",
         body: "But a whole lot that's new"
@@ -44,7 +44,7 @@ export default function App() {
     }, 5000);
 
     setTimeout(() => {
-      el.current?.addInboxMessage({
+      courier.toast.addMessage({
         messageId: "3",
         title: "Re-introducing Toasts",
         body: "Dismissible in-app messages, fully customizable and synced with Courier Inbox"
@@ -53,8 +53,7 @@ export default function App() {
 
   }, []);
 
-  return <CourierToast ref={el} autoDismiss={true} autoDismissTimeoutMs={10000} renderToastItem={CustomElement} onReady={setToastReady} />;
+  return <CourierToast ref={el} autoDismissTimeoutMs={10000} onReady={setToastReady} />;
 
 
 }
-

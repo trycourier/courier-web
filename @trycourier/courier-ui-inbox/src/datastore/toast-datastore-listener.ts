@@ -5,6 +5,6 @@ export class CourierToastDatastoreListener {
   constructor(readonly events: CourierToastDatastoreEvents) {}
 
   remove() {
-    CourierToastDatastore.shared;
+    CourierToastDatastore.shared.removeDatastoreListener(this);
   }
 }

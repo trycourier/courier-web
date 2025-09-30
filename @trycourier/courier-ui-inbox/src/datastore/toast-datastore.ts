@@ -11,6 +11,7 @@ export class CourierToastDatastore {
   /** Set of listeners whose handlers will be called when the datastore changes. */
   private _datastoreListeners: CourierToastDatastoreListener[] = [];
 
+  /** The shared instance of CourierToastDatastore, used to access all public methods. */
   public static get shared(): CourierToastDatastore {
     if (!CourierToastDatastore.instance) {
       CourierToastDatastore.instance = new CourierToastDatastore();
@@ -19,19 +20,40 @@ export class CourierToastDatastore {
     return CourierToastDatastore.instance;
   }
 
+  /**
+   * Add a listener whose handlers are called when there are changes to the datastore.
+   *
+   * @param listener an implementation of {@link CourierToastDatastoreListener}
+   */
   public addDatastoreListener(listener: CourierToastDatastoreListener) {
     this._datastoreListeners.push(listener);
   }
 
+  /**
+   * Remove a previously added listener.
+   *
+   * Note: the `listener` param is matched by object reference, so callers must pass
+   * the same object previously passed to {@link addDatastoreListener}.
+   *
+   * See also: {@link CourierToastDatastoreListener.remove}
+   *
+   * @param listener a previously added listener implementation
+   */
   public removeDatastoreListener(listener: CourierToastDatastoreListener) {
     this._datastoreListeners = this._datastoreListeners.filter(l => l !== listener);
   }
 
+  /**
+   * Start listening for toast messages.
+   *
+   * Calling this method will open a WebSocket connection to the Courier backend if one
+   * is not already open.
+   *
+   * See also: {@link Courier.shared.signIn} and {@link Courier.shared.signOut}
+   */
   public async listenForMessages() {
-    console.log(Courier.shared.client);
     try {
       const socketClient = Courier.shared.client?.inbox.socket;
-      console.log(socketClient);
 
       if (!socketClient) {
         Courier.shared.client?.options.logger?.info('CourierInbox socket not available');
@@ -61,6 +83,16 @@ export class CourierToastDatastore {
     }
   }
 
+  /**
+   * Find the position of an {@link InboxMessage} in the toast stack.
+   *
+   * Notes:
+   *  - Since the stack is an array, with the last item being the "top" of the stack,
+   *    a toast's position in the underlying array is the inverse of its stack position.
+   *  - `message` is matched by {@link InboxMessage.messageId}, not by object reference.
+   *
+   * @param message the {@link InboxMessage} to find in the stack
+   */
   public toastIndexOfMessage(message: InboxMessage) {
     const position = this._dataset.findIndex(m => m.messageId === message.messageId);
 
@@ -73,6 +105,22 @@ export class CourierToastDatastore {
     return this._dataset.length - position - 1;
   }
 
+  /**
+   * Add an {@link InboxMessage} toast item to the datastore.
+   *
+   * <p>Calling this directly is useful to send test messages while developing with the Courier SDK.</p>
+   *
+   * @example
+   * ```
+   * CourierToastDatastore.shared.addMessage({
+   *  title: 'Lorem ipsum dolor sit',
+   *  body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
+   *  messageId: '1'
+   * });
+   * ```
+   *
+   * @param message The message to add as a toast item.
+   */
   public addMessage(message: InboxMessage) {
     this._dataset.push(message);
 
@@ -83,6 +131,11 @@ export class CourierToastDatastore {
     });
   }
 
+  /**
+   * Remove an {@link InboxMessage} from the datastore.
+   *
+   * Note: `message` is matched by {@link InboxMessage.messageId}, not by object reference
+   */
   public removeMessage(message: InboxMessage) {
     const index = this._dataset.findIndex(m => m.messageId === message.messageId);
     if (index < 0) {

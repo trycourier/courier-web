@@ -9,7 +9,7 @@ describe('CourierToast', () => {
   });
 
   describe('Component Rendering', () => {
-    it('should render skeleton with default props when no props are provided', () => {
+    it('should render component with default props when no props are provided', () => {
       const { container } = render(<CourierToast />);
 
       // The component should render
@@ -26,7 +26,7 @@ describe('CourierToast', () => {
       expect((ref as React.RefObject<CourierToastElement | null>).current).not.toBeNull();
 
       // We can access the CourierToasts Web Component's properties/methods
-      expect((ref as React.RefObject<CourierToastElement | null>).current?.addInboxMessage).toBeDefined();
+      expect((ref as React.RefObject<CourierToastElement | null>).current?.setToastItem).toBeDefined();
     });
   });
 });

@@ -13,7 +13,7 @@
   <courier-toast id="my-toast"></courier-toast>
 
   <script type="module">
-    import { Courier } from '@trycourier/courier-ui-inbox';
+    import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-inbox';
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
@@ -23,7 +23,7 @@
 
     const toast = document.getElementById("my-toast");
 
-    toast.addInboxMessage({
+     CourierToastDatastore.shared.addMessage({
       title: 'Lorem ipsum dolor sit',
       body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
       messageId: "1"
@@ -34,7 +34,7 @@
     });
 
     setTimeout(() => {
-      toast.addInboxMessage({
+      CourierToastDatastore.shared.addMessage({
         title: 'Ut enim ad minim',
         body: 'Ut enim ad minim veniam, quis Ut enim ad minim veniam, quis',
         messageId: "2"
@@ -42,7 +42,7 @@
     }, 2000);
 
     setTimeout(() => {
-      toast.addInboxMessage({
+      CourierToastDatastore.shared.addMessage({
         title: 'Duis aute irure dolor',
         body: 'Duis aute irure dolor in reprehe',
         messageId: "3"
@@ -50,7 +50,7 @@
     }, 4000);
 
     setTimeout(() => {
-      toast.addInboxMessage({
+      CourierToastDatastore.shared.addMessage({
         title: 'Excepteur sint occaecat',
         body: 'Excepteur sint occaecat non Excepteur sint occaecat non Excepteur sint occaecat non',
         messageId: "4"

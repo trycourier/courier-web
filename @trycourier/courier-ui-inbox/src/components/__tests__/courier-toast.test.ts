@@ -2,6 +2,9 @@ import { InboxMessage } from "@trycourier/courier-js";
 import { CourierToast } from "../courier-toast";
 import { CourierToastItem } from "../courier-toast-item";
 import { CourierInboxTheme } from "../../types/courier-inbox-theme";
+import { CourierToastDatastore } from "../../datastore/toast-datastore";
+
+let toast: CourierToast;
 
 const INBOX_MESSAGE: InboxMessage = {
   messageId: "1",
@@ -10,8 +13,6 @@ const INBOX_MESSAGE: InboxMessage = {
 };
 
 describe("courier-toast", () => {
-  let toast: CourierToast;
-
   beforeEach(() => {
     toast = new CourierToast(/* props= */ {});
     document.body.appendChild(toast);
@@ -25,7 +26,7 @@ describe("courier-toast", () => {
 
   describe("addInboxMessage", () => {
     it("should add a <courier-toast-item> to the DOM", () => {
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       const toastItem = document.querySelector("courier-toast-item");
 
@@ -39,10 +40,10 @@ describe("courier-toast", () => {
       const message3 = { ...INBOX_MESSAGE, messageId: "3", title: "Message 3" };
       const message4 = { ...INBOX_MESSAGE, messageId: "4", title: "Message 4" };
 
-      toast.addInboxMessage(message1);
-      toast.addInboxMessage(message2);
-      toast.addInboxMessage(message3);
-      toast.addInboxMessage(message4);
+      CourierToastDatastore.shared.addMessage(message1);
+      CourierToastDatastore.shared.addMessage(message2);
+      CourierToastDatastore.shared.addMessage(message3);
+      CourierToastDatastore.shared.addMessage(message4);
 
       const toastItems = document.querySelectorAll("courier-toast-item");
 
@@ -71,7 +72,8 @@ describe("courier-toast", () => {
       const dismissedCallback = jest.fn();
       toast.onToastItemDismissed(dismissedCallback);
 
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
       item.dismiss();
 
       // Dismiss has a timer set for the item to animate out
@@ -86,7 +88,7 @@ describe("courier-toast", () => {
       const addedCallback = jest.fn();
       toast.onToastItemAdded(addedCallback);
 
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       expect(addedCallback).toHaveBeenCalledWith({
         message: INBOX_MESSAGE,
@@ -101,7 +103,8 @@ describe("courier-toast", () => {
 
       toast.onToastItemClick(clickCallback);
 
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
       item.click();
 
       expect(clickCallback).toHaveBeenCalledWith({
@@ -120,7 +123,8 @@ describe("courier-toast", () => {
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(5000);
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
 
       // Verify the item is initially in the DOM
       expect(document.body.contains(item)).toBe(true);
@@ -151,7 +155,8 @@ describe("courier-toast", () => {
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(5000);
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as HTMLElement;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as HTMLElement;
 
       // Verify the item is initially in the DOM
       expect(document.body.contains(item)).toBe(true);
@@ -177,7 +182,8 @@ describe("courier-toast", () => {
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(5000);
       toast.disableAutoDismiss();
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
 
       // Verify the item is initially in the DOM
       expect(document.body.contains(item)).toBe(true);
@@ -202,7 +208,8 @@ describe("courier-toast", () => {
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(10_000);
-      const item = toast.addInboxMessage(INBOX_MESSAGE) as CourierToastItem;
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
 
       // Verify the item is initially in the DOM
       expect(document.body.contains(item)).toBe(true);
@@ -240,7 +247,7 @@ describe("courier-toast", () => {
       toast.setLightTheme(lightTheme);
       toast.setMode("light");
 
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       // Check that the theme styles are applied to the DOM
       const styleElements = document.querySelectorAll("style");
@@ -267,7 +274,7 @@ describe("courier-toast", () => {
       toast.setDarkTheme(darkTheme);
       toast.setMode("dark");
 
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       // Check that the theme styles are applied to the DOM
       const styleElements = document.querySelectorAll("style");
@@ -307,7 +314,7 @@ describe("courier-toast", () => {
 
       // Test light mode
       toast.setMode("light");
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       let styleElements = document.querySelectorAll("style");
       let mergedStyles = Array.from(styleElements).map(el => el.textContent).join();
@@ -317,7 +324,7 @@ describe("courier-toast", () => {
 
       // Test dark mode
       toast.setMode("dark");
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       styleElements = document.querySelectorAll("style");
       mergedStyles = Array.from(styleElements).map(el => el.textContent).join();
@@ -336,7 +343,7 @@ describe("courier-toast", () => {
       };
 
       toast.setToastItem(customItemFactory);
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       expect(document.getElementById("test-item")).not.toBeNull();
       expect(document.querySelector("courier-toast-item")).toBeNull();
@@ -352,7 +359,7 @@ describe("courier-toast", () => {
       toast.setToastItemContent(customItemFactory);
       toast.setToastItemContent();
 
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       expect(document.getElementById("test-content")).toBeNull();
       expect(document.querySelector("courier-toast-item")).not.toBeNull();
@@ -368,7 +375,7 @@ describe("courier-toast", () => {
       };
 
       toast.setToastItemContent(customItemContentFactory);
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       expect(document.querySelector("courier-toast-item #test-content")).not.toBeNull();
     });
@@ -383,7 +390,7 @@ describe("courier-toast", () => {
       toast.setToastItemContent(customItemContentFactory);
       toast.setToastItemContent();
 
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
 
       expect(document.querySelector("courier-toast-item #test-content")).toBeNull();
     });
@@ -392,12 +399,12 @@ describe("courier-toast", () => {
   describe("dismissToastForMessage", () => {
     it("should dismiss the toast item matching the message's messageId", () => {
       jest.useFakeTimers()
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
       const added = document.querySelector("courier-toast-item") as HTMLElement;
       expect(added).not.toBeNull()
       expect(added.dataset.courierMessageId).toBe("1");
 
-      toast.dismissToastForMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.removeMessage(INBOX_MESSAGE);
 
       // Dismiss has a timer set for the item to animate out
       jest.advanceTimersByTime(1000);
@@ -408,12 +415,12 @@ describe("courier-toast", () => {
 
     it("should not dismiss toast items that do not match the message's messageId", () => {
       jest.useFakeTimers()
-      toast.addInboxMessage(INBOX_MESSAGE);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
       const elementBeforeDismiss = document.querySelector("courier-toast-item") as HTMLElement;
       expect(elementBeforeDismiss).not.toBeNull()
       expect(elementBeforeDismiss.dataset.courierMessageId).toBe("1");
 
-      toast.dismissToastForMessage({...INBOX_MESSAGE, messageId: "2"});
+      CourierToastDatastore.shared.removeMessage({...INBOX_MESSAGE, messageId: "2"});
 
       // Dismiss has a timer set for the item to animate out
       jest.advanceTimersByTime(1000);
