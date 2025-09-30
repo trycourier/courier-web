@@ -97,28 +97,6 @@ export class CourierToast extends CourierBaseElement {
     });
   }
 
-  /**
-   * Add and immediately show an {@link InboxMessage} toast item.
-   *
-   * <p>Useful to send test messages while developing with the Courier SDK.</p>
-   *
-   * @example
-   * ```
-   * const toast = document.getElementById("my-toast");
-   *
-   * toast.addInboxMessage({
-   *  title: 'Lorem ipsum dolor sit',
-   *  body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
-   *  messageId: '1'
-   * });
-   * ```
-   *
-   * @param message The message to add as a toast item.
-   */
-  private addInboxMessage(message: InboxMessage): CourierToastItem | HTMLElement {
-    return this.addToastItem(message);
-  }
-
   /** Set the handler invoked when a toast item is dismissed. */
   public onToastItemDismissed(handler?: (props: CourierToastItemDismissedEvent) => void): void {
     this._onItemDismissed = handler;
@@ -328,8 +306,7 @@ export class CourierToast extends CourierBaseElement {
     }
   }
 
-  private authChangedCallback(props: { userId?: string }) {
-    console.log("auth changed", props.userId);
+  private authChangedCallback() {
     this.removeAllItems();
 
     // If re-auth'ing logged the user out and closed the WebSocket connection,
