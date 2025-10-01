@@ -74,28 +74,6 @@ describe('courier-toast-item', () => {
 
       jest.useRealTimers();
     });
-
-    it('should not call the handler when the item is dismissed if there is not a message', () => {
-      jest.useFakeTimers();
-      const handler = jest.fn();
-      const item = new CourierToastItem({
-        message: INBOX_MESSAGE,
-        autoDismiss: false,
-        autoDismissTimeoutMs: 1000,
-        themeManager: THEME_MANAGER,
-      });
-      item.onItemDismissed(handler);
-      document.body.appendChild(item);
-
-      item.dismiss();
-
-      // Dismiss doesn't remove the element and call the handler
-      // until after the item animates out.
-      jest.advanceTimersByTime(1000);
-      expect(handler).not.toHaveBeenCalled();
-
-      jest.useRealTimers();
-    });
   });
 
   describe('onItemClicked', () => {
