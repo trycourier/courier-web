@@ -3,7 +3,7 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItem } from "./courier-toast-item";
-import { CourierToastItemAddedEvent, CourierToastItemClickEvent, CourierToastItemDismissedEvent, CourierToastItemFactoryProps } from "../types/toast";
+import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 import { CourierToastDismissButtonOption } from "../types/toast";
 import { CourierToastDatastoreListener } from "../datastore/toast-datastore-listener";
 import { CourierToastDatastore } from "../datastore/toast-datastore";
@@ -55,9 +55,7 @@ export class CourierToast extends CourierBaseElement {
   private _customToastItemContent?: (props: CourierToastItemFactoryProps) => HTMLElement;
 
   // Consumer-provided callbacks
-  private _onItemDismissed?: ((props: CourierToastItemDismissedEvent) => void);
   private _onItemClick?: ((props: CourierToastItemClickEvent) => void);
-  private _onItemAdded?: ((props: CourierToastItemAddedEvent) => void);
 
   /** Default layout props. */
   private readonly _defaultLayoutProps: CourierToastLayoutProps = {
@@ -97,19 +95,9 @@ export class CourierToast extends CourierBaseElement {
     });
   }
 
-  /** Set the handler invoked when a toast item is dismissed. */
-  public onToastItemDismissed(handler?: (props: CourierToastItemDismissedEvent) => void): void {
-    this._onItemDismissed = handler;
-  }
-
   /** Set the handler invoked when a toast item is clicked. */
   public onToastItemClick(handler?: (props: CourierToastItemClickEvent) => void): void {
     this._onItemClick = handler;
-  }
-
-  /** Set the handler invoked when a toast item is added. */
-  public onToastItemAdded(handler?: (props: CourierToastItemAddedEvent) => void): void {
-    this._onItemAdded = handler;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -183,8 +171,8 @@ export class CourierToast extends CourierBaseElement {
    * The toast item's container, including the stack, auto-dismiss timer, and dismiss button
    * and all events are still present when custom content is set.
    *
-   * See {@link CourierToastProps.dismissButton} to customize the dismiss button's visibility and
-   * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
+   * See {@link setDismissButton} to customize the dismiss button's visibility and
+   * {@link setToastItem} to customize the entire toast item, including
    * its container.
    */
   public setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
@@ -329,10 +317,6 @@ export class CourierToast extends CourierBaseElement {
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
 
-    if (this._onItemAdded) {
-      this._onItemAdded({ toastItem, message });
-    }
-
     return toastItem;
   }
 
@@ -346,19 +330,14 @@ export class CourierToast extends CourierBaseElement {
 
   private createDefaultToastItem(message: InboxMessage) {
     const item = new CourierToastItem({
+      message,
       autoDismiss: this._autoDismiss,
       autoDismissTimeoutMs: this._autoDismissTimeoutMs,
       themeManager: this._themeManager
     });
 
-    item.setMessage(message);
-
     item.onItemDismissed((_) => {
       this.resizeContainerToHeight(this.topStackItemHeight);
-
-      if (this._onItemDismissed) {
-        this._onItemDismissed({ message });
-      }
     });
 
     if (this._customToastItemContent) {
@@ -391,6 +370,10 @@ export class CourierToast extends CourierBaseElement {
       setTimeout(() => {
         this.removeChild(customItem);
       }, this._autoDismissTimeoutMs);
+    }
+
+    if (this._onItemClick) {
+      customItem.addEventListener('click', this._onItemClick.bind(this, { message, toastItem: customItem }));
     }
 
     return customItem;

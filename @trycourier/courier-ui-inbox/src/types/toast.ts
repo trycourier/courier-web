@@ -23,20 +23,6 @@ export type CourierToastItemFactoryProps = {
   autoDismissTimeoutMs: number;
 };
 
-/** Event metadata passed to the callback for {@link CourierToast.onToastItemAdded}. */
-export type CourierToastItemAddedEvent = {
-  /** The message that was added. */
-  message: InboxMessage;
-
-  /**
-   * The toast item added.
-   *
-   * This is either an instance of {@link CourierToastItem} or an instance of {@link HTMLElement}
-   * if {@link CourierToast.setToastItem} was called to set a custom HTML Element as the toast item.
-   */
-  toastItem: CourierToastItem | HTMLElement;
-};
-
 /** Event metadata passed to the callback for {@link CourierToast.onToastItemClick}. */
 export type CourierToastItemClickEvent = {
   /** The message that was clicked. */
@@ -54,17 +40,5 @@ export type CourierToastItemClickEvent = {
    * });
    * ```
    */
-  toastItem: CourierToastItem;
+  toastItem: CourierToastItem | HTMLElement;
 };
-
-/**
- * Event metadata passed to the callback for {@link CourierToast.onToastItemDismissed}.
- *
- * Unlike other toast events, dismissed does not include the element for which the event was fired,
- * since it has been removed from the DOM.
- */
-export type CourierToastItemDismissedEvent = {
-  /** The message that was removed. */
-  message: InboxMessage;
-};
-

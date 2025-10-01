@@ -21,6 +21,7 @@ describe('courier-toast-item', () => {
   describe('constructor', () => {
     it('should render a component', () => {
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
@@ -35,12 +36,11 @@ describe('courier-toast-item', () => {
   describe('setMessage', () => {
     it('should render the message content', () => {
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-
-      item.setMessage(INBOX_MESSAGE);
 
       document.body.appendChild(item);
 
@@ -56,12 +56,12 @@ describe('courier-toast-item', () => {
       jest.useFakeTimers();
       const handler = jest.fn();
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
 
-      item.setMessage(INBOX_MESSAGE);
       item.onItemDismissed(handler);
 
       document.body.appendChild(item);
@@ -79,6 +79,7 @@ describe('courier-toast-item', () => {
       jest.useFakeTimers();
       const handler = jest.fn();
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
@@ -101,11 +102,11 @@ describe('courier-toast-item', () => {
     it('should call the handler when the item is clicked', () => {
       const handler = jest.fn();
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-      item.setMessage(INBOX_MESSAGE);
       item.onItemClicked(handler);
       document.body.appendChild(item);
 
@@ -126,11 +127,11 @@ describe('courier-toast-item', () => {
       };
 
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-      item.setMessage(INBOX_MESSAGE);
 
       item.setToastItemContent(factory);
       document.body.appendChild(item);
@@ -150,11 +151,11 @@ describe('courier-toast-item', () => {
       };
 
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-      item.setMessage(INBOX_MESSAGE);
 
       item.setToastItemContent(factory);
       item.setToastItemContent();
@@ -171,12 +172,12 @@ describe('courier-toast-item', () => {
       jest.useFakeTimers();
       const handler = jest.fn();
       const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
         autoDismiss: false,
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
 
-      item.setMessage(INBOX_MESSAGE);
       item.onItemDismissed(handler);
 
       document.body.appendChild(item);
