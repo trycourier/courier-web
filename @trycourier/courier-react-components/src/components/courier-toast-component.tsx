@@ -1,5 +1,5 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties, useState } from "react";
-import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps, CourierToastItemAddedEvent, CourierToastItemDismissedEvent } from "@trycourier/courier-ui-inbox";
+import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
@@ -55,12 +55,6 @@ export interface CourierToastProps {
   /** Callback function invoked when a toast item is clicked. */
   onToastItemClick?: (props: CourierToastItemClickEvent) => void;
 
-  /** Callback function invoked when a toast item is dismissed. */
-  onToastItemDismissed?: (props: CourierToastItemDismissedEvent) => void;
-
-  /** Callback function invoked when a toast item is added. */
-  onToastItemAdded?: (props: CourierToastItemAddedEvent) => void;
-
   /**
    * Callback function invoked when the component is ready to receive messages.
    *
@@ -111,8 +105,6 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   const [setupSteps, setSetupSteps] = useState({
     elementMounted: false,
     onClickSet: false,
-    onDismissedSet: false,
-    onAddedSet: false,
     renderToastItemSet: false,
     renderToastItemContentSet: false
   });
@@ -172,22 +164,6 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
     toast.onToastItemClick(props.onToastItemClick);
     setSetupSteps(prev => ({ ...prev, onClickSet: true }));
   }, [props.onToastItemClick, elementReady]);
-
-  // Handle toast item dismissed
-  useEffect(() => {
-    const toast = getEl();
-    if (!toast) return;
-    toast.onToastItemDismissed(props.onToastItemDismissed);
-    setSetupSteps(prev => ({ ...prev, onDismissedSet: true }));
-  }, [props.onToastItemDismissed, elementReady]);
-
-  // Handle toast item added
-  useEffect(() => {
-    const toast = getEl();
-    if (!toast) return;
-    toast.onToastItemAdded(props.onToastItemAdded);
-    setSetupSteps(prev => ({ ...prev, onAddedSet: true }));
-  }, [props.onToastItemAdded, elementReady]);
 
   // Render toast item
   useEffect(() => {

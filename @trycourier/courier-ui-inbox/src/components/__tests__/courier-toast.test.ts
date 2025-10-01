@@ -66,37 +66,6 @@ describe("courier-toast", () => {
     });
   });
 
-  describe("onToastItemDismissed", () => {
-    it("should call the handler with the dismissed message", () => {
-      jest.useFakeTimers()
-      const dismissedCallback = jest.fn();
-      toast.onToastItemDismissed(dismissedCallback);
-
-      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
-      const item = document.querySelector("courier-toast-item") as CourierToastItem;
-      item.dismiss();
-
-      // Dismiss has a timer set for the item to animate out
-      jest.advanceTimersByTime(1000);
-      expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
-      jest.useRealTimers()
-    });
-  });
-
-  describe("onToastItemAdded", () => {
-    it("should call the handler with the added message and element", () => {
-      const addedCallback = jest.fn();
-      toast.onToastItemAdded(addedCallback);
-
-      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
-
-      expect(addedCallback).toHaveBeenCalledWith({
-        message: INBOX_MESSAGE,
-        toastItem: expect.any(CourierToastItem)
-      });
-    });
-  });
-
   describe("onToastItemClick", () => {
     it("should call the handler with the added message and element", () => {
       const clickCallback = jest.fn();
@@ -115,11 +84,8 @@ describe("courier-toast", () => {
   });
 
   describe("enableAutoDismiss", () => {
-    it("should automatically dismiss the toast and call onToastItemDismissed", () => {
+    it("should automatically dismiss the toast", () => {
       jest.useFakeTimers();
-
-      const dismissedCallback = jest.fn();
-      toast.onToastItemDismissed(dismissedCallback);
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(5000);
@@ -133,17 +99,13 @@ describe("courier-toast", () => {
       jest.advanceTimersByTime(6000);
 
       // Verify the item is no longer in the DOM
-      expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();
     });
 
-    it("should automatically dismiss a custom toast item and call onToastItemDismissed", () => {
+    it("should automatically dismiss a custom toast item", () => {
       jest.useFakeTimers();
-
-      const dismissedCallback = jest.fn();
-      toast.onToastItemDismissed(dismissedCallback);
 
       const customItemFactory = () => {
         const el = document.createElement("div");
@@ -165,7 +127,6 @@ describe("courier-toast", () => {
       jest.advanceTimersByTime(6000);
 
       // Verify the item is no longer in the DOM
-      expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();
@@ -175,9 +136,6 @@ describe("courier-toast", () => {
   describe("disableAutoDismiss", () => {
     it("should revert auto-dismiss if it were previously enabled", () => {
       jest.useFakeTimers();
-
-      const dismissedCallback = jest.fn();
-      toast.onToastItemDismissed(dismissedCallback);
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(5000);
@@ -192,7 +150,6 @@ describe("courier-toast", () => {
       jest.advanceTimersByTime(6000);
 
       // Verify the item is still in the DOM
-      expect(dismissedCallback).not.toHaveBeenCalled();
       expect(document.body.contains(item)).toBe(true);
 
       jest.useRealTimers();
@@ -202,9 +159,6 @@ describe("courier-toast", () => {
   describe("setAutoDismissTimeoutMs", () => {
     it("should set the auto-dismiss timeout used if auto-dismiss is enabled", () => {
       jest.useFakeTimers();
-
-      const dismissedCallback = jest.fn();
-      toast.onToastItemDismissed(dismissedCallback);
 
       toast.enableAutoDismiss();
       toast.setAutoDismissTimeoutMs(10_000);
@@ -224,7 +178,6 @@ describe("courier-toast", () => {
       jest.advanceTimersByTime(6000);
 
       // Verify the item is no longer in the DOM
-      expect(dismissedCallback).toHaveBeenCalledWith({ message: INBOX_MESSAGE });
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();
