@@ -4,12 +4,12 @@ import { CourierToastItem } from "../components/courier-toast-item";
 /**
  * Options to display the toast dismiss button.
  *
- * - enabled: always show the dismiss button
- * - disabled: always hide the dismiss button
+ * - visible: always show the dismiss button
+ * - hidden: always hide the dismiss button
  * - hover: only show the dismiss button when the toast is hovered
- * - auto (default): enabled for manually-dismissed toasts, hover for auto-dismiss toasts
+ * - auto (default): visible for manually-dismissed toasts, hover for auto-dismiss toasts
  */
-export type CourierToastDismissButtonOption = 'enabled' | 'disabled' | 'hover' | 'auto';
+export type CourierToastDismissButtonOption = 'visible' | 'hidden' | 'hover' | 'auto';
 
 /** Props passed to a factory function used to create toast items or toast item content. */
 export type CourierToastItemFactoryProps = {

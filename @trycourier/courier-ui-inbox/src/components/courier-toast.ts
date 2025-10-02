@@ -157,9 +157,8 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Set a factory function that renders a toast item.
    *
-   * Custom toast items fire the "added" event, but not "clicked" or "dismissed".
    * See {@link setToastItemContent} to set the content while preserving the toast item's
-   * container, stack, auto-dismiss, dismiss button, and all events.
+   * container and stack styling.
    */
   public setToastItem(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItem = factory;
@@ -533,7 +532,7 @@ export class CourierToast extends CourierBaseElement {
       ${CourierToastItem.id} > .overflow-hidden-container > .auto-dismiss {
         width: 100%;
         height: 5px;
-        background-color: ${item?.autoDismissColor};
+        background-color: ${item?.autoDismissBarColor};
         animation: auto-dismiss ${this._autoDismissTimeoutMs}ms ease-in-out forwards;
       }
 
@@ -618,7 +617,7 @@ export class CourierToast extends CourierBaseElement {
 
   /** Whether to show the dismiss button. The button is visible (either always or on hover) if not explicitly disabled. */
   private get showDismiss(): boolean {
-    return this._dismissButtonOption !== 'disabled';
+    return this._dismissButtonOption !== 'hidden';
   }
 
   /** @override */
@@ -627,7 +626,7 @@ export class CourierToast extends CourierBaseElement {
   }
 
   private static isDismissButtonOption(value: string): value is CourierToastDismissButtonOption {
-    const validOptions: CourierToastDismissButtonOption[] = ['enabled', 'disabled', 'hover', 'auto'];
+    const validOptions: CourierToastDismissButtonOption[] = ['visible', 'hidden', 'hover', 'auto'];
     return validOptions.includes(value as CourierToastDismissButtonOption);
   }
 }
