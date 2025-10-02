@@ -33,7 +33,6 @@ export function ToastApp() {
   }, []);
 
   return <CourierToast
-    style={{}}
     renderToastItemContent={customToastItemContent}
     dismissButton={'disabled'}
     autoDismiss={true}

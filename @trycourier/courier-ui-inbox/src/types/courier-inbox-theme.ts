@@ -123,7 +123,7 @@ export type CourierActionMenuTheme = {
 export type CourierToastItemTheme = {
   backgroundColor?: string;
   hoverBackgroundColor?: string;
-  autoDismissColor?: string;
+  autoDismissBarColor?: string;
   title?: CourierInboxFontTheme;
   body?: CourierInboxFontTheme;
   icon?: CourierInboxIconTheme;
@@ -440,7 +440,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         color: CourierColors.black[500],
         svg: CourierIconSVGs.remove,
       },
-      autoDismissColor: CourierColors.blue[400],
+      autoDismissBarColor: CourierColors.blue[400],
     }
   }
 };
@@ -713,7 +713,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         color: CourierColors.white[500],
         svg: CourierIconSVGs.remove,
       },
-      autoDismissColor: CourierColors.blue[400],
+      autoDismissBarColor: CourierColors.blue[400],
     }
   }
 };

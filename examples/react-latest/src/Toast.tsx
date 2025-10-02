@@ -53,7 +53,7 @@ export default function App() {
 
   }, []);
 
-  return <CourierToast ref={el} autoDismissTimeoutMs={10000} onReady={setToastReady} />;
+  return <CourierToast ref={el} autoDismissTimeoutMs={10000} onReady={setToastReady} renderToastItem={CustomElement} />;
 
 
 }
