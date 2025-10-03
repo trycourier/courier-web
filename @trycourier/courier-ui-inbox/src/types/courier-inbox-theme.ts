@@ -1,16 +1,10 @@
-import { CourierColors, CourierIconSVGs, SystemThemeMode } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme, CourierButtonTheme, CourierIconButtonTheme } from "@trycourier/courier-ui-core";
 
-export type CourierInboxFontTheme = {
-  family?: string;
-  weight?: string;
-  size?: string;
-  color?: string;
-}
-
-export type CourierInboxIconTheme = {
-  color?: string;
-  svg?: string;
-}
+// Re-export common types from core for convenience
+export type CourierInboxFontTheme = CourierFontTheme;
+export type CourierInboxIconTheme = CourierIconTheme;
+export type CourierInboxButtonTheme = CourierButtonTheme;
+export type CourierInboxIconButtonTheme = CourierIconButtonTheme;
 
 export type CourierInboxFilterItemTheme = {
   icon?: CourierInboxIconTheme;
@@ -29,24 +23,6 @@ export type CourierInboxUnreadCountIndicatorTheme = {
   backgroundColor?: string;
   borderRadius?: string;
   padding?: string;
-}
-
-export type CourierInboxIconButtonTheme = {
-  icon?: CourierInboxIconTheme;
-  backgroundColor?: string;
-  hoverBackgroundColor?: string;
-  activeBackgroundColor?: string;
-}
-
-export type CourierInboxButtonTheme = {
-  font?: CourierInboxFontTheme;
-  text?: string;
-  shadow?: string;
-  border?: string;
-  borderRadius?: string;
-  backgroundColor?: string;
-  hoverBackgroundColor?: string;
-  activeBackgroundColor?: string;
 }
 
 export type CourierInboxMenuButtonTheme = CourierInboxIconButtonTheme & {

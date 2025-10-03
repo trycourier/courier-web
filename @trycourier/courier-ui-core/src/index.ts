@@ -21,6 +21,10 @@ export * from './utils/theme';
 export * from './utils/courier-colors';
 export * from './utils/registeration';
 
+// Export theme management
+export * from './managers/courier-theme-manager';
+export * from './types/common-theme-types';
+
 // Register core UI components
 registerElement(CourierButton);
 registerElement(CourierIcon);
