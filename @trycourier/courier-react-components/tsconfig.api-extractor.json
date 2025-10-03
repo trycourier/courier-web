@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "emitDeclarationOnly": false,
+    "types": [
+      "jest",
+      "vite/client",
+      "node"
+    ]
+  },
+  "include": [
+    "dist/**/*.d.ts"
+  ],
+  "exclude": [
+    "src",
+    "vite.config.ts",
+    "node_modules"
+  ]
+}

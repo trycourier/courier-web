@@ -8,10 +8,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ci": "yarn build && yarn generate-api-doc",
     "watch": "vite build --watch",
     "preview": "vite preview",
     "prepare": "npm run build",
-    "test": "echo \"courier-ui-core has no tests\""
+    "test": "echo \"courier-ui-core has no tests\"",
+    "generate-api-doc": "api-extractor run"
   },
   "keywords": [
     "courier",

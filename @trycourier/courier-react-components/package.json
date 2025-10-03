@@ -10,10 +10,12 @@
   ],
   "scripts": {
     "build": "cross-env NODE_ENV=production tsc && vite build --mode production",
+    "build:ci": "yarn build && yarn generate-api-doc",
     "watch": "vite build --watch",
     "preview": "vite preview",
     "prepare": "npm run build",
-    "test": "echo \"courier-react-components has no tests\""
+    "test": "echo \"courier-react-components has no tests\"",
+    "generate-api-doc": "api-extractor run"
   },
   "author": "Courier",
   "license": "MIT",

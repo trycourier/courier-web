@@ -8,11 +8,13 @@
   "scripts": {
     "dev": "vite",
     "build": "cross-env NODE_ENV=production tsc && vite build --mode production",
+    "build:ci": "yarn build && yarn generate-api-doc",
     "watch": "vite build --watch",
     "preview": "vite preview",
     "prepare": "npm run build",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "generate-api-doc": "api-extractor run"
   },
   "files": [
     "dist"

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "Removing the following dist directories:"
+find ./@trycourier -type d -name dist -maxdepth 2 -print
+find ./@trycourier -type d -name dist -maxdepth 2 -exec rm -rf {} +
+
+# The packages here are sorted topologically
+echo "Building @trycourier packages for CI..."
+
+echo "Building @trycourier/courier-js..."
+yarn workspace @trycourier/courier-js run build:ci || exit $?
+
+echo "Building @trycourier/courier-ui-core..."
+yarn workspace @trycourier/courier-ui-core run build:ci || exit $?
+
+echo "Building @trycourier/courier-ui-inbox..."
+yarn workspace @trycourier/courier-ui-inbox run build:ci || exit $?
+
+echo "Building @trycourier/courier-react-components..."
+yarn workspace @trycourier/courier-react-components run build:ci || exit $?
+
+echo "Building @trycourier/courier-react-17..."
+yarn workspace @trycourier/courier-react-17 run build:ci || exit $?
+
+echo "Building @trycourier/courier-react..."
+yarn workspace @trycourier/courier-react run build:ci || exit $?
