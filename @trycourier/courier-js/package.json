@@ -8,10 +8,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ci": "yarn build && yarn generate-api-doc",
     "watch": "vite build --watch",
     "preview": "vite preview",
     "test": "jest",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "generate-api-doc": "api-extractor run"
   },
   "keywords": [
     "courier",

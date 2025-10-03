@@ -35,7 +35,7 @@ export interface CourierProps {
    *
    * This is an internal prop, intended to be set by other Courier SDKs.
    * If undefined, this defaults to "courier-js".
-   * @ignore
+   * @internal
    */
   courierUserAgentName?: string;
 
@@ -44,7 +44,7 @@ export interface CourierProps {
    *
    * This is an internal prop, intended to be set by other Courier SDKs.
    * If undefined, this defaults to this package's version.
-   * @ignore
+   * @internal
    */
   courierUserAgentVersion?: string;
 }
