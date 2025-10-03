@@ -4,16 +4,121 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courier Inbox</title>
+  <title>My App</title>
   <link rel="stylesheet" href="./../../styles.css">
 </head>
 
 <body>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 40px;
+      box-sizing: border-box;
+    }
 
-  <courier-toast id="my-toast"></courier-toast>
+    .skeleton {
+      background: #f0f0f0;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-title {
+      height: 30px;
+      width: 35%;
+      margin-bottom: 20px;
+    }
+
+    .skeleton-title.short {
+      width: 20%;
+    }
+
+    .skeleton-line {
+      height: 10px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .skeleton-line.short {
+      width: 70%;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .toast-content {
+      height: 100%;
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+      border-radius: 8px;
+      align-items: center;
+    }
+
+    .toast-icon {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .toast-text {
+      flex: 1;
+    }
+
+    .toast-title {
+      display: block;
+      margin-bottom: 4px;
+      color: #1f2937;
+    }
+
+    .toast-body {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    courier-toast-item:not(:last-child) .toast-body {
+      color: transparent;
+    }
+
+    .toast-dismiss {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: #9ca3af;
+      flex-shrink: 0;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      line-height: 1;
+    }
+  </style>
+
+  <!-- <div class="skeleton skeleton-title"></div>
+  <div class="skeleton skeleton-title short"></div>
+  <div class="skeleton skeleton-title"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line short"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line short"></div>
+  <div class="skeleton skeleton-line"></div>
+  <div class="skeleton skeleton-line"></div> -->
+
+  <courier-toast dismiss-button="hidden" id="my-toast"></courier-toast>
 
   <script type="module">
     import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-inbox';
+    import ToastIcon from './toast-icon.svg?raw';
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
@@ -23,14 +128,27 @@
 
     const toast = document.getElementById("my-toast");
 
-     CourierToastDatastore.shared.addMessage({
+    toast.setLightTheme({
+      toast: {
+        item: {
+          title: {
+            color: "#6366f1",
+            weight: "bold",
+          },
+          backgroundColor: "#edeefc",
+          border: "1px solid #cdd1ff",
+          borderRadius: "15px",
+          icon: {
+            svg: ToastIcon
+          }
+        }
+      }
+    });
+
+    CourierToastDatastore.shared.addMessage({
       title: 'Lorem ipsum dolor sit',
       body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
       messageId: "1"
-    });
-
-    toast.onToastItemDismissed((message) => {
-      console.log('Dismissed', message);
     });
 
     setTimeout(() => {
@@ -51,8 +169,8 @@
 
     setTimeout(() => {
       CourierToastDatastore.shared.addMessage({
-        title: 'Excepteur sint occaecat',
-        body: 'Excepteur sint occaecat non Excepteur sint occaecat non Excepteur sint occaecat non',
+        title: '👋 Hey there!',
+        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
         messageId: "4"
       });
     }, 8000);
