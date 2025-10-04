@@ -135,8 +135,8 @@ export abstract class CourierThemeManager<TTheme> {
 
   /**
    * Subscribe to theme changes
-   * @param {Function} callback - Function to run when the theme changes
-   * @returns {CourierThemeSubscription} - Object with unsubscribe method to stop listening
+   * @param callback - Function to run when the theme changes
+   * @returns - Object with unsubscribe method to stop listening
    */
   public subscribe(callback: (theme: TTheme) => void): CourierThemeSubscription<TTheme> {
     const controller = new AbortController();

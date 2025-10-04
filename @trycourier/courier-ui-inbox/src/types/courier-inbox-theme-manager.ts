@@ -41,8 +41,8 @@ export class CourierInboxThemeManager extends CourierThemeManager<CourierInboxTh
 
   /**
    * Subscribe to inbox theme changes
-   * @param {Function} callback - Function to run when the theme changes
-   * @returns {CourierInboxThemeSubscription} - Object with unsubscribe method to stop listening
+   * @param callback - Function to run when the theme changes
+   * @returns Object with unsubscribe method to stop listening
    */
   public subscribe(callback: (theme: CourierInboxTheme) => void): CourierInboxThemeSubscription {
     const baseSubscription = super.subscribe(callback);

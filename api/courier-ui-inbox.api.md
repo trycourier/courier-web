@@ -8,13 +8,19 @@ import { Courier } from '@trycourier/courier-js';
 import { CourierApiUrls } from '@trycourier/courier-js';
 import { CourierBaseElement } from '@trycourier/courier-ui-core';
 import { CourierBrand } from '@trycourier/courier-js';
+import { CourierButtonTheme } from '@trycourier/courier-ui-core';
 import { CourierClientOptions } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierDevice } from '@trycourier/courier-js';
 import { CourierFactoryElement } from '@trycourier/courier-ui-core';
+import { CourierFontTheme } from '@trycourier/courier-ui-core';
 import { CourierGetInboxMessageResponse } from '@trycourier/courier-js';
 import { CourierGetInboxMessagesResponse } from '@trycourier/courier-js';
+import { CourierIconButtonTheme } from '@trycourier/courier-ui-core';
+import { CourierIconTheme } from '@trycourier/courier-ui-core';
 import { CourierProps } from '@trycourier/courier-js';
+import { CourierThemeManager } from '@trycourier/courier-ui-core';
+import { CourierThemeSubscription } from '@trycourier/courier-ui-core';
 import { CourierToken } from '@trycourier/courier-js';
 import { CourierUserPreferences } from '@trycourier/courier-js';
 import { CourierUserPreferencesChannel } from '@trycourier/courier-js';
@@ -112,16 +118,7 @@ export class CourierInbox extends CourierBaseElement {
 // Warning: (ae-missing-release-tag) "CourierInboxButtonTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierInboxButtonTheme = {
-    font?: CourierInboxFontTheme;
-    text?: string;
-    shadow?: string;
-    border?: string;
-    borderRadius?: string;
-    backgroundColor?: string;
-    hoverBackgroundColor?: string;
-    activeBackgroundColor?: string;
-};
+export type CourierInboxButtonTheme = CourierButtonTheme;
 
 // Warning: (ae-missing-release-tag) "CourierInboxDatastore" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -239,12 +236,7 @@ export type CourierInboxFilterItemTheme = {
 // Warning: (ae-missing-release-tag) "CourierInboxFontTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierInboxFontTheme = {
-    family?: string;
-    weight?: string;
-    size?: string;
-    color?: string;
-};
+export type CourierInboxFontTheme = CourierFontTheme;
 
 // Warning: (ae-missing-release-tag) "CourierInboxHeader" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -289,20 +281,12 @@ export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' 
 // Warning: (ae-missing-release-tag) "CourierInboxIconButtonTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierInboxIconButtonTheme = {
-    icon?: CourierInboxIconTheme;
-    backgroundColor?: string;
-    hoverBackgroundColor?: string;
-    activeBackgroundColor?: string;
-};
+export type CourierInboxIconButtonTheme = CourierIconButtonTheme;
 
 // Warning: (ae-missing-release-tag) "CourierInboxIconTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierInboxIconTheme = {
-    color?: string;
-    svg?: string;
-};
+export type CourierInboxIconTheme = CourierIconTheme;
 
 // Warning: (ae-missing-release-tag) "CourierInboxInfoStateTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -578,33 +562,23 @@ export type CourierInboxTheme = {
 
 // Warning: (ae-missing-release-tag) "CourierInboxThemeManager" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
-export class CourierInboxThemeManager {
+// @public
+export class CourierInboxThemeManager extends CourierThemeManager<CourierInboxTheme> {
     constructor(initialTheme: CourierInboxTheme);
-    cleanup(): void;
-    get currentSystemTheme(): SystemThemeMode;
-    getTheme(): CourierInboxTheme;
-    // (undocumented)
-    get mode(): CourierComponentThemeMode;
-    // (undocumented)
-    setDarkTheme(theme: CourierInboxTheme): void;
-    // (undocumented)
-    setLightTheme(theme: CourierInboxTheme): void;
-    setMode(mode: CourierComponentThemeMode): void;
-    // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    protected getDefaultDarkTheme(): CourierInboxTheme;
+    protected getDefaultLightTheme(): CourierInboxTheme;
+    protected mergeTheme(mode: SystemThemeMode, theme: CourierInboxTheme): CourierInboxTheme;
     subscribe(callback: (theme: CourierInboxTheme) => void): CourierInboxThemeSubscription;
+    // (undocumented)
+    protected readonly THEME_CHANGE_EVENT: string;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxThemeSubscription" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export interface CourierInboxThemeSubscription {
+export interface CourierInboxThemeSubscription extends CourierThemeSubscription<CourierInboxTheme> {
     // (undocumented)
     manager: CourierInboxThemeManager;
-    // (undocumented)
-    unsubscribe: () => void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxUnreadCountIndicatorTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
