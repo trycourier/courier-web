@@ -2,6 +2,7 @@
 "@trycourier/courier-react-components": minor
 "@trycourier/courier-react-17": minor
 "@trycourier/courier-ui-inbox": minor
+"@trycourier/courier-ui-toast": major
 "@trycourier/courier-react": minor
 ---
 
