@@ -1,9 +1,14 @@
 import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme } from "@trycourier/courier-ui-core";
 
 // Re-export common types from core for convenience
+
+/** @public */
 export type CourierToastFontTheme = CourierFontTheme;
+
+/** @public */
 export type CourierToastIconTheme = CourierIconTheme;
 
+/** @public */
 export type CourierToastItemTheme = {
   backgroundColor?: string;
   hoverBackgroundColor?: string;
@@ -17,10 +22,12 @@ export type CourierToastItemTheme = {
   borderRadius?: string;
 }
 
+/** @public */
 export type CourierToastTheme = {
   item?: CourierToastItemTheme;
 };
 
+/** @public */
 export const defaultLightTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.white[500],
@@ -50,6 +57,7 @@ export const defaultLightTheme: CourierToastTheme = {
   }
 };
 
+/** @public */
 export const defaultDarkTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.black[500],
@@ -79,7 +87,11 @@ export const defaultDarkTheme: CourierToastTheme = {
   }
 };
 
-// Deep merge the themes, only overwriting non-optional properties
+/**
+ * Deep merge themes, only overwriting non-optional properties.
+ *
+ * @public
+ */
 export const mergeTheme = (mode: SystemThemeMode, theme: CourierToastTheme): CourierToastTheme => {
   const defaultTheme = mode === 'light' ? defaultLightTheme : defaultDarkTheme;
   return {

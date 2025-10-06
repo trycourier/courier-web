@@ -4,6 +4,12 @@ import { CourierToastTheme } from "../types/courier-toast-theme";
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 
+/**
+ * Default implementation of a Toast item.
+ *
+ * @see {@link CourierToast}
+ * @public
+ */
 export class CourierToastItem extends CourierBaseElement {
   /** The animation duration to fade out a dismissed toast before its element is removed. */
   private static readonly dismissAnimationTimeoutMs = 300;
@@ -44,7 +50,7 @@ export class CourierToastItem extends CourierBaseElement {
   /**
    * Registers a handler called when the item is dismissed.
    *
-   * @param handler A function to be called when the item is dismissed.
+   * @param handler - A function to be called when the item is dismissed.
    */
   public onItemDismissed(handler: (props: { message: InboxMessage }) => void): void {
     this._onItemDismissedCallback = handler;
@@ -53,7 +59,7 @@ export class CourierToastItem extends CourierBaseElement {
   /**
    * Registers a handler for item click events.
    *
-   * @param handler A function to be called when the item is clicked.
+   * @param handler - A function to be called when the item is clicked.
    */
   public onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void {
     this._onItemClickCallback = handler;
@@ -66,7 +72,7 @@ export class CourierToastItem extends CourierBaseElement {
    * Set a custom content element for the toast item, reusing the {@link CourierToastItem}
    * container, which provides styling, animations, and event handling.
    *
-   * @param factory Function that returns an {@link HTMLElement} to render as the content.
+   * @param factory - Function that returns an `HTMLElement` to render as the content.
    */
   public setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
     this._customToastItemContent = factory;
@@ -78,7 +84,7 @@ export class CourierToastItem extends CourierBaseElement {
    * <p>By default the toast fades out before it's removed. Set `timeoutMs` to
    * `0` to remove the item immediately.
    *
-   * @param timeoutMs the animation duration to fade out the toast item
+   * @param timeoutMs - the animation duration to fade out the toast item
    */
   public dismiss(timeoutMs: number = CourierToastItem.dismissAnimationTimeoutMs) {
     this.classList.add('dismissing');

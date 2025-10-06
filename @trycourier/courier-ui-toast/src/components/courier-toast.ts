@@ -37,6 +37,8 @@ type CourierToastLayoutProps = {
  * </body>
  * </html>
  * ```
+ *
+ * @public
  */
 export class CourierToast extends CourierBaseElement {
 
@@ -113,7 +115,7 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Set the timeout before auto-dismissing toasts.
    * Only applicable if auto-dismiss is enabled.
-   * @param timeoutMs The timeout in milliseconds before a toast is dismissed.
+   * @param timeoutMs - The timeout in milliseconds before a toast is dismissed.
    */
   public setAutoDismissTimeoutMs(timeoutMs: number) {
     this._autoDismissTimeoutMs = timeoutMs;
@@ -121,7 +123,7 @@ export class CourierToast extends CourierBaseElement {
 
   /**
    * Set the light theme for the toast.
-   * @param theme The light theme object to set.
+   * @param theme - The light theme object to set.
    */
   public setLightTheme(theme: CourierToastTheme) {
     this._themeManager.setLightTheme(theme);
@@ -129,7 +131,7 @@ export class CourierToast extends CourierBaseElement {
 
   /**
    * Set the dark theme for the toast.
-   * @param theme The dark theme object to set.
+   * @param theme - The dark theme object to set.
    */
   public setDarkTheme(theme: CourierToastTheme) {
     this._themeManager.setDarkTheme(theme);
@@ -138,7 +140,7 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Set the dismiss button display option.
    *
-   * @param option a value of {@link CourierToastDismissButtonOption}
+   * @param option - a value of {@link CourierToastDismissButtonOption}
    */
   public setDismissButton(option: CourierToastDismissButtonOption) {
     this._dismissButtonOption = option;
@@ -148,7 +150,7 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Set the theme mode.
    *
-   * @param mode The theme mode, one of "dark", "light", or "system".
+   * @param mode - The theme mode, one of "dark", "light", or "system".
    */
   public setMode(mode: CourierComponentThemeMode) {
     this._themeManager.setMode(mode);
@@ -157,7 +159,7 @@ export class CourierToast extends CourierBaseElement {
   /**
    * Set a factory function that renders a toast item.
    *
-   * See {@link setToastItemContent} to set the content while preserving the toast item's
+   * See {@link CourierToast.setToastItemContent} to set the content while preserving the toast item's
    * container and stack styling.
    */
   public setToastItem(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
@@ -170,8 +172,8 @@ export class CourierToast extends CourierBaseElement {
    * The toast item's container, including the stack, auto-dismiss timer, and dismiss button
    * and all events are still present when custom content is set.
    *
-   * See {@link setDismissButton} to customize the dismiss button's visibility and
-   * {@link setToastItem} to customize the entire toast item, including
+   * See {@link CourierToast.setDismissButton} to customize the dismiss button's visibility and
+   * {@link CourierToast.setToastItem} to customize the entire toast item, including
    * its container.
    */
   public setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement) {
@@ -179,9 +181,9 @@ export class CourierToast extends CourierBaseElement {
   }
 
   /**
-   * Dismiss the toast item(s) associated with a particular {@link InboxMessage}.
+   * Dismiss the toast item(s) associated with a particular {@link @trycourier/courier-js#InboxMessage}.
    *
-   * Toast items are matched to messages by the field {@link InboxMessage.messageId}.
+   * Toast items are matched to messages by the field {@link @trycourier/courier-js#InboxMessage.messageId}.
    * If the item is an instance of {@link CourierToastItem} it will be animated out
    * before removal, otherwise custom items are removed immediately.
    *
@@ -200,7 +202,7 @@ export class CourierToast extends CourierBaseElement {
    * });
    * ```
    *
-   * @param message the {@link InboxMessage} for which toast items should be dismissed
+   * @param message - the {@link @trycourier/courier-js#InboxMessage} for which toast items should be dismissed
    */
   private dismissToastForMessage(message: InboxMessage) {
     this.childNodes.forEach(node => {
@@ -220,7 +222,6 @@ export class CourierToast extends CourierBaseElement {
 
   /**
    * @override
-   * @inheritdoc
    */
   protected onComponentMounted(): void {
     this._toastStyle = injectGlobalStyle(CourierToast.id, this.getStyles(this.theme));
@@ -232,7 +233,6 @@ export class CourierToast extends CourierBaseElement {
 
   /**
    * @override
-   * @inheritdoc
    */
   protected onComponentUnmounted(): void {
     this._datastoreListener.remove();
