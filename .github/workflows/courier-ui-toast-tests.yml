@@ -1,4 +1,4 @@
-name: Courier React 17 Tests
+name: Courier UI Toast Tests
 
 on:
   pull_request:
@@ -16,19 +16,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'yarn'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build courier-react-17 packages
+      - name: Build courier-ui-toast packages
         run: |
           yarn workspace @trycourier/courier-js run build
           yarn workspace @trycourier/courier-ui-core run build
-          yarn workspace @trycourier/courier-ui-inbox run build
           yarn workspace @trycourier/courier-ui-toast run build
-          yarn workspace @trycourier/courier-react-components run build
-          yarn workspace @trycourier/courier-react-17 run build
-      - name: Run courier-react-17 tests
-        run: yarn workspace @trycourier/courier-react-17 run test
+      - name: Run courier-ui-toast tests
+        run: yarn workspace @trycourier/courier-ui-toast run test
         env:
           JWT: ${{ secrets.JWT }}
           USER_ID: ${{ vars.USER_ID }}
