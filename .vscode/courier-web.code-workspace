@@ -20,6 +20,10 @@
       "path": "../@trycourier/courier-ui-inbox"
     },
     {
+      "name": "courier-ui-toast",
+      "path": "../@trycourier/courier-ui-toast"
+    },
+    {
       "name": "courier-ui-core",
       "path": "../@trycourier/courier-ui-core"
     },
