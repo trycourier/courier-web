@@ -70,6 +70,20 @@ export type CourierButtonProps = {
     onClick?: () => void;
 };
 
+// Warning: (ae-missing-release-tag) "CourierButtonTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierButtonTheme = {
+    font?: CourierFontTheme;
+    text?: string;
+    shadow?: string;
+    border?: string;
+    borderRadius?: string;
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+};
+
 // Warning: (ae-missing-release-tag) "CourierButtonVariant" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -150,6 +164,16 @@ export class CourierFactoryElement extends CourierSystemThemeElement {
     defaultElement(): HTMLElement;
 }
 
+// Warning: (ae-missing-release-tag) "CourierFontTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type CourierFontTheme = {
+    family?: string;
+    weight?: string;
+    size?: string;
+    color?: string;
+};
+
 // Warning: (ae-missing-release-tag) "CourierIcon" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -182,6 +206,16 @@ export class CourierIconButton extends CourierBaseElement {
     updateIconSVG(svg: string): void;
 }
 
+// Warning: (ae-missing-release-tag) "CourierIconButtonTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierIconButtonTheme = {
+    icon?: CourierIconTheme;
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+};
+
 // Warning: (ae-missing-release-tag) "CourierIconSVGs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -197,6 +231,14 @@ export const CourierIconSVGs: {
     archiveRead: string;
     unread: string;
     unarchive: string;
+};
+
+// Warning: (ae-missing-release-tag) "CourierIconTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierIconTheme = {
+    color?: string;
+    svg?: string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierInfoState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -256,6 +298,56 @@ export class CourierSystemThemeElement extends CourierBaseElement {
     protected onComponentUnmounted(): void;
     // (undocumented)
     protected onSystemThemeChange(_: SystemThemeMode): void;
+}
+
+// Warning: (ae-missing-release-tag) "CourierThemeManager" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export abstract class CourierThemeManager<TTheme> {
+    constructor(initialTheme: TTheme);
+    cleanup(): void;
+    get currentSystemTheme(): SystemThemeMode;
+    // (undocumented)
+    protected _darkTheme: TTheme;
+    // (undocumented)
+    protected abstract getDefaultDarkTheme(): TTheme;
+    // (undocumented)
+    protected abstract getDefaultLightTheme(): TTheme;
+    getTheme(): TTheme;
+    // (undocumented)
+    protected _lightTheme: TTheme;
+    // (undocumented)
+    protected abstract mergeTheme(mode: SystemThemeMode, theme: TTheme): TTheme;
+    get mode(): CourierComponentThemeMode;
+    setDarkTheme(theme: TTheme): void;
+    setLightTheme(theme: TTheme): void;
+    setMode(mode: CourierComponentThemeMode): void;
+    subscribe(callback: (theme: TTheme) => void): CourierThemeSubscription<TTheme>;
+    // (undocumented)
+    protected _subscriptions: CourierThemeSubscription<TTheme>[];
+    // (undocumented)
+    protected _systemMode: SystemThemeMode;
+    // (undocumented)
+    protected _systemThemeCleanup: (() => void) | undefined;
+    // (undocumented)
+    protected _target: EventTarget;
+    // (undocumented)
+    protected _theme: TTheme;
+    // (undocumented)
+    protected abstract readonly THEME_CHANGE_EVENT: string;
+    protected updateTheme(): void;
+    // (undocumented)
+    protected _userMode: CourierComponentThemeMode;
+}
+
+// Warning: (ae-missing-release-tag) "CourierThemeSubscription" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierThemeSubscription<TTheme> {
+    // (undocumented)
+    manager: CourierThemeManager<TTheme>;
+    // (undocumented)
+    unsubscribe: () => void;
 }
 
 // Warning: (ae-missing-release-tag) "getSystemThemeMode" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
