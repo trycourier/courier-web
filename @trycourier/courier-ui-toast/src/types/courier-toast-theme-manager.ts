@@ -1,6 +1,9 @@
 import { CourierThemeManager, CourierThemeSubscription, SystemThemeMode } from "@trycourier/courier-ui-core";
 import { CourierToastTheme, defaultDarkTheme, defaultLightTheme, mergeTheme } from "./courier-toast-theme";
 
+/**
+ * @public
+ */
 export interface CourierToastThemeSubscription extends CourierThemeSubscription<CourierToastTheme> {
   manager: CourierToastThemeManager;
 }
@@ -8,6 +11,8 @@ export interface CourierToastThemeSubscription extends CourierThemeSubscription<
 /**
  * Toast-specific theme manager that extends the abstract CourierThemeManager.
  * Provides toast theme management with light/dark mode support.
+ *
+ * @public
  */
 export class CourierToastThemeManager extends CourierThemeManager<CourierToastTheme> {
 

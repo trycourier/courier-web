@@ -5,10 +5,10 @@ import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
 import { CourierToastDismissButtonOption, CourierToastItemClickEvent } from "@trycourier/courier-ui-toast";
 
-/** Props that may be passed to the {@link CourierToast} component. */
+/** Props that may be passed to the CourierToast component. */
 export interface CourierToastProps {
   /**
-   * Styles applied to the {@link CourierToast} component.
+   * Styles applied to the CourierToast component.
    *
    * By default, the component has the following styles:
    *

@@ -8,10 +8,16 @@ import { CourierToastItem } from "../components/courier-toast-item";
  * - hidden: always hide the dismiss button
  * - hover: only show the dismiss button when the toast is hovered
  * - auto (default): visible for manually-dismissed toasts, hover for auto-dismiss toasts
+ *
+ * @public
  */
 export type CourierToastDismissButtonOption = 'visible' | 'hidden' | 'hover' | 'auto';
 
-/** Props passed to a factory function used to create toast items or toast item content. */
+/**
+ * Props passed to a factory function used to create toast items or toast item content.
+ *
+ * @public
+ */
 export type CourierToastItemFactoryProps = {
   /** The message for which the toast item is being created. */
   message: InboxMessage;
@@ -23,7 +29,11 @@ export type CourierToastItemFactoryProps = {
   autoDismissTimeoutMs: number;
 };
 
-/** Event metadata passed to the callback for {@link CourierToast.onToastItemClick}. */
+/**
+ * Event metadata passed to the callback for {@link CourierToast.onToastItemClick}.
+ *
+ * @public
+ */
 export type CourierToastItemClickEvent = {
   /** The message that was clicked. */
   message: InboxMessage;

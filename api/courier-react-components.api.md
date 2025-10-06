@@ -21,6 +21,12 @@ import { CourierInboxStateErrorFactoryProps } from '@trycourier/courier-ui-inbox
 import { CourierInboxStateLoadingFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import { CourierProps } from '@trycourier/courier-js';
+import { CourierToast } from '@trycourier/courier-ui-toast';
+import { CourierToastDismissButtonOption } from '@trycourier/courier-ui-toast';
+import { CourierToastItemClickEvent } from '@trycourier/courier-ui-toast';
+import { CourierToastItemFactoryProps } from '@trycourier/courier-ui-toast';
+import { CourierToastTheme } from '@trycourier/courier-ui-toast';
+import { CSSProperties } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { InboxDataSet } from '@trycourier/courier-ui-inbox';
 import { InboxMessage } from '@trycourier/courier-js';
@@ -90,6 +96,28 @@ export interface CourierInboxProps {
 // @public
 export const CourierRenderContext: Context<RenderFn | null>;
 
+// Warning: (ae-missing-release-tag) "CourierToastComponent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CourierToastComponent: ForwardRefExoticComponent<CourierToastProps & RefAttributes<CourierToast>>;
+
+// Warning: (ae-missing-release-tag) "CourierToastProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierToastProps {
+    autoDismiss?: boolean;
+    autoDismissTimeoutMs?: number;
+    darkTheme?: CourierToastTheme;
+    dismissButton?: CourierToastDismissButtonOption;
+    lightTheme?: CourierToastTheme;
+    mode?: CourierComponentThemeMode;
+    onReady?: (ready: boolean) => void;
+    onToastItemClick?: (props: CourierToastItemClickEvent) => void;
+    renderToastItem?: (props: CourierToastItemFactoryProps) => ReactNode;
+    renderToastItemContent?: (props: CourierToastItemFactoryProps) => ReactNode;
+    style?: CSSProperties;
+}
+
 // Warning: (ae-missing-release-tag) "useCourier" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -97,12 +125,14 @@ export const useCourier: () => {
     shared: Courier;
     auth: AuthenticationHooks;
     inbox: InboxHooks;
+    toast: ToastHooks;
 };
 
 // Warnings were encountered during analysis:
 //
-// dist/hooks/use-courier.d.ts:30:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:31:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:35:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:36:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:37:5 - (ae-forgotten-export) The symbol "ToastHooks" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

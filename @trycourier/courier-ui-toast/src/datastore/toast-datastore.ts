@@ -1,6 +1,13 @@
 import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { CourierToastDatastoreListener } from "./toast-datastore-listener";
 
+/**
+ * Shared datastore for Courier toasts.
+ *
+ * This datastore listens to and stores Courier Inbox messages.
+ *
+ * @public
+ */
 export class CourierToastDatastore {
   /** Shared instance. Access via {@link CourierToastDatastore.shared}. */
   private static instance: CourierToastDatastore;
@@ -23,7 +30,7 @@ export class CourierToastDatastore {
   /**
    * Add a listener whose handlers are called when there are changes to the datastore.
    *
-   * @param listener an implementation of {@link CourierToastDatastoreListener}
+   * @param listener - an implementation of {@link CourierToastDatastoreListener}
    */
   public addDatastoreListener(listener: CourierToastDatastoreListener) {
     this._datastoreListeners.push(listener);
@@ -33,11 +40,11 @@ export class CourierToastDatastore {
    * Remove a previously added listener.
    *
    * Note: the `listener` param is matched by object reference, so callers must pass
-   * the same object previously passed to {@link addDatastoreListener}.
+   * the same object previously passed to {@link CourierToastDatastore.addDatastoreListener}.
    *
    * See also: {@link CourierToastDatastoreListener.remove}
    *
-   * @param listener a previously added listener implementation
+   * @param listener - a previously added listener implementation
    */
   public removeDatastoreListener(listener: CourierToastDatastoreListener) {
     this._datastoreListeners = this._datastoreListeners.filter(l => l !== listener);
@@ -49,7 +56,7 @@ export class CourierToastDatastore {
    * Calling this method will open a WebSocket connection to the Courier backend if one
    * is not already open.
    *
-   * See also: {@link Courier.shared.signIn} and {@link Courier.shared.signOut}
+   * See also: {@link @trycourier/courier-js#Courier.shared.signIn} and {@link @trycourier/courier-js#Courier.shared.signOut}
    */
   public async listenForMessages() {
     try {
@@ -84,14 +91,14 @@ export class CourierToastDatastore {
   }
 
   /**
-   * Find the position of an {@link InboxMessage} in the toast stack.
+   * Find the position of an {@link @trycourier/courier-js#InboxMessage} in the toast stack.
    *
    * Notes:
    *  - Since the stack is an array, with the last item being the "top" of the stack,
    *    a toast's position in the underlying array is the inverse of its stack position.
-   *  - `message` is matched by {@link InboxMessage.messageId}, not by object reference.
+   *  - `message` is matched by {@link @trycourier/courier-js#InboxMessage.messageId}, not by object reference.
    *
-   * @param message the {@link InboxMessage} to find in the stack
+   * @param message - the {@link @trycourier/courier-js#InboxMessage} to find in the stack
    */
   public toastIndexOfMessage(message: InboxMessage) {
     const position = this._dataset.findIndex(m => m.messageId === message.messageId);
@@ -106,7 +113,7 @@ export class CourierToastDatastore {
   }
 
   /**
-   * Add an {@link InboxMessage} toast item to the datastore.
+   * Add an {@link @trycourier/courier-js#InboxMessage} toast item to the datastore.
    *
    * <p>Calling this directly is useful to send test messages while developing with the Courier SDK.</p>
    *
@@ -119,7 +126,7 @@ export class CourierToastDatastore {
    * });
    * ```
    *
-   * @param message The message to add as a toast item.
+   * @param message - the message to add as a toast item.
    */
   public addMessage(message: InboxMessage) {
     this._dataset.push(message);
@@ -132,9 +139,9 @@ export class CourierToastDatastore {
   }
 
   /**
-   * Remove an {@link InboxMessage} from the datastore.
+   * Remove an {@link @trycourier/courier-js#InboxMessage} from the datastore.
    *
-   * Note: `message` is matched by {@link InboxMessage.messageId}, not by object reference
+   * Note: `message` is matched by {@link @trycourier/courier-js#InboxMessage.messageId}, not by object reference
    */
   public removeMessage(message: InboxMessage) {
     const index = this._dataset.findIndex(m => m.messageId === message.messageId);
