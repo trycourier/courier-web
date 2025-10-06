@@ -14,7 +14,7 @@
     "build-packages": "yarn exec ./scripts/build-packages",
     "build-packages:ci": "yarn exec ./scripts/build-packages-ci",
     "sync": "yarn exec ./scripts/sync",
-    "release": "yarn build-packages && yarn changeset publish",
+    "release": "yarn build-packages:ci && yarn changeset publish",
     "ipqr": "sh ./scripts/ipqr.sh"
   },
   "devDependencies": {
