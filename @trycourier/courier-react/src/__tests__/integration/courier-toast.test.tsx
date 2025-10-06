@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { CourierToast } from '../../components/courier-toast';
-import { CourierToast as CourierToastElement } from '@trycourier/courier-ui-inbox';
+import { CourierToast as CourierToastElement } from '@trycourier/courier-ui-toast';
 import React from 'react';
 
 describe('CourierToast', () => {

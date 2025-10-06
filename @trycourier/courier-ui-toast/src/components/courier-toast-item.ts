@@ -1,6 +1,6 @@
 import { CourierBaseElement, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierToastThemeManager, CourierToastThemeSubscription } from "../types/courier-toast-theme-manager";
+import { CourierToastTheme } from "../types/courier-toast-theme";
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 
@@ -8,8 +8,8 @@ export class CourierToastItem extends CourierBaseElement {
   /** The animation duration to fade out a dismissed toast before its element is removed. */
   private static readonly dismissAnimationTimeoutMs = 300;
 
-  private _themeManager: CourierInboxThemeManager;
-  private _themeSubscription: CourierInboxThemeSubscription;
+  private _themeManager: CourierToastThemeManager;
+  private _themeSubscription: CourierToastThemeSubscription;
   private _message: InboxMessage;
   private _customToastItemContent?: (props: CourierToastItemFactoryProps) => HTMLElement;
 
@@ -27,7 +27,7 @@ export class CourierToastItem extends CourierBaseElement {
     message: InboxMessage,
     autoDismiss: boolean,
     autoDismissTimeoutMs: number,
-    themeManager: CourierInboxThemeManager,
+    themeManager: CourierToastThemeManager,
   }) {
 
     super();
@@ -36,7 +36,7 @@ export class CourierToastItem extends CourierBaseElement {
     this._autoDismissTimeoutMs = props.autoDismissTimeoutMs;
 
     this._themeManager = props.themeManager;
-    this._themeSubscription = this._themeManager.subscribe((_: CourierInboxTheme) => {
+    this._themeSubscription = this._themeManager.subscribe((_: CourierToastTheme) => {
       this.render();
     });
   }
@@ -102,7 +102,7 @@ export class CourierToastItem extends CourierBaseElement {
     this._themeSubscription.unsubscribe();
   }
 
-  get theme(): CourierInboxTheme {
+  get theme(): CourierToastTheme {
     return this._themeManager.getTheme();
   }
 
@@ -164,8 +164,8 @@ export class CourierToastItem extends CourierBaseElement {
 
     // Dismiss button
     const dismiss = new CourierIcon(
-      this.theme.toast?.item?.dismissIcon?.color,
-      this.theme.toast?.item?.dismissIcon?.svg,
+      this.theme.item?.dismissIcon?.color,
+      this.theme.item?.dismissIcon?.svg,
     );
     dismiss.classList.add('dismiss');
     dismiss.addEventListener('click', (event) => {
@@ -186,8 +186,8 @@ export class CourierToastItem extends CourierBaseElement {
     this.append(content);
 
     const icon = new CourierIcon(
-      this.theme.toast?.item?.icon?.color,
-      this.theme.toast?.item?.icon?.svg,
+      this.theme.item?.icon?.color,
+      this.theme.item?.icon?.svg,
     );
     icon.classList.add('icon');
     content.appendChild(icon);

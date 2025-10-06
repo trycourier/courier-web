@@ -1,10 +1,10 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { defaultLightTheme } from "../../types/courier-inbox-theme";
-import { CourierInboxThemeManager } from "../../types/courier-inbox-theme-manager";
+import { defaultLightTheme } from "../../types/courier-toast-theme";
+import { CourierToastThemeManager } from "../../types/courier-toast-theme-manager";
 import { CourierToastItem } from "../courier-toast-item";
 import { CourierToastItemFactoryProps } from "../../types/toast";
 
-const THEME_MANAGER = new CourierInboxThemeManager(defaultLightTheme);
+const THEME_MANAGER = new CourierToastThemeManager(defaultLightTheme);
 const INBOX_MESSAGE: InboxMessage = {
   messageId: "1",
   title: "title",

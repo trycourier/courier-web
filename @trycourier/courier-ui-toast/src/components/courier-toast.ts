@@ -1,6 +1,6 @@
 import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
-import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
+import { CourierToastThemeManager, CourierToastThemeSubscription } from "../types/courier-toast-theme-manager";
+import { CourierToastTheme, defaultLightTheme } from "../types/courier-toast-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItem } from "./courier-toast-item";
 import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
@@ -29,9 +29,9 @@ type CourierToastLayoutProps = {
  * <courier-toast></courier-toast>
  *
  * <script type="module">
- * import { Courier } from "@trycourier/courier-ui-inbox";
+ * import { Courier } from "@trycourier/courier-ui-toast";
  *
- * // Authenticate the user with the inbox
+ * // Authenticate the user
  * Courier.shared.signIn({ userId, jwt });
  * </script>
  * </body>
@@ -41,8 +41,8 @@ type CourierToastLayoutProps = {
 export class CourierToast extends CourierBaseElement {
 
   // Internally-maintained state
-  private _themeManager: CourierInboxThemeManager;
-  private _themeSubscription: CourierInboxThemeSubscription;
+  private _themeManager: CourierToastThemeManager;
+  private _themeSubscription: CourierToastThemeSubscription;
   private _toastStyle?: HTMLStyleElement;
   private _authListener?: AuthenticationListener;
   private _datastoreListener: CourierToastDatastoreListener;
@@ -81,12 +81,12 @@ export class CourierToast extends CourierBaseElement {
   ];
 
   constructor(props: {
-    themeManager?: CourierInboxThemeManager
+    themeManager?: CourierToastThemeManager
   }) {
     super();
 
-    this._themeManager = props?.themeManager ?? new CourierInboxThemeManager(defaultLightTheme);
-    this._themeSubscription = this._themeManager.subscribe((_: CourierInboxTheme) => {
+    this._themeManager = props?.themeManager ?? new CourierToastThemeManager(defaultLightTheme);
+    this._themeSubscription = this._themeManager.subscribe((_: CourierToastTheme) => {
       this.refreshStyles();
     });
     this._datastoreListener = new CourierToastDatastoreListener({
@@ -120,18 +120,18 @@ export class CourierToast extends CourierBaseElement {
   }
 
   /**
-   * Set the light theme for the inbox.
+   * Set the light theme for the toast.
    * @param theme The light theme object to set.
    */
-  public setLightTheme(theme: CourierInboxTheme) {
+  public setLightTheme(theme: CourierToastTheme) {
     this._themeManager.setLightTheme(theme);
   }
 
   /**
-   * Set the dark theme for the inbox.
+   * Set the dark theme for the toast.
    * @param theme The dark theme object to set.
    */
-  public setDarkTheme(theme: CourierInboxTheme) {
+  public setDarkTheme(theme: CourierToastTheme) {
     this._themeManager.setDarkTheme(theme);
   }
 
@@ -282,7 +282,7 @@ export class CourierToast extends CourierBaseElement {
     }
   }
 
-  private get theme(): CourierInboxTheme {
+  private get theme(): CourierToastTheme {
     return this._themeManager.getTheme();
   }
 
@@ -386,8 +386,8 @@ export class CourierToast extends CourierBaseElement {
     this.dismissToastForMessage(message);
   }
 
-  private getStyles(theme: CourierInboxTheme): string {
-    const item = theme.toast?.item;
+  private getStyles(theme: CourierToastTheme): string {
+    const item = theme.item;
 
     // Styles for the top-level toast container.
     const toastStyles = `

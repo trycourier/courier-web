@@ -68,12 +68,15 @@ update_all_deps_for_package () {
 # ── route by the *source* package we just published ─────────────────────
 case "$package_name" in
   "@trycourier/courier-js")
-    update_deps courier-ui-inbox courier-react-components courier-react courier-react-17
+    update_deps courier-ui-inbox courier-ui-toast courier-react-components courier-react courier-react-17
     ;;
   "@trycourier/courier-ui-core")
-    update_deps courier-ui-inbox courier-react-components courier-react courier-react-17
+    update_deps courier-ui-inbox courier-ui-toast courier-react-components courier-react courier-react-17
     ;;
   "@trycourier/courier-ui-inbox")
+    update_deps courier-react-components courier-react courier-react-17
+    ;;
+  "@trycourier/courier-ui-toast")
     update_deps courier-react-components courier-react courier-react-17
     ;;
   "@trycourier/courier-react-components")

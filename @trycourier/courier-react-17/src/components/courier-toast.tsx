@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { CourierToast as CourierToastElement } from "@trycourier/courier-ui-inbox";
+import { CourierToast as CourierToastElement } from "@trycourier/courier-ui-toast";
 import { CourierToastComponent, CourierToastProps, CourierRenderContext } from "@trycourier/courier-react-components";
 import { reactNodeToHTMLElement } from "../utils/render";
 

@@ -117,7 +117,7 @@
   <courier-toast dismiss-button="hidden" id="my-toast"></courier-toast>
 
   <script type="module">
-    import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-inbox';
+    import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-toast';
     import ToastIcon from './toast-icon.svg?raw';
 
     // Authenticate the user with the inbox
@@ -129,18 +129,16 @@
     const toast = document.getElementById("my-toast");
 
     toast.setLightTheme({
-      toast: {
-        item: {
-          title: {
-            color: "#6366f1",
-            weight: "bold",
-          },
-          backgroundColor: "#edeefc",
-          border: "1px solid #cdd1ff",
-          borderRadius: "15px",
-          icon: {
-            svg: ToastIcon
-          }
+      item: {
+        title: {
+          color: "#6366f1",
+          weight: "bold",
+        },
+        backgroundColor: "#edeefc",
+        border: "1px solid #cdd1ff",
+        borderRadius: "15px",
+        icon: {
+          svg: ToastIcon
         }
       }
     });

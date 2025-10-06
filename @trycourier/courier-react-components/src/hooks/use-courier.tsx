@@ -1,6 +1,7 @@
 import React from 'react';
 import { Courier, CourierProps, InboxMessage } from '@trycourier/courier-js';
-import { CourierInboxDatastore, CourierInboxDataStoreListener, CourierInboxFeedType, CourierToastDatastore, CourierToastDatastoreListener, InboxDataSet } from '@trycourier/courier-ui-inbox';
+import { CourierInboxDatastore, CourierInboxDataStoreListener, CourierInboxFeedType, InboxDataSet } from '@trycourier/courier-ui-inbox';
+import { CourierToastDatastore, CourierToastDatastoreListener } from '@trycourier/courier-ui-toast';
 
 type AuthenticationHooks = {
   userId?: string,

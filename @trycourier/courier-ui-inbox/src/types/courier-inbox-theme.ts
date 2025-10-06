@@ -120,19 +120,6 @@ export type CourierActionMenuTheme = {
   archiveRead?: CourierMenuItemTheme;
 }
 
-export type CourierToastItemTheme = {
-  backgroundColor?: string;
-  hoverBackgroundColor?: string;
-  autoDismissBarColor?: string;
-  title?: CourierInboxFontTheme;
-  body?: CourierInboxFontTheme;
-  icon?: CourierInboxIconTheme;
-  dismissIcon?: CourierInboxIconTheme;
-  shadow?: string;
-  border?: string;
-  borderRadius?: string;
-}
-
 export type CourierInboxTheme = {
   popup?: {
     button?: CourierInboxMenuButtonTheme;
@@ -166,9 +153,6 @@ export type CourierInboxTheme = {
     loading?: CourierInboxSkeletonLoadingStateTheme,
     empty?: CourierInboxInfoStateTheme,
     error?: CourierInboxInfoStateTheme
-  }
-  toast?: {
-    item?: CourierToastItemTheme;
   }
 };
 
@@ -413,34 +397,6 @@ export const defaultLightTheme: CourierInboxTheme = {
       button: {
         text: 'Retry'
       }
-    }
-  },
-  toast: {
-    item: {
-      backgroundColor: CourierColors.white[500],
-      hoverBackgroundColor: CourierColors.gray[200],
-      shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
-      border: `1px solid ${CourierColors.gray[500]}`,
-      borderRadius: '8px',
-      title: {
-        size: '11pt',
-        weight: '400',
-        color: CourierColors.black[500],
-      },
-      body: {
-        size: '11pt',
-        weight: '400',
-        color: CourierColors.gray[600],
-      },
-      icon: {
-        color: CourierColors.black[500],
-        svg: CourierIconSVGs.inbox,
-      },
-      dismissIcon: {
-        color: CourierColors.black[500],
-        svg: CourierIconSVGs.remove,
-      },
-      autoDismissBarColor: CourierColors.blue[400],
     }
   }
 };
@@ -687,34 +643,6 @@ export const defaultDarkTheme: CourierInboxTheme = {
         text: 'Retry'
       }
     }
-  },
-  toast: {
-    item: {
-      backgroundColor: CourierColors.black[500],
-      hoverBackgroundColor: CourierColors.gray[200],
-      shadow: `0px 4px 8px -2px ${CourierColors.gray[400]}`,
-      border: `1px solid ${CourierColors.black[500]}`,
-      borderRadius: '8px',
-      title: {
-        size: '11pt',
-        weight: '600',
-        color: CourierColors.white[500],
-      },
-      body: {
-        size: '11pt',
-        weight: '400',
-        color: CourierColors.gray[200],
-      },
-      icon: {
-        color: CourierColors.white[500],
-        svg: CourierIconSVGs.inbox,
-      },
-      dismissIcon: {
-        color: CourierColors.white[500],
-        svg: CourierIconSVGs.remove,
-      },
-      autoDismissBarColor: CourierColors.blue[400],
-    }
   }
 };
 
@@ -880,12 +808,6 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       error: {
         ...defaultTheme.inbox?.error,
         ...theme.inbox?.error
-      }
-    },
-    toast: {
-      item: {
-        ...defaultTheme.toast?.item,
-        ...theme.toast?.item
       }
     }
   };
