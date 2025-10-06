@@ -1,6 +1,7 @@
 // Import core Courier dependencies
 import '@trycourier/courier-js';
 import '@trycourier/courier-ui-inbox';
+import '@trycourier/courier-ui-toast';
 
 // Export local hooks
 export { useCourier } from './hooks/use-courier';

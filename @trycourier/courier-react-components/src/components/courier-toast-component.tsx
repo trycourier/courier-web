@@ -1,9 +1,9 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties, useState } from "react";
-import { CourierInboxTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps } from "@trycourier/courier-ui-inbox";
+import { CourierToastTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps } from "@trycourier/courier-ui-toast";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
-import { CourierToastDismissButtonOption, CourierToastItemClickEvent } from "@trycourier/courier-ui-inbox/dist/types/toast";
+import { CourierToastDismissButtonOption, CourierToastItemClickEvent } from "@trycourier/courier-ui-toast";
 
 /** Props that may be passed to the {@link CourierToast} component. */
 export interface CourierToastProps {
@@ -27,10 +27,10 @@ export interface CourierToastProps {
   style?: CSSProperties;
 
   /** Theme object used to render the component when light mode is used. */
-  lightTheme?: CourierInboxTheme;
+  lightTheme?: CourierToastTheme;
 
   /** Theme object used to render the component when dark mode is used. */
-  darkTheme?: CourierInboxTheme;
+  darkTheme?: CourierToastTheme;
 
   /** Manually set the theme mode to one of "light", "dark", or "system". Defaults to "system". */
   mode?: CourierComponentThemeMode;

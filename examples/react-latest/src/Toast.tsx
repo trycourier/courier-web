@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CourierToast, useCourier } from '@trycourier/courier-react'
-import type { CourierToast as CourierToastElement, CourierToastItemFactoryProps } from '@trycourier/courier-ui-inbox';
+import type { CourierToast as CourierToastElement, CourierToastItemFactoryProps } from '@trycourier/courier-ui-toast';
 
 function CustomElement(props: CourierToastItemFactoryProps) {
   return (
@@ -53,7 +53,7 @@ export default function App() {
 
   }, []);
 
-  return <CourierToast ref={el} autoDismissTimeoutMs={10000} onReady={setToastReady} renderToastItem={CustomElement} />;
+  return <CourierToast ref={el} autoDismissTimeoutMs={10000} onReady={setToastReady} />;
 
 
 }

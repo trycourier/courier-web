@@ -12,6 +12,7 @@ export { useCourier } from '@trycourier/courier-react-components';
 export type {
   CourierInboxProps,
   CourierInboxPopupMenuProps,
+  CourierToastProps,
 } from '@trycourier/courier-react-components';
 
 // Re-export types from courier-js
@@ -87,6 +88,27 @@ export {
 // Re-export element types from courier-ui-inbox
 export type { CourierInbox as CourierInboxElement } from '@trycourier/courier-ui-inbox';
 export type { CourierInboxPopupMenu as CourierInboxPopupMenuElement } from '@trycourier/courier-ui-inbox';
+
+// Re-export element types from courier-ui-toast
+export type { CourierToast as CourierToastElement } from '@trycourier/courier-ui-toast';
+
+// Re-export toast types from courier-ui-toast
+export type {
+  CourierToastTheme,
+  CourierToastFontTheme,
+  CourierToastIconTheme,
+  CourierToastItemTheme,
+  CourierToastItemFactoryProps,
+  CourierToastItemClickEvent,
+  CourierToastDismissButtonOption
+} from '@trycourier/courier-ui-toast';
+
+// Re-export toast theme utilities from courier-ui-toast
+export {
+  defaultLightTheme as defaultToastLightTheme,
+  defaultDarkTheme as defaultToastDarkTheme,
+  mergeTheme as mergeToastTheme
+} from '@trycourier/courier-ui-toast';
 
 // Re-export types from courier-ui-core
 export type {

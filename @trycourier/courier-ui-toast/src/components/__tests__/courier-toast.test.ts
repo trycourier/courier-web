@@ -1,7 +1,7 @@
 import { InboxMessage } from "@trycourier/courier-js";
 import { CourierToast } from "../courier-toast";
 import { CourierToastItem } from "../courier-toast-item";
-import { CourierInboxTheme } from "../../types/courier-inbox-theme";
+import { CourierToastTheme } from "../../types/courier-toast-theme";
 import { CourierToastDatastore } from "../../datastore/toast-datastore";
 
 let toast: CourierToast;
@@ -186,13 +186,11 @@ describe("courier-toast", () => {
 
   describe("setLightTheme", () => {
     it("should set the light theme rendered if mode=light", () => {
-      const lightTheme: CourierInboxTheme = {
-        toast: {
-          item: {
-            backgroundColor: "#fbeaea",
-            title: {
-              color: "#2b2727"
-            }
+      const lightTheme: CourierToastTheme = {
+        item: {
+          backgroundColor: "#fbeaea",
+          title: {
+            color: "#2b2727"
           }
         }
       };
@@ -213,13 +211,11 @@ describe("courier-toast", () => {
 
   describe("setDarkTheme", () => {
     it("should set the dark theme rendered if mode=dark", () => {
-      const darkTheme: CourierInboxTheme = {
-        toast: {
-          item: {
-            backgroundColor: "#1a1a1a",
-            title: {
-              color: "#e0e0e0"
-            }
+      const darkTheme: CourierToastTheme = {
+        item: {
+          backgroundColor: "#1a1a1a",
+          title: {
+            color: "#e0e0e0"
           }
         }
       };
@@ -240,24 +236,20 @@ describe("courier-toast", () => {
 
   describe("setMode", () => {
     it("should switch between light and dark themes when both are set", () => {
-      const lightTheme: CourierInboxTheme = {
-        toast: {
-          item: {
-            backgroundColor: "#fbeaea",
-            title: {
-              color: "#2b2727"
-            }
+      const lightTheme: CourierToastTheme = {
+        item: {
+          backgroundColor: "#fbeaea",
+          title: {
+            color: "#2b2727"
           }
         }
       };
 
-      const darkTheme: CourierInboxTheme = {
-        toast: {
-          item: {
-            backgroundColor: "#1a1a1a",
-            title: {
-              color: "#e0e0e0"
-            }
+      const darkTheme: CourierToastTheme = {
+        item: {
+          backgroundColor: "#1a1a1a",
+          title: {
+            color: "#e0e0e0"
           }
         }
       };
@@ -373,7 +365,7 @@ describe("courier-toast", () => {
       expect(elementBeforeDismiss).not.toBeNull()
       expect(elementBeforeDismiss.dataset.courierMessageId).toBe("1");
 
-      CourierToastDatastore.shared.removeMessage({...INBOX_MESSAGE, messageId: "2"});
+      CourierToastDatastore.shared.removeMessage({ ...INBOX_MESSAGE, messageId: "2" });
 
       // Dismiss has a timer set for the item to animate out
       jest.advanceTimersByTime(1000);
