@@ -20,6 +20,15 @@ export type CourierToastItemTheme = {
   shadow?: string;
   border?: string;
   borderRadius?: string;
+  actions?: {
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    shadow?: string;
+    font?: CourierToastFontTheme;
+  }
 }
 
 /** @public */
@@ -54,6 +63,18 @@ export const defaultLightTheme: CourierToastTheme = {
       svg: CourierIconSVGs.remove,
     },
     autoDismissBarColor: CourierColors.blue[400],
+    actions: {
+      backgroundColor: 'transparent',
+      hoverBackgroundColor: CourierColors.gray[200],
+      activeBackgroundColor: CourierColors.gray[500],
+      border: `1px solid ${CourierColors.gray[500]}`,
+      borderRadius: '4px',
+      shadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.06)',
+      font: {
+        color: CourierColors.black[500],
+        size: '14px',
+      }
+    }
   }
 };
 

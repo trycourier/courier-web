@@ -1,4 +1,4 @@
-import { InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItem } from "../components/courier-toast-item";
 
 /**
@@ -35,7 +35,7 @@ export type CourierToastItemFactoryProps = {
  * @public
  */
 export type CourierToastItemClickEvent = {
-  /** The message that was clicked. */
+  /** The message for the toast item that was clicked. */
   message: InboxMessage;
 
   /**
@@ -52,3 +52,16 @@ export type CourierToastItemClickEvent = {
    */
   toastItem: CourierToastItem | HTMLElement;
 };
+
+/**
+ * Event metadata passed to the callback for {@link CourierToast.onToastItemActionClick}.
+ *
+ * @public
+ */
+export type CourierToastItemActionClickEvent = {
+  /** The message for the toast item that was clicked. */
+  message: InboxMessage;
+
+  /** The action for the action button that was clicked. */
+  action: InboxAction;
+}

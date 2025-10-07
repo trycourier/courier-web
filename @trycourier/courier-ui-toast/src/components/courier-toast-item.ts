@@ -1,8 +1,8 @@
-import { CourierBaseElement, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierToastThemeManager, CourierToastThemeSubscription } from "../types/courier-toast-theme-manager";
 import { CourierToastTheme } from "../types/courier-toast-theme";
-import { InboxMessage } from "@trycourier/courier-js";
-import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { CourierToastItemActionClickEvent, CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 
 /**
  * Default implementation of a Toast item.
@@ -28,6 +28,7 @@ export class CourierToastItem extends CourierBaseElement {
   // Callbacks
   private _onItemDismissedCallback: ((props: { message: InboxMessage }) => void) | null = null;
   private _onItemClickCallback: ((props: CourierToastItemClickEvent) => void) | null = null;
+  private _onItemActionClickCallback: ((props: CourierToastItemActionClickEvent) => void) | null = null;
 
   constructor(props: {
     message: InboxMessage,
@@ -67,6 +68,19 @@ export class CourierToastItem extends CourierBaseElement {
     // Re-render to set/un-set the .clickable class
     this.render();
   }
+
+  /**
+   * Registers a handler for item click events.
+   *
+   * @param handler - A function to be called when the item is clicked.
+   */
+  public onItemActionClicked(handler: (props: CourierToastItemActionClickEvent) => void): void {
+    this._onItemActionClickCallback = handler;
+
+    // Re-render to set/un-set the .clickable class
+    this.render();
+  }
+
 
   /**
    * Set a custom content element for the toast item, reusing the {@link CourierToastItem}
@@ -211,7 +225,50 @@ export class CourierToastItem extends CourierBaseElement {
     body.classList.add('body');
     body.textContent = this._message.preview ?? this._message.body ?? '';
     textContent.appendChild(body);
+
+    if (this.messageHasActions) {
+      const actionsContainer = document.createElement('div');
+      actionsContainer.classList.add('actions-container');
+      textContent.appendChild(actionsContainer);
+
+      this._message.actions?.forEach(action => {
+        const button = this.createActionButton(action);
+        actionsContainer.appendChild(button);
+      });
+    }
+
     return content;
+  }
+
+  private get messageHasActions() {
+    return this._message.actions && this._message.actions.length > 0;
+  }
+
+  private createActionButton(action: InboxAction): CourierButton {
+    const actionsTheme = this._themeManager.getTheme().item?.actions;
+
+    return new CourierButton({
+      mode: this._themeManager.mode,
+      text: action.content,
+      variant: 'secondary',
+      backgroundColor: actionsTheme?.backgroundColor,
+      hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
+      activeBackgroundColor: actionsTheme?.activeBackgroundColor,
+      border: actionsTheme?.border,
+      borderRadius: actionsTheme?.borderRadius,
+      shadow: actionsTheme?.shadow,
+      fontFamily: actionsTheme?.font?.family,
+      fontSize: actionsTheme?.font?.size,
+      fontWeight: actionsTheme?.font?.weight,
+      textColor: actionsTheme?.font?.color,
+      onClick: () => {
+        if (this._onItemActionClickCallback) {
+          this._onItemActionClickCallback({ message: this._message, action });
+        }
+      }
+    });
+
+
   }
 
   private onClick(event: Event) {
