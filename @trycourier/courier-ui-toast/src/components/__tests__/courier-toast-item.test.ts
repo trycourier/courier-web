@@ -105,7 +105,7 @@ describe('courier-toast-item', () => {
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-      item.onItemClicked(handler);
+      item.onToastItemClick(handler);
       document.body.appendChild(item);
 
       (document.querySelector('courier-toast-item') as HTMLElement).click();
@@ -128,7 +128,7 @@ describe('courier-toast-item', () => {
         autoDismissTimeoutMs: 1000,
         themeManager: THEME_MANAGER,
       });
-      item.onItemActionClicked(handler);
+      item.onToastItemActionClick(handler);
       document.body.appendChild(item);
 
       const buttonSelector = 'courier-toast-item .actions-container courier-button';
