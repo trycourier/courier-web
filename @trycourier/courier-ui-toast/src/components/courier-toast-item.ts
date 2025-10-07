@@ -27,8 +27,8 @@ export class CourierToastItem extends CourierBaseElement {
 
   // Callbacks
   private _onItemDismissedCallback: ((props: { message: InboxMessage }) => void) | null = null;
-  private _onItemClickCallback: ((props: CourierToastItemClickEvent) => void) | null = null;
-  private _onItemActionClickCallback: ((props: CourierToastItemActionClickEvent) => void) | null = null;
+  private _onToastItemClickCallback: ((props: CourierToastItemClickEvent) => void) | null = null;
+  private _onToastItemActionClickCallback: ((props: CourierToastItemActionClickEvent) => void) | null = null;
 
   constructor(props: {
     message: InboxMessage,
@@ -62,8 +62,8 @@ export class CourierToastItem extends CourierBaseElement {
    *
    * @param handler - A function to be called when the item is clicked.
    */
-  public onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void {
-    this._onItemClickCallback = handler;
+  public onToastItemClick(handler: (props: CourierToastItemClickEvent) => void): void {
+    this._onToastItemClickCallback = handler;
 
     // Re-render to set/un-set the .clickable class
     this.render();
@@ -74,8 +74,8 @@ export class CourierToastItem extends CourierBaseElement {
    *
    * @param handler - A function to be called when the item is clicked.
    */
-  public onItemActionClicked(handler: (props: CourierToastItemActionClickEvent) => void): void {
-    this._onItemActionClickCallback = handler;
+  public onToastItemActionClick(handler: (props: CourierToastItemActionClickEvent) => void): void {
+    this._onToastItemActionClickCallback = handler;
 
     // Re-render to set/un-set the .clickable class
     this.render();
@@ -176,7 +176,7 @@ export class CourierToastItem extends CourierBaseElement {
     }
 
     // Click-ability
-    if (this._onItemClickCallback) {
+    if (this._onToastItemClickCallback) {
       this.classList.add('clickable');
     }
 
@@ -262,8 +262,8 @@ export class CourierToastItem extends CourierBaseElement {
       fontWeight: actionsTheme?.font?.weight,
       textColor: actionsTheme?.font?.color,
       onClick: () => {
-        if (this._onItemActionClickCallback) {
-          this._onItemActionClickCallback({ message: this._message, action });
+        if (this._onToastItemActionClickCallback) {
+          this._onToastItemActionClickCallback({ message: this._message, action });
         }
       }
     });
@@ -273,8 +273,8 @@ export class CourierToastItem extends CourierBaseElement {
 
   private onClick(event: Event) {
     event.stopPropagation();
-    if (this._onItemClickCallback) {
-      this._onItemClickCallback({ toastItem: this, message: this._message });
+    if (this._onToastItemClickCallback) {
+      this._onToastItemClickCallback({ toastItem: this, message: this._message });
     }
   }
 }

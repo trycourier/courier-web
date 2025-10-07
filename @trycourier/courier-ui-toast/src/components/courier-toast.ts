@@ -350,11 +350,11 @@ export class CourierToast extends CourierBaseElement {
     }
 
     if (this._onItemClick) {
-      item.onItemClicked(this._onItemClick);
+      item.onToastItemClick(this._onItemClick);
     }
 
     if (this._onItemActionClick) {
-      item.onItemActionClicked(this._onItemActionClick);
+      item.onToastItemActionClick(this._onItemActionClick);
     }
 
     if (this._autoDismiss) {
