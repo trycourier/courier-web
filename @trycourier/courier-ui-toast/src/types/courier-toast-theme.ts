@@ -41,7 +41,7 @@ export const defaultLightTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.white[500],
     hoverBackgroundColor: CourierColors.gray[200],
-    shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
+    shadow: `0px 4px 8px -2px ${CourierColors.black[500_20]}`,
     border: `1px solid ${CourierColors.gray[500]}`,
     borderRadius: '8px',
     title: {
@@ -88,13 +88,13 @@ export const defaultDarkTheme: CourierToastTheme = {
     borderRadius: '8px',
     title: {
       size: '11pt',
-      weight: '600',
+      weight: '400',
       color: CourierColors.white[500],
     },
     body: {
       size: '11pt',
       weight: '400',
-      color: CourierColors.gray[200],
+      color: CourierColors.gray[500],
     },
     icon: {
       color: CourierColors.white[500],
