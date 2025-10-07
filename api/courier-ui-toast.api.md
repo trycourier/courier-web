@@ -129,11 +129,11 @@ export class CourierToastItem extends CourierBaseElement {
     protected onComponentMounted(): void;
     // @override (undocumented)
     protected onComponentUnmounted(): void;
-    onItemActionClicked(handler: (props: CourierToastItemActionClickEvent) => void): void;
-    onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void;
     onItemDismissed(handler: (props: {
         message: InboxMessage;
     }) => void): void;
+    onToastItemActionClick(handler: (props: CourierToastItemActionClickEvent) => void): void;
+    onToastItemClick(handler: (props: CourierToastItemClickEvent) => void): void;
     setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement): void;
     // (undocumented)
     get theme(): CourierToastTheme;
