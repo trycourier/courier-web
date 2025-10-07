@@ -1,4 +1,4 @@
-import { InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { defaultLightTheme } from "../../types/courier-toast-theme";
 import { CourierToastThemeManager } from "../../types/courier-toast-theme-manager";
 import { CourierToastItem } from "../courier-toast-item";
@@ -18,7 +18,7 @@ describe('courier-toast-item', () => {
     }
   });
 
-  describe('constructor', () => {
+  describe('onComponentMounted', () => {
     it('should render a component', () => {
       const item = new CourierToastItem({
         message: INBOX_MESSAGE,
@@ -30,6 +30,26 @@ describe('courier-toast-item', () => {
       document.body.appendChild(item);
 
       expect(document.querySelector('courier-toast-item')).not.toBeNull();
+      expect(document.querySelector('courier-button')).toBeNull();
+    });
+
+    it('should render action buttons if the message includes actions', () => {
+      const action: InboxAction = { content: "Click me!" };
+      const messageWithAction: InboxMessage = {
+        ...INBOX_MESSAGE,
+        actions: [ action ],
+      };
+      const item = new CourierToastItem({
+        message: messageWithAction,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager: THEME_MANAGER,
+      });
+
+      document.body.appendChild(item);
+
+      expect(document.querySelector('courier-toast-item')).not.toBeNull();
+      expect(document.querySelector('courier-button')).not.toBeNull();
     });
   });
 
@@ -91,6 +111,31 @@ describe('courier-toast-item', () => {
       (document.querySelector('courier-toast-item') as HTMLElement).click();
 
       expect(handler).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('onItemActionClicked', () => {
+    it('should call the handler when the action button is clicked', () => {
+      const handler = jest.fn();
+      const action: InboxAction = { content: "Click me!" };
+      const messageWithAction: InboxMessage = {
+        ...INBOX_MESSAGE,
+        actions: [ action ],
+      };
+      const item = new CourierToastItem({
+        message: messageWithAction,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager: THEME_MANAGER,
+      });
+      item.onItemActionClicked(handler);
+      document.body.appendChild(item);
+
+      const buttonSelector = 'courier-toast-item .actions-container courier-button';
+      const buttonShadowRoot = document.querySelector(buttonSelector)?.shadowRoot;
+      (buttonShadowRoot?.querySelector('button') as HTMLElement).click();
+
+      expect(handler).toHaveBeenCalledWith({ action, message: messageWithAction })
     });
   });
 

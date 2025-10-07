@@ -1,4 +1,4 @@
-import { InboxMessage } from "@trycourier/courier-js";
+import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierToast } from "../courier-toast";
 import { CourierToastItem } from "../courier-toast-item";
 import { CourierToastTheme } from "../../types/courier-toast-theme";
@@ -79,6 +79,28 @@ describe("courier-toast", () => {
       expect(clickCallback).toHaveBeenCalledWith({
         message: INBOX_MESSAGE,
         toastItem: expect.any(CourierToastItem)
+      });
+    });
+  });
+
+  describe("onToastItemActionClick", () => {
+    it("should call the handler with the added message and action", () => {
+      const clickCallback = jest.fn();
+
+      toast.onToastItemActionClick(clickCallback);
+
+      const action: InboxAction = { content: "Click me!" };
+      const messageWithAction: InboxMessage = {
+        ...INBOX_MESSAGE,
+        actions: [ action ],
+      };
+      CourierToastDatastore.shared.addMessage(messageWithAction);
+      const buttonShadowRoot = document.querySelector("courier-toast-item courier-button")?.shadowRoot;
+      buttonShadowRoot?.querySelector('button')?.click();
+
+      expect(clickCallback).toHaveBeenCalledWith({
+        message: messageWithAction,
+        action,
       });
     });
   });
