@@ -23,6 +23,7 @@ import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import { CourierProps } from '@trycourier/courier-js';
 import { CourierToast } from '@trycourier/courier-ui-toast';
 import { CourierToastDismissButtonOption } from '@trycourier/courier-ui-toast';
+import { CourierToastItemActionClickEvent } from '@trycourier/courier-ui-toast';
 import { CourierToastItemClickEvent } from '@trycourier/courier-ui-toast';
 import { CourierToastItemFactoryProps } from '@trycourier/courier-ui-toast';
 import { CourierToastTheme } from '@trycourier/courier-ui-toast';
@@ -112,6 +113,7 @@ export interface CourierToastProps {
     lightTheme?: CourierToastTheme;
     mode?: CourierComponentThemeMode;
     onReady?: (ready: boolean) => void;
+    onToastItemActionClick?: (props: CourierToastItemActionClickEvent) => void;
     onToastItemClick?: (props: CourierToastItemClickEvent) => void;
     renderToastItem?: (props: CourierToastItemFactoryProps) => ReactNode;
     renderToastItemContent?: (props: CourierToastItemFactoryProps) => ReactNode;

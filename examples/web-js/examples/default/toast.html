@@ -101,20 +101,7 @@
     }
   </style>
 
-  <!-- <div class="skeleton skeleton-title"></div>
-  <div class="skeleton skeleton-title short"></div>
-  <div class="skeleton skeleton-title"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line short"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line short"></div>
-  <div class="skeleton skeleton-line"></div>
-  <div class="skeleton skeleton-line"></div> -->
-
-  <courier-toast dismiss-button="hidden" id="my-toast"></courier-toast>
+  <courier-toast id="my-toast"></courier-toast>
 
   <script type="module">
     import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-toast';
@@ -128,52 +115,39 @@
 
     const toast = document.getElementById("my-toast");
 
-    toast.setLightTheme({
-      item: {
-        title: {
-          color: "#6366f1",
-          weight: "bold",
-        },
-        backgroundColor: "#edeefc",
-        border: "1px solid #cdd1ff",
-        borderRadius: "15px",
-        icon: {
-          svg: ToastIcon
-        }
-      }
+    toast.onToastItemActionClick((props) => {
+      console.log(props.action);
     });
+
+    // Uncomment to set light theme
+    // toast.setLightTheme({
+    //   item: {
+    //     title: {
+    //       color: "#6366f1",
+    //       weight: "bold",
+    //     },
+    //     backgroundColor: "#edeefc",
+    //     border: "1px solid #cdd1ff",
+    //     borderRadius: "15px",
+    //     icon: {
+    //       svg: ToastIcon
+    //     }
+    //   }
+    // });
 
     CourierToastDatastore.shared.addMessage({
-      title: 'Lorem ipsum dolor sit',
-      body: 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet',
-      messageId: "1"
+      title: 'New Access Request',
+      body: '@dana requests access to GitHub Ut enim ad minim veniam, quis',
+      messageId: "1",
+      actions: [
+        {
+          content: "Approve",
+        },
+        {
+          content: "Deny"
+        }
+      ]
     });
-
-    setTimeout(() => {
-      CourierToastDatastore.shared.addMessage({
-        title: 'Ut enim ad minim',
-        body: 'Ut enim ad minim veniam, quis Ut enim ad minim veniam, quis',
-        messageId: "2"
-      });
-    }, 2000);
-
-    setTimeout(() => {
-      CourierToastDatastore.shared.addMessage({
-        title: 'Duis aute irure dolor',
-        body: 'Duis aute irure dolor in reprehe',
-        messageId: "3"
-      });
-    }, 4000);
-
-    setTimeout(() => {
-      CourierToastDatastore.shared.addMessage({
-        title: '👋 Hey there!',
-        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        messageId: "4"
-      });
-    }, 8000);
   </script>
-
 </body>
-
 </html>

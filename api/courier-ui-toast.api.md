@@ -63,6 +63,7 @@ export class CourierToast extends CourierBaseElement {
     protected onComponentMounted(): void;
     // @override (undocumented)
     protected onComponentUnmounted(): void;
+    onToastItemActionClick(handler?: (props: CourierToastItemActionClickEvent) => void): void;
     onToastItemClick(handler?: (props: CourierToastItemClickEvent) => void): void;
     setAutoDismissTimeoutMs(timeoutMs: number): void;
     setDarkTheme(theme: CourierToastTheme): void;
@@ -128,6 +129,7 @@ export class CourierToastItem extends CourierBaseElement {
     protected onComponentMounted(): void;
     // @override (undocumented)
     protected onComponentUnmounted(): void;
+    onItemActionClicked(handler: (props: CourierToastItemActionClickEvent) => void): void;
     onItemClicked(handler: (props: CourierToastItemClickEvent) => void): void;
     onItemDismissed(handler: (props: {
         message: InboxMessage;
@@ -136,6 +138,12 @@ export class CourierToastItem extends CourierBaseElement {
     // (undocumented)
     get theme(): CourierToastTheme;
 }
+
+// @public
+export type CourierToastItemActionClickEvent = {
+    message: InboxMessage;
+    action: InboxAction;
+};
 
 // @public
 export type CourierToastItemClickEvent = {
@@ -162,6 +170,15 @@ export type CourierToastItemTheme = {
     shadow?: string;
     border?: string;
     borderRadius?: string;
+    actions?: {
+        backgroundColor?: string;
+        hoverBackgroundColor?: string;
+        activeBackgroundColor?: string;
+        border?: string;
+        borderRadius?: string;
+        shadow?: string;
+        font?: CourierToastFontTheme;
+    };
 };
 
 // @public (undocumented)

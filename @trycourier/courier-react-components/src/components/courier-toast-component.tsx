@@ -3,7 +3,7 @@ import { CourierToastTheme, CourierToast as CourierToastElement, CourierToastIte
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
-import { CourierToastDismissButtonOption, CourierToastItemClickEvent } from "@trycourier/courier-ui-toast";
+import { CourierToastDismissButtonOption, CourierToastItemClickEvent, CourierToastItemActionClickEvent } from "@trycourier/courier-ui-toast";
 
 /** Props that may be passed to the CourierToast component. */
 export interface CourierToastProps {
@@ -55,6 +55,9 @@ export interface CourierToastProps {
   /** Callback function invoked when a toast item is clicked. */
   onToastItemClick?: (props: CourierToastItemClickEvent) => void;
 
+  /** Callback function invoked when a toast item action button is clicked. */
+  onToastItemActionClick?: (props: CourierToastItemActionClickEvent) => void;
+
   /**
    * Callback function invoked when the component is ready to receive messages.
    *
@@ -104,7 +107,8 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   // When all the steps are complete, props.onReady is called to indicate the component is ready to receive toasts.
   const [setupSteps, setSetupSteps] = useState({
     elementMounted: false,
-    onClickSet: false,
+    onItemClickSet: false,
+    onItemActionClickSet: false,
     renderToastItemSet: false,
     renderToastItemContentSet: false
   });
@@ -157,13 +161,21 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
     }
   }, [elementReady]);
 
-  // Handle toast item clicked
+  // Handle toast item click
   useEffect(() => {
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemClick(props.onToastItemClick);
-    setSetupSteps(prev => ({ ...prev, onClickSet: true }));
+    setSetupSteps(prev => ({ ...prev, onItemClickSet: true }));
   }, [props.onToastItemClick, elementReady]);
+
+  // Handle toast item action click
+  useEffect(() => {
+    const toast = getEl();
+    if (!toast) return;
+    toast.onToastItemActionClick(props.onToastItemActionClick);
+    setSetupSteps(prev => ({ ...prev, onItemActionClickSet: true }));
+  }, [props.onToastItemActionClick, elementReady]);
 
   // Render toast item
   useEffect(() => {

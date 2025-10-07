@@ -3,7 +3,7 @@ import { CourierToastThemeManager, CourierToastThemeSubscription } from "../type
 import { CourierToastTheme, defaultLightTheme } from "../types/courier-toast-theme";
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItem } from "./courier-toast-item";
-import { CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
+import { CourierToastItemActionClickEvent, CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 import { CourierToastDismissButtonOption } from "../types/toast";
 import { CourierToastDatastoreListener } from "../datastore/toast-datastore-listener";
 import { CourierToastDatastore } from "../datastore/toast-datastore";
@@ -58,6 +58,7 @@ export class CourierToast extends CourierBaseElement {
 
   // Consumer-provided callbacks
   private _onItemClick?: ((props: CourierToastItemClickEvent) => void);
+  private _onItemActionClick?: ((props: CourierToastItemActionClickEvent) => void);
 
   /** Default layout props. */
   private readonly _defaultLayoutProps: CourierToastLayoutProps = {
@@ -100,6 +101,11 @@ export class CourierToast extends CourierBaseElement {
   /** Set the handler invoked when a toast item is clicked. */
   public onToastItemClick(handler?: (props: CourierToastItemClickEvent) => void): void {
     this._onItemClick = handler;
+  }
+
+  /** Set the handler invoked when a toast item action button is clicked. */
+  public onToastItemActionClick(handler?: (props: CourierToastItemActionClickEvent) => void): void {
+    this._onItemActionClick = handler;
   }
 
   /** Enable auto-dismiss for toast items. */
@@ -347,6 +353,10 @@ export class CourierToast extends CourierBaseElement {
       item.onItemClicked(this._onItemClick);
     }
 
+    if (this._onItemActionClick) {
+      item.onItemActionClicked(this._onItemActionClick);
+    }
+
     if (this._autoDismiss) {
       setTimeout(item.dismiss.bind(item), this._autoDismissTimeoutMs);
     }
@@ -551,11 +561,10 @@ export class CourierToast extends CourierBaseElement {
         align-items: center;
         align-self: stretch;
         box-sizing: border-box;
-        padding: 16px;
+        padding: 12px;
       }
 
       ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content {
-        line-height: 150%;
       }
 
       ${CourierToastItem.id} > .overflow-hidden-container > .content > .icon {
@@ -569,10 +578,19 @@ export class CourierToast extends CourierBaseElement {
       }
 
       ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .body {
-        margin: 0;
+        margin: 8px 0 0 0;
         font-weight: ${item?.body?.weight};
         font-size: ${item?.body?.size};
+        line-height: 150%;
         color: ${item?.body?.color};
+      }
+    `;
+
+    const actionStyles = `
+      ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .actions-container {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
       }
     `;
 
@@ -583,6 +601,7 @@ export class CourierToast extends CourierBaseElement {
       dismissStyles,
       autoDismissStyles,
       contentStyles,
+      actionStyles,
     ].join('');
   }
 
