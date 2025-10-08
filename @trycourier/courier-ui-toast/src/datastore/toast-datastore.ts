@@ -115,7 +115,7 @@ export class CourierToastDatastore {
   /**
    * Add an {@link @trycourier/courier-js#InboxMessage} toast item to the datastore.
    *
-   * <p>Calling this directly is useful to send test messages while developing with the Courier SDK.</p>
+   * Calling this directly is useful to send test messages while developing with the Courier SDK.</p>
    *
    * @example
    * ```
