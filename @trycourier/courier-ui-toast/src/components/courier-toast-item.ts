@@ -95,7 +95,7 @@ export class CourierToastItem extends CourierBaseElement {
   /**
    * Dismiss the toast item.
    *
-   * <p>By default the toast fades out before it's removed. Set `timeoutMs` to
+   * By default the toast fades out before it's removed. Set `timeoutMs` to
    * `0` to remove the item immediately.
    *
    * @param timeoutMs - the animation duration to fade out the toast item
