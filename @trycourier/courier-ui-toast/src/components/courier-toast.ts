@@ -438,9 +438,8 @@ export class CourierToast extends CourierBaseElement {
         visibility: hidden;
       }
 
-      ${CourierToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .title,
-      ${CourierToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container > .content > .text-content > .body {
-        color: rgba(255, 255, 255, 0);
+      ${CourierToastItem.id}:nth-last-child(n+2) > .overflow-hidden-container {
+        opacity: 0;
       }
     `;
 
