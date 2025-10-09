@@ -18,10 +18,12 @@ export default defineConfig({
     rollupOptions: {
       external: [
         '@trycourier/courier-js',
+        '@trycourier/courier-ui-core',
       ],
       output: {
         globals: {
           '@trycourier/courier-js': 'CourierJS',
+          '@trycourier/courier-ui-core': 'CourierUICore',
         },
       },
     },

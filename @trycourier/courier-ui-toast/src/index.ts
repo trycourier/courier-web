@@ -1,7 +1,3 @@
-// Import courier-ui-core to ensure CourierIcon and other core elements are registered
-// even when only type imports are used from this package
-import '@trycourier/courier-ui-core';
-
 export * from './components/courier-toast';
 export * from './components/courier-toast-item';
 export * from './types/courier-toast-theme';
