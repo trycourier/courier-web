@@ -492,12 +492,12 @@ export class CourierToast extends CourierBaseElement {
       @keyframes hide {
         0% {
           opacity: 1;
-          transform: none;
+          transform: scaleX(var(--scale, 1));
         }
 
         100% {
           opacity: 0;
-          transform: none;
+          transform: scaleX(var(--scale, 1));
         }
       }
 
