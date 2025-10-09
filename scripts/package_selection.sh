@@ -12,6 +12,7 @@ packages=(
   "courier-js       — Base API client and shared instance singleton"
   "courier-ui-core  — Core UI components, styles, colors etc that are shared between packages"
   "courier-ui-inbox — Inbox UI components"
+  "courier-ui-toast — Toast UI components"
   "courier-react    — React wrapper around UI components"
   "courier-react-17 — React 17 wrapper around UI components"
   "courier-react-components — Shared React components for the Courier React packages"

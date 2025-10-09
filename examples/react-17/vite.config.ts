@@ -15,6 +15,7 @@ export default defineConfig({
       '@trycourier/courier-react-17': path.resolve(__dirname, '../../@trycourier/courier-react-17/src'),
       '@trycourier/courier-react-components': path.resolve(__dirname, '../../@trycourier/courier-react-components/src'),
       '@trycourier/courier-ui-inbox': path.resolve(__dirname, '../../@trycourier/courier-ui-inbox/src'),
+      '@trycourier/courier-ui-toast': path.resolve(__dirname, '../../@trycourier/courier-ui-toast/src'),
       '@trycourier/courier-js': path.resolve(__dirname, '../../@trycourier/courier-js/src'),
       '@trycourier/courier-ui-core': path.resolve(__dirname, '../../@trycourier/courier-ui-core/src')
     }
@@ -25,6 +26,7 @@ export default defineConfig({
       '@trycourier/courier-react-components',
       '@trycourier/courier-react-17',
       '@trycourier/courier-ui-inbox',
+      '@trycourier/courier-ui-toast',
       '@trycourier/courier-js',
       '@trycourier/courier-ui-core',
       'object-assign'
@@ -36,6 +38,7 @@ export default defineConfig({
         '!../../@trycourier/courier-react-17/src/**',
         '!../../@trycourier/courier-react-components/src/**',
         '!../../@trycourier/courier-ui-inbox/src/**',
+        '!../../@trycourier/courier-ui-toast/src/**',
         '!../../@trycourier/courier-js/src/**',
         '!../../@trycourier/courier-ui-core/src/**'
       ]

@@ -1,0 +1,9 @@
+__tests__/
+.github/
+.DS_Store
+*.log
+.gitignore
+jest.config.js
+tsconfig.json
+.vscode/
+stats.html
