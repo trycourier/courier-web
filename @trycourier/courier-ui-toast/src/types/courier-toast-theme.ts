@@ -64,9 +64,9 @@ export const defaultLightTheme: CourierToastTheme = {
       color: CourierColors.black[500],
       svg: CourierIconSVGs.remove,
     },
-    autoDismissBarColor: CourierColors.blue[500],
+    autoDismissBarColor: CourierColors.blue[400],
     actions: {
-      backgroundColor: CourierColors.white[500],
+      backgroundColor: 'transparent',
       hoverBackgroundColor: CourierColors.gray[200],
       activeBackgroundColor: CourierColors.gray[500],
       border: `1px solid ${CourierColors.gray[500]}`,
@@ -84,8 +84,8 @@ export const defaultLightTheme: CourierToastTheme = {
 export const defaultDarkTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.black[500],
-    hoverBackgroundColor: CourierColors.white[500_10],
-    activeBackgroundColor: CourierColors.white[500_20],
+    hoverBackgroundColor: CourierColors.gray[400],
+    activeBackgroundColor: CourierColors.gray[600],
     shadow: `0px 4px 8px -2px ${CourierColors.gray[400]}`,
     border: `1px solid ${CourierColors.black[500]}`,
     borderRadius: '8px',
@@ -107,9 +107,9 @@ export const defaultDarkTheme: CourierToastTheme = {
       color: CourierColors.white[500],
       svg: CourierIconSVGs.remove,
     },
-    autoDismissBarColor: CourierColors.blue[500],
+    autoDismissBarColor: CourierColors.blue[400],
     actions: {
-      backgroundColor: CourierColors.black[500],
+      backgroundColor: CourierColors.black[400],
       hoverBackgroundColor: CourierColors.white[500_10],
       activeBackgroundColor: CourierColors.white[500_20],
       border: `1px solid ${CourierColors.gray[400]}`,

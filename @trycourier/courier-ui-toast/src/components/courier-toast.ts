@@ -538,6 +538,14 @@ export class CourierToast extends CourierBaseElement {
         transition: 0.2s ease-in-out;
       }
 
+      ${CourierToastItem.id} > .dismiss:hover {
+        background-color: ${item?.hoverBackgroundColor};
+      }
+
+      ${CourierToastItem.id} > .dismiss:active {
+        background-color: ${item?.activeBackgroundColor};
+      }
+
       ${CourierToastItem.id}:last-child${this.showDismissOnHover ? ':hover' : ''} > .dismiss {
         visibility: ${this.showDismiss ? 'visible' : 'hidden'};
         opacity: 100%;
