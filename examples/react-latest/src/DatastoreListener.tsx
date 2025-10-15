@@ -39,7 +39,7 @@ export default function App() {
 
     // Sign the user in
     // This can be done outside of this class as well.
-    // The same use will be registered until you sign them out.
+    // The same user will stay signed in until signOut is called.
     Courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
