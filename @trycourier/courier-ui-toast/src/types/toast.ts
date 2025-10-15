@@ -1,5 +1,4 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierToastItem } from "../components/courier-toast-item";
 
 /**
  * Options to display the toast dismiss button.
@@ -37,20 +36,6 @@ export type CourierToastItemFactoryProps = {
 export type CourierToastItemClickEvent = {
   /** The message for the toast item that was clicked. */
   message: InboxMessage;
-
-  /**
-   * The toast item component clicked.
-   *
-   * Use toastItem to access properties and methods on the web component.
-   *
-   * @example
-   * ```
-   * toastItem.onToastItemClick((event) => {
-   *   event.toastItem.dismiss();
-   * });
-   * ```
-   */
-  toastItem: CourierToastItem | HTMLElement;
 };
 
 /**

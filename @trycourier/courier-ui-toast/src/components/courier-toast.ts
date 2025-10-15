@@ -381,9 +381,11 @@ export class CourierToast extends CourierBaseElement {
       }, this._autoDismissTimeoutMs);
     }
 
-    if (this._onItemClick) {
-      customItem.addEventListener('click', this._onItemClick.bind(this, { message, toastItem: customItem }));
-    }
+    customItem.addEventListener('click', () => {
+      if (this._onItemClick) {
+        this._onItemClick({ message });
+      }
+    });
 
     return customItem;
   }

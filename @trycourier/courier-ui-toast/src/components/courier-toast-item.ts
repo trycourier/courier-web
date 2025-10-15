@@ -274,7 +274,7 @@ export class CourierToastItem extends CourierBaseElement {
   private onClick(event: Event) {
     event.stopPropagation();
     if (this._onToastItemClickCallback) {
-      this._onToastItemClickCallback({ toastItem: this, message: this._message });
+      this._onToastItemClickCallback({ message: this._message });
     }
   }
 }

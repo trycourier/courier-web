@@ -148,7 +148,6 @@ export type CourierToastItemActionClickEvent = {
 // @public
 export type CourierToastItemClickEvent = {
     message: InboxMessage;
-    toastItem: CourierToastItem | HTMLElement;
 };
 
 // @public

@@ -78,7 +78,6 @@ describe("courier-toast", () => {
 
       expect(clickCallback).toHaveBeenCalledWith({
         message: INBOX_MESSAGE,
-        toastItem: expect.any(CourierToastItem)
       });
     });
   });
