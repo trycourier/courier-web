@@ -162,6 +162,7 @@ export type CourierToastItemFactoryProps = {
 export type CourierToastItemTheme = {
     backgroundColor?: string;
     hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
     autoDismissBarColor?: string;
     title?: CourierToastFontTheme;
     body?: CourierToastFontTheme;
