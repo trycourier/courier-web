@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react-components",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "React components for the Courier web UI",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -21,15 +21,15 @@
   "license": "MIT",
   "dependencies": {
     "@trycourier/courier-js": "2.1.0",
-    "@trycourier/courier-ui-core": "1.0.13",
-    "@trycourier/courier-ui-inbox": "1.1.0",
-    "@trycourier/courier-ui-toast": "0.0.1"
+    "@trycourier/courier-ui-core": "1.0.14",
+    "@trycourier/courier-ui-inbox": "1.2.0",
+    "@trycourier/courier-ui-toast": "1.0.0"
   },
   "devDependencies": {
     "@trycourier/courier-js": "2.1.0",
-    "@trycourier/courier-ui-core": "1.0.13",
-    "@trycourier/courier-ui-inbox": "1.1.0",
-    "@trycourier/courier-ui-toast": "0.0.1",
+    "@trycourier/courier-ui-core": "1.0.14",
+    "@trycourier/courier-ui-inbox": "1.2.0",
+    "@trycourier/courier-ui-toast": "1.0.0",
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.2",
     "react": "17.0.2",
