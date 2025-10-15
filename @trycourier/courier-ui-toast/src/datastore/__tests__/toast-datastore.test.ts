@@ -379,7 +379,7 @@ describe('CourierToastDatastore', () => {
       expect(onMessageAdd).toHaveBeenCalledWith(message);
     });
 
-    it('should return early when socket is null, connecting, or open', async () => {
+    it('should return early when socket is null', async () => {
       // Test with null socket
       Object.defineProperty(Courier, 'shared', {
         get: jest.fn(() => ({
@@ -407,20 +407,42 @@ describe('CourierToastDatastore', () => {
         })),
         configurable: true,
       });
+    });
 
+    it('should still add a message listener if the socket is already connecting', async () => {
       // Test with socket already connecting
       mockSocketClient.isConnecting = true;
+      mockSocketClient.isOpen = false;
+
       await datastore.listenForMessages();
-      expect(mockSocketClient.addMessageEventListener).not.toHaveBeenCalled();
+
+      expect(mockSocketClient.addMessageEventListener).toHaveBeenCalled();
       expect(mockCourierClient.options.logger.info).toHaveBeenCalledWith(
         expect.stringContaining('already connecting or open')
       );
+    });
 
+    it('should still add a message listener if the socket is already open', async () => {
       // Test with socket already open
       mockSocketClient.isConnecting = false;
       mockSocketClient.isOpen = true;
+
       await datastore.listenForMessages();
-      expect(mockSocketClient.addMessageEventListener).not.toHaveBeenCalled();
+
+      expect(mockSocketClient.addMessageEventListener).toHaveBeenCalled();
+      expect(mockCourierClient.options.logger.info).toHaveBeenCalledWith(
+        expect.stringContaining('already connecting or open')
+      );
+    });
+
+    it('should still add a message listener if the socket is already connecting', async () => {
+      // Test with socket already connecting
+      mockSocketClient.isConnecting = true;
+      await datastore.listenForMessages();
+      expect(mockSocketClient.addMessageEventListener).toHaveBeenCalled();
+      expect(mockCourierClient.options.logger.info).toHaveBeenCalledWith(
+        expect.stringContaining('already connecting or open')
+      );
     });
 
     it('should handle errors and notify onError handlers', async () => {

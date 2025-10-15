@@ -67,12 +67,6 @@ export class CourierToastDatastore {
         return;
       }
 
-      // If the socket is already connecting or open, return early
-      if (socketClient.isConnecting || socketClient.isOpen) {
-        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
-        return;
-      }
-
       socketClient.addMessageEventListener((messageEvent: InboxMessageEventEnvelope) => {
         if (messageEvent.event === InboxMessageEvent.NewMessage) {
           const message: InboxMessage = messageEvent.data as InboxMessage;
@@ -80,6 +74,12 @@ export class CourierToastDatastore {
           this.addMessage(message);
         }
       });
+
+      // If the socket is already connecting or open, return early
+      if (socketClient.isConnecting || socketClient.isOpen) {
+        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
+        return;
+      }
 
       socketClient.connect();
     } catch (error: unknown) {
