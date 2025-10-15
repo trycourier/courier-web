@@ -12,6 +12,7 @@ export type CourierToastIconTheme = CourierIconTheme;
 export type CourierToastItemTheme = {
   backgroundColor?: string;
   hoverBackgroundColor?: string;
+  activeBackgroundColor?: string;
   autoDismissBarColor?: string;
   title?: CourierToastFontTheme;
   body?: CourierToastFontTheme;
@@ -41,6 +42,7 @@ export const defaultLightTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.white[500],
     hoverBackgroundColor: CourierColors.gray[200],
+    activeBackgroundColor: CourierColors.gray[500],
     shadow: `0px 4px 8px -2px ${CourierColors.black[500_20]}`,
     border: `1px solid ${CourierColors.gray[500]}`,
     borderRadius: '8px',
@@ -62,9 +64,9 @@ export const defaultLightTheme: CourierToastTheme = {
       color: CourierColors.black[500],
       svg: CourierIconSVGs.remove,
     },
-    autoDismissBarColor: CourierColors.blue[400],
+    autoDismissBarColor: CourierColors.blue[500],
     actions: {
-      backgroundColor: 'transparent',
+      backgroundColor: CourierColors.white[500],
       hoverBackgroundColor: CourierColors.gray[200],
       activeBackgroundColor: CourierColors.gray[500],
       border: `1px solid ${CourierColors.gray[500]}`,
@@ -82,7 +84,8 @@ export const defaultLightTheme: CourierToastTheme = {
 export const defaultDarkTheme: CourierToastTheme = {
   item: {
     backgroundColor: CourierColors.black[500],
-    hoverBackgroundColor: CourierColors.gray[200],
+    hoverBackgroundColor: CourierColors.white[500_10],
+    activeBackgroundColor: CourierColors.white[500_20],
     shadow: `0px 4px 8px -2px ${CourierColors.gray[400]}`,
     border: `1px solid ${CourierColors.black[500]}`,
     borderRadius: '8px',
@@ -104,7 +107,19 @@ export const defaultDarkTheme: CourierToastTheme = {
       color: CourierColors.white[500],
       svg: CourierIconSVGs.remove,
     },
-    autoDismissBarColor: CourierColors.blue[400],
+    autoDismissBarColor: CourierColors.blue[500],
+    actions: {
+      backgroundColor: CourierColors.black[500],
+      hoverBackgroundColor: CourierColors.white[500_10],
+      activeBackgroundColor: CourierColors.white[500_20],
+      border: `1px solid ${CourierColors.gray[400]}`,
+      borderRadius: '4px',
+      shadow: `0px 1px 2px 0px ${CourierColors.white[500_10]}`,
+      font: {
+        color: CourierColors.white[500],
+        size: '14px'
+      }
+    }
   }
 };
 

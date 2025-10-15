@@ -504,6 +504,14 @@ export class CourierToast extends CourierBaseElement {
         cursor: pointer;
       }
 
+      ${CourierToastItem.id}.clickable:last-child:hover {
+        background-color: ${item?.hoverBackgroundColor};
+      }
+
+      ${CourierToastItem.id}.clickable:last-child:active {
+        background-color: ${item?.activeBackgroundColor};
+      }
+
       ${CourierToastItem.id}.clickable:nth-last-child(n+2) {
         pointer-events: none;
       }
