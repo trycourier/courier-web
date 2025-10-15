@@ -1897,6 +1897,7 @@
     "@trycourier/courier-react-components" "1.1.0"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.1.0"
+    "@trycourier/courier-ui-toast" "0.0.1"
 
 "@trycourier/courier-react@file:@trycourier/courier-react":
   version "8.1.0"
@@ -1905,6 +1906,7 @@
     "@trycourier/courier-react-components" "1.1.0"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.1.0"
+    "@trycourier/courier-ui-toast" "0.0.1"
 
 "@trycourier/courier-react@file:@trycourier/courier-react-17":
   version "8.1.0"
@@ -1913,9 +1915,16 @@
     "@trycourier/courier-react-components" "1.1.0"
     "@trycourier/courier-ui-core" "1.0.13"
     "@trycourier/courier-ui-inbox" "1.1.0"
+    "@trycourier/courier-ui-toast" "0.0.1"
 
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
   version "1.1.0"
+  dependencies:
+    "@trycourier/courier-js" "2.1.0"
+    "@trycourier/courier-ui-core" "1.0.13"
+
+"@trycourier/courier-ui-toast@file:@trycourier/courier-ui-toast":
+  version "0.0.1"
   dependencies:
     "@trycourier/courier-js" "2.1.0"
     "@trycourier/courier-ui-core" "1.0.13"

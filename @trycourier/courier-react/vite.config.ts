@@ -49,6 +49,7 @@ export default defineConfig({
         /^@trycourier\/courier-js/,
         /^@trycourier\/courier-ui-core/,
         /^@trycourier\/courier-ui-inbox/,
+        /^@trycourier\/courier-ui-toast/,
         '@trycourier/courier-react-components',
         "react",
         "react-dom",
@@ -63,6 +64,7 @@ export default defineConfig({
           "react-dom/client": "ReactDOMClient",
           "@trycourier/courier-js": "CourierJS",
           "@trycourier/courier-ui-inbox": "CourierInboxUI",
+          "@trycourier/courier-ui-toast": "CourierToastUI",
           "@trycourier/courier-react-components": "CourierReactComponents"
         },
       },

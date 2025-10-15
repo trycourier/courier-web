@@ -143,12 +143,6 @@ export class CourierInboxDatastore {
         return;
       }
 
-      // If the socket is already connecting or open, return early
-      if (socket.isConnecting || socket.isOpen) {
-        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
-        return;
-      }
-
       // Handle message events
       socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
         if (event.event === InboxMessageEvent.NewMessage) {
@@ -203,6 +197,12 @@ export class CourierInboxDatastore {
             break;
         }
       });
+
+      // If the socket is already connecting or open, return early
+      if (socket.isConnecting || socket.isOpen) {
+        Courier.shared.client?.options.logger?.info(`Inbox socket already connecting or open for client ID: [${Courier.shared.client?.options.connectionId}]`);
+        return;
+      }
 
       // Connect to the socket. By default, the socket will subscribe to all events for the user after opening.
       await socket.connect();

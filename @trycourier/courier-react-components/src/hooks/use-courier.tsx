@@ -1,6 +1,7 @@
 import React from 'react';
 import { Courier, CourierProps, InboxMessage } from '@trycourier/courier-js';
 import { CourierInboxDatastore, CourierInboxDataStoreListener, CourierInboxFeedType, InboxDataSet } from '@trycourier/courier-ui-inbox';
+import { CourierToastDatastore, CourierToastDatastoreListener } from '@trycourier/courier-ui-toast';
 
 type AuthenticationHooks = {
   userId?: string,
@@ -23,6 +24,12 @@ type InboxHooks = {
   archive?: InboxDataSet,
   unreadCount?: number,
   error?: Error
+}
+
+type ToastHooks = {
+  addMessage: (message: InboxMessage) => void;
+  removeMessage: (message: InboxMessage) => void;
+  error?: Error,
 }
 
 // A hook for managing the shared state of Courier
@@ -66,6 +73,14 @@ export const useCourier = () => {
     readAllMessages
   });
 
+  const addToastMessage = (message: InboxMessage) => CourierToastDatastore.shared.addMessage(message);
+  const removeToastMessage = (message: InboxMessage) => CourierToastDatastore.shared.removeMessage(message);
+
+  const [toast, setToast] = React.useState<ToastHooks>({
+    addMessage: addToastMessage,
+    removeMessage: removeToastMessage,
+  });
+
   React.useEffect(() => {
 
     // Add a listener to the Courier instance
@@ -83,14 +98,23 @@ export const useCourier = () => {
     });
     CourierInboxDatastore.shared.addDataStoreListener(inboxListener);
 
+    const toastListener = new CourierToastDatastoreListener({
+      onMessageAdd: () => refreshToast(),
+      onMessageRemove: () => refreshToast(),
+      onError: (error: Error) => refreshToast(error),
+    });
+    CourierToastDatastore.shared.addDatastoreListener(toastListener);
+
     // Set initial values
     refreshAuth();
     refreshInbox();
+    refreshToast();
 
     // Remove listeners when the component unmounts
     return () => {
       listener.remove();
       inboxListener.remove();
+      toastListener.remove();
     };
   }, []);
 
@@ -123,9 +147,18 @@ export const useCourier = () => {
     });
   }
 
+  const refreshToast = (error?: Error) => {
+    setToast({
+      addMessage: addToastMessage,
+      removeMessage: removeToastMessage,
+      error,
+    });
+  };
+
   return {
     shared: Courier.shared,
     auth: auth,
     inbox: inbox,
+    toast: toast,
   };
 };

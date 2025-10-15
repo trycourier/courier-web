@@ -43,6 +43,15 @@ import { CourierInboxUnreadCountIndicatorTheme } from '@trycourier/courier-ui-in
 import { CourierInboxUnreadDotIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierMenuItemTheme } from '@trycourier/courier-ui-inbox';
 import { CourierProps } from '@trycourier/courier-js';
+import { CourierToastDismissButtonOption } from '@trycourier/courier-ui-toast';
+import { CourierToast as CourierToastElement } from '@trycourier/courier-ui-toast';
+import { CourierToastFontTheme } from '@trycourier/courier-ui-toast';
+import { CourierToastIconTheme } from '@trycourier/courier-ui-toast';
+import { CourierToastItemClickEvent } from '@trycourier/courier-ui-toast';
+import { CourierToastItemFactoryProps } from '@trycourier/courier-ui-toast';
+import { CourierToastItemTheme } from '@trycourier/courier-ui-toast';
+import { CourierToastProps } from '@trycourier/courier-react-components';
+import { CourierToastTheme } from '@trycourier/courier-ui-toast';
 import { CourierToken } from '@trycourier/courier-js';
 import { CourierUserPreferences } from '@trycourier/courier-js';
 import { CourierUserPreferencesChannel } from '@trycourier/courier-js';
@@ -52,6 +61,8 @@ import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopicResponse } from '@trycourier/courier-js';
 import { defaultDarkTheme } from '@trycourier/courier-ui-inbox';
 import { defaultLightTheme } from '@trycourier/courier-ui-inbox';
+import { defaultDarkTheme as defaultToastDarkTheme } from '@trycourier/courier-ui-toast';
+import { defaultLightTheme as defaultToastLightTheme } from '@trycourier/courier-ui-toast';
 import { ForwardRefExoticComponent } from 'react';
 import { InboxAction } from '@trycourier/courier-js';
 import { InboxMessage } from '@trycourier/courier-js';
@@ -59,6 +70,7 @@ import { InboxMessageEventEnvelope } from '@trycourier/courier-js';
 import { markAsRead } from '@trycourier/courier-ui-inbox';
 import { markAsUnread } from '@trycourier/courier-ui-inbox';
 import { mergeTheme } from '@trycourier/courier-ui-inbox';
+import { mergeTheme as mergeToastTheme } from '@trycourier/courier-ui-toast';
 import { openMessage } from '@trycourier/courier-ui-inbox';
 import { RefAttributes } from 'react';
 import { useCourier } from '@trycourier/courier-react-components';
@@ -151,6 +163,29 @@ export { CourierMenuItemTheme }
 
 export { CourierProps }
 
+// Warning: (ae-missing-release-tag) "CourierToast" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const CourierToast: ForwardRefExoticComponent<CourierToastProps & RefAttributes<CourierToastElement>>;
+
+export { CourierToastDismissButtonOption }
+
+export { CourierToastElement }
+
+export { CourierToastFontTheme }
+
+export { CourierToastIconTheme }
+
+export { CourierToastItemClickEvent }
+
+export { CourierToastItemFactoryProps }
+
+export { CourierToastItemTheme }
+
+export { CourierToastProps }
+
+export { CourierToastTheme }
+
 export { CourierToken }
 
 export { CourierUserPreferences }
@@ -169,6 +204,10 @@ export { defaultDarkTheme }
 
 export { defaultLightTheme }
 
+export { defaultToastDarkTheme }
+
+export { defaultToastLightTheme }
+
 export { InboxAction }
 
 export { InboxMessage }
@@ -180,6 +219,8 @@ export { markAsRead }
 export { markAsUnread }
 
 export { mergeTheme }
+
+export { mergeToastTheme }
 
 export { openMessage }
 
