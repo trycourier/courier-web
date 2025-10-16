@@ -49,6 +49,7 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 | [`courier-js`](./@trycourier/courier-js) | The base API client and shared instance singleton for Courier's JavaScript Browser SDK |
 | [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
+| [`courier-ui-toast`](./@trycourier/courier-ui-toast) | Web components for Courier Toast |
 | [`courier-react-components`](./@trycourier/courier-react-components/) | Shared package of React components for `courier-react` and `courier-react-17` |
 | [`courier-react`](./@trycourier/courier-react) | React 18+ components for Courier Inbox |
 | [`courier-react-17`](./@trycourier/courier-react-17/) | React 17 components for Courier Inbox |
@@ -64,14 +65,5 @@ Package versions and changelogs are maintained by [changesets](https://github.co
    that validates PRs contain changeset files.
 2. Changesets will maintain a PR "Version Packages", that bumps package versions appropriately and maintains the
    changelog.
-3. When you're ready to release, merge the "Version Packages" PR and run the release commands:
-
-   ```sh
-   yarn workspace <package_name> release
-   ```
-
-   ```sh
-   gh release create "$package_name@v$version" \
-     --title "$package_name@$version" \
-     --notes "Release of $package_name@$version"
-   ```
+3. When you're ready to release, merge the "Version Packages" PR. Changesets will release
+   the packages with version bumps automatically via GitHub Actions.
