@@ -67,3 +67,7 @@ Package versions and changelogs are maintained by [changesets](https://github.co
    changelog.
 3. When you're ready to release, merge the "Version Packages" PR. Changesets will release
    the packages with version bumps automatically via GitHub Actions.
+
+### Trusted Publishing
+
+Packages are published using [NPM's trusted publishing workflow](https://docs.npmjs.com/trusted-publishers), meaning a long-lived write token is not required to publish.
