@@ -7,6 +7,12 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+# id-token is required for OIDC
+# See https://docs.npmjs.com/trusted-publishers
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   release:
     name: Release
@@ -20,13 +26,20 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install Dependencies
-        run: yarn
+      # OIDC requires npm 11.5.1 or later
+      # Changesets calls npm to publish packages
+      - name: Update npm
+        run: npm install -g npm@latest
 
-      - name: Create Release Pull Request
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Update Release PR or Release to NPM
         uses: changesets/action@v1
         with:
           publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Workaround for changesets setting NPM_TOKEN in the registry URL
+          # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
+          NPM_TOKEN: ''
