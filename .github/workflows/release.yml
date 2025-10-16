@@ -26,8 +26,13 @@ jobs:
         with:
           node-version: '20.x'
 
+      # OIDC requires npm 11.5.1 or later
+      # Changesets calls npm to publish packages
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Install Dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: Update Release PR or Release to NPM
         uses: changesets/action@v1
