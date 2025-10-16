@@ -7,6 +7,12 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+# id-token is required for OIDC
+# See https://docs.npmjs.com/trusted-publishers
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   release:
     name: Release
@@ -23,10 +29,9 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Create Release Pull Request
+      - name: Update Release PR or Release to NPM
         uses: changesets/action@v1
         with:
           publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
