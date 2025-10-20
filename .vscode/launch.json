@@ -128,7 +128,7 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
-        "@trycourier/courier-js",
+        "@trycourier/courier-ui-inbox",
         "run",
         "test"
       ],
@@ -167,18 +167,6 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "build-packages"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Package Deployment",
-      "runtimeExecutable": "sh",
-      "runtimeArgs": [
-        "deploy.sh"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
