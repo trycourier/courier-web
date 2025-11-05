@@ -1,4 +1,5 @@
 import { Courier } from '../shared/courier';
+import { InboxMessageEvent } from '../types/socket/protocol/messages';
 
 describe('Shared Courier instance', () => {
 
@@ -16,47 +17,42 @@ describe('Shared Courier instance', () => {
     expect(authState).toEqual({ userId: undefined });
   });
 
-  it('should not accumulate duplicate socket listeners when signIn is called twice in quick succession', async () => {
-    // Track how many times a listener is added
-    let listenerAddCount = 0;
+  it('should only call active listeners when message is received', () => {
+    const listener1Calls = jest.fn();
+    const listener2Calls = jest.fn();
 
-    // Add an auth listener that simulates what CourierInbox does:
-    // it adds a socket listener on every signIn
-    Courier.shared.addAuthenticationListener(async (props) => {
-      if (props.userId) {
-        const socket = Courier.shared.client?.inbox.socket;
-        if (socket) {
-          // Simulate adding a listener like the datastore does
-          socket.addMessageEventListener(() => {
-            // Empty listener for testing
-          });
-          listenerAddCount++;
-        }
-      }
+    // Sign in and add first listener
+    Courier.shared.signIn({ userId: 'test-user-1' });
+    const socket1 = Courier.shared.client?.inbox.socket!;
+    socket1.addMessageEventListener(listener1Calls);
+
+    // Simulate receiving a message on first socket
+    socket1.onMessageReceived({
+      event: InboxMessageEvent.NewMessage,
+      data: { messageId: '1', created: '2024-01-01' }
     });
 
-    // First signIn
-    Courier.shared.signIn({ userId: 'test-user-1' });
-    await new Promise(resolve => setTimeout(resolve, 0)); // Let async operations settle
+    expect(listener1Calls).toHaveBeenCalledTimes(1);
+    expect(listener2Calls).toHaveBeenCalledTimes(0);
 
-    const firstSocket = Courier.shared.client?.inbox.socket;
-    const firstListenerCount = (firstSocket as any)?.messageEventListeners?.length || 0;
-
-    // Second signIn immediately (simulating race condition)
+    // Sign in again (creates new socket)
     Courier.shared.signIn({ userId: 'test-user-2' });
-    await new Promise(resolve => setTimeout(resolve, 0)); // Let async operations settle
+    const socket2 = Courier.shared.client?.inbox.socket!;
+    socket2.addMessageEventListener(listener2Calls);
 
-    const secondSocket = Courier.shared.client?.inbox.socket;
-    const secondListenerCount = (secondSocket as any)?.messageEventListeners?.length || 0;
+    // Simulate receiving a message on second socket
+    socket2.onMessageReceived({
+      event: InboxMessageEvent.NewMessage,
+      data: { messageId: '2', created: '2024-01-02' }
+    });
 
-    // The second socket should only have 1 listener, not accumulated listeners
-    // from the first socket or duplicate registrations
-    expect(firstListenerCount).toBe(1);
-    expect(secondListenerCount).toBe(1);
+    // Only the second listener should be called
+    // listener1 still only called 1 time total
+    expect(listener1Calls).toHaveBeenCalledTimes(1);
+    expect(listener2Calls).toHaveBeenCalledTimes(1);
 
-    // We should have added exactly 2 listeners total (one per signIn),
-    // but they should be on different socket instances
-    expect(listenerAddCount).toBe(2);
+    // Old socket's listener should not be called for new messages
+    expect(socket1).not.toBe(socket2);
   });
 
 });
