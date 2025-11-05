@@ -11,6 +11,9 @@
     "@trycourier/courier-react-17",
     "examples/*"
   ],
+  "repository": {
+    "url": "https://github.com/trycourier/courier-web"
+  },
   "scripts": {
     "build-packages": "yarn exec ./scripts/build-packages",
     "build-packages:ci": "yarn exec ./scripts/build-packages-ci",
