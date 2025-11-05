@@ -1,5 +1,14 @@
 # @trycourier/courier-ui-inbox
 
+## 1.2.1
+
+### Patch Changes
+
+- [#116](https://github.com/trycourier/courier-web/pull/116) [`ef426cb`](https://github.com/trycourier/courier-web/commit/ef426cb34eb79bd320b680c5faf62963ca70b2ce) Thanks [@danasilver](https://github.com/danasilver)! - Fix an issue where duplicate messages may appear when a message arrives in real-time.
+
+- Updated dependencies [[`ef426cb`](https://github.com/trycourier/courier-web/commit/ef426cb34eb79bd320b680c5faf62963ca70b2ce)]:
+  - @trycourier/courier-js@2.1.1
+
 ## 1.2.0
 
 ### Minor Changes
