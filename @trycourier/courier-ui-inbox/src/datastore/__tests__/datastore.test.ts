@@ -9,6 +9,16 @@ const mockArchiveAll = jest.fn();
 const mockOpen = jest.fn();
 const mockRead = jest.fn();
 const mockUnread = jest.fn();
+const mockAddMessageEventListener = jest.fn();
+const mockConnect = jest.fn();
+
+// Create mock socket with mutable properties
+const mockSocket = {
+  addMessageEventListener: mockAddMessageEventListener,
+  connect: mockConnect,
+  isConnecting: false,
+  isOpen: false,
+};
 
 jest.mock("@trycourier/courier-js", () => ({
   Courier: {
@@ -23,10 +33,14 @@ jest.mock("@trycourier/courier-js", () => ({
           open: () => mockOpen(),
           read: () => mockRead(),
           unread: () => mockUnread(),
+          get socket() {
+            return mockSocket;
+          },
         },
         options: {
           logger: {
             error: jest.fn(),
+            info: jest.fn(),
           },
           userId: "123",
         },
@@ -311,6 +325,80 @@ describe("CourierInboxDatastore", () => {
       expect(datastore.inboxDataSet.messages).toHaveLength(1);
       expect(datastore.inboxDataSet.messages[0].read).toBeUndefined();
       expect(datastore.unreadCount).toBe(1);
+    });
+  });
+
+  describe("listenForUpdates", () => {
+    beforeEach(() => {
+      // Reset socket state and mocks
+      mockSocket.isConnecting = false;
+      mockSocket.isOpen = false;
+      mockAddMessageEventListener.mockClear();
+      mockConnect.mockClear();
+      mockAddMessageEventListener.mockReturnValue(jest.fn());
+    });
+
+    it("should add a message event listener to the socket", async () => {
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.listenForUpdates();
+
+      expect(mockAddMessageEventListener).toHaveBeenCalledTimes(1);
+      expect(mockAddMessageEventListener).toHaveBeenCalledWith(expect.any(Function));
+    });
+
+    it("should not add duplicate listeners when called multiple times", async () => {
+      const mockRemoveListener = jest.fn();
+      mockAddMessageEventListener.mockReturnValue(mockRemoveListener);
+
+      const datastore = CourierInboxDatastore.shared;
+
+      // First call
+      await datastore.listenForUpdates();
+      expect(mockAddMessageEventListener).toHaveBeenCalledTimes(1);
+      expect(mockRemoveListener).not.toHaveBeenCalled();
+
+      // Second call - should remove old listener first
+      await datastore.listenForUpdates();
+      expect(mockRemoveListener).toHaveBeenCalledTimes(1);
+      expect(mockAddMessageEventListener).toHaveBeenCalledTimes(2);
+
+      // Third call - should remove previous listener
+      await datastore.listenForUpdates();
+      expect(mockRemoveListener).toHaveBeenCalledTimes(2);
+      expect(mockAddMessageEventListener).toHaveBeenCalledTimes(3);
+    });
+
+    it("should not connect if socket is already connecting", async () => {
+      mockSocket.isConnecting = true;
+      mockSocket.isOpen = false;
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.listenForUpdates();
+
+      expect(mockAddMessageEventListener).toHaveBeenCalled();
+      expect(mockConnect).not.toHaveBeenCalled();
+    });
+
+    it("should not connect if socket is already open", async () => {
+      mockSocket.isConnecting = false;
+      mockSocket.isOpen = true;
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.listenForUpdates();
+
+      expect(mockAddMessageEventListener).toHaveBeenCalled();
+      expect(mockConnect).not.toHaveBeenCalled();
+    });
+
+    it("should connect the socket if not already connecting or open", async () => {
+      mockSocket.isConnecting = false;
+      mockSocket.isOpen = false;
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.listenForUpdates();
+
+      expect(mockAddMessageEventListener).toHaveBeenCalled();
+      expect(mockConnect).toHaveBeenCalled();
     });
   });
 });

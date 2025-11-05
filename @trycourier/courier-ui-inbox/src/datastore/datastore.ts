@@ -11,6 +11,7 @@ export class CourierInboxDatastore {
   private _archiveDataSet?: InboxDataSet;
   private _dataStoreListeners: CourierInboxDataStoreListener[] = [];
   private _unreadCount?: number;
+  private _removeMessageEventListener?: () => void;
   private isPaginatingInbox: boolean = false;
   private isPaginatingArchive: boolean = false;
 
@@ -143,8 +144,17 @@ export class CourierInboxDatastore {
         return;
       }
 
-      // Handle message events
-      socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
+      console.log(`[Datastore] connectSocket called for socket ${(socket as any).socketId}`)
+
+      // Remove any existing listener before adding a new one
+      // This prevents duplicates and handles socket changes
+      if (this._removeMessageEventListener) {
+        console.log(`[Datastore] Removing existing listener before registering new one`);
+        this._removeMessageEventListener();
+      }
+
+      // Handle message events and store the removal function
+      this._removeMessageEventListener = socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
         if (event.event === InboxMessageEvent.NewMessage) {
           const message: InboxMessage = event.data as InboxMessage;
           this.addMessage(message, 0, 'inbox');
