@@ -10,8 +10,10 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 # id-token is required for OIDC
 # See https://docs.npmjs.com/trusted-publishers
 permissions:
-  id-token: write
-  contents: read
+  contents: write # to create release (changesets/action)
+  issues: write # to post issue comments (changesets/action)
+  pull-requests: write # to create pull request (changesets/action)
+  id-token: write # to use OpenID Connect token for provenance (changesets/action)
 
 jobs:
   release:
