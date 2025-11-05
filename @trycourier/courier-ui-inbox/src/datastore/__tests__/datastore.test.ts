@@ -12,7 +12,7 @@ const mockUnread = jest.fn();
 const mockAddMessageEventListener = jest.fn();
 const mockConnect = jest.fn();
 
-// Create mock socket with mutable properties
+// Create mock CourierInboxSocket with mutable properties
 const mockSocket = {
   addMessageEventListener: mockAddMessageEventListener,
   connect: mockConnect,

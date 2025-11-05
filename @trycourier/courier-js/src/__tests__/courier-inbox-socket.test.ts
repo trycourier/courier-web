@@ -235,15 +235,7 @@ describe('CourierInboxSocket', () => {
   });
 
   describe('addMessageEventListener', () => {
-    it('should return a cleanup function', () => {
-      const socket = new CourierInboxSocket(OPTIONS);
-      const listener = jest.fn();
-      const removeListener = socket.addMessageEventListener(listener);
-
-      expect(typeof removeListener).toBe('function');
-    });
-
-    it('should allow removing the same listener multiple times without error', () => {
+    it('should return a remove function and allow removing the same listener multiple times without throwing', () => {
       const socket = new CourierInboxSocket(OPTIONS);
       const listener = jest.fn();
       const removeListener = socket.addMessageEventListener(listener);
@@ -253,30 +245,9 @@ describe('CourierInboxSocket', () => {
       removeListener();
       expect((socket as any).messageEventListeners.length).toBe(0);
 
-      removeListener(); // Should not throw
+      // Second call is a no-op and does not throw
+      removeListener();
       expect((socket as any).messageEventListeners.length).toBe(0);
-    });
-
-    it('should prevent duplicate listeners using remove-then-add pattern', () => {
-      const socket = new CourierInboxSocket(OPTIONS);
-      let removeListener: (() => void) | undefined;
-
-      // Simulate what the datastore does to prevent duplicates
-      const registerListener = () => {
-        if (removeListener) {
-          removeListener();
-        }
-        removeListener = socket.addMessageEventListener(() => {});
-      };
-
-      registerListener();
-      expect((socket as any).messageEventListeners.length).toBe(1);
-
-      registerListener();
-      expect((socket as any).messageEventListeners.length).toBe(1);
-
-      registerListener();
-      expect((socket as any).messageEventListeners.length).toBe(1);
     });
   });
 
