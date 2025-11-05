@@ -144,12 +144,9 @@ export class CourierInboxDatastore {
         return;
       }
 
-      console.log(`[Datastore] connectSocket called for socket ${(socket as any).socketId}`)
-
       // Remove any existing listener before adding a new one
       // This prevents duplicates and handles socket changes
       if (this._removeMessageEventListener) {
-        console.log(`[Datastore] Removing existing listener before registering new one`);
         this._removeMessageEventListener();
       }
 
