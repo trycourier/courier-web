@@ -28,6 +28,9 @@
   ],
   "author": "Courier",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/trycourier/courier-web"
+  },
   "dependencies": {
     "@trycourier/courier-js": "2.1.0",
     "@trycourier/courier-react-components": "1.2.0",

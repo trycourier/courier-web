@@ -24,6 +24,9 @@
   ],
   "author": "Courier",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/trycourier/courier-web"
+  },
   "files": [
     "dist"
   ],
