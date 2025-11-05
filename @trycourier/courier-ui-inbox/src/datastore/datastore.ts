@@ -144,8 +144,10 @@ export class CourierInboxDatastore {
         return;
       }
 
-      // Remove any existing listener before adding a new one
-      // This prevents duplicates and handles socket changes
+      // Remove any existing listener before adding a new one.
+      // This both prevents multiple listeners from being added to the same WebSocket client
+      // and makes sure the listener is on the current WebSocket client (rather than maintaining
+      // one from a stale client).
       if (this._removeMessageEventListener) {
         this._removeMessageEventListener();
       }
