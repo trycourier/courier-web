@@ -1,5 +1,17 @@
 # @trycourier/courier-react
 
+## 8.2.1
+
+### Patch Changes
+
+- [#120](https://github.com/trycourier/courier-web/pull/120) [`69e8bd5`](https://github.com/trycourier/courier-web/commit/69e8bd504ee6d170b6e77220a9145cbfaf01da78) Thanks [@danasilver](https://github.com/danasilver)! - Fix an issue where duplicate messages may appear when a message arrives in real-time.
+
+- Updated dependencies [[`69e8bd5`](https://github.com/trycourier/courier-web/commit/69e8bd504ee6d170b6e77220a9145cbfaf01da78)]:
+  - @trycourier/courier-ui-inbox@1.2.1
+  - @trycourier/courier-ui-toast@1.0.1
+  - @trycourier/courier-js@2.1.1
+  - @trycourier/courier-react-components@1.2.1
+
 ## 8.2.0
 
 ### Minor Changes
