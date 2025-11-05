@@ -18,6 +18,9 @@ export class CourierToastDatastore {
   /** Set of listeners whose handlers will be called when the datastore changes. */
   private _datastoreListeners: CourierToastDatastoreListener[] = [];
 
+  /** Cleanup function to remove the message event listener. */
+  private _removeMessageEventListener?: () => void;
+
   /** The shared instance of CourierToastDatastore, used to access all public methods. */
   public static get shared(): CourierToastDatastore {
     if (!CourierToastDatastore.instance) {
@@ -67,7 +70,14 @@ export class CourierToastDatastore {
         return;
       }
 
-      socketClient.addMessageEventListener((messageEvent: InboxMessageEventEnvelope) => {
+      // Remove any existing listener before adding a new one
+      // This prevents duplicates and handles socket changes
+      if (this._removeMessageEventListener) {
+        this._removeMessageEventListener();
+      }
+
+      // Register message event listener and store the cleanup function
+      this._removeMessageEventListener = socketClient.addMessageEventListener((messageEvent: InboxMessageEventEnvelope) => {
         if (messageEvent.event === InboxMessageEvent.NewMessage) {
           const message: InboxMessage = messageEvent.data as InboxMessage;
 

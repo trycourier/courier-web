@@ -193,6 +193,62 @@ describe('CourierInboxSocket', () => {
       expect(listener).toHaveBeenCalledWith(messageEventWithCreatedTime);
       expect(listener2).toHaveBeenCalledWith(messageEventWithCreatedTime);
     });
+
+    it('should allow listeners to be removed via cleanup function', async () => {
+      const socket = new CourierInboxSocket(OPTIONS);
+
+      socket.connect();
+      await mockServer.connected;
+      await expectOpeningMessages(mockServer);
+
+      const listener1 = jest.fn();
+      const listener2 = jest.fn();
+
+      const remove1 = socket.addMessageEventListener(listener1);
+      socket.addMessageEventListener(listener2);
+
+      // Send a message event
+      const messageEvent: InboxMessageEventEnvelope = {
+        event: InboxMessageEvent.NewMessage,
+        data: { messageId: 'test-1', created: '2024-01-01' },
+      };
+      mockServer.send(messageEvent);
+
+      // Both listeners should be called
+      expect(listener1).toHaveBeenCalledTimes(1);
+      expect(listener2).toHaveBeenCalledTimes(1);
+
+      // Remove first listener
+      remove1();
+
+      // Send another message event
+      const messageEvent2: InboxMessageEventEnvelope = {
+        event: InboxMessageEvent.NewMessage,
+        data: { messageId: 'test-2', created: '2024-01-02' },
+      };
+      mockServer.send(messageEvent2);
+
+      // Only listener2 should be called
+      expect(listener1).toHaveBeenCalledTimes(1); // Still 1
+      expect(listener2).toHaveBeenCalledTimes(2); // Now 2
+    });
+  });
+
+  describe('addMessageEventListener', () => {
+    it('should return a remove function and allow removing the same listener multiple times without throwing', () => {
+      const socket = new CourierInboxSocket(OPTIONS);
+      const listener = jest.fn();
+      const removeListener = socket.addMessageEventListener(listener);
+
+      expect((socket as any).messageEventListeners.length).toBe(1);
+
+      removeListener();
+      expect((socket as any).messageEventListeners.length).toBe(0);
+
+      // Second call is a no-op and does not throw
+      removeListener();
+      expect((socket as any).messageEventListeners.length).toBe(0);
+    });
   });
 
   describe('onClose', () => {

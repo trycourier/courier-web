@@ -169,9 +169,15 @@ export class CourierInboxSocket extends CourierSocket {
    * from the Courier WebSocket server.
    *
    * @param listener The listener function
+   * @returns A function that can be called to remove this specific listener
    */
-  public addMessageEventListener(listener: (message: InboxMessageEventEnvelope) => void): void {
+  public addMessageEventListener(listener: (message: InboxMessageEventEnvelope) => void): () => void {
     this.messageEventListeners.push(listener);
+
+    // Return a function to remove this specific listener
+    return () => {
+      this.removeMessageEventListener(listener);
+    };
   }
 
   /**
@@ -267,7 +273,22 @@ export class CourierInboxSocket extends CourierSocket {
    * Removes all message event listeners.
    */
   private clearMessageEventListeners(): void {
-    this.messageEventListeners = [];
+    while (this.messageEventListeners.length > 0) {
+      this.messageEventListeners.pop();
+    }
+  }
+
+  /**
+   * Remove the message event listener specified.
+   *
+   * This is the same listener function passed to {@link addMessageEventListener}.
+   */
+  private removeMessageEventListener(listener: (message: InboxMessageEventEnvelope) => void): void {
+    const index = this.messageEventListeners.indexOf(listener);
+
+    if (index > -1) {
+      this.messageEventListeners.splice(index, 1);
+    }
   }
 
   private static isInboxMessageEvent(event: string): event is InboxMessageEvent {

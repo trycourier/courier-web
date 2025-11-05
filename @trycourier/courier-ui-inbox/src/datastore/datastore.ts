@@ -11,6 +11,7 @@ export class CourierInboxDatastore {
   private _archiveDataSet?: InboxDataSet;
   private _dataStoreListeners: CourierInboxDataStoreListener[] = [];
   private _unreadCount?: number;
+  private _removeMessageEventListener?: () => void;
   private isPaginatingInbox: boolean = false;
   private isPaginatingArchive: boolean = false;
 
@@ -143,8 +144,16 @@ export class CourierInboxDatastore {
         return;
       }
 
-      // Handle message events
-      socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
+      // Remove any existing listener before adding a new one.
+      // This both prevents multiple listeners from being added to the same WebSocket client
+      // and makes sure the listener is on the current WebSocket client (rather than maintaining
+      // one from a stale client).
+      if (this._removeMessageEventListener) {
+        this._removeMessageEventListener();
+      }
+
+      // Handle message events and store the removal function
+      this._removeMessageEventListener = socket.addMessageEventListener((event: InboxMessageEventEnvelope) => {
         if (event.event === InboxMessageEvent.NewMessage) {
           const message: InboxMessage = event.data as InboxMessage;
           this.addMessage(message, 0, 'inbox');

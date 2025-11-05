@@ -210,8 +210,10 @@ export class CourierInbox extends CourierBaseElement {
     });
 
     // Listen for authentication state changes
-    this._authListener = Courier.shared.addAuthenticationListener((_) => {
-      this.refresh();
+    this._authListener = Courier.shared.addAuthenticationListener(async ({ userId }) => {
+      if (userId) {
+        await this.refresh();
+      }
     });
 
     // Refresh the inbox if the user is already signed in
