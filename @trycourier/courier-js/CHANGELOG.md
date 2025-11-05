@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 2.1.1
+
+### Patch Changes
+
+- [#122](https://github.com/trycourier/courier-web/pull/122) [`1baf251`](https://github.com/trycourier/courier-web/commit/1baf251523794771cfe6a86724b84ab1f69f79bd) Thanks [@danasilver](https://github.com/danasilver)! - Fix an issue where duplicate messages may appear when a message arrives in real-time.
+
 ## 2.1.0
 
 ### Minor Changes
