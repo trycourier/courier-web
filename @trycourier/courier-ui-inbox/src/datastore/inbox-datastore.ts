@@ -1,17 +1,33 @@
 import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { CourierInboxDatasetFilter } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
+import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
+import { CourierInboxDataStoreListener } from "./datastore-listener";
 
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
 
   private _datasets: Map<string, CourierInboxDataset> = new Map();
 
+  private _dataStoreListeners: CourierInboxDataStoreListener[] = [];
+
+  private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
+  private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
+    handleMessage: (message) => {
+      this.upsertMessage(message);
+    }
+  };
+
+  /** Access CourierInboxDatastore through {@link CourierInboxDatastore.shared} */
+  private constructor() {
+    this._messageMutationPublisher.addSubscriber(this._messageMutationSubscriber);
+  }
+
   public createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void {
     this.clearDatasets();
 
     for (let [id, filter] of filters) {
-      const dataset = new CourierInboxDataset(id, filter.archivedMessages, filter.readMessages, filter.tags);
+      const dataset = new CourierInboxDataset(id, filter);
       this._datasets.set(id, dataset);
     }
   }
@@ -19,6 +35,12 @@ export class CourierInboxDatastore {
   public addMessage(message: InboxMessage) {
     for (let dataset of this._datasets.values()) {
       dataset.addMessage(message);
+    }
+  }
+
+  public upsertMessage(message: InboxMessage) {
+    for (let dataset of this._datasets.values()) {
+      dataset.upsertMessage(message);
     }
   }
 
@@ -45,6 +67,40 @@ export class CourierInboxDatastore {
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
     }
+  }
+
+  public addDataStoreListener(listener: CourierInboxDataStoreListener): void {
+    this._dataStoreListeners.push(listener);
+  }
+
+  public removeDataStoreListener(listener: CourierInboxDataStoreListener): void {
+    this._dataStoreListeners = this._dataStoreListeners.filter(l => l !== listener);
+  }
+
+  public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {
+    const client = Courier.shared.client;
+
+    if (!client?.options.userId) {
+      throw new Error('User is not signed in');
+    }
+
+    const canUseCache = props?.canUseCache ?? true;
+
+    if (props?.datasetIds) {
+      return await this.loadDatasets({
+        canUseCache: canUseCache,
+        datasets: props.datasetIds.map(this._datasets.get).filter(dataset => !!dataset),
+      });
+    }
+
+    return await this.loadDatasets({
+      canUseCache: canUseCache,
+      datasets: Array.from(this._datasets.values()),
+    });
+  }
+
+  private async loadDatasets(props: { canUseCache: boolean, datasets: CourierInboxDataset[] }): Promise<void> {
+    await Promise.all(props.datasets.map(dataset => dataset.loadDataset(props.canUseCache)));
   }
 
   private handleMessageEvent(envelope: InboxMessageEventEnvelope) {

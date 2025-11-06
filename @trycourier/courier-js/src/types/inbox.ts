@@ -11,6 +11,12 @@ export interface CourierGetInboxMessagesResponse {
   };
 }
 
+export interface CourierGetInboxMessagesQueryFilter {
+  tags?: string[];
+  archived?: boolean;
+  status?: 'read' | 'unread';
+}
+
 export interface InboxAction {
   content?: string;
   href?: string;
