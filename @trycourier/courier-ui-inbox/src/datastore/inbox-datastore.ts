@@ -117,6 +117,17 @@ export class CourierInboxDatastore {
     await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
   }
 
+  public async clickMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Clicking a message does not mutate it locally
+
+    if (message.trackingIds?.clickTrackingId) {
+      await Courier.shared.client?.inbox.click({
+        messageId: message.messageId,
+        trackingId: message.trackingIds.clickTrackingId
+      });
+    }
+  }
+
   public async archiveAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
     const dataset = this._datasets.get(datasetId);
     if (dataset) {
