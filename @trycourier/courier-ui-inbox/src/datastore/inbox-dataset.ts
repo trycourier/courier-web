@@ -1,6 +1,8 @@
-import { Courier, InboxMessage, InboxMessageEvent } from "@trycourier/courier-js";
-import { CourierInboxDatasetFilterOption } from "../types/inbox-data-set";
+import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { copyMessage } from "../utils/utils";
+import { CourierInboxDatasetFilter } from "../types/inbox-data-set";
+import { InboxMessageMutationPublisher } from "./inbox-message-mutation-publisher";
+import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 
 export class CourierInboxDataset {
   /** The unique ID for this dataset. */
@@ -17,24 +19,25 @@ export class CourierInboxDataset {
    * or null if this is the first request or a response has indicated
    * there is no next page.
    */
-  private _paginationCursor: string | null = null;
+  private _paginationCursor?: string;;
 
-  private _archivedMessages: CourierInboxDatasetFilterOption;
-  private _readMessages: CourierInboxDatasetFilterOption;
-  private _tags?: string[];
+  private readonly _filter: CourierInboxDatasetFilter;
+  private readonly _messageMutationPublisher = InboxMessageMutationPublisher.shared;
 
   private _unreadCount: number = 0;
 
   public constructor(
     id: string,
-    archivedMessages: CourierInboxDatasetFilterOption,
-    readMessages: CourierInboxDatasetFilterOption,
-    tags?: string[],
+    filter: CourierInboxDatasetFilter,
   ) {
     this._id = id;
-    this._archivedMessages = archivedMessages;
-    this._readMessages = readMessages;
-    this._tags = tags;
+
+    // Make a copy of the input filters so this dataset's filters are immutable.
+    this._filter = {
+      tags: filter.tags ? [...(filter.tags)] : undefined,
+      archived: filter.archived || false,
+      status: filter.status
+    };
   }
 
   /**
@@ -42,9 +45,9 @@ export class CourierInboxDataset {
    * @param message the message to add
    * @returns true if the message was added, otherwise false
    */
-  addMessage(message: InboxMessage): boolean {
+  addMessage(message: InboxMessage, insertIndex: number = 0): boolean {
     if (this.messageQualifiesForDataset(message)) {
-      this._messages.splice(0, 0, message);
+      this._messages.splice(insertIndex, 0, message);
       this._unreadCount += 1;
       return true;
     }
@@ -52,10 +55,44 @@ export class CourierInboxDataset {
     return false;
   }
 
+  /**
+   * Insert or update a message in the dataset, potentially removing the message
+   * if the update operation makes it no longer qualify for the dataset's filters.
+   *
+   * @param message the message to upsert
+   * @returns true if the message still qualifies for the dataset and was upserted
+   */
+  upsertMessage(message: InboxMessage): boolean {
+    const index = this.indexOfMessage(message);
+
+    // Message is already in dataset
+    if (index > -1) {
+
+      // Message still qualifies for dataset after mutation
+      if (this.messageQualifiesForDataset(message)) {
+        this._messages.splice(index, 1, message);
+        return true;
+      }
+
+      // Message no longer qualifies for dataset
+      this.removeMessage(message);
+      return false;
+    }
+
+    const insertIndex = this.findInsertIndex(message);
+    this.addMessage(message, insertIndex);
+    return true;
+  }
+
   removeMessage(message: InboxMessage): boolean {
     const indexToRemove = this.indexOfMessage(message);
     if (indexToRemove > -1) {
       this._messages.splice(indexToRemove, 1);
+
+      if (!message.read) {
+        this._unreadCount--;
+      }
+
       return true;
     }
 
@@ -168,6 +205,37 @@ export class CourierInboxDataset {
     return this._messages.find(message => message.messageId === messageId);
   }
 
+  async loadDataset(canUseCache: boolean): Promise<void> {
+    if (canUseCache && this._messages.length > 0) {
+      return;
+    }
+
+    const client = Courier.shared.client;
+
+    // If the user is not signed in, return early
+    if (!client?.options.userId) {
+      throw new Error('User is not signed in');
+    }
+
+    const paginationLimit = Courier.shared.paginationLimit;
+    const inboxQueryFilter: CourierGetInboxMessagesQueryFilter = {
+      tags: this._filter.tags,
+      archived: this._filter.archived,
+      status: this._filter.status,
+    };
+
+    const response = await client.inbox.getMessages({
+      paginationLimit,
+      startCursor: this._paginationCursor,
+      filter: inboxQueryFilter,
+    });
+
+    this._messages = response.data?.messages?.nodes ?? [];
+    this._unreadCount = response.data?.unreadCount ?? 0;
+    this._canPaginate = response.data?.messages?.pageInfo?.hasNextPage ?? false;
+    this._paginationCursor = response.data?.messages?.pageInfo?.startCursor;
+  }
+
   /**
    * Mutate the message set according to the mutation and predicate provided.
    *
@@ -196,6 +264,7 @@ export class CourierInboxDataset {
     }
 
     this._messages = messageSetAfterMutation;
+    mutatedMessages.forEach(this._messageMutationPublisher.publishMessage);
   }
 
   private applyMessageMutation(
@@ -215,24 +284,43 @@ export class CourierInboxDataset {
     if (this.messageQualifiesForDataset(messageCopy)) {
       this._messages.splice(index, 1, messageCopy);
     }
+
+    this._messageMutationPublisher.publishMessage(messageCopy);
   }
 
   private indexOfMessage(message: InboxMessage): number {
     return this._messages.findIndex(m => m.messageId === message.messageId);
   }
 
+  /**
+   * Find the insert index for a new message in a data set
+   * @param newMessage - The new message to insert
+   * @param dataSet - The data set to insert the message into
+   * @returns The index to insert the message at
+   */
+  private findInsertIndex(newMessage: InboxMessage): number {
+    const messages = this._messages;
 
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
+      if (message.created && newMessage.created && message.created < newMessage.created) {
+        return i;
+      }
+    }
+
+    return messages.length;
+  }
 
   private messageQualifiesForDataset(message: InboxMessage): boolean {
     // Is the message archived state compatible with the dataset?
-    if (message.archived && this._archivedMessages === 'hide' ||
-        !message.archived && this._archivedMessages === 'only') {
+    if (message.archived && !this._filter.archived ||
+        !message.archived && this._filter.archived) {
       return false;
     }
 
     // Is the message read state compatible with the dataset?
-    if (message.read && this._readMessages === 'hide' ||
-        !message.read && this._readMessages === 'only') {
+    if (message.read && this._filter.status === 'unread' ||
+        !message.read && this._filter.status === 'read') {
       return false;
     }
 
@@ -240,13 +328,13 @@ export class CourierInboxDataset {
     // read and archived states.
 
     // If the dataset requires tags, does the message have tags?
-    if (this._tags && !message.tags) {
+    if (this._filter.tags && !message.tags) {
       return false;
     }
 
     // Does one of the message's tags match this dataset's tags?
-    if (this._tags && message.tags) {
-      for (const tag in this._tags) {
+    if (this._filter.tags && message.tags) {
+      for (const tag in this._filter.tags) {
         if (message.tags.includes(tag)) {
           return true;
         }

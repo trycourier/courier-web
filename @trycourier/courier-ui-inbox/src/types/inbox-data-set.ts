@@ -8,11 +8,6 @@ export type InboxDataSet = {
   paginationCursor: string | null;
 };
 
-/**
- * Filter options for the unread and archived filters on a dataset.
- */
-export type CourierInboxDatasetMessageState = 'archived' | 'unarchived' | 'read' | 'unread';
-
 export type CourierInboxDatasetFilter = {
   /**
    * The set of tags to match to a message's tags. If a message has any of the tags,
@@ -20,13 +15,9 @@ export type CourierInboxDatasetFilter = {
    */
   tags?: string[];
 
-  /**
-   * The set of states to match to a message's states.
-   *
-   * Omitting the states filter will include all messages.
-   * An empty list of states will exclude all messages.
-   * Multiple states given will include the union of matching messages, for example
-   * if `states` is `['archived', 'read']`, the dataset will include both ar
-   */
-  archivedStates?: CourierInboxDatasetMessageState[];
+  /** Whether to include archived messages. Defaults to false if unset. */
+  archived?: boolean;
+
+  /* Whether to limit messages to those that are read or unread. Undefined applies no state filter. */
+  status?: 'read' | 'unread';
 }
