@@ -285,7 +285,9 @@ export class CourierInboxDataset {
     }
 
     this._messages = messageSetAfterMutation;
-    mutatedMessages.forEach(this._messageMutationPublisher.publishMessage);
+    mutatedMessages.forEach(message => {
+      this._messageMutationPublisher.publishMessage(message);
+    });
 
     this._datastoreListeners.forEach(listener => {
       listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);

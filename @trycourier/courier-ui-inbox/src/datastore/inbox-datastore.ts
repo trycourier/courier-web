@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { Courier, InboxClient, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { CourierInboxDatasetFilter } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
@@ -77,28 +77,71 @@ export class CourierInboxDatastore {
 
   }
 
-  public readMessage(props: { message: InboxMessage }) {
+  public async readMessage({ message }: { message: InboxMessage }): Promise<void> {
     for (let dataset of this._datasets.values()) {
-      dataset.readMessage(props.message);
+      dataset.readMessage(message);
     }
+
+    await Courier.shared.client?.inbox.read({ messageId: message.messageId });
   }
 
-  public unreadMessage(props: { message: InboxMessage }) {
+  public async unreadMessage({ message }: { message: InboxMessage }): Promise<void> {
     for (let dataset of this._datasets.values()) {
-      dataset.unreadMessage(props.message);
+      dataset.unreadMessage(message);
     }
+
+    await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
   }
 
-  public unarchiveMessage(props: { message: InboxMessage }) {
+  public async openMessage({ message }: { message: InboxMessage }): Promise<void> {
     for (let dataset of this._datasets.values()) {
-      dataset.unarchiveMessage(props.message);
+      dataset.openMessage(message);
     }
+
+    await Courier.shared.client?.inbox.open({ messageId: message.messageId });
   }
 
-  public archiveMessage(props: { message: InboxMessage }) {
+  public async unarchiveMessage({ message }: { message: InboxMessage }): Promise<void> {
     for (let dataset of this._datasets.values()) {
-      dataset.archiveMessage(props.message);
+      dataset.unarchiveMessage(message);
     }
+
+    await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
+  }
+
+  public async archiveMessage({ message }: { message: InboxMessage }): Promise<void> {
+    for (let dataset of this._datasets.values()) {
+      dataset.archiveMessage(message);
+    }
+
+    await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
+  }
+
+  public async archiveAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
+    const dataset = this._datasets.get(datasetId);
+    if (dataset) {
+      dataset.archiveAllMessages();
+    }
+
+    await Courier.shared.client?.inbox.archiveAll();
+  }
+
+  public async readAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
+    const dataset = this._datasets.get(datasetId);
+    if (dataset) {
+      dataset.readAllMessages();
+    }
+
+    await Courier.shared.client?.inbox.readAll();
+  }
+
+  public async archiveReadMessages({ datasetId }: { datasetId: string }): Promise<void> {
+    const dataset = this._datasets.get(datasetId);
+    if (dataset) {
+      dataset.archiveReadMessages();
+    }
+
+    await Courier.shared.client?.inbox.archiveRead();
   }
 
   public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {
@@ -209,6 +252,14 @@ export class CourierInboxDatastore {
 
   private clearDatasets() {
     this._datasets.clear();
+  }
+
+  private static get inboxClient(): InboxClient | undefined {
+    const client = Courier.shared.client?.inbox;
+
+    if (client) {
+      return client;
+    }
   }
 
   public static get shared(): CourierInboxDatastore {
