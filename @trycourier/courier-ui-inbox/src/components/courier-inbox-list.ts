@@ -152,7 +152,6 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   public addMessage(message: InboxMessage, index = 0): void {
-    console.log("list addMessage");
     this._messages.splice(index, 0, message);
     this.render();
   }

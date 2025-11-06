@@ -4,7 +4,7 @@ import { CourierInboxOptionMenu, CourierInboxMenuOption } from "./courier-inbox-
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
 import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
@@ -19,7 +19,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  private _feedType: CourierInboxFeedType | string = 'inbox';
+  private _activeDatasetId: CourierInboxFeedType | string = 'inbox';
   private _unreadCount: number = 0;
 
   // Components
@@ -29,7 +29,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _style?: HTMLStyleElement;
 
   // Callbacks
-  private _onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
+  private _onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void;
 
   static get observedAttributes() {
     return ['icon', 'title', 'feed-type'];
@@ -39,7 +39,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return this._themeSubscription.manager.getTheme();
   }
 
-  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType) => void }) {
+  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void }) {
     super();
 
     // Subscribe to the theme bus
@@ -112,7 +112,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.readAllMessages({ canCallApi: true });
+          CourierInboxDatastore.shared.readAllMessages({ datasetId: this._activeDatasetId });
         }
       },
       {
@@ -124,7 +124,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveAllMessages({ canCallApi: true });
+          CourierInboxDatastore.shared.archiveAllMessages({ datasetId: this._activeDatasetId });
         }
       },
       {
@@ -136,7 +136,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveReadMessages({ canCallApi: true });
+          CourierInboxDatastore.shared.archiveReadMessages({ datasetId: this._activeDatasetId });
         }
       }
     ];
@@ -154,19 +154,19 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   private handleOptionMenuItemClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
-    this._feedType = feedType;
+    this._activeDatasetId = feedType;
     if (this._titleSection) {
-      this._titleSection.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
+      this._titleSection.updateSelectedOption(option, this._activeDatasetId, this._activeDatasetId === 'inbox' ? this._unreadCount : 0);
     }
     this._onFeedTypeChange(feedType);
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {
-    this._feedType = props.feedType;
+    this._activeDatasetId = props.feedType;
     this._unreadCount = props.unreadCount;
-    const option = this.getFilterOptions().find(opt => ['inbox', 'archive'].includes(opt.id) && opt.id === this._feedType);
+    const option = this.getFilterOptions().find(opt => ['inbox', 'archive'].includes(opt.id) && opt.id === this._activeDatasetId);
     if (option) {
-      this._titleSection?.updateSelectedOption(option, this._feedType, this._feedType === 'inbox' ? this._unreadCount : 0);
+      this._titleSection?.updateSelectedOption(option, this._activeDatasetId, this._activeDatasetId === 'inbox' ? this._unreadCount : 0);
       this._filterMenu?.selectOption(option);
     }
   }
