@@ -22,7 +22,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _feedType: CourierInboxFeedType = 'inbox';
+  private _feedType: CourierInboxFeedType | string = 'inbox';
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
@@ -36,7 +36,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onRefresh: () => void;
 
   // Factories
-  private _onPaginationTrigger?: (feedType: CourierInboxFeedType) => void;
+  private _onPaginationTrigger?: (feedType: CourierInboxFeedType | string) => void;
   private _listItemFactory?: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement;
   private _paginationItemFactory?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement;
   private _loadingStateFactory?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement;
@@ -64,7 +64,7 @@ export class CourierInboxList extends CourierBaseElement {
     canClickListItems: boolean,
     canLongPressListItems: boolean,
     onRefresh: () => void,
-    onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
+    onPaginationTrigger: (feedType: CourierInboxFeedType | string) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onMessageActionClick: (message: InboxMessage, action: InboxAction, index: number) => void,
     onMessageLongPress: (message: InboxMessage, index: number) => void
@@ -152,6 +152,7 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   public addMessage(message: InboxMessage, index = 0): void {
+    console.log("list addMessage");
     this._messages.splice(index, 0, message);
     this.render();
   }
@@ -166,7 +167,7 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setFeedType(feedType: CourierInboxFeedType): void {
+  public setFeedType(feedType: CourierInboxFeedType | string): void {
     this._feedType = feedType;
     this._error = null;
     this._isLoading = true;

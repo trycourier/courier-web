@@ -19,7 +19,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  private _feedType: CourierInboxFeedType = 'inbox';
+  private _feedType: CourierInboxFeedType | string = 'inbox';
   private _unreadCount: number = 0;
 
   // Components

@@ -7,9 +7,7 @@ import { CourierInboxDataStoreListener } from "./datastore-listener";
 export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
 
-  private _datasets: Map<string, CourierInboxDataset> = new Map();
-
-  private _dataStoreListeners: CourierInboxDataStoreListener[] = [];
+  public _datasets: Map<string, CourierInboxDataset> = new Map();
 
   private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
@@ -70,11 +68,37 @@ export class CourierInboxDatastore {
   }
 
   public addDataStoreListener(listener: CourierInboxDataStoreListener): void {
-    this._dataStoreListeners.push(listener);
+    for (let dataset of this._datasets.values()) {
+      dataset.addDatastoreListener(listener);
+    }
   }
 
   public removeDataStoreListener(listener: CourierInboxDataStoreListener): void {
-    this._dataStoreListeners = this._dataStoreListeners.filter(l => l !== listener);
+
+  }
+
+  public readMessage(props: { message: InboxMessage }) {
+    for (let dataset of this._datasets.values()) {
+      dataset.readMessage(props.message);
+    }
+  }
+
+  public unreadMessage(props: { message: InboxMessage }) {
+    for (let dataset of this._datasets.values()) {
+      dataset.unreadMessage(props.message);
+    }
+  }
+
+  public unarchiveMessage(props: { message: InboxMessage }) {
+    for (let dataset of this._datasets.values()) {
+      dataset.unarchiveMessage(props.message);
+    }
+  }
+
+  public archiveMessage(props: { message: InboxMessage }) {
+    for (let dataset of this._datasets.values()) {
+      dataset.archiveMessage(props.message);
+    }
   }
 
   public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {

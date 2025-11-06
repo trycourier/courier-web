@@ -4,7 +4,7 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 
 export class CourierInboxListItem extends CourierBaseElement {
@@ -17,7 +17,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
-  private _feedType: CourierInboxFeedType = 'inbox';
+  private _feedType: CourierInboxFeedType | string = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
@@ -399,7 +399,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // Public API
-  public setMessage(message: InboxMessage, feedType: CourierInboxFeedType): void {
+  public setMessage(message: InboxMessage, feedType: CourierInboxFeedType | string): void {
     this._message = message;
     this._feedType = feedType;
     this._updateContent();

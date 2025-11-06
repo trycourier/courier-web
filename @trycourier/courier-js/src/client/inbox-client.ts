@@ -433,7 +433,9 @@ export class InboxClient extends Client {
       parts.push(`status: "${filter.status}"`);
     }
 
-    parts.push(`archived: ${filter.archived}`);
+    if (filter.archived) {
+      parts.push(`archived: ${filter.archived}`);
+    }
 
     return `{ ${parts.join(',')} }`;
   }

@@ -3,22 +3,22 @@ import { CourierInboxFeedType } from "./feed-type";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feedType: CourierInboxFeedType | string;
   unreadCount: number;
   messageCount: number;
 }
 
 // States
 export type CourierInboxStateLoadingFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feedType: CourierInboxFeedType | string;
 }
 
 export type CourierInboxStateEmptyFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feedType: CourierInboxFeedType | string;
 }
 
 export type CourierInboxStateErrorFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feedType: CourierInboxFeedType | string;
   error: Error;
 }
 
@@ -37,7 +37,7 @@ export type CourierInboxListItemActionFactoryProps = {
 
 // Pagination Item
 export type CourierInboxPaginationItemFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feedType: CourierInboxFeedType | string;
 }
 
 // Menu Button

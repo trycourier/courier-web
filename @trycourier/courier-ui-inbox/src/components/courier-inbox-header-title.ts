@@ -16,7 +16,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
   // State
   private _option: CourierInboxMenuOption;
-  private _feedType?: CourierInboxFeedType;
+  private _feedType?: CourierInboxFeedType | string;
 
   // Components
   private _style?: HTMLStyleElement;
@@ -93,7 +93,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this._style?.remove();
   }
 
-  private refreshTheme(feedType: CourierInboxFeedType) {
+  private refreshTheme(feedType: CourierInboxFeedType | string) {
     this._feedType = feedType;
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
@@ -102,7 +102,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this.updateFilter();
   }
 
-  public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType, unreadCount: number) {
+  public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType | string, unreadCount: number) {
     this._option = option;
     this._feedType = feedType;
     this._unreadBadge?.setCount(unreadCount);
