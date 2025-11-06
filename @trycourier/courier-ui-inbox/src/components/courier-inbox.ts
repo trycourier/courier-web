@@ -2,9 +2,10 @@ import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/couri
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore as CourierInboxDatastore2 } from "../datastore/inbox-datastore";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
@@ -18,10 +19,10 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   // State
-  private _currentFeed: CourierInboxFeedType = 'inbox';
+  private _currentFeed: string = 'inbox';
 
   /** Returns the current feed type. */
-  get currentFeed(): CourierInboxFeedType {
+  get currentFeed(): string {
     return this._currentFeed;
   }
 
@@ -100,7 +101,7 @@ export class CourierInbox extends CourierBaseElement {
     // Header
     this._header = new CourierInboxHeader({
       themeManager: this._themeManager,
-      onFeedTypeChange: (feedType: CourierInboxFeedType) => {
+      onFeedTypeChange: (feedType: CourierInboxFeedType | string) => {
         this.setFeedType(feedType);
       }
     });
@@ -115,11 +116,11 @@ export class CourierInbox extends CourierBaseElement {
       onRefresh: () => {
         this.refresh();
       },
-      onPaginationTrigger: async (feedType: CourierInboxFeedType) => {
+      onPaginationTrigger: async (feedType: CourierInboxFeedType | string) => {
         try {
-          await CourierInboxDatastore.shared.fetchNextPageOfMessages({
-            feedType: feedType
-          });
+          // await CourierInboxDatastore.shared.fetchNextPageOfMessages({
+          //   feedType: feedType
+          // });
         } catch (error) {
           Courier.shared.client?.options.logger?.error('Failed to fetch next page of messages:', error);
         }
@@ -162,36 +163,41 @@ export class CourierInbox extends CourierBaseElement {
 
     this.appendChild(this._list);
 
+    CourierInboxDatastore2.shared.createDatasetsFromFilters(
+      new Map<string, CourierInboxDatasetFilter>()
+        .set("inbox", { archived: false })
+        .set("archive", { archived: true }));
+
     // Attach the datastore listener
     this._datastoreListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => {
         this._list?.setError(error);
       },
-      onDataSetChange: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
+      onDataSetChange: (dataSet: InboxDataSet, feedType: string) => {
         if (this._currentFeed === feedType) {
           this._list?.setDataSet(dataSet);
           this.updateHeader();
         }
       },
-      onPageAdded: (dataSet: InboxDataSet, feedType: CourierInboxFeedType) => {
+      onPageAdded: (dataSet: InboxDataSet, feedType: string) => {
         if (this._currentFeed === feedType) {
           this._list?.addPage(dataSet);
           this.updateHeader();
         }
       },
-      onMessageAdd: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+      onMessageAdd: (message: InboxMessage, index: number, feedType: string) => {
         if (this._currentFeed === feedType) {
           this._list?.addMessage(message, index);
           this.updateHeader();
         }
       },
-      onMessageRemove: (_: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+      onMessageRemove: (_: InboxMessage, index: number, feedType: string) => {
         if (this._currentFeed === feedType) {
           this._list?.removeMessage(index);
           this.updateHeader();
         }
       },
-      onMessageUpdate: (message: InboxMessage, index: number, feedType: CourierInboxFeedType) => {
+      onMessageUpdate: (message: InboxMessage, index: number, feedType: string) => {
         if (this._currentFeed === feedType) {
           this._list?.updateMessage(message, index);
           this.updateHeader();
@@ -202,7 +208,7 @@ export class CourierInbox extends CourierBaseElement {
       }
     });
 
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+    CourierInboxDatastore2.shared.addDataStoreListener(this._datastoreListener);
 
     // Refresh the theme on change
     this._themeManager.subscribe((_) => {
@@ -352,8 +358,7 @@ export class CourierInbox extends CourierBaseElement {
    * Sets the feed type for the inbox (e.g., "inbox" or "archive").
    * @param feedType - The feed type to display.
    */
-  public setFeedType(feedType: CourierInboxFeedType) {
-
+  public async setFeedType(feedType: CourierInboxFeedType | string) {
     // Do not swap if current feed is same
     if (this._currentFeed === feedType) {
       return;
@@ -367,7 +372,7 @@ export class CourierInbox extends CourierBaseElement {
     this.updateHeader();
 
     // Load data
-    this.load({
+    await this.load({
       canUseCache: true
     });
   }
@@ -396,8 +401,11 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private async load(props: { canUseCache: boolean }) {
-    await CourierInboxDatastore.shared.load(props);
-    await CourierInboxDatastore.shared.listenForUpdates();
+    // await CourierInboxDatastore.shared.load(props);
+    // await CourierInboxDatastore.shared.listenForUpdates();
+
+    await CourierInboxDatastore2.shared.load(props);
+    await CourierInboxDatastore2.shared.listenForUpdates();
   }
 
   /**

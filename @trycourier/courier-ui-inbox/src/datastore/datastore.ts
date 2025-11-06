@@ -112,7 +112,7 @@ export class CourierInboxDatastore {
         if (this._archiveDataSet) {
           listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
         }
-        listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
+        listener.events.onUnreadCountChange?.(this._unreadCount ?? 0, 'inbox');
       });
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Error loading inbox:', error);
@@ -343,7 +343,7 @@ export class CourierInboxDatastore {
 
       // Notify listeners
       this._dataStoreListeners.forEach(listener => {
-        listener.events.onUnreadCountChange?.(this._unreadCount!);
+        listener.events.onUnreadCountChange?.(this._unreadCount!, 'inbox');
       });
 
       if (canCallApi) {
@@ -384,7 +384,7 @@ export class CourierInboxDatastore {
 
       // Notify listeners
       this._dataStoreListeners.forEach(listener => {
-        listener.events.onUnreadCountChange?.(this._unreadCount!);
+        listener.events.onUnreadCountChange?.(this._unreadCount!, 'inbox');
       });
 
       if (canCallApi) {
@@ -623,7 +623,7 @@ export class CourierInboxDatastore {
         if (this._archiveDataSet) {
           listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
         }
-        listener.events.onUnreadCountChange?.(this._unreadCount!);
+        listener.events.onUnreadCountChange?.(this._unreadCount!, 'inbox');
       });
 
       // Call API to archive all messages
@@ -674,7 +674,7 @@ export class CourierInboxDatastore {
         if (this._archiveDataSet) {
           listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
         }
-        listener.events.onUnreadCountChange?.(this._unreadCount!);
+        listener.events.onUnreadCountChange?.(this._unreadCount!, 'inbox');
       });
 
       if (canCallApi) {
@@ -742,7 +742,7 @@ export class CourierInboxDatastore {
     }
     this._dataStoreListeners.forEach(listener => {
       listener.events.onMessageAdd?.(message, index, feedType);
-      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
+      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0, 'inbox');
     });
   }
 
@@ -760,7 +760,7 @@ export class CourierInboxDatastore {
     }
     this._dataStoreListeners.forEach(listener => {
       listener.events.onMessageRemove?.(message, index, feedType);
-      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
+      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0, 'inbox');
     });
   }
 
@@ -792,7 +792,7 @@ export class CourierInboxDatastore {
       if (this._archiveDataSet) {
         listener.events.onDataSetChange?.(this._archiveDataSet, 'archive');
       }
-      listener.events.onUnreadCountChange?.(unreadCount);
+      listener.events.onUnreadCountChange?.(unreadCount, 'inbox');
     });
   }
 
@@ -817,7 +817,7 @@ export class CourierInboxDatastore {
     }
     this._dataStoreListeners.forEach(listener => {
       listener.events.onMessageUpdate?.(message, index, feedType);
-      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0);
+      listener.events.onUnreadCountChange?.(this._unreadCount ?? 0, 'inbox');
     });
   }
 

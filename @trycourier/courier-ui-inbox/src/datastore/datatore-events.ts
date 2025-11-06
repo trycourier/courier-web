@@ -13,8 +13,10 @@ export class CourierInboxDatastoreEvents {
   public onPageAdded?(_: InboxDataSet, __: CourierInboxFeedType | string): void { }
   /**
    * @public
+   * @param _ - the new unread count
+   * @param __ - the dataset ID that was updated
    */
-  public onUnreadCountChange?(_: number): void { }
+  public onUnreadCountChange?(_: number, __: string): void { }
   /**
    * @public
    */
