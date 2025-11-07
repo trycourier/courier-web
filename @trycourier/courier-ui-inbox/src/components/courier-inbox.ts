@@ -4,8 +4,7 @@ import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
-import { CourierInboxDatastore } from "../datastore/datastore";
-import { CourierInboxDatastore as CourierInboxDatastore2 } from "../datastore/inbox-datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
@@ -65,6 +64,7 @@ export class CourierInbox extends CourierBaseElement {
   private _list?: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
+  private _unreadCount: number = 0;
 
   // Header
   private _header?: CourierInboxHeader;
@@ -118,8 +118,8 @@ export class CourierInbox extends CourierBaseElement {
       },
       onPaginationTrigger: async (feedType: CourierInboxFeedType | string) => {
         try {
-          // await CourierInboxDatastore.shared.fetchNextPageOfMessages({
-          //   feedType: feedType
+          // await CourierInboxDatastore2.shared.fetchNextPageOfMessages({
+          //   datasetId: feedType
           // });
         } catch (error) {
           Courier.shared.client?.options.logger?.error('Failed to fetch next page of messages:', error);
@@ -163,7 +163,7 @@ export class CourierInbox extends CourierBaseElement {
 
     this.appendChild(this._list);
 
-    CourierInboxDatastore2.shared.createDatasetsFromFilters(
+    CourierInboxDatastore.shared.createDatasetsFromFilters(
       new Map<string, CourierInboxDatasetFilter>()
         .set("inbox", { archived: false })
         .set("archive", { archived: true }));
@@ -203,12 +203,15 @@ export class CourierInbox extends CourierBaseElement {
           this.updateHeader();
         }
       },
-      onUnreadCountChange: (_: number) => {
-        this.updateHeader();
+      onUnreadCountChange: (unreadCount: number, feedType: string) => {
+        if (this._currentFeed === feedType) {
+          this._unreadCount = unreadCount;
+          this.updateHeader();
+        }
       }
     });
 
-    CourierInboxDatastore2.shared.addDataStoreListener(this._datastoreListener);
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
     // Refresh the theme on change
     this._themeManager.subscribe((_) => {
@@ -381,7 +384,7 @@ export class CourierInbox extends CourierBaseElement {
 
     const props = {
       feedType: this._currentFeed,
-      unreadCount: CourierInboxDatastore.shared.unreadCount,
+      unreadCount: this._unreadCount,
       messageCount: this._list?.messages.length ?? 0
     };
 
@@ -404,8 +407,8 @@ export class CourierInbox extends CourierBaseElement {
     // await CourierInboxDatastore.shared.load(props);
     // await CourierInboxDatastore.shared.listenForUpdates();
 
-    await CourierInboxDatastore2.shared.load(props);
-    await CourierInboxDatastore2.shared.listenForUpdates();
+    await CourierInboxDatastore.shared.load(props);
+    await CourierInboxDatastore.shared.listenForUpdates();
   }
 
   /**

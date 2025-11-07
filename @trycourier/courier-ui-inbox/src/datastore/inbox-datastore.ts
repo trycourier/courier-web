@@ -51,7 +51,7 @@ export class CourierInboxDatastore {
     }
 
     try {
-      socket.addMessageEventListener(this.handleMessageEvent);
+      socket.addMessageEventListener(event => this.handleMessageEvent(event));
 
       // If the socket is already connecting or open, return early
       if (socket.isConnecting || socket.isOpen) {
