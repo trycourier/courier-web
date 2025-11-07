@@ -322,18 +322,27 @@ export class CourierInboxDataset {
     for (let i = 0; i < this._messages.length; i++) {
       const messageCopy = copyMessage(this._messages[i]);
 
+      // Mutate the message
       if (predicate(messageCopy)) {
         mutation(messageCopy)
 
+        // Aggregate mutated messages to upsert into datasets
         mutatedMessages.push(messageCopy);
       }
 
-      if (this.messageQualifiesForDataset(messageCopy)) {
+      // Message is still in dataset
+      const messageQualifiesForDataset = this.messageQualifiesForDataset(messageCopy);
+      if (messageQualifiesForDataset) {
         messageSetAfterMutation.push(messageCopy);
+      }
+
+      // Message is unread
+      if (messageQualifiesForDataset && !messageCopy.read) {
         unreadCountAfterMutation++;
       }
     }
 
+    // Update this dataset and publish mutated messages for other datasets
     this._messages = messageSetAfterMutation;
     this._unreadCount = unreadCountAfterMutation;
     mutatedMessages.forEach(message => {
