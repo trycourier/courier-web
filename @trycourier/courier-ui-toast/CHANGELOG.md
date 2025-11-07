@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-toast
 
+## 1.0.2
+
+### Patch Changes
+
+- [#126](https://github.com/trycourier/courier-web/pull/126) [`3d8e485`](https://github.com/trycourier/courier-web/commit/3d8e485193353c2755b94c92fec119a18149723b) Thanks [@danasilver](https://github.com/danasilver)! - Fix an unhandled promise rejection opening a real-time connection for toasts.
+
 ## 1.0.1
 
 ### Patch Changes
