@@ -27,11 +27,11 @@ export class CourierInboxDatastore {
   }
 
   public get inboxDataSet(): InboxDataSet {
-    return this._inboxDataSet ?? { feedType: 'inbox', messages: [], canPaginate: false, paginationCursor: null };
+    return this._inboxDataSet ?? { feedType: 'inbox', messages: [], unreadCount: 0, canPaginate: false, paginationCursor: null };
   }
 
   public get archiveDataSet(): InboxDataSet {
-    return this._archiveDataSet ?? { feedType: 'archive', messages: [], canPaginate: false, paginationCursor: null };
+    return this._archiveDataSet ?? { feedType: 'archive', messages: [], unreadCount: 0, canPaginate: false, paginationCursor: null };
   }
 
   public addDataStoreListener(listener: CourierInboxDataStoreListener) {
@@ -62,6 +62,7 @@ export class CourierInboxDatastore {
     return {
       feedType: props.feedType,
       messages: response.data?.messages?.nodes ?? [],
+      unreadCount: response.data?.unreadCount ?? 0,
       canPaginate: response.data?.messages?.pageInfo?.hasNextPage ?? false,
       paginationCursor: response.data?.messages?.pageInfo?.startCursor ?? null,
     };
@@ -259,6 +260,7 @@ export class CourierInboxDatastore {
             const dataSet: InboxDataSet = {
               feedType: 'inbox',
               messages: response?.data?.messages?.nodes ?? [],
+              unreadCount: response?.data?.unreadCount ?? 0,
               canPaginate: response?.data?.messages?.pageInfo?.hasNextPage ?? false,
               paginationCursor: response?.data?.messages?.pageInfo?.startCursor ?? null
             };
@@ -289,6 +291,7 @@ export class CourierInboxDatastore {
             const dataSet: InboxDataSet = {
               feedType: 'archive',
               messages: response?.data?.messages?.nodes ?? [],
+              unreadCount: response?.data?.unreadCount ?? 0,
               canPaginate: response?.data?.messages?.pageInfo?.hasNextPage ?? false,
               paginationCursor: response?.data?.messages?.pageInfo?.startCursor ?? null
             };
@@ -608,6 +611,7 @@ export class CourierInboxDatastore {
       this._inboxDataSet = {
         messages: [],
         canPaginate: false,
+        unreadCount: 0,
         paginationCursor: null,
         feedType: 'inbox',
       };

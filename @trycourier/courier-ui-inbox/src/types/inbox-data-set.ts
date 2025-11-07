@@ -4,6 +4,7 @@ import { CourierInboxFeedType } from "./feed-type";
 export type InboxDataSet = {
   feedType: CourierInboxFeedType | string;
   messages: InboxMessage[];
+  unreadCount: number;
   canPaginate: boolean;
   paginationCursor: string | null;
 };

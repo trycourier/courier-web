@@ -13,14 +13,14 @@ export class CourierInboxDataset {
   private _messages: InboxMessage[] = [];
 
   /** True if the fetched dataset sets hasNextPage to true. */
-  private _canPaginate: boolean = false;
+  private _hasNextPage: boolean = false;
 
   /**
    * The pagination cursor to pass to subsequent fetch requests
    * or null if this is the first request or a response has indicated
    * there is no next page.
    */
-  private _paginationCursor?: string;;
+  private _lastPaginationCursor?: string;
 
   private readonly _filter: CourierInboxDatasetFilter;
   private readonly _messageMutationPublisher = InboxMessageMutationPublisher.shared;
@@ -50,7 +50,18 @@ export class CourierInboxDataset {
   addMessage(message: InboxMessage, insertIndex: number = 0): boolean {
     if (this.messageQualifiesForDataset(message)) {
       this._messages.splice(insertIndex, 0, message);
-      this._unreadCount += 1;
+
+      if (!message.read) {
+        this._unreadCount++;
+        this._datastoreListeners.forEach(listener => {
+          listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
+        });
+      }
+
+      this._datastoreListeners.forEach(listener => {
+        listener.events.onMessageAdd?.(message, insertIndex, this._id);
+      });
+
       return true;
     }
 
@@ -93,6 +104,9 @@ export class CourierInboxDataset {
 
       if (!message.read) {
         this._unreadCount--;
+        this._datastoreListeners.forEach(listener => {
+          listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
+        });
       }
 
       this._datastoreListeners.forEach(listener => {
@@ -212,6 +226,7 @@ export class CourierInboxDataset {
   }
 
   async loadDataset(canUseCache: boolean): Promise<void> {
+    // Can we return cached data?
     if (canUseCache && this._messages.length > 0) {
       this._datastoreListeners.forEach(listener => {
         listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
@@ -220,9 +235,49 @@ export class CourierInboxDataset {
       return;
     }
 
+    const fetchedDataset = await this.fetchMessages();
+
+    // Unpack response and call listeners
+    this._messages = [...fetchedDataset.messages];
+    this._unreadCount = fetchedDataset.unreadCount;
+    this._hasNextPage = fetchedDataset.canPaginate;
+    this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
+
+    this._datastoreListeners.forEach(listener => {
+      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
+      listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
+    });
+  }
+
+  async fetchNextPageOfMessages(): Promise<InboxDataSet | null> {
+    if (!this._hasNextPage) {
+      return null;
+    }
+
+    const fetchedDataset = await this.fetchMessages(this._lastPaginationCursor);
+
+    // Unpack response and call listeners
+    this._messages = [...this._messages, ...fetchedDataset.messages];
+    this._unreadCount = this._unreadCount + fetchedDataset.unreadCount;
+    this._hasNextPage = fetchedDataset.canPaginate;
+    this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
+
+    this._datastoreListeners.forEach(listener => {
+      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
+      listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
+      listener.events.onPageAdded?.(fetchedDataset, this._id);
+    });
+
+    return fetchedDataset;
+  }
+
+  addDatastoreListener(listener: CourierInboxDataStoreListener): void {
+    this._datastoreListeners.push(listener);
+  }
+
+  private async fetchMessages(startCursor?: string): Promise<InboxDataSet> {
     const client = Courier.shared.client;
 
-    // If the user is not signed in, return early
     if (!client?.options.userId) {
       throw new Error('User is not signed in');
     }
@@ -236,23 +291,17 @@ export class CourierInboxDataset {
 
     const response = await client.inbox.getMessages({
       paginationLimit,
-      startCursor: this._paginationCursor,
+      startCursor,
       filter: inboxQueryFilter,
     });
 
-    this._messages = response.data?.messages?.nodes ?? [];
-    this._unreadCount = response.data?.unreadCount ?? 0;
-    this._canPaginate = response.data?.messages?.pageInfo?.hasNextPage ?? false;
-    this._paginationCursor = response.data?.messages?.pageInfo?.startCursor;
-
-    this._datastoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
-      listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
-    });
-  }
-
-  addDatastoreListener(listener: CourierInboxDataStoreListener): void {
-    this._datastoreListeners.push(listener);
+    return {
+      feedType: this._id,
+      messages: [...(response.data?.messages?.nodes ?? [])],
+      unreadCount: response.data?.unreadCount ?? 0,
+      canPaginate: response.data?.messages?.pageInfo?.hasNextPage ?? false,
+      paginationCursor: response.data?.messages?.pageInfo?.startCursor ?? null,
+    }
   }
 
   /**
@@ -265,6 +314,8 @@ export class CourierInboxDataset {
     mutation: (message: InboxMessage) => void,
     predicate: (message: InboxMessage) => boolean
   ) {
+    const unreadCountBeforeMutation = this._unreadCount;
+    let unreadCountAfterMutation = 0;
     const mutatedMessages = [];
     const messageSetAfterMutation = [];
 
@@ -279,18 +330,22 @@ export class CourierInboxDataset {
 
       if (this.messageQualifiesForDataset(messageCopy)) {
         messageSetAfterMutation.push(messageCopy);
+        unreadCountAfterMutation++;
       }
-
-      this.updateUnreadCount(this._messages[i], messageCopy);
     }
 
     this._messages = messageSetAfterMutation;
+    this._unreadCount = unreadCountAfterMutation;
     mutatedMessages.forEach(message => {
       this._messageMutationPublisher.publishMessage(message);
     });
 
     this._datastoreListeners.forEach(listener => {
       listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
+
+      if (unreadCountBeforeMutation !== unreadCountAfterMutation) {
+        listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
+      }
     });
   }
 
@@ -351,6 +406,10 @@ export class CourierInboxDataset {
     this._datastoreListeners.forEach(listener => {
       listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
     });
+  }
+
+  private addPageOfMessages() {
+
   }
 
   private indexOfMessage(message: InboxMessage): number {
@@ -421,8 +480,9 @@ export class CourierInboxDataset {
     return {
       feedType: this._id,
       messages: [...this._messages],
-      canPaginate: this._canPaginate,
-      paginationCursor: this._paginationCursor ?? null
+      unreadCount: this._unreadCount,
+      canPaginate: this._hasNextPage,
+      paginationCursor: this._lastPaginationCursor ?? null
     };
   }
 }
