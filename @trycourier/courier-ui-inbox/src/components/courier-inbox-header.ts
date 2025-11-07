@@ -156,7 +156,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private handleOptionMenuItemClick(feedType: CourierInboxFeedType, option: CourierInboxMenuOption) {
     this._activeDatasetId = feedType;
     if (this._titleSection) {
-      this._titleSection.updateSelectedOption(option, this._activeDatasetId, this._activeDatasetId === 'inbox' ? this._unreadCount : 0);
+      this._titleSection.updateSelectedOption(option, this._activeDatasetId, this._unreadCount);
     }
     this._onFeedTypeChange(feedType);
   }
@@ -166,7 +166,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._unreadCount = props.unreadCount;
     const option = this.getFilterOptions().find(opt => ['inbox', 'archive'].includes(opt.id) && opt.id === this._activeDatasetId);
     if (option) {
-      this._titleSection?.updateSelectedOption(option, this._activeDatasetId, this._activeDatasetId === 'inbox' ? this._unreadCount : 0);
+      this._titleSection?.updateSelectedOption(option, this._activeDatasetId, this._unreadCount);
       this._filterMenu?.selectOption(option);
     }
   }
