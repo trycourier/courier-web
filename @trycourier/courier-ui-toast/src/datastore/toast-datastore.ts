@@ -91,7 +91,7 @@ export class CourierToastDatastore {
         return;
       }
 
-      socketClient.connect();
+      await socketClient.connect();
     } catch (error: unknown) {
       Courier.shared.client?.options.logger.error('Error listening for messages:', error);
       this._datastoreListeners.forEach(listener => {
