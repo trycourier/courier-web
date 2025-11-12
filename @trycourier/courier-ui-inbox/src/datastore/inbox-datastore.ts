@@ -10,7 +10,7 @@ export class CourierInboxDatastore {
 
   private static instance: CourierInboxDatastore;
 
-  public _datasets: Map<string, CourierInboxDataset> = new Map();
+  private _datasets: Map<string, CourierInboxDataset> = new Map();
 
   private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
@@ -170,7 +170,7 @@ export class CourierInboxDatastore {
    *  - canUseCache: If true and the dataset has already been loaded once, this will return the dataset from memory.
    *  - datasetIds: Optional: The set of dataset IDs to load. If unset, all known datasets will be loaded.
    *
-   * @param props options to load datasets, see method documentation
+   * @param props - options to load datasets, see method documentation
    */
   public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {
     const client = Courier.shared.client;
@@ -208,7 +208,7 @@ export class CourierInboxDatastore {
    * Please migrate to pass the same identifier as datasetId.
    * While both options are present, exactly one is required.
    *
-   * @param props options to fetch the next page of messages, see method documetation
+   * @param props - options to fetch the next page of messages, see method documetation
    */
   public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId: string }): Promise<InboxDataSet | null> {
     const client = Courier.shared.client;
