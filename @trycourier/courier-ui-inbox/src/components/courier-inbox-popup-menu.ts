@@ -1,7 +1,7 @@
 import { CourierInbox } from "./courier-inbox";
 import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
@@ -38,7 +38,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   /** Returns the current feed type. */
-  get currentFeed(): CourierInboxFeedType {
+  get currentFeed(): CourierInboxFeedType | string {
     return this._inbox?.currentFeed ?? 'inbox';
   }
 
@@ -166,7 +166,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         transform: translateZ(0);
         will-change: transform;
       }
-        
+
       ${CourierInboxPopupMenu.id} #unread-badge {
         position: absolute;
         top: -8px;
@@ -230,9 +230,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   /**
    * Called when the unread count changes.
-   * @param _ The new unread count (unused).
+   * @param _ The new unread count (unused)
+   * @param __ The ID of the dataset for which the unread count changed (unused)
    */
-  public onUnreadCountChange(_: number): void {
+  public onUnreadCountChange(_: number, __: string): void {
     this.render();
   }
 
@@ -493,7 +494,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   private render() {
-    const unreadCount = CourierInboxDatastore.shared.unreadCount;
+    const unreadCount = CourierInboxDatastore.shared.totalUnreadCount;
     if (!this._triggerButton) return;
 
     switch (this._popupMenuButtonFactory) {

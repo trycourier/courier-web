@@ -234,6 +234,15 @@ export class CourierInboxDatastore {
     return this.fetchNextPageForDataset({ dataset: datasetToFetch });
   }
 
+  public get totalUnreadCount(): number {
+    let unreadCount = 0;
+    for (let dataset of this._datasets.values()) {
+      unreadCount += dataset.unreadCount;
+    }
+
+    return unreadCount;
+  }
+
   private async fetchNextPageForDataset(props: { dataset: CourierInboxDataset }): Promise<InboxDataSet | null> {
     return await props.dataset.fetchNextPageOfMessages();
   }
