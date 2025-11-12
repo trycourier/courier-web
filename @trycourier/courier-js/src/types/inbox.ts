@@ -1,6 +1,7 @@
 export interface CourierGetInboxMessagesResponse {
   data?: {
     count?: number;
+    unreadCount?: number;
     messages?: {
       pageInfo?: {
         startCursor?: string;

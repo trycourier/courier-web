@@ -152,6 +152,18 @@ export interface CourierGetInboxMessageResponse {
     message: InboxMessage;
 }
 
+// Warning: (ae-missing-release-tag) "CourierGetInboxMessagesQueryFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierGetInboxMessagesQueryFilter {
+    // (undocumented)
+    archived?: boolean;
+    // (undocumented)
+    status?: 'read' | 'unread';
+    // (undocumented)
+    tags?: string[];
+}
+
 // Warning: (ae-missing-release-tag) "CourierGetInboxMessagesResponse" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -159,6 +171,7 @@ export interface CourierGetInboxMessagesResponse {
     // (undocumented)
     data?: {
         count?: number;
+        unreadCount?: number;
         messages?: {
             pageInfo?: {
                 startCursor?: string;
@@ -292,6 +305,7 @@ export class InboxClient extends Client {
     getMessages(props?: {
         paginationLimit?: number;
         startCursor?: string;
+        filter?: CourierGetInboxMessagesQueryFilter;
     }): Promise<CourierGetInboxMessagesResponse>;
     getUnreadMessageCount(): Promise<number>;
     open(props: {

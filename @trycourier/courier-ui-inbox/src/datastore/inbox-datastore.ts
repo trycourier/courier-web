@@ -182,14 +182,17 @@ export class CourierInboxDatastore {
     const canUseCache = props?.canUseCache ?? true;
 
     if (props?.datasetIds) {
-      return await this.loadDatasets({
-        canUseCache: canUseCache,
-        datasets: props.datasetIds.map(this._datasets.get).filter(dataset => !!dataset),
+      // flatMap asserts all members are defined
+      const datasets: CourierInboxDataset[] = props.datasetIds.flatMap(id => {
+        const dataset = this._datasets.get(id);
+        return dataset ? [dataset] : [];
       });
+
+      return await this.loadDatasets({ canUseCache, datasets });
     }
 
     return await this.loadDatasets({
-      canUseCache: canUseCache,
+      canUseCache,
       datasets: Array.from(this._datasets.values()),
     });
   }

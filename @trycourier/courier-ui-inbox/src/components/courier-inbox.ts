@@ -118,9 +118,9 @@ export class CourierInbox extends CourierBaseElement {
       },
       onPaginationTrigger: async (feedType: CourierInboxFeedType | string) => {
         try {
-          // await CourierInboxDatastore2.shared.fetchNextPageOfMessages({
-          //   datasetId: feedType
-          // });
+          await CourierInboxDatastore.shared.fetchNextPageOfMessages({
+            datasetId: feedType
+          });
         } catch (error) {
           Courier.shared.client?.options.logger?.error('Failed to fetch next page of messages:', error);
         }
