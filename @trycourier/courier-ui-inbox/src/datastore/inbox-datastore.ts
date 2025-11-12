@@ -1,10 +1,13 @@
-import { Courier, InboxClient, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
-import { CourierInboxDatasetFilter } from "../types/inbox-data-set";
+import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
+import { CourierInboxFeedType } from "../types/feed-type";
 
 export class CourierInboxDatastore {
+  private static readonly TAG = "CourierInboxDatastore";
+
   private static instance: CourierInboxDatastore;
 
   public _datasets: Map<string, CourierInboxDataset> = new Map();
@@ -74,7 +77,9 @@ export class CourierInboxDatastore {
   }
 
   public removeDataStoreListener(listener: CourierInboxDataStoreListener): void {
-
+    for (let dataset of this._datasets.values()) {
+      dataset.removeDatastoreListener(listener);
+    }
   }
 
   public async readMessage({ message }: { message: InboxMessage }): Promise<void> {
@@ -128,6 +133,7 @@ export class CourierInboxDatastore {
     }
   }
 
+  /** Archive all messages for the specified dataset. */
   public async archiveAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
     const dataset = this._datasets.get(datasetId);
     if (dataset) {
@@ -137,6 +143,7 @@ export class CourierInboxDatastore {
     await Courier.shared.client?.inbox.archiveAll();
   }
 
+  /** Mark all messages read for the specified dataset. */
   public async readAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
     const dataset = this._datasets.get(datasetId);
     if (dataset) {
@@ -146,6 +153,7 @@ export class CourierInboxDatastore {
     await Courier.shared.client?.inbox.readAll();
   }
 
+  /** Archive all read messages for the specified dataset. */
   public async archiveReadMessages({ datasetId }: { datasetId: string }): Promise<void> {
     const dataset = this._datasets.get(datasetId);
     if (dataset) {
@@ -155,11 +163,20 @@ export class CourierInboxDatastore {
     await Courier.shared.client?.inbox.archiveRead();
   }
 
+  /**
+   * Load datasets from the backend.
+   *
+   * Props:
+   *  - canUseCache: If true and the dataset has already been loaded once, this will return the dataset from memory.
+   *  - datasetIds: Optional: The set of dataset IDs to load. If unset, all known datasets will be loaded.
+   *
+   * @param props options to load datasets, see method documentation
+   */
   public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {
     const client = Courier.shared.client;
 
     if (!client?.options.userId) {
-      throw new Error('User is not signed in');
+      throw new Error('[Datastore] User is not signed in');
     }
 
     const canUseCache = props?.canUseCache ?? true;
@@ -179,6 +196,46 @@ export class CourierInboxDatastore {
 
   private async loadDatasets(props: { canUseCache: boolean, datasets: CourierInboxDataset[] }): Promise<void> {
     await Promise.all(props.datasets.map(dataset => dataset.loadDataset(props.canUseCache)));
+  }
+
+  /**
+   * Fetch the next page of messages for the specified feed or datasetId.
+   *
+   * feedType is deprecated and will be removed in the next major release.
+   * Please migrate to pass the same identifier as datasetId.
+   * While both options are present, exactly one is required.
+   *
+   * @param props options to fetch the next page of messages, see method documetation
+   */
+  public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId: string }): Promise<InboxDataSet | null> {
+    const client = Courier.shared.client;
+
+    if (!client?.options.userId) {
+      throw new Error('User is not signed in');
+    }
+
+    if (!props.feedType && !props.datasetId || props.feedType && props.datasetId) {
+      throw new Error(`[${CourierInboxDatastore.TAG}] Exactly one of feedType or datasetId is required to call fetchNextPageOfMessages.`);
+    }
+
+    let datasetIdToFetch: string;
+    if (props.feedType) {
+      Courier.shared.client?.options.logger.warn(`[${CourierInboxDatastore.TAG}] feedType is deprecated and will be removed in the next major version. Please update callers to use datasetIds.`);
+      datasetIdToFetch = props.feedType;
+    } else {
+      datasetIdToFetch = props.datasetId;
+    }
+
+    const datasetToFetch = this._datasets.get(datasetIdToFetch);
+    if (!datasetToFetch) {
+      throw new Error(`[${CourierInboxDatastore.TAG}] Attempted to fetch next page of messages for dataset ${datasetIdToFetch}, but the dataset does not exist.`);
+    }
+
+    return this.fetchNextPageForDataset({ dataset: datasetToFetch });
+  }
+
+  private async fetchNextPageForDataset(props: { dataset: CourierInboxDataset }): Promise<InboxDataSet | null> {
+    return await props.dataset.fetchNextPageOfMessages();
   }
 
   private handleMessageEvent(envelope: InboxMessageEventEnvelope) {
@@ -263,14 +320,6 @@ export class CourierInboxDatastore {
 
   private clearDatasets() {
     this._datasets.clear();
-  }
-
-  private static get inboxClient(): InboxClient | undefined {
-    const client = Courier.shared.client?.inbox;
-
-    if (client) {
-      return client;
-    }
   }
 
   public static get shared(): CourierInboxDatastore {
