@@ -21,7 +21,7 @@ export class CourierInbox extends CourierBaseElement {
   private _currentFeed: string = 'inbox';
 
   /** Returns the current feed type. */
-  get currentFeed(): string {
+  get currentFeed(): CourierInboxFeedType | string {
     return this._currentFeed;
   }
 
@@ -361,7 +361,7 @@ export class CourierInbox extends CourierBaseElement {
    * Sets the feed type for the inbox (e.g., "inbox" or "archive").
    * @param feedType - The feed type to display.
    */
-  public async setFeedType(feedType: CourierInboxFeedType | string) {
+  public setFeedType(feedType: CourierInboxFeedType | string) {
     // Do not swap if current feed is same
     if (this._currentFeed === feedType) {
       return;
@@ -375,7 +375,7 @@ export class CourierInbox extends CourierBaseElement {
     this.updateHeader();
 
     // Load data
-    await this.load({
+    this.load({
       canUseCache: true
     });
   }

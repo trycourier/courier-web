@@ -85,7 +85,7 @@ export class CourierInbox extends CourierBaseElement {
     constructor(themeManager?: CourierInboxThemeManager);
     // (undocumented)
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
-    get currentFeed(): string;
+    get currentFeed(): CourierInboxFeedType | string;
     // (undocumented)
     static get id(): string;
     // (undocumented)
@@ -103,7 +103,7 @@ export class CourierInbox extends CourierBaseElement {
     setDarkTheme(theme: CourierInboxTheme): void;
     setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement): void;
     setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement): void;
-    setFeedType(feedType: CourierInboxFeedType | string): Promise<void>;
+    setFeedType(feedType: CourierInboxFeedType | string): void;
     setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setLightTheme(theme: CourierInboxTheme): void;
@@ -153,18 +153,12 @@ export class CourierInboxDatastore {
     }): Promise<void>;
     // (undocumented)
     createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void;
-    // Warning: (ae-forgotten-export) The symbol "CourierInboxDataset" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    _datasets: Map<string, CourierInboxDataset>;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     fetchNextPageOfMessages(props: {
         feedType?: CourierInboxFeedType;
         datasetId: string;
     }): Promise<InboxDataSet | null>;
     // (undocumented)
     listenForUpdates(): Promise<void>;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     load(props?: {
         canUseCache: boolean;
         datasetIds?: string[];
