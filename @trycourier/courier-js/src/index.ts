@@ -37,6 +37,7 @@ import {
   CourierGetInboxMessagesResponse,
   InboxMessage,
   InboxAction,
+  CourierGetInboxMessagesQueryFilter,
 } from './types/inbox';
 import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/messages';
 
@@ -66,6 +67,7 @@ export type {
   InboxMessage,
   InboxAction,
   InboxMessageEventEnvelope,
+  CourierGetInboxMessagesQueryFilter,
 };
 
 export {

@@ -415,7 +415,7 @@ export class InboxClient extends Client {
   /**
    * Create FilterParamsInput for the given filters.
    *
-   * @param filter the filtering options to include in the output
+   * @param filter - the filtering options to include in the output
    * @returns the FilterParamsInput to pass to a GraphQL query for messages
    */
   private createFilterParams(filter: CourierGetInboxMessagesQueryFilter) {
