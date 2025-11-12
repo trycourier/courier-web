@@ -306,6 +306,10 @@ export class CourierInboxDataset {
     }
   }
 
+  get unreadCount(): number {
+    return this._unreadCount;
+  }
+
   private async fetchMessages(startCursor?: string): Promise<InboxDataSet> {
     const client = Courier.shared.client;
 
