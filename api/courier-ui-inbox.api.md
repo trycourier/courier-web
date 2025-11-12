@@ -137,16 +137,14 @@ export class CourierInboxDatastore {
     addDataStoreListener(listener: CourierInboxDataStoreListener): void;
     // (undocumented)
     addMessage(message: InboxMessage): void;
-    archiveAllMessages({ datasetId }: {
-        datasetId: string;
-    }): Promise<void>;
+    archiveAllMessages(): Promise<void>;
+    // @deprecated (undocumented)
+    get archiveDataSet(): InboxDataSet | undefined;
     // (undocumented)
     archiveMessage({ message }: {
         message: InboxMessage;
     }): Promise<void>;
-    archiveReadMessages({ datasetId }: {
-        datasetId: string;
-    }): Promise<void>;
+    archiveReadMessages(): Promise<void>;
     // (undocumented)
     clickMessage({ message }: {
         message: InboxMessage;
@@ -155,8 +153,12 @@ export class CourierInboxDatastore {
     createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void;
     fetchNextPageOfMessages(props: {
         feedType?: CourierInboxFeedType;
-        datasetId: string;
+        datasetId?: string;
     }): Promise<InboxDataSet | null>;
+    // (undocumented)
+    getDatasetById(datasetId: string): InboxDataSet | undefined;
+    // @deprecated (undocumented)
+    get inboxDataSet(): InboxDataSet | undefined;
     // (undocumented)
     listenForUpdates(): Promise<void>;
     load(props?: {
@@ -167,9 +169,7 @@ export class CourierInboxDatastore {
     openMessage({ message }: {
         message: InboxMessage;
     }): Promise<void>;
-    readAllMessages({ datasetId }: {
-        datasetId: string;
-    }): Promise<void>;
+    readAllMessages(): Promise<void>;
     // (undocumented)
     readMessage({ message }: {
         message: InboxMessage;
@@ -184,6 +184,8 @@ export class CourierInboxDatastore {
     unarchiveMessage({ message }: {
         message: InboxMessage;
     }): Promise<void>;
+    // @deprecated (undocumented)
+    get unreadCount(): number;
     // (undocumented)
     unreadMessage({ message }: {
         message: InboxMessage;

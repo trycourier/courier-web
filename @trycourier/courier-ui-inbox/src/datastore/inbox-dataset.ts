@@ -310,6 +310,16 @@ export class CourierInboxDataset {
     return this._unreadCount;
   }
 
+  toInboxDataset(): InboxDataSet {
+    return {
+      feedType: this._id,
+      messages: [...this._messages],
+      unreadCount: this._unreadCount,
+      canPaginate: this._hasNextPage,
+      paginationCursor: this._lastPaginationCursor ?? null
+    };
+  }
+
   private async fetchMessages(startCursor?: string): Promise<InboxDataSet> {
     const client = Courier.shared.client;
 
@@ -514,15 +524,5 @@ export class CourierInboxDataset {
 
   private static getISONow() {
     return new Date().toISOString();
-  }
-
-  private toInboxDataset(): InboxDataSet {
-    return {
-      feedType: this._id,
-      messages: [...this._messages],
-      unreadCount: this._unreadCount,
-      canPaginate: this._hasNextPage,
-      paginationCursor: this._lastPaginationCursor ?? null
-    };
   }
 }
