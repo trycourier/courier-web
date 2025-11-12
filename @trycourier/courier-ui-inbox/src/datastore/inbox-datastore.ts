@@ -134,19 +134,17 @@ export class CourierInboxDatastore {
   }
 
   /** Archive all messages for the specified dataset. */
-  public async archiveAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
-    const dataset = this._datasets.get(datasetId);
-    if (dataset) {
+  public async archiveAllMessages(): Promise<void> {
+    for (let dataset of this._datasets.values()) {
       dataset.archiveAllMessages();
     }
 
     await Courier.shared.client?.inbox.archiveAll();
   }
 
-  /** Mark all messages read for the specified dataset. */
-  public async readAllMessages({ datasetId }: { datasetId: string }): Promise<void> {
-    const dataset = this._datasets.get(datasetId);
-    if (dataset) {
+  /** Mark all messages read across all datasets. */
+  public async readAllMessages(): Promise<void> {
+    for (let dataset of this._datasets.values()) {
       dataset.readAllMessages();
     }
 
@@ -154,9 +152,8 @@ export class CourierInboxDatastore {
   }
 
   /** Archive all read messages for the specified dataset. */
-  public async archiveReadMessages({ datasetId }: { datasetId: string }): Promise<void> {
-    const dataset = this._datasets.get(datasetId);
-    if (dataset) {
+  public async archiveReadMessages(): Promise<void> {
+    for (let dataset of this._datasets.values()) {
       dataset.archiveReadMessages();
     }
 
@@ -210,23 +207,22 @@ export class CourierInboxDatastore {
    *
    * @param props - options to fetch the next page of messages, see method documetation
    */
-  public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId: string }): Promise<InboxDataSet | null> {
+  public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId?: string }): Promise<InboxDataSet | null> {
     const client = Courier.shared.client;
 
     if (!client?.options.userId) {
       throw new Error('User is not signed in');
     }
 
-    if (!props.feedType && !props.datasetId || props.feedType && props.datasetId) {
-      throw new Error(`[${CourierInboxDatastore.TAG}] Exactly one of feedType or datasetId is required to call fetchNextPageOfMessages.`);
-    }
-
     let datasetIdToFetch: string;
-    if (props.feedType) {
-      Courier.shared.client?.options.logger.warn(`[${CourierInboxDatastore.TAG}] feedType is deprecated and will be removed in the next major version. Please update callers to use datasetIds.`);
+    if (props.feedType && !props.datasetId) {
+      Courier.shared.client?.options.logger.warn(`[${CourierInboxDatastore.TAG}] feedType is deprecated and` +
+        `will be removed in the next major version. Please update callers to use datasetIds.`);
       datasetIdToFetch = props.feedType;
-    } else {
+    } else if (props.datasetId) {
       datasetIdToFetch = props.datasetId;
+    } else {
+      throw new Error(`[${CourierInboxDatastore.TAG}] Exactly one of feedType or datasetId is required to call fetchNextPageOfMessages.`);
     }
 
     const datasetToFetch = this._datasets.get(datasetIdToFetch);
@@ -244,6 +240,25 @@ export class CourierInboxDatastore {
     }
 
     return unreadCount;
+  }
+
+  public getDatasetById(datasetId: string): InboxDataSet | undefined {
+    return this._datasets.get(datasetId)?.toInboxDataset();
+  }
+
+  /** @deprecated - update callers to use getDataSetById('inbox') */
+  public get inboxDataSet(): InboxDataSet | undefined {
+    return this.getDatasetById('inbox');
+  }
+
+  /** @deprecated - update callers to use getDataSetById('archive') */
+  public get archiveDataSet(): InboxDataSet | undefined {
+    return this.getDatasetById('archive');
+  }
+
+  /** @deprecated - update callers to use totalUnreadCount or get the unreadCount for a specific dataset */
+  public get unreadCount(): number {
+    return this.totalUnreadCount;
   }
 
   private async fetchNextPageForDataset(props: { dataset: CourierInboxDataset }): Promise<InboxDataSet | null> {

@@ -112,7 +112,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.readAllMessages({ datasetId: this._activeDatasetId });
+          CourierInboxDatastore.shared.readAllMessages();
         }
       },
       {
@@ -124,7 +124,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveAllMessages({ datasetId: this._activeDatasetId });
+          CourierInboxDatastore.shared.archiveAllMessages();
         }
       },
       {
@@ -136,7 +136,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         },
         selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveReadMessages({ datasetId: this._activeDatasetId });
+          CourierInboxDatastore.shared.archiveReadMessages();
         }
       }
     ];

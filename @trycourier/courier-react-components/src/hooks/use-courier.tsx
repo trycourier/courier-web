@@ -11,7 +11,7 @@ type AuthenticationHooks = {
 
 type InboxHooks = {
   load: (props?: { canUseCache: boolean }) => Promise<void>,
-  fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => Promise<InboxDataSet | null>,
+  fetchNextPageOfMessages: (props: { feedType?: CourierInboxFeedType, datasetId?: string }) => Promise<InboxDataSet | null>,
   setPaginationLimit: (limit: number) => void,
   readMessage: (message: InboxMessage) => Promise<void>,
   unreadMessage: (message: InboxMessage) => Promise<void>,
@@ -43,7 +43,7 @@ export const useCourier = () => {
 
   // Inbox Functions
   const loadInbox = (props?: { canUseCache: boolean }) => CourierInboxDatastore.shared.load(props);
-  const fetchNextPageOfMessages = (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
+  const fetchNextPageOfMessages = (props: { feedType?: CourierInboxFeedType, datasetId?: string }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
   const setPaginationLimit = (limit: number) => Courier.shared.paginationLimit = limit;
   const readMessage = (message: InboxMessage) => CourierInboxDatastore.shared.readMessage({ message });
   const unreadMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unreadMessage({ message });
