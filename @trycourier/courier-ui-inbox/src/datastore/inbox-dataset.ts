@@ -6,11 +6,20 @@ import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 
 export class CourierInboxDataset {
-  /** The unique ID for this dataset. */
+  /** The unique ID for this dataset, provided by the consumer to later identify this set of messages. */
   private _id: string;
 
   /** The set of messages in this dataset. */
   private _messages: InboxMessage[] = [];
+
+  /**
+   * True if the first fetch of messages has completed successfully.
+   *
+   * This marker is used to distinguish if _messages can be returned when cached messages
+   * are acceptable, since an empty array of messages could indicate they weren't
+   * ever fetched or that they were fetched but there are currently none in the dataset.
+   */
+  private _firstFetchComplete: boolean = false;
 
   /** True if the fetched dataset sets hasNextPage to true. */
   private _hasNextPage: boolean = false;
@@ -44,14 +53,16 @@ export class CourierInboxDataset {
 
   /**
    * Add a message to the dataset if it qualifies based on the dataset's filters.
+   *
    * @param message the message to add
    * @returns true if the message was added, otherwise false
    */
   addMessage(message: InboxMessage, insertIndex: number = 0): boolean {
-    if (this.messageQualifiesForDataset(message)) {
-      this._messages.splice(insertIndex, 0, message);
+    const messageCopy = copyMessage(message);
+    if (this.messageQualifiesForDataset(messageCopy)) {
+      this._messages.splice(insertIndex, 0, messageCopy);
 
-      if (!message.read) {
+      if (!messageCopy.read) {
         this._unreadCount++;
         this._datastoreListeners.forEach(listener => {
           listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
@@ -59,7 +70,7 @@ export class CourierInboxDataset {
       }
 
       this._datastoreListeners.forEach(listener => {
-        listener.events.onMessageAdd?.(message, insertIndex, this._id);
+        listener.events.onMessageAdd?.(messageCopy, insertIndex, this._id);
       });
 
       return true;
@@ -73,30 +84,40 @@ export class CourierInboxDataset {
    * if the update operation makes it no longer qualify for the dataset's filters.
    *
    * @param message the message to upsert
-   * @returns true if the message still qualifies for the dataset and was upserted
+   * @returns true if the message still qualifies for the dataset and was upserted, false if the message was removed
    */
   upsertMessage(message: InboxMessage): boolean {
     const index = this.indexOfMessage(message);
+    const existingMessage = this._messages[index];
+    const newMessage = copyMessage(message);
 
     // Message is already in dataset
     if (index > -1) {
 
       // Message still qualifies for dataset after mutation
-      if (this.messageQualifiesForDataset(message)) {
-        this._messages.splice(index, 1, message);
+      if (this.messageQualifiesForDataset(newMessage)) {
+        this._messages.splice(index, 1, newMessage);
+        this.updateUnreadCountForInPlaceUpdate(existingMessage, newMessage);
         return true;
       }
 
       // Message no longer qualifies for dataset
-      this.removeMessage(message);
+      this.removeMessage(existingMessage);
       return false;
     }
 
+    // Message is not yet in the dataset
     const insertIndex = this.findInsertIndex(message);
     this.addMessage(message, insertIndex);
     return true;
   }
 
+  /**
+   * Remove the specified message from this dataset, if it's present.
+   *
+   * @param message the message to remove from this dataset
+   * @returns true if the message was removed, else false
+   */
   removeMessage(message: InboxMessage): boolean {
     const indexToRemove = this.indexOfMessage(message);
     if (indexToRemove > -1) {
@@ -226,8 +247,8 @@ export class CourierInboxDataset {
   }
 
   async loadDataset(canUseCache: boolean): Promise<void> {
-    // Can we return cached data?
-    if (canUseCache && this._messages.length > 0) {
+    // Returned cached data if it's requested and available
+    if (canUseCache && this._firstFetchComplete) {
       this._datastoreListeners.forEach(listener => {
         listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
         listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
@@ -242,6 +263,7 @@ export class CourierInboxDataset {
     this._unreadCount = fetchedDataset.unreadCount;
     this._hasNextPage = fetchedDataset.canPaginate;
     this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
+    this._firstFetchComplete = true;
 
     this._datastoreListeners.forEach(listener => {
       listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
@@ -261,6 +283,7 @@ export class CourierInboxDataset {
     this._unreadCount = this._unreadCount + fetchedDataset.unreadCount;
     this._hasNextPage = fetchedDataset.canPaginate;
     this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
+    this._firstFetchComplete = true;
 
     this._datastoreListeners.forEach(listener => {
       listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
@@ -273,6 +296,14 @@ export class CourierInboxDataset {
 
   addDatastoreListener(listener: CourierInboxDataStoreListener): void {
     this._datastoreListeners.push(listener);
+  }
+
+  removeDatastoreListener(listener: CourierInboxDataStoreListener): void {
+    const index = this._datastoreListeners.indexOf(listener);
+
+    if (index > -1) {
+      this._datastoreListeners.splice(index, 1);
+    }
   }
 
   private async fetchMessages(startCursor?: string): Promise<InboxDataSet> {
@@ -376,11 +407,10 @@ export class CourierInboxDataset {
 
     if (mutatedMessageQualifies) {
       this._messages.splice(index, 1, messageCopy);
+      this.updateUnreadCountForInPlaceUpdate(message, messageCopy);
     } else {
       this.removeMessage(message);
     }
-
-    this.updateUnreadCount(message, messageCopy);
 
     this._messageMutationPublisher.publishMessage(messageCopy);
 
@@ -393,7 +423,8 @@ export class CourierInboxDataset {
     }
   }
 
-  private updateUnreadCount(
+  /** Update the unreadCount for a message updated in place in the dataset. */
+  private updateUnreadCountForInPlaceUpdate(
     before: InboxMessage,
     after: InboxMessage
   ) {
@@ -415,10 +446,6 @@ export class CourierInboxDataset {
     this._datastoreListeners.forEach(listener => {
       listener.events.onUnreadCountChange?.(this._unreadCount, this._id);
     });
-  }
-
-  private addPageOfMessages() {
-
   }
 
   private indexOfMessage(message: InboxMessage): number {
