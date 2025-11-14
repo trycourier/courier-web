@@ -15,8 +15,8 @@ export class CourierInboxDatastore {
 
   private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
-    handleMessage: (message) => {
-      this.upsertMessage(message);
+    handleMessage: (originatingDatasetId, message) => {
+      this.upsertMessage(originatingDatasetId, message);
     }
   };
 
@@ -54,8 +54,12 @@ export class CourierInboxDatastore {
     }
   }
 
-  public upsertMessage(message: InboxMessage) {
-    for (let dataset of this._datasets.values()) {
+  public upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage) {
+    for (let [datasetId, dataset] of this._datasets.entries()) {
+      // Skip the originating dataset to avoid duplicate processing
+      if (datasetId === originatingDatasetId) {
+        continue;
+      }
       dataset.upsertMessage(message);
     }
   }

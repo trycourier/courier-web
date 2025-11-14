@@ -1,7 +1,7 @@
 import { InboxMessage } from "@trycourier/courier-js"
 
 export interface InboxMessageMutationSubscriber {
-  handleMessage(message: InboxMessage): void;
+  handleMessage(originatingDatasetId: string | undefined, message: InboxMessage): void;
 }
 
 export class InboxMessageMutationPublisher {
@@ -12,9 +12,9 @@ export class InboxMessageMutationPublisher {
     this.subscribers.push(subscriber);
   }
 
-  publishMessage(message: InboxMessage) {
+  publishMessage(originatingDatasetId: string | undefined, message: InboxMessage) {
     this.subscribers.forEach(subscriber => {
-      subscriber.handleMessage(message);
+      subscriber.handleMessage(originatingDatasetId, message);
     });
   }
 
