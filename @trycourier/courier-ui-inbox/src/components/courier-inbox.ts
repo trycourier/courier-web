@@ -2,7 +2,7 @@ import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/couri
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -19,10 +19,15 @@ export class CourierInbox extends CourierBaseElement {
 
   // State
   private _currentFeed: string = 'inbox';
+  private _currentTabId: string = 'inbox-tab';
 
   /** Returns the current feed type. */
   get currentFeed(): CourierInboxFeedType | string {
     return this._currentFeed;
+  }
+
+  get currentTab(): string {
+    return this._currentTabId;
   }
 
   // Theming
@@ -65,6 +70,7 @@ export class CourierInbox extends CourierBaseElement {
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
   private _unreadCount: number = 0;
+  private _feeds: CourierInboxFeed[] = CourierInbox.createDefaultFeeds();
 
   // Header
   private _header?: CourierInboxHeader;
@@ -105,6 +111,7 @@ export class CourierInbox extends CourierBaseElement {
         this.setFeedType(feedType);
       }
     });
+    this._header.setFeeds(this._feeds);
     this._header.build(undefined);
     this.appendChild(this._header);
 
@@ -163,48 +170,45 @@ export class CourierInbox extends CourierBaseElement {
 
     this.appendChild(this._list);
 
-    CourierInboxDatastore.shared.createDatasetsFromFilters(
-      new Map<string, CourierInboxDatasetFilter>()
-        .set("inbox", { archived: false })
-        .set("archive", { archived: true }));
+    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
 
     // Attach the datastore listener
     this._datastoreListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => {
         this._list?.setError(error);
       },
-      onDataSetChange: (dataSet: InboxDataSet, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onDataSetChange: (dataSet: InboxDataSet, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._list?.setDataSet(dataSet);
           this.updateHeader();
         }
       },
-      onPageAdded: (dataSet: InboxDataSet, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onPageAdded: (dataSet: InboxDataSet, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._list?.addPage(dataSet);
           this.updateHeader();
         }
       },
-      onMessageAdd: (message: InboxMessage, index: number, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onMessageAdd: (message: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._list?.addMessage(message, index);
           this.updateHeader();
         }
       },
-      onMessageRemove: (_: InboxMessage, index: number, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onMessageRemove: (_: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._list?.removeMessage(index);
           this.updateHeader();
         }
       },
-      onMessageUpdate: (message: InboxMessage, index: number, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onMessageUpdate: (message: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._list?.updateMessage(message, index);
           this.updateHeader();
         }
       },
-      onUnreadCountChange: (unreadCount: number, feedType: string) => {
-        if (this._currentFeed === feedType) {
+      onUnreadCountChange: (unreadCount: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
           this._unreadCount = unreadCount;
           this.updateHeader();
         }
@@ -380,22 +384,84 @@ export class CourierInbox extends CourierBaseElement {
     });
   }
 
+  /**
+   * Set the feeds for this Inbox, replacing any existing feeds.
+   *
+   * By default, feeds are set to:
+   *
+   * ```
+   * [
+   *   {
+   *     label: 'Inbox',
+   *     tabs: [{ label: 'Inbox', id: 'inbox', filter: {}}],
+   *   },
+   *   {
+   *     label: 'Archive',
+   *     tabs: [{ label: 'Archive', id: 'archive', filter: { archived: true }}],
+   *   }
+   * ]
+   * ```
+   *
+   * @param feeds the list of feeds to set for the Inbox
+   * @throws if feeds includes a duplicate feed or tab ID
+   */
+  public setFeeds(feeds: CourierInboxFeed[]) {
+    const feedIds: string[] = [];
+    const tabIds: string[] = [];
+
+    // Validate feeds and tabs have unique IDs
+    for (let feed of feeds) {
+      if (feedIds.includes(feed.id)) {
+        throw new Error(`[CourierInbox] Duplicate feed ID [${feed.id}] passed to setFeeds.`);
+      }
+
+      feedIds.push(feed.id);
+
+      for (let tab of feed.tabs) {
+        if (tabIds.includes(tab.id)) {
+          throw new Error(`[CourierInbox] Duplicate tab ID [${tab.id}] passed to setFeeds.`);
+        }
+
+        tabIds.push(tab.id);
+      }
+    }
+
+    this._feeds = feeds;
+
+    // Select the first feed and tab if it exists
+    if (this._feeds.length > 0 && this._feeds[0].tabs.length > 0) {
+      this._currentFeed = feeds[0].id;
+      this._currentTabId = feeds[0].tabs[0].id;
+    }
+
+    this.updateHeader();
+  }
+
+  /** Get the current set of feeds. */
+  public getFeeds() {
+    return this._feeds;
+  }
+
   private updateHeader() {
 
     const props = {
       feedType: this._currentFeed,
       unreadCount: this._unreadCount,
-      messageCount: this._list?.messages.length ?? 0
+      messageCount: this._list?.messages.length ?? 0,
     };
 
     switch (this._headerFactory) {
       case undefined:
+        // Render default header
+        this._header?.setFeeds(this._feeds);
         this._header?.render(props);
         break;
       case null:
+        // Remove header
         this._header?.build(null);
         break;
       default:
+        // Render custom header
         const headerElement = this._headerFactory(props);
         this._header?.build(headerElement);
         break;
@@ -404,11 +470,23 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private async load(props: { canUseCache: boolean }) {
-    // await CourierInboxDatastore.shared.load(props);
-    // await CourierInboxDatastore.shared.listenForUpdates();
-
     await CourierInboxDatastore.shared.load(props);
     await CourierInboxDatastore.shared.listenForUpdates();
+  }
+
+  private static createDefaultFeeds(): CourierInboxFeed[] {
+    return [
+      {
+        id: 'inbox',
+        label: 'Inbox',
+        tabs: [{ id: 'inbox-tab', label: 'Inbox', filter: {}}]
+      },
+      {
+        id: 'archive',
+        label: 'Archive',
+        tabs: [{ id: 'archive-tab', label: 'Archive', filter: { archived: true }}]
+      }
+    ];
   }
 
   /**
