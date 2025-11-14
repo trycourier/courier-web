@@ -8,6 +8,7 @@ import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxHeaderTabs } from "./courier-inbox-header-tabs";
+import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead' | string;
 
@@ -26,10 +27,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _feeds: CourierInboxFeed[] = [];
 
   // Components
-  private _titleSection?: CourierInboxHeaderTitle;
+  private _titleComponent?: CourierInboxHeaderTitle;
   private _filterMenu?: CourierInboxOptionMenu;
   private _actionMenu?: CourierInboxOptionMenu;
   private _tabsComponent?: CourierInboxHeaderTabs;
+  private _unreadBadge?: CourierUnreadCountBadge;
   private _style?: HTMLStyleElement;
 
   // Callbacks
@@ -169,8 +171,8 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   private handleOptionMenuItemClick(feedType: CourierInboxFeedType | string, option: CourierInboxMenuOption) {
     this._activeFeedId = feedType;
-    if (this._titleSection) {
-      this._titleSection.updateSelectedOption(option, this._activeFeedId, this._unreadCount);
+    if (this._titleComponent) {
+      this._titleComponent.updateSelectedOption(option, this._activeFeedId);
     }
 
     // Update tabs to show the active feed's tabs
@@ -191,11 +193,13 @@ export class CourierInboxHeader extends CourierFactoryElement {
     const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
 
     if (feedOption) {
-      // Hide top-level unread badge if there are multiple tabs
-      const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
-      this._titleSection?.updateSelectedOption(feedOption, this._activeFeedId, unreadCount);
+      this._titleComponent?.updateSelectedOption(feedOption, this._activeFeedId);
       this._filterMenu?.selectOption(feedOption);
     }
+
+    // Update unread badge - hide if there are multiple tabs
+    const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
+    this._unreadBadge?.setCount(unreadCount);
 
     // Update tabs for the active feed
     if (activeFeed) {
@@ -221,7 +225,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   defaultElement(): HTMLElement {
     const feedOptions = this.getFeedOptions();
 
-    this._titleSection = new CourierInboxHeaderTitle(this._themeSubscription.manager, feedOptions[0]);
+    this._titleComponent = new CourierInboxHeaderTitle(this._themeSubscription.manager, feedOptions[0]);
     this._filterMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, 'filters', true, feedOptions, () => {
       this._actionMenu?.closeMenu();
     });
@@ -232,11 +236,18 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Selected default menu
     this._filterMenu.selectOption(feedOptions[0]);
 
+    // Create unread badge
+    this._unreadBadge = new CourierUnreadCountBadge({
+      themeBus: this._themeSubscription.manager,
+      location: 'header'
+    });
+
     // Create title with filter menu section
-    const titleWithFilter = document.createElement('div');
-    titleWithFilter.className = 'title-with-filter';
-    titleWithFilter.appendChild(this._titleSection);
-    titleWithFilter.appendChild(this._filterMenu);
+    const titleSection = document.createElement('div');
+    titleSection.className = 'title';
+    titleSection.appendChild(this._titleComponent);
+    titleSection.appendChild(this._filterMenu);
+    titleSection.appendChild(this._unreadBadge);
 
     // Create flexible spacer
     const spacer = document.createElement('div');
@@ -249,7 +260,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     const headerContent = document.createElement('div');
     headerContent.className = 'header-content';
-    headerContent.appendChild(titleWithFilter);
+    headerContent.appendChild(titleSection);
     headerContent.appendChild(spacer);
     headerContent.appendChild(actions);
 
@@ -287,7 +298,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._feeds = feeds;
 
     // If components are already built, we need to rebuild them with the new feeds
-    if (this._filterMenu && this._titleSection) {
+    if (this._filterMenu && this._titleComponent) {
       const feedOptions = this.getFeedOptions();
 
       // Recreate the filter menu with new options
@@ -304,8 +315,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
       // Update the title section with the new default option
       if (feedOptions.length > 0) {
         const selectedOption = feedOptions.find(opt => opt.id === this._activeFeedId) || feedOptions[0];
-        this._titleSection.updateSelectedOption(selectedOption, this._activeFeedId, this._unreadCount);
+        this._titleComponent.updateSelectedOption(selectedOption, this._activeFeedId);
         this._filterMenu.selectOption(selectedOption);
+
+        // Update badge visibility
+        const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
+        const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
+        const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
+        this._unreadBadge?.setCount(unreadCount);
       }
     }
   }
@@ -335,10 +352,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
         flex: 1;
       }
 
-      ${CourierInboxHeader.id} .title-with-filter {
+      ${CourierInboxHeader.id} .title {
         display: flex;
         align-items: center;
         gap: 4px;
+      }
+
+      ${CourierInboxHeader.id} .title courier-unread-count-badge {
+        margin-left: 4px;
       }
 
       ${CourierInboxHeader.id} .spacer {
