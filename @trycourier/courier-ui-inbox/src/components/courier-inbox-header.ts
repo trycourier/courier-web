@@ -6,7 +6,7 @@ import { CourierInboxHeaderFactoryProps } from "../types/factories";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
-import { CourierInboxFeed, CourierInboxTab } from "../types/inbox-data-set";
+import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxHeaderTabs } from "./courier-inbox-header-tabs";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead' | string;
