@@ -228,19 +228,24 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Selected default menu
     this._filterMenu.selectOption(feedOptions[0]);
 
+    // Create title with filter menu section
+    const titleWithFilter = document.createElement('div');
+    titleWithFilter.className = 'title-with-filter';
+    titleWithFilter.appendChild(this._titleSection);
+    titleWithFilter.appendChild(this._filterMenu);
+
     // Create flexible spacer
     const spacer = document.createElement('div');
     spacer.className = 'spacer';
 
-    // Create and setup actions section
+    // Create and setup actions section (just the action menu now)
     const actions = document.createElement('div');
     actions.className = 'actions';
-    actions.appendChild(this._filterMenu);
     actions.appendChild(this._actionMenu);
 
     const headerContent = document.createElement('div');
     headerContent.className = 'header-content';
-    headerContent.appendChild(this._titleSection);
+    headerContent.appendChild(titleWithFilter);
     headerContent.appendChild(spacer);
     headerContent.appendChild(actions);
 
@@ -297,6 +302,12 @@ export class CourierInboxHeader extends CourierFactoryElement {
         align-items: center;
         justify-content: space-between;
         flex: 1;
+      }
+
+      ${CourierInboxHeader.id} .title-with-filter {
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
 
       ${CourierInboxHeader.id} .spacer {
