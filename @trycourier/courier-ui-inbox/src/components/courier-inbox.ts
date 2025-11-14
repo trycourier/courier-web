@@ -119,6 +119,9 @@ export class CourierInbox extends CourierBaseElement {
     this._header.setSelectedTab(this._currentTabId);
     this.appendChild(this._header);
 
+    // Initial render to set correct unread badge visibility
+    this.updateHeader();
+
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
       themeManager: this._themeManager,
@@ -524,9 +527,14 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private updateHeader() {
+    // Find the feed that contains the current tab
+    const currentFeed = this._feeds.find(feed =>
+      feed.tabs.some(tab => tab.id === this._currentTabId)
+    );
+    const feedType = currentFeed?.id ?? this._currentFeed;
 
     const props = {
-      feedType: this._currentFeed,
+      feedType: feedType,
       unreadCount: this._unreadCount,
       messageCount: this._list?.messages.length ?? 0,
     };
