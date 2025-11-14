@@ -7,6 +7,7 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxFeed, CourierInboxTab } from "../types/inbox-data-set";
+import { CourierInboxHeaderTabs } from "./courier-inbox-header-tabs";
 
 export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead' | string;
 
@@ -28,10 +29,12 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _titleSection?: CourierInboxHeaderTitle;
   private _filterMenu?: CourierInboxOptionMenu;
   private _actionMenu?: CourierInboxOptionMenu;
+  private _tabsComponent?: CourierInboxHeaderTabs;
   private _style?: HTMLStyleElement;
 
   // Callbacks
   private _onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void;
+  private _onTabChange: (tabId: string) => void;
 
   static get observedAttributes() {
     return ['icon', 'title', 'feed-type'];
@@ -41,7 +44,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return this._themeSubscription.manager.getTheme();
   }
 
-  constructor(props: { themeManager: CourierInboxThemeManager, onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void }) {
+  constructor(props: {
+    themeManager: CourierInboxThemeManager,
+    onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void,
+    onTabChange: (tabId: string) => void
+  }) {
     super();
 
     // Subscribe to the theme bus
@@ -49,8 +56,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this.refreshTheme();
     });
 
-    // Set the on feed type change callback
+    // Set the callbacks
     this._onFeedTypeChange = props.onFeedTypeChange;
+    this._onTabChange = props.onTabChange;
   }
 
   onComponentMounted() {
@@ -166,6 +174,13 @@ export class CourierInboxHeader extends CourierFactoryElement {
     if (this._titleSection) {
       this._titleSection.updateSelectedOption(option, this._activeFeedId, this._unreadCount);
     }
+
+    // Update tabs to show the active feed's tabs
+    const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
+    if (activeFeed) {
+      this._tabsComponent?.setFeed(activeFeed);
+    }
+
     this._onFeedTypeChange(feedType);
   }
 
@@ -178,6 +193,20 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._titleSection?.updateSelectedOption(feedOption, this._activeFeedId, this._unreadCount);
       this._filterMenu?.selectOption(feedOption);
     }
+
+    // Update tabs for the active feed
+    const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
+    if (activeFeed) {
+      this._tabsComponent?.setFeed(activeFeed);
+    }
+  }
+
+  public updateTabUnreadCount(tabId: string, count: number) {
+    this._tabsComponent?.updateTabUnreadCount(tabId, count);
+  }
+
+  public setSelectedTab(tabId: string) {
+    this._tabsComponent?.setSelectedTab(tabId);
   }
 
   build(newElement: HTMLElement | undefined | null) {
@@ -215,22 +244,28 @@ export class CourierInboxHeader extends CourierFactoryElement {
     headerContent.appendChild(spacer);
     headerContent.appendChild(actions);
 
-    const tabsContainer = document.createElement('div');
-    tabsContainer.className = 'tabs-container';
+    // Create tabs component
+    const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
 
-    const activeTabs: CourierInboxTab[] | undefined = this._feeds.find(feed => feed.id === this._activeFeedId)?.tabs;
-    if (activeTabs) {
-      for (let tab of activeTabs) {
-        const tabName = document.createElement('div');
-        tabName.innerText = tab.label;
-        tabsContainer.append(tabName);
+    this._tabsComponent = new CourierInboxHeaderTabs({
+      themeManager: this._themeSubscription.manager,
+      onTabClick: (tabId: string) => {
+        this._onTabChange(tabId);
       }
+    });
+
+    // Set the feed before building
+    if (activeFeed) {
+      this._tabsComponent.setFeed(activeFeed);
     }
+
+    // Build the tabs component
+    this._tabsComponent.build(undefined);
 
     const header = document.createElement('div');
     header.className = 'header';
     header.appendChild(headerContent);
-    header.appendChild(tabsContainer);
+    header.appendChild(this._tabsComponent);
 
     return header;
   }
@@ -246,22 +281,22 @@ export class CourierInboxHeader extends CourierFactoryElement {
         display: flex;
       }
 
-      ${CourierInboxHeader.id} .header {
+      ${CourierInboxHeader.id} > .header {
         display: flex;
         flex-direction: column;
         flex: 1;
+        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
+        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px red`};
+        z-index: 100;
       }
 
       ${CourierInboxHeader.id} .header-content {
         padding: 10px 10px 10px 16px;
-        background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
-        box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px red`};
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
         flex: 1;
-        z-index: 100;
       }
 
       ${CourierInboxHeader.id} .spacer {
@@ -273,11 +308,8 @@ export class CourierInboxHeader extends CourierFactoryElement {
         align-items: center;
         gap: 4px;
       }
-
-      ${CourierInboxHeader.id} .header .tabs-container {
-        height: 50px;
-      }
     `;
+
   }
 
 }

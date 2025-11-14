@@ -91,6 +91,11 @@ export class CourierInboxDatastore {
   }
 
   public async readMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't mark as read if already read
+    if (message.read) {
+      return;
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.readMessage(message);
     }
@@ -99,6 +104,11 @@ export class CourierInboxDatastore {
   }
 
   public async unreadMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't mark as unread if already unread
+    if (!message.read) {
+      return;
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.unreadMessage(message);
     }
@@ -107,6 +117,11 @@ export class CourierInboxDatastore {
   }
 
   public async openMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't mark as opened if already opened
+    if (message.opened) {
+      return;
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.openMessage(message);
     }
@@ -115,6 +130,11 @@ export class CourierInboxDatastore {
   }
 
   public async unarchiveMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't unarchive if already unarchived
+    if (!message.archived) {
+      return;
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.unarchiveMessage(message);
     }
@@ -123,6 +143,11 @@ export class CourierInboxDatastore {
   }
 
   public async archiveMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't archive if already archived
+    if (message.archived) {
+      return;
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.archiveMessage(message);
     }
