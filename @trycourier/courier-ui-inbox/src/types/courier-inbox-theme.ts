@@ -240,7 +240,7 @@ export const defaultLightTheme: CourierInboxTheme = {
           button: {
             icon: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.filter
+              svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
             hoverBackgroundColor: CourierColors.black[500_10],
@@ -485,7 +485,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
           button: {
             icon: {
               color: CourierColors.white[500],
-              svg: CourierIconSVGs.filter
+              svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
             hoverBackgroundColor: CourierColors.white[500_10],

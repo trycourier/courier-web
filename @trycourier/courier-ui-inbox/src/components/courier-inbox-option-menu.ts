@@ -55,7 +55,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     this._style = injectGlobalStyle(CourierInboxOptionMenu.id, this.getStyles());
 
-    this._menuButton = new CourierIconButton(this._type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow);
+    this._menuButton = new CourierIconButton(this._type === 'filters' ? CourierIconSVGs.chevronDown : CourierIconSVGs.overflow);
     this._menu = document.createElement('div');
     this._menu.className = `menu ${this._type}`;
 
@@ -87,7 +87,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         display: none;
         position: absolute;
         top: 42px;
-        right: -6px;
         border-radius: ${theme.inbox?.header?.menus?.popup?.borderRadius ?? '6px'};
         border: ${theme.inbox?.header?.menus?.popup?.border ?? '1px solid red'};
         background: ${theme.inbox?.header?.menus?.popup?.backgroundColor ?? 'red'};
@@ -96,6 +95,10 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         min-width: 200px;
         overflow: hidden;
         padding: 4px 0;
+      }
+
+      ${CourierInboxOptionMenu.id} .menu.anchor-right {
+        right: -6px;
       }
 
       ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {
@@ -160,7 +163,15 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     const menu = theme.inbox?.header?.menus;
     const isFilter = this._type === 'filters';
     const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
-    const defaultIcon = isFilter ? CourierIconSVGs.filter : CourierIconSVGs.overflow;
+    const defaultIcon = isFilter ? CourierIconSVGs.chevronDown : CourierIconSVGs.overflow;
+
+    // The filter/feed selector is positioned under its button, next to the title.
+    // Other buttons are anchored right.
+    if (!isFilter) {
+      this._menu?.classList.add('anchor-right');
+    } else {
+      this._menu?.classList.remove('anchor-right');
+    }
 
     this._menuButton?.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
     this._menuButton?.updateIconColor(buttonConfig?.icon?.color ?? 'red');
