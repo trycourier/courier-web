@@ -68,6 +68,8 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
   }
 
   static getStyles(theme: CourierInboxTheme): string {
+    const tabs = theme.inbox?.header?.tabs;
+
     return `
       ${CourierInboxHeaderTabs.id} .tabs-container {
         display: flex;
@@ -82,22 +84,32 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
         gap: 8px;
         padding: 8px 16px;
         cursor: pointer;
-        border-bottom: 1px solid transparent;
+        border-bottom: 1px solid ${tabs?.default?.borderColor ?? 'transparent'};
         transition: border-color 0.2s;
         margin: -1px;
       }
 
       ${CourierInboxHeaderTabs.id} .tab:hover {
-        border-bottom-color: ${theme.inbox?.header?.backgroundColor ?? '#e0e0e0'};
+        border-bottom-color: ${tabs?.hover?.borderColor ?? theme.inbox?.header?.backgroundColor ?? '#e0e0e0'};
       }
 
       ${CourierInboxHeaderTabs.id} .tab.selected {
-        border-bottom-color: ${theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'steelblue'};
+        border-bottom-color: ${tabs?.selected?.borderColor ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'steelblue'};
       }
 
       ${CourierInboxHeaderTabs.id} .tab-label {
-        font-size: 14px;
-        color: ${theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+        font-size: ${tabs?.default?.font?.size ?? '14px'};
+        font-family: ${tabs?.default?.font?.family ?? 'inherit'};
+        font-weight: ${tabs?.default?.font?.weight ?? 'inherit'};
+        color: ${tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+      }
+
+      ${CourierInboxHeaderTabs.id} .tab:hover .tab-label {
+        color: ${tabs?.hover?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+      }
+
+      ${CourierInboxHeaderTabs.id} .tab.selected .tab-label {
+        color: ${tabs?.selected?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
       }
     `;
   }
