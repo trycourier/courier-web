@@ -2,7 +2,7 @@ import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/couri
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxFeed, CourierInboxTab, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxFeedType } from "../types/feed-type";
@@ -391,15 +391,13 @@ export class CourierInbox extends CourierBaseElement {
       this._currentTabId = newFeed.tabs[0].id;
     }
 
-    // Update components
-    this._list?.setFeedType(this._currentTabId);
-    this._header?.setSelectedTab(this._currentTabId);
-    this.updateHeader();
+    // Switch to the new tab and update unread counts for all tabs in the feed
+    this.switchToTab(this._currentTabId);
 
-    // Load data
-    this.load({
-      canUseCache: true
-    });
+    // Update unread counts for all tabs in the new feed
+    if (newFeed) {
+      this.updateTabUnreadCounts(newFeed.tabs);
+    }
   }
 
   /**
@@ -415,17 +413,37 @@ export class CourierInbox extends CourierBaseElement {
     // Update state
     this._currentTabId = tabId;
 
+    // Switch to the new tab
+    this.switchToTab(tabId);
+  }
+
+  /**
+   * Switches to a tab by updating components and loading data.
+   * @param tabId - The tab ID to switch to.
+   */
+  private switchToTab(tabId: string) {
     // Update components
     this._list?.setFeedType(tabId);
     this._header?.setSelectedTab(tabId);
     this.updateHeader();
 
-    // Load data if needed
-    const dataset = CourierInboxDatastore.shared.getDatasetById(tabId);
-    if (!dataset || dataset.messages.length === 0) {
-      this.load({
-        canUseCache: true
-      });
+    // Load data for the tab (will use cache if available)
+    CourierInboxDatastore.shared.load({
+      canUseCache: true,
+      datasetIds: [tabId]
+    });
+  }
+
+  /**
+   * Updates unread counts for a list of tabs.
+   * @param tabs - The tabs to update unread counts for.
+   */
+  private updateTabUnreadCounts(tabs: CourierInboxTab[]) {
+    for (const tab of tabs) {
+      const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
+      if (dataset) {
+        this._header?.updateTabUnreadCount(tab.id, dataset.unreadCount);
+      }
     }
   }
 
@@ -479,7 +497,25 @@ export class CourierInbox extends CourierBaseElement {
       this._currentTabId = feeds[0].tabs[0].id;
     }
 
-    this.updateHeader();
+    // If the component is already mounted, we need to update everything
+    if (this._header && this._list) {
+      // Create datasets for the new feeds
+      CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
+
+      // Update the list to show the current tab
+      this._list.setFeedType(this._currentTabId);
+      this._header.setFeeds(this._feeds);
+      this._header.setSelectedTab(this._currentTabId);
+
+      this.updateHeader();
+
+      // Load data for the new feeds - only load the current tab initially
+      CourierInboxDatastore.shared.load({
+        canUseCache: true,
+        datasetIds: [this._currentTabId]
+      });
+    }
+    // If not mounted yet, just update the feeds - onComponentMounted will handle the rest
   }
 
   /** Get the current set of feeds. */
@@ -527,12 +563,7 @@ export class CourierInbox extends CourierBaseElement {
   private initializeTabUnreadCounts() {
     // Initialize unread counts for all tabs from the datastore
     for (const feed of this._feeds) {
-      for (const tab of feed.tabs) {
-        const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
-        if (dataset) {
-          this._header?.updateTabUnreadCount(tab.id, dataset.unreadCount);
-        }
-      }
+      this.updateTabUnreadCounts(feed.tabs);
     }
   }
 

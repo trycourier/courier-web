@@ -14,6 +14,7 @@ import CustomOther from './CustomOther';
 import MarkdownListItemInbox from './MarkdownListItem';
 import DatastoreListener from './DatastoreListener';
 import Toast from './Toast';
+import CustomFeeds from './CustomFeeds';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/markdown" element={<MarkdownListItemInbox />} />
         <Route path="/datastore-listener" element={<DatastoreListener />} />
         <Route path="/toast" element={<Toast />} />
+        <Route path="/custom-feeds" element={<CustomFeeds />} />
       </Routes>
     </BrowserRouter>
   )

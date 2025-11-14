@@ -277,6 +277,29 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   setFeeds(feeds: CourierInboxFeed[]) {
     this._feeds = feeds;
+
+    // If components are already built, we need to rebuild them with the new feeds
+    if (this._filterMenu && this._titleSection) {
+      const feedOptions = this.getFeedOptions();
+
+      // Recreate the filter menu with new options
+      const oldFilterMenu = this._filterMenu;
+      this._filterMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, 'filters', true, feedOptions, () => {
+        this._actionMenu?.closeMenu();
+      });
+
+      // Find and replace the old filter menu in the DOM
+      if (oldFilterMenu.parentNode) {
+        oldFilterMenu.parentNode.replaceChild(this._filterMenu, oldFilterMenu);
+      }
+
+      // Update the title section with the new default option
+      if (feedOptions.length > 0) {
+        const selectedOption = feedOptions.find(opt => opt.id === this._activeFeedId) || feedOptions[0];
+        this._titleSection.updateSelectedOption(selectedOption, this._activeFeedId, this._unreadCount);
+        this._filterMenu.selectOption(selectedOption);
+      }
+    }
   }
 
   static getStyles(theme: CourierInboxTheme): string {
