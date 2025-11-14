@@ -155,6 +155,7 @@ export type CourierInboxTheme = {
         inbox?: CourierInboxFilterItemTheme;
         archive?: CourierInboxFilterItemTheme;
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
+        inactiveUnreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -204,15 +205,15 @@ export const defaultLightTheme: CourierInboxTheme = {
         default: {
           borderColor: 'transparent',
           font: {
-            color: CourierColors.black[500],
+            color: CourierColors.gray[600],
             family: undefined,
             size: '14px'
           }
         },
         hover: {
-          borderColor: CourierColors.gray[500],
+          borderColor: 'transparent',
           font: {
-            color: CourierColors.black[500],
+            color: CourierColors.gray[600],
             family: undefined,
             size: '14px'
           }
@@ -220,7 +221,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         selected: {
           borderColor: CourierColors.blue[500],
           font: {
-            color: CourierColors.black[500],
+            color: CourierColors.blue[500],
             family: undefined,
             size: '14px'
           }
@@ -253,6 +254,16 @@ export const defaultLightTheme: CourierInboxTheme = {
             size: '12px'
           },
           backgroundColor: CourierColors.blue[500],
+          borderRadius: '4px',
+          padding: '2px 6px',
+        },
+        inactiveUnreadIndicator: {
+          font: {
+            color: CourierColors.gray[600],
+            family: undefined,
+            size: '12px'
+          },
+          backgroundColor: CourierColors.gray[500],
           borderRadius: '4px',
           padding: '2px 6px',
         }
@@ -483,7 +494,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         hover: {
           borderColor: CourierColors.gray[400],
           font: {
-            color: CourierColors.white[500],
+            color: CourierColors.gray[400],
             family: undefined,
             size: '14px'
           }
@@ -491,7 +502,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         selected: {
           borderColor: CourierColors.blue[500],
           font: {
-            color: CourierColors.white[500],
+            color: CourierColors.blue[500],
             family: undefined,
             size: '14px'
           }
@@ -524,6 +535,16 @@ export const defaultDarkTheme: CourierInboxTheme = {
             size: '12px'
           },
           backgroundColor: CourierColors.blue[500],
+          borderRadius: '4px',
+          padding: '3px 8px',
+        },
+        inactiveUnreadIndicator: {
+          font: {
+            color: CourierColors.white[500],
+            family: undefined,
+            size: '12px'
+          },
+          backgroundColor: 'transparent',
           borderRadius: '4px',
           padding: '3px 8px',
         }
@@ -790,6 +811,10 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           unreadIndicator: {
             ...defaultTheme.inbox?.header?.filters?.unreadIndicator,
             ...theme.inbox?.header?.filters?.unreadIndicator
+          },
+          inactiveUnreadIndicator: {
+            ...defaultTheme.inbox?.header?.filters?.inactiveUnreadIndicator,
+            ...theme.inbox?.header?.filters?.inactiveUnreadIndicator
           }
         },
         menus: {

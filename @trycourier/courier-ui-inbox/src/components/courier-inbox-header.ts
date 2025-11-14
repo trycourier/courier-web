@@ -200,6 +200,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Update unread badge - hide if there are multiple tabs
     const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
     this._unreadBadge?.setCount(unreadCount);
+    this._unreadBadge?.setActive(true);
 
     // Update tabs for the active feed
     if (activeFeed) {
