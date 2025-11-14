@@ -35,6 +35,15 @@ export class CourierInboxDataset {
   private readonly _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private readonly _datastoreListeners: CourierInboxDataStoreListener[] = [];
 
+  /**
+   * The unread count loaded before messages are fetched.
+   * Used to show unread badge counts on tabs before the user clicks into them.
+   *
+   * After messages are fetched, unread count is derived from this._messages.
+   * Access via this.unreadCount, where this behavior is codified.
+   */
+  private _prefetchUnreadCount: number | null = null;
+
   public constructor(
     id: string,
     filter: CourierInboxDatasetFilter,
@@ -49,9 +58,41 @@ export class CourierInboxDataset {
     };
   }
 
-  /** Get the current unread count by calculating from messages */
+  /**
+   * Get the current unread count.
+   * If messages have been loaded, calculates from messages.
+   * Otherwise returns the preloaded count (or 0).
+   */
   get unreadCount(): number {
-    return this._messages.filter(m => !m.read).length;
+    // If we have messages or have completed first fetch, calculate from messages
+    if (this._messages.length > 0 || this._firstFetchComplete) {
+      return this._messages.filter(m => !m.read).length;
+    }
+    // Otherwise use the preloaded count
+    return this._prefetchUnreadCount ?? 0;
+  }
+
+  /**
+   * Set the unread count without loading messages.
+   * Used for batch loading tab badges before messages are fetched.
+   */
+  public setPrefetchUnreadCount(count: number): void {
+    this._prefetchUnreadCount = count;
+    this._datastoreListeners.forEach(listener => {
+      listener.events.onUnreadCountChange?.(count, this._id);
+    });
+  }
+
+  /**
+   * Get the filter configuration for this dataset.
+   * Used for batch loading unread counts.
+   */
+  public getFilter(): CourierGetInboxMessagesQueryFilter {
+    return {
+      tags: this._filter.tags,
+      archived: this._filter.archived,
+      status: this._filter.status,
+    };
   }
 
   /**
@@ -317,17 +358,10 @@ export class CourierInboxDataset {
       throw new Error('User is not signed in');
     }
 
-    const paginationLimit = Courier.shared.paginationLimit;
-    const inboxQueryFilter: CourierGetInboxMessagesQueryFilter = {
-      tags: this._filter.tags,
-      archived: this._filter.archived,
-      status: this._filter.status,
-    };
-
     const response = await client.inbox.getMessages({
-      paginationLimit,
+      paginationLimit: Courier.shared.paginationLimit,
       startCursor,
-      filter: inboxQueryFilter,
+      filter: this.getFilter(),
     });
 
     return {

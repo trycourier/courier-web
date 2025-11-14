@@ -78,6 +78,57 @@ export class InboxClient extends Client {
   }
 
   /**
+   * Get unread counts for multiple filters in a single query
+   * @param filtersMap - Map of dataset ID to filter
+   * @returns Promise resolving to map of dataset ID to unread count
+   */
+  public async getUnreadCounts(
+    filtersMap: Record<string, CourierGetInboxMessagesQueryFilter>
+  ): Promise<Record<string, number>> {
+    // Build query variables and field aliases
+    const variables: string[] = [];
+    const fields: string[] = [];
+    const sanitizedIdMapping: Record<string, string> = {};
+
+    for (const [datasetId, filter] of Object.entries(filtersMap)) {
+      const sanitizedId = InboxClient.sanitizeGraphQLIdentifier(datasetId);
+      sanitizedIdMapping[sanitizedId] = datasetId;
+
+      const unreadCountFilterParams = this.createUnreadCountFilterParams(filter);
+      variables.push(`$${sanitizedId}: FilterParamsInput = ${unreadCountFilterParams}`);
+      fields.push(`${sanitizedId}: count(params: $${sanitizedId})`);
+    }
+
+    const query = `
+      query GetUnreadCounts(
+        ${variables.join('\n')}
+      ) {
+        ${fields.join('\n')}
+      }
+    `;
+
+    const response = await graphql({
+      options: this.options,
+      query,
+      headers: {
+        'x-courier-user-id': this.options.userId,
+        'Authorization': `Bearer ${this.options.accessToken}`
+      },
+      url: this.options.apiUrls.inbox.graphql,
+    });
+
+    // Parse response data into Record<string, number> using original IDs
+    const result: Record<string, number> = {};
+    if (response.data) {
+      for (const [sanitizedId, originalId] of Object.entries(sanitizedIdMapping)) {
+        result[originalId] = response.data[sanitizedId] ?? 0;
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Get paginated archived messages
    * @param paginationLimit - Number of messages to return per page (default: 24)
    * @param startCursor - Cursor for pagination
@@ -454,6 +505,19 @@ export class InboxClient extends Client {
     }
 
     return this.createFilterParams(filter);
+  }
+
+  /**
+   * Sanitize dataset IDs for use as GraphQL identifiers.
+   *
+   * GraphQL identifiers must contain only alphanumerics/underscores and begin with a letter or underscore.
+   * https://spec.graphql.org/draft/#sec-Names
+   */
+  private static sanitizeGraphQLIdentifier(id: string): string {
+    // Prepend with id and
+    // replace _ (underscore) with double underscore (effectively escaping it) and
+    // replace - (hyphen) with underscore
+    return `id_${id.replace(/_/g, '__').replace(/-/g, '_')}`
   }
 
 }
