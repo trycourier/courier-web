@@ -1,5 +1,5 @@
 import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
-import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
+import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
@@ -24,7 +24,15 @@ export class CourierInboxDatastore {
     this._messageMutationPublisher.addSubscriber(this._messageMutationSubscriber);
   }
 
-  public createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void {
+  public createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void {
+    const datasets = new Map<string, CourierInboxDatasetFilter>(
+      feeds.flatMap(feed => feed.tabs).map(tab => [tab.id, tab.filter])
+    );
+
+    this.createDatasetsFromFilters(datasets);
+  }
+
+  private createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void {
     this.clearDatasets();
 
     for (let [id, filter] of filters) {

@@ -16,7 +16,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
   // State
   private _option: CourierInboxMenuOption;
-  private _feedType?: CourierInboxFeedType | string;
+  private _feedId: string = 'inbox';
 
   // Components
   private _style?: HTMLStyleElement;
@@ -35,7 +35,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
     // Subscribe to the theme bus
     this._themeSubscription = themeManager.subscribe((_) => {
-      this.refreshTheme(this._feedType ?? 'inbox');
+      this.refreshTheme(this._feedId);
     });
 
   }
@@ -84,7 +84,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this.appendChild(this._titleElement);
     this.appendChild(this._unreadBadge);
 
-    this.refreshTheme(this._feedType ?? 'inbox');
+    this.refreshTheme(this._feedId);
 
   }
 
@@ -93,39 +93,30 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this._style?.remove();
   }
 
-  private refreshTheme(feedType: CourierInboxFeedType | string) {
-    this._feedType = feedType;
+  private refreshTheme(feedType: string) {
+    this._feedId = feedType;
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
     }
     this._unreadBadge?.refreshTheme('header');
-    this.updateFilter();
+    this.updateFeedTitle();
   }
 
   public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType | string, unreadCount: number) {
     this._option = option;
-    this._feedType = feedType;
+    this._feedId = feedType;
     this._unreadBadge?.setCount(unreadCount);
-    this.updateFilter();
+    this.updateFeedTitle();
   }
 
-  private updateFilter() {
-    const theme = this._themeSubscription.manager.getTheme();
-    switch (this._feedType) {
-      case 'inbox':
-        if (this._titleElement) {
-          this._titleElement.textContent = theme.inbox?.header?.filters?.inbox?.text ?? 'Inbox';
-        }
-        this._iconElement?.updateSVG(theme.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSVGs.inbox);
-        this._iconElement?.updateColor(theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'red');
-        break;
-      case 'archive':
-        if (this._titleElement) {
-          this._titleElement.textContent = theme.inbox?.header?.filters?.archive?.text ?? 'Archive';
-        }
-        this._iconElement?.updateSVG(theme.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSVGs.archive);
-        this._iconElement?.updateColor(theme.inbox?.header?.filters?.archive?.icon?.color ?? 'red');
-        break;
+  private updateFeedTitle() {
+    if (this._titleElement) {
+      this._titleElement.textContent = this._option.text;
+    }
+
+    if (this._iconElement) {
+      this._iconElement.updateSVG(this._option?.icon.svg ?? CourierIconSVGs.inbox);
+      this._iconElement.updateColor(this._option?.icon.color ?? 'red');
     }
   }
 }
