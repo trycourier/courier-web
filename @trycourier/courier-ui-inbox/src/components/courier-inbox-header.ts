@@ -74,8 +74,6 @@ export class CourierInboxHeader extends CourierFactoryElement {
     const theme = this._themeSubscription.manager.getTheme();
     const filterMenu = theme.inbox?.header?.menus?.filters;
 
-    console.log(this._feeds);
-
     return this._feeds.map(feed => {
       // 'archive' is a special cased feed that gets its own icon
       if (feed.id === 'archive') {
@@ -189,15 +187,21 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._unreadCount = props.unreadCount;
 
     const feedOption = this.getFeedOptions().find(opt => opt.id === this._activeFeedId);
+    const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
+    const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
+
     if (feedOption) {
-      this._titleSection?.updateSelectedOption(feedOption, this._activeFeedId, this._unreadCount);
+      // Hide top-level unread badge if there are multiple tabs
+      const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
+      this._titleSection?.updateSelectedOption(feedOption, this._activeFeedId, unreadCount);
       this._filterMenu?.selectOption(feedOption);
     }
 
     // Update tabs for the active feed
-    const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
     if (activeFeed) {
       this._tabsComponent?.setFeed(activeFeed);
+      // Show/hide tabs based on whether there are multiple tabs
+      this._tabsComponent?.setVisible(hasMultipleTabs);
     }
   }
 
@@ -251,6 +255,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Create tabs component
     const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
+    const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
 
     this._tabsComponent = new CourierInboxHeaderTabs({
       themeManager: this._themeSubscription.manager,
@@ -266,6 +271,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Build the tabs component
     this._tabsComponent.build(undefined);
+
+    // Set initial visibility based on tab count
+    this._tabsComponent.setVisible(hasMultipleTabs);
 
     const header = document.createElement('div');
     header.className = 'header';

@@ -125,6 +125,12 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
     }
   }
 
+  public setVisible(visible: boolean) {
+    if (this._container) {
+      this._container.style.display = visible ? 'flex' : 'none';
+    }
+  }
+
   private refreshTheme() {
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTabs.getStyles(this.theme);
