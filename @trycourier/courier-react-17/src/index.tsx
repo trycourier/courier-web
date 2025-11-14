@@ -55,7 +55,10 @@ export type {
   CourierInboxListItemActionFactoryProps,
   CourierInboxPaginationItemFactoryProps,
   CourierInboxMenuButtonFactoryProps,
-  CourierInboxFeedType
+  CourierInboxFeedType,
+  CourierInboxFeed,
+  CourierInboxTab,
+  CourierInboxDatasetFilter
 } from '@trycourier/courier-ui-inbox';
 
 // Re-export theme types from courier-ui-inbox

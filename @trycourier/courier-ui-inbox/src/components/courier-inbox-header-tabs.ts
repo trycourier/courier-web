@@ -103,10 +103,12 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
   }
 
   public setFeed(feed: CourierInboxFeed) {
+    // Only rebuild if the feed has actually changed
+    const feedChanged = this._feed?.id !== feed.id;
     this._feed = feed;
 
-    // If component is already mounted, rebuild the tabs
-    if (this._container) {
+    // If component is already mounted and feed changed, rebuild the tabs
+    if (this._container && feedChanged) {
       this.rebuild();
     }
   }

@@ -11,6 +11,7 @@ export class CourierInboxDatastore {
   private static instance: CourierInboxDatastore;
 
   private _datasets: Map<string, CourierInboxDataset> = new Map();
+  private _listeners: CourierInboxDataStoreListener[] = [];
 
   private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
@@ -37,6 +38,12 @@ export class CourierInboxDatastore {
 
     for (let [id, filter] of filters) {
       const dataset = new CourierInboxDataset(id, filter);
+
+      // Re-attach all existing listeners to the new dataset
+      for (let listener of this._listeners) {
+        dataset.addDatastoreListener(listener);
+      }
+
       this._datasets.set(id, dataset);
     }
   }
@@ -79,12 +86,16 @@ export class CourierInboxDatastore {
   }
 
   public addDataStoreListener(listener: CourierInboxDataStoreListener): void {
+    this._listeners.push(listener);
+
     for (let dataset of this._datasets.values()) {
       dataset.addDatastoreListener(listener);
     }
   }
 
   public removeDataStoreListener(listener: CourierInboxDataStoreListener): void {
+    this._listeners = this._listeners.filter(l => l !== listener);
+
     for (let dataset of this._datasets.values()) {
       dataset.removeDatastoreListener(listener);
     }

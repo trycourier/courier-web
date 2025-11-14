@@ -1,5 +1,5 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, useState } from "react";
-import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
+import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
@@ -19,6 +19,9 @@ export interface CourierInboxProps {
 
   /** Type of feed to display in the inbox ("inbox" or "archive"). Defaults to "inbox" */
   feedType?: CourierInboxFeedType;
+
+  /** Array of feeds to display in the inbox. Each feed contains tabs with different filters. */
+  feeds?: CourierInboxFeed[];
 
   /** Callback fired when a message is clicked. */
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -57,6 +60,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
   // Element ref for use in effects, updated by handleRef.
   const inboxRef = useRef<CourierInboxElement | null>(null);
   const [elementReady, setElementReady] = useState(false);
+  const feedsSetRef = useRef(false);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -179,6 +183,16 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
       });
     });
   }, [props.renderPaginationItem, elementReady]);
+
+  // Set feeds (only once when element is ready)
+  useEffect(() => {
+    const inbox = getEl();
+    if (!inbox || !props.feeds || feedsSetRef.current) return;
+    feedsSetRef.current = true;
+    queueMicrotask(() => {
+      inbox.setFeeds(props.feeds!);
+    });
+  }, [props.feeds, elementReady]);
 
   // Set feed type
   useEffect(() => {
