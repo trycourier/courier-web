@@ -179,6 +179,10 @@ export class CourierInbox extends CourierBaseElement {
 
     CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
 
+    // Load unread counts for all tabs immediately (single GraphQL query)
+    const allTabIds = this._feeds.flatMap(feed => feed.tabs.map(tab => tab.id));
+    CourierInboxDatastore.shared.loadUnreadCountsForTabs(allTabIds);
+
     // Attach the datastore listener
     this._datastoreListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => {
@@ -502,17 +506,17 @@ export class CourierInbox extends CourierBaseElement {
 
     // If the component is already mounted, we need to update everything
     if (this._header && this._list) {
-      // Create datasets for the new feeds
+      // Create datasets for the new feeds and load unread counts
       CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
+      CourierInboxDatastore.shared.loadUnreadCountsForTabs(tabIds);
 
-      // Update the list to show the current tab
+      // Update the list and header to show the current tab
       this._list.setFeedType(this._currentTabId);
       this._header.setFeeds(this._feeds);
       this._header.setSelectedTab(this._currentTabId);
-
       this.updateHeader();
 
-      // Load data for the new feeds - only load the current tab initially
+      // Load messages for the current tab
       CourierInboxDatastore.shared.load({
         canUseCache: true,
         datasetIds: [this._currentTabId]

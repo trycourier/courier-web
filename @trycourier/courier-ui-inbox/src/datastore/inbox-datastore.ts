@@ -1,4 +1,5 @@
 import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
@@ -86,6 +87,44 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.info(`Inbox socket connected for client ID: [${Courier.shared.client?.options.connectionId}]`);
     } catch (error) {
       Courier.shared.client?.options.logger?.error('Failed to connect socket:', error);
+    }
+  }
+
+  /**
+   * Load unread counts for multiple tabs in a single GraphQL query.
+   * This populates tab badges without loading messages.
+   * @param tabIds - Array of tab IDs to load counts for
+   */
+  public async loadUnreadCountsForTabs(tabIds: string[]): Promise<void> {
+    const client = Courier.shared.client;
+    if (!client) {
+      return;
+    }
+
+    // Build filters map for the specified tabs
+    const filtersMap: Record<string, CourierGetInboxMessagesQueryFilter> = {};
+    for (const tabId of tabIds) {
+      const dataset = this._datasets.get(tabId);
+      if (dataset) {
+        filtersMap[tabId] = dataset.getFilter();
+      }
+    }
+
+    if (Object.keys(filtersMap).length === 0) {
+      return;
+    }
+
+    const counts = await client.inbox.getUnreadCounts(filtersMap);
+
+    // Update datasets with the fetched counts
+    for (const [tabId, count] of Object.entries(counts)) {
+      const dataset = this._datasets.get(tabId);
+
+      // If datasets changed out while the request was in progress,
+      // we'll update a dataset with the same ID, but otherwise pass through
+      if (dataset) {
+        dataset.setPrefetchUnreadCount(count);
+      }
     }
   }
 
