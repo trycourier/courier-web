@@ -16,6 +16,8 @@ export type CourierInboxMenuOption = {
 
 export class CourierInboxOptionMenu extends CourierBaseElement {
 
+  private static readonly MENU_BORDER_PADDING_PX = 6;
+
   static get id(): string {
     return 'courier-inbox-option-menu';
   }
@@ -98,7 +100,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       }
 
       ${CourierInboxOptionMenu.id} .menu.anchor-right {
-        right: -6px;
+        right: -${CourierInboxOptionMenu.MENU_BORDER_PADDING_PX}px;
       }
 
       ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {
@@ -165,8 +167,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
     const defaultIcon = isFilter ? CourierIconSVGs.chevronDown : CourierIconSVGs.overflow;
 
-    // The filter/feed selector is positioned under its button, next to the title.
-    // Other buttons are anchored right.
+    // Actions menu is anchored right, filter menu position is calculated dynamically
     if (!isFilter) {
       this._menu?.classList.add('anchor-right');
     } else {
@@ -212,11 +213,33 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     });
   }
 
+  /** Calculate the left offset relative to the inbox header to anchor the menu to the left border. */
+  private calculateMenuLeftOffset(): number {
+    if (!this._menu) {
+      return 0;
+    }
+
+    const rect = this.getBoundingClientRect();
+    const inboxHeader = this.closest('courier-inbox-header');
+    if (!inboxHeader) {
+      return 0;
+    }
+
+    const headerRect = inboxHeader.getBoundingClientRect();
+    const offsetFromLeft = rect.left - headerRect.left;
+    return offsetFromLeft;
+  }
+
   private toggleMenu(event: Event) {
     event.stopPropagation();
     const isOpening = this._menu?.style.display !== 'block';
     if (this._menu) {
       this._menu.style.display = isOpening ? 'block' : 'none';
+    }
+
+    if (this._menu && this._type === 'filters') {
+      const leftOffset = this.calculateMenuLeftOffset();
+      this._menu.style.left = `-${leftOffset - CourierInboxOptionMenu.MENU_BORDER_PADDING_PX}px`
     }
 
     if (isOpening) {

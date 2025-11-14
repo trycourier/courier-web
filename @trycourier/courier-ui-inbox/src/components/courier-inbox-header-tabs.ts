@@ -74,7 +74,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
       ${CourierInboxHeaderTabs.id} .tabs-container {
         display: flex;
         flex-direction: row;
-        gap: 8px;
+        gap: 16px;
         padding: 0 16px;
       }
 
@@ -82,7 +82,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 16px;
+        padding: 12px 0;
         cursor: pointer;
         border-bottom: 1px solid ${tabs?.default?.borderColor ?? 'transparent'};
         transition: border-color 0.2s;
@@ -128,6 +128,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
   public setSelectedTab(tabId: string) {
     this._selectedTabId = tabId;
     this.updateTabStyles();
+    this.updateBadgeStates();
   }
 
   public updateTabUnreadCount(tabId: string, count: number) {
@@ -156,6 +157,12 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
       } else {
         tabElement.classList.remove('selected');
       }
+    }
+  }
+
+  private updateBadgeStates() {
+    for (let [tabId, badge] of this._tabBadges) {
+      badge.setActive(tabId === this._selectedTabId);
     }
   }
 
@@ -199,6 +206,9 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
         this._tabElements.set(tab.id, tabElement);
       }
     }
+
+    // Update badge states after rebuild
+    this.updateBadgeStates();
   }
 
 }
