@@ -20,7 +20,7 @@ export class CourierIconButton extends CourierBaseElement {
   private _button: HTMLButtonElement;
   private _icon: CourierIcon;
 
-  constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string, borderRadius?: string, height?: string, width?: string) {
+  constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string, borderRadius?: string, height?: string, width?: string, iconSize?: string) {
     super();
 
     this._borderRadius = borderRadius;
@@ -34,7 +34,7 @@ export class CourierIconButton extends CourierBaseElement {
 
     this._button = document.createElement('button');
     this._button.setAttribute('part', 'button');
-    this._icon = new CourierIcon(color, svg);
+    this._icon = new CourierIcon(color, svg, iconSize);
 
     this._style = document.createElement('style');
     this.refresh();
@@ -113,6 +113,10 @@ export class CourierIconButton extends CourierBaseElement {
   updateActiveBackgroundColor(color: string) {
     this._activeBackgroundColor = color;
     this.refresh();
+  }
+
+  updateIconSize(size: string) {
+    this._icon.updateSize(size);
   }
 
 }

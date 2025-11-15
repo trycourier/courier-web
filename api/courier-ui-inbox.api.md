@@ -85,7 +85,7 @@ export class CourierInbox extends CourierBaseElement {
     constructor(themeManager?: CourierInboxThemeManager);
     // (undocumented)
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
-    get currentFeed(): CourierInboxFeedType;
+    get currentFeed(): CourierInboxFeedType | string;
     // (undocumented)
     static get id(): string;
     // (undocumented)
@@ -103,7 +103,7 @@ export class CourierInbox extends CourierBaseElement {
     setDarkTheme(theme: CourierInboxTheme): void;
     setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement): void;
     setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement): void;
-    setFeedType(feedType: CourierInboxFeedType): void;
+    setFeedType(feedType: CourierInboxFeedType | string): void;
     setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setLightTheme(theme: CourierInboxTheme): void;
@@ -120,6 +120,15 @@ export class CourierInbox extends CourierBaseElement {
 // @public (undocumented)
 export type CourierInboxButtonTheme = CourierButtonTheme;
 
+// Warning: (ae-missing-release-tag) "CourierInboxDatasetFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierInboxDatasetFilter = {
+    tags?: string[];
+    archived?: boolean;
+    status?: 'read' | 'unread';
+};
+
 // Warning: (ae-missing-release-tag) "CourierInboxDatastore" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -127,66 +136,62 @@ export class CourierInboxDatastore {
     // (undocumented)
     addDataStoreListener(listener: CourierInboxDataStoreListener): void;
     // (undocumented)
-    archiveAllMessages({ canCallApi }?: {
-        canCallApi?: boolean;
-    }): Promise<void>;
+    addMessage(message: InboxMessage): void;
+    archiveAllMessages(): Promise<void>;
+    // @deprecated (undocumented)
+    get archiveDataSet(): InboxDataSet | undefined;
     // (undocumented)
-    get archiveDataSet(): InboxDataSet;
-    // (undocumented)
-    archiveMessage({ message, canCallApi }: {
+    archiveMessage({ message }: {
         message: InboxMessage;
-        canCallApi?: boolean;
     }): Promise<void>;
+    archiveReadMessages(): Promise<void>;
     // (undocumented)
-    archiveReadMessages({ canCallApi }?: {
-        canCallApi?: boolean;
-    }): Promise<void>;
-    // (undocumented)
-    clickMessage({ message, canCallApi }: {
+    clickMessage({ message }: {
         message: InboxMessage;
-        canCallApi?: boolean;
     }): Promise<void>;
+    // (undocumented)
+    createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void;
     fetchNextPageOfMessages(props: {
-        feedType: CourierInboxFeedType;
+        feedType?: CourierInboxFeedType;
+        datasetId?: string;
     }): Promise<InboxDataSet | null>;
     // (undocumented)
-    get inboxDataSet(): InboxDataSet;
+    getDatasetById(datasetId: string): InboxDataSet | undefined;
+    // @deprecated (undocumented)
+    get inboxDataSet(): InboxDataSet | undefined;
     // (undocumented)
     listenForUpdates(): Promise<void>;
-    // (undocumented)
     load(props?: {
         canUseCache: boolean;
+        datasetIds?: string[];
     }): Promise<void>;
     // (undocumented)
-    openMessage({ message, canCallApi }: {
+    openMessage({ message }: {
         message: InboxMessage;
-        canCallApi?: boolean;
     }): Promise<void>;
+    readAllMessages(): Promise<void>;
     // (undocumented)
-    readAllMessages({ canCallApi }?: {
-        canCallApi?: boolean;
-    }): Promise<void>;
-    // (undocumented)
-    readMessage({ message, canCallApi }: {
+    readMessage({ message }: {
         message: InboxMessage;
-        canCallApi?: boolean;
     }): Promise<void>;
     // (undocumented)
     removeDataStoreListener(listener: CourierInboxDataStoreListener): void;
     // (undocumented)
     static get shared(): CourierInboxDatastore;
     // (undocumented)
-    unarchiveMessage({ message, canCallApi }: {
-        message: InboxMessage;
-        canCallApi?: boolean;
-    }): Promise<void>;
+    get totalUnreadCount(): number;
     // (undocumented)
+    unarchiveMessage({ message }: {
+        message: InboxMessage;
+    }): Promise<void>;
+    // @deprecated (undocumented)
     get unreadCount(): number;
     // (undocumented)
-    unreadMessage({ message, canCallApi }: {
+    unreadMessage({ message }: {
         message: InboxMessage;
-        canCallApi?: boolean;
     }): Promise<void>;
+    // (undocumented)
+    upsertMessage(message: InboxMessage): void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxDatastoreEvents" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -194,19 +199,19 @@ export class CourierInboxDatastore {
 // @public (undocumented)
 export class CourierInboxDatastoreEvents {
     // (undocumented)
-    onDataSetChange?(_: InboxDataSet, __: CourierInboxFeedType): void;
+    onDataSetChange?(_: InboxDataSet, __: CourierInboxFeedType | string): void;
     // (undocumented)
     onError?(_: Error): void;
     // (undocumented)
-    onMessageAdd?(_: InboxMessage, __: number, ___: CourierInboxFeedType): void;
+    onMessageAdd?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void;
     // (undocumented)
-    onMessageRemove?(_: InboxMessage, __: number, ___: CourierInboxFeedType): void;
+    onMessageRemove?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void;
     // (undocumented)
-    onMessageUpdate?(_: InboxMessage, __: number, ___: CourierInboxFeedType): void;
+    onMessageUpdate?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void;
     // (undocumented)
-    onPageAdded?(_: InboxDataSet, __: CourierInboxFeedType): void;
+    onPageAdded?(_: InboxDataSet, __: CourierInboxFeedType | string): void;
     // (undocumented)
-    onUnreadCountChange?(_: number): void;
+    onUnreadCountChange?(_: number, __: string): void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxDataStoreListener" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -222,7 +227,7 @@ export class CourierInboxDataStoreListener {
 
 // Warning: (ae-missing-release-tag) "CourierInboxFeedType" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CourierInboxFeedType = 'inbox' | 'archive';
 
 // Warning: (ae-missing-release-tag) "CourierInboxFilterItemTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -244,7 +249,7 @@ export type CourierInboxFontTheme = CourierFontTheme;
 export class CourierInboxHeader extends CourierFactoryElement {
     constructor(props: {
         themeManager: CourierInboxThemeManager;
-        onFeedTypeChange: (feedType: CourierInboxFeedType) => void;
+        onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void;
     });
     // (undocumented)
     build(newElement: HTMLElement | undefined | null): void;
@@ -268,7 +273,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 //
 // @public (undocumented)
 export type CourierInboxHeaderFactoryProps = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
     unreadCount: number;
     messageCount: number;
 };
@@ -311,7 +316,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     // (undocumented)
     onComponentUnmounted(): void;
     // (undocumented)
-    setMessage(message: InboxMessage, feedType: CourierInboxFeedType): void;
+    setMessage(message: InboxMessage, feedType: CourierInboxFeedType | string): void;
     // (undocumented)
     setOnItemActionClick(cb: (message: InboxMessage, action: InboxAction) => void): void;
     // (undocumented)
@@ -401,7 +406,7 @@ export type CourierInboxMenuButtonTheme = CourierInboxIconButtonTheme & {
 //
 // @public (undocumented)
 export type CourierInboxPaginationItemFactoryProps = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierInboxPopupAlignment" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -417,7 +422,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // (undocumented)
     attributeChangedCallback(name: string, _: string, newValue: string): void;
     closePopup(): void;
-    get currentFeed(): CourierInboxFeedType;
+    get currentFeed(): CourierInboxFeedType | string;
     // (undocumented)
     static getStyles(theme: CourierInboxTheme, width: string, height: string): string;
     // (undocumented)
@@ -435,7 +440,8 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    onUnreadCountChange(_: number): void;
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    onUnreadCountChange(_: number, __: string): void;
     removeHeader(): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setContent(element: HTMLElement): void;
@@ -503,14 +509,14 @@ export type CourierInboxSkeletonLoadingStateTheme = {
 //
 // @public (undocumented)
 export type CourierInboxStateEmptyFactoryProps = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierInboxStateErrorFactoryProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export type CourierInboxStateErrorFactoryProps = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
     error: Error;
 };
 
@@ -518,7 +524,7 @@ export type CourierInboxStateErrorFactoryProps = {
 //
 // @public (undocumented)
 export type CourierInboxStateLoadingFactoryProps = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierInboxTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -641,8 +647,9 @@ export { InboxAction }
 //
 // @public (undocumented)
 export type InboxDataSet = {
-    feedType: CourierInboxFeedType;
+    feedType: CourierInboxFeedType | string;
     messages: InboxMessage[];
+    unreadCount: number;
     canPaginate: boolean;
     paginationCursor: string | null;
 };
@@ -673,7 +680,7 @@ export function openMessage(message: InboxMessage): Promise<void>;
 
 // Warnings were encountered during analysis:
 //
-// dist/components/courier-inbox-popup-menu.d.ts:73:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// dist/components/courier-inbox-popup-menu.d.ts:74:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,6 +1,5 @@
 import { CourierBaseElement, CourierIcon, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
-import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -16,13 +15,12 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
   // State
   private _option: CourierInboxMenuOption;
-  private _feedType?: CourierInboxFeedType;
+  private _feedId: string = 'inbox';
 
   // Components
   private _style?: HTMLStyleElement;
   private _titleElement?: HTMLHeadingElement;
   private _iconElement?: CourierIcon;
-  private _unreadBadge?: CourierUnreadCountBadge;
 
   private get theme(): CourierInboxTheme {
     return this._themeSubscription.manager.getTheme();
@@ -35,7 +33,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
     // Subscribe to the theme bus
     this._themeSubscription = themeManager.subscribe((_) => {
-      this.refreshTheme(this._feedType ?? 'inbox');
+      this.refreshTheme(this._feedId);
     });
 
   }
@@ -62,10 +60,6 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
         font-weight: ${theme.inbox?.header?.filters?.font?.weight ?? '500'};
         color: ${theme.inbox?.header?.filters?.font?.color ?? 'red'};
       }
-
-      ${CourierInboxHeaderTitle.id} courier-unread-count-badge {
-        margin-left: 4px;
-      }
     `;
   }
 
@@ -75,16 +69,11 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
     this._iconElement = new CourierIcon(undefined, this._option.icon.svg);
     this._titleElement = document.createElement('h2');
-    this._unreadBadge = new CourierUnreadCountBadge({
-      themeBus: this._themeSubscription.manager,
-      location: 'header'
-    });
 
     this.appendChild(this._iconElement);
     this.appendChild(this._titleElement);
-    this.appendChild(this._unreadBadge);
 
-    this.refreshTheme(this._feedType ?? 'inbox');
+    this.refreshTheme(this._feedId);
 
   }
 
@@ -93,39 +82,28 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this._style?.remove();
   }
 
-  private refreshTheme(feedType: CourierInboxFeedType) {
-    this._feedType = feedType;
+  private refreshTheme(feedType: string) {
+    this._feedId = feedType;
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
     }
-    this._unreadBadge?.refreshTheme('header');
-    this.updateFilter();
+    this.updateFeedTitle();
   }
 
-  public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType, unreadCount: number) {
+  public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType | string) {
     this._option = option;
-    this._feedType = feedType;
-    this._unreadBadge?.setCount(unreadCount);
-    this.updateFilter();
+    this._feedId = feedType;
+    this.updateFeedTitle();
   }
 
-  private updateFilter() {
-    const theme = this._themeSubscription.manager.getTheme();
-    switch (this._feedType) {
-      case 'inbox':
-        if (this._titleElement) {
-          this._titleElement.textContent = theme.inbox?.header?.filters?.inbox?.text ?? 'Inbox';
-        }
-        this._iconElement?.updateSVG(theme.inbox?.header?.filters?.inbox?.icon?.svg ?? CourierIconSVGs.inbox);
-        this._iconElement?.updateColor(theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'red');
-        break;
-      case 'archive':
-        if (this._titleElement) {
-          this._titleElement.textContent = theme.inbox?.header?.filters?.archive?.text ?? 'Archive';
-        }
-        this._iconElement?.updateSVG(theme.inbox?.header?.filters?.archive?.icon?.svg ?? CourierIconSVGs.archive);
-        this._iconElement?.updateColor(theme.inbox?.header?.filters?.archive?.icon?.color ?? 'red');
-        break;
+  private updateFeedTitle() {
+    if (this._titleElement) {
+      this._titleElement.textContent = this._option.text;
+    }
+
+    if (this._iconElement) {
+      this._iconElement.updateSVG(this._option?.icon.svg ?? CourierIconSVGs.inbox);
+      this._iconElement.updateColor(this._option?.icon.color ?? 'red');
     }
   }
 }
