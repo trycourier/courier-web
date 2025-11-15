@@ -26,6 +26,11 @@ export default function CustomFeeds() {
           id: 'unread-notifications',
           label: 'Unread',
           filter: { status: 'unread' }
+        },
+        {
+          id: 'important',
+          label: 'Important',
+          filter: { tags: ['important'] }
         }
       ]
     },
