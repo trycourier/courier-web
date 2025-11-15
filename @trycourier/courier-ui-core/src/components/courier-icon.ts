@@ -49,17 +49,19 @@ export class CourierIcon extends CourierBaseElement {
   // State
   private _color?: string;
   private _svg?: string;
+  private _size?: string;
 
   // Components
   private _iconContainer: HTMLElement;
   private _style: HTMLStyleElement;
 
-  constructor(color?: string, svg?: string) {
+  constructor(color?: string, svg?: string, size?: string) {
     super();
 
     // Set initial values from constructor
     this._color = color ?? CourierColors.black[500];
     this._svg = svg;
+    this._size = size ?? '24px';
 
     // Create components
     const shadow = this.attachShadow({ mode: 'open' });
@@ -68,14 +70,14 @@ export class CourierIcon extends CourierBaseElement {
 
     // Add styles
     this._style = document.createElement('style');
-    this._style.textContent = this.getStyles(this._color);
+    this._style.textContent = this.getStyles();
     shadow.appendChild(this._style);
 
     // Refresh
     this.refresh();
   }
 
-  private getStyles(color: string): string {
+  private getStyles(): string {
     return `
       :host {
         display: inline-block;
@@ -86,9 +88,9 @@ export class CourierIcon extends CourierBaseElement {
       }
 
       svg {
-        width: 24px;
-        height: 24px;
-        color: ${color};
+        width: ${this._size};
+        height: ${this._size};
+        color: ${this._color};
       }
     `;
   }
@@ -97,9 +99,7 @@ export class CourierIcon extends CourierBaseElement {
     if (this._svg) {
       this._iconContainer.innerHTML = this._svg;
     }
-    if (this._color) {
-      this._style.textContent = this.getStyles(this._color);
-    }
+    this._style.textContent = this.getStyles();
   }
 
   public updateColor(color: string) {
@@ -109,6 +109,11 @@ export class CourierIcon extends CourierBaseElement {
 
   public updateSVG(svg: string) {
     this._svg = svg;
+    this.refresh();
+  }
+
+  public updateSize(size: string) {
+    this._size = size;
     this.refresh();
   }
 }

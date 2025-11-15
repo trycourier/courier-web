@@ -26,6 +26,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
+  // Various configuration is set based on _type, a future improvement
+  // may be to parameterize that config so it can be set on the menu directly.
   private _type: CourierInboxMenuOptionType;
   private _selectedIndex: number = 0;
   private _options: CourierInboxMenuOption[];
@@ -57,7 +59,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     this._style = injectGlobalStyle(CourierInboxOptionMenu.id, this.getStyles());
 
-    this._menuButton = new CourierIconButton(this._type === 'filters' ? CourierIconSVGs.chevronDown : CourierIconSVGs.overflow);
+    this._menuButton = this.createMenuButton();
     this._menu = document.createElement('div');
     this._menu.className = `menu ${this._type}`;
 
@@ -182,6 +184,24 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     // Reload menu items
     this.refreshMenuItems();
+  }
+
+  private createMenuButton(): CourierIconButton {
+    if (this._type === 'filters') {
+      return new CourierIconButton(
+        /* svg */ CourierIconSVGs.chevronDown,
+        /* color */ undefined,
+        /* backgroundColor */ undefined,
+        /* hoverBackgroundColor */ 'transparent',
+        /* activeBackgroundColor */ 'transparent',
+        /* borderRadius */ undefined,
+        /* height */ undefined,
+        /* width */ '20px',
+        /* iconSize */ '20px'
+      );
+    } else {
+      return new CourierIconButton(CourierIconSVGs.overflow);
+    }
   }
 
   public setOptions(options: CourierInboxMenuOption[]) {
