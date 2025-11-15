@@ -429,6 +429,12 @@ export class CourierInbox extends CourierBaseElement {
    * @param tabId - The tab ID to switch to.
    */
   private switchToTab(tabId: string) {
+    // Update the unread count from the dataset immediately
+    const dataset = CourierInboxDatastore.shared.getDatasetById(tabId);
+    if (dataset) {
+      this._unreadCount = dataset.unreadCount;
+    }
+
     // Update components
     this._list?.setFeedType(tabId);
     this._header?.setSelectedTab(tabId);
