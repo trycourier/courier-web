@@ -296,8 +296,8 @@ export const defaultLightTheme: CourierInboxTheme = {
               svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.black[500_10],
-            activeBackgroundColor: CourierColors.black[500_20],
+            hoverBackgroundColor: 'transparent',
+            activeBackgroundColor: 'transparent',
           },
           inbox: {
             icon: {
@@ -577,8 +577,8 @@ export const defaultDarkTheme: CourierInboxTheme = {
               svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.white[500_10],
-            activeBackgroundColor: CourierColors.white[500_20],
+            hoverBackgroundColor: 'transparent',
+            activeBackgroundColor: 'transparent',
           },
           inbox: {
             icon: {
