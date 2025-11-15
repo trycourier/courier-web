@@ -477,7 +477,7 @@ export class InboxClient extends Client {
     }
 
     if (filter.tags) {
-      parts.push(`tags: ${filter.tags}`);
+      parts.push(`tags: [${filter.tags.map(tag => `"${tag}"`).join(',')}]`);
     }
 
     if (filter.status) {
