@@ -111,9 +111,13 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
 
       if (this._count > 0) {
         this._badge.textContent = this._count > 99 ? '99+' : this._count.toString();
+        this.style.display = 'inline-block';
         this._badge.style.display = 'block';
       } else {
-        this._badge.style.display = 'none';
+        // display style must be applied to the top level component
+        // so the flex model doesn't show a gap between the previous element and this one
+        // when display is none
+        this.style.display = 'none';
       }
     }
   }
