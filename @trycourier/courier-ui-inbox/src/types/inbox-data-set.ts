@@ -13,7 +13,7 @@ export type InboxDataSet = {
  * The set of message filters.
  *
  * Filters are AND'd together to produce a set of messages.
- * For example, if the filter is { archived: true, status: 'read' }
+ * For example, if the filter is `{ archived: true, status: 'read' }`
  * the filter will produce messages that are archived AND read.
  */
 export type CourierInboxDatasetFilter = {

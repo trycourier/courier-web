@@ -478,7 +478,7 @@ export class CourierInbox extends CourierBaseElement {
    * ]
    * ```
    *
-   * @param feeds the list of feeds to set for the Inbox
+   * @param feeds - the list of feeds to set for the Inbox
    * @throws if feeds includes a duplicate feed or tab ID
    */
   public setFeeds(feeds: CourierInboxFeed[]) {

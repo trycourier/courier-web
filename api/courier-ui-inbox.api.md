@@ -107,7 +107,6 @@ export class CourierInbox extends CourierBaseElement {
     setDarkTheme(theme: CourierInboxTheme): void;
     setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement): void;
     setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement): void;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setFeeds(feeds: CourierInboxFeed[]): void;
     setFeedType(feedType: CourierInboxFeedType | string): void;
     setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement): void;
@@ -126,8 +125,6 @@ export class CourierInbox extends CourierBaseElement {
 // @public (undocumented)
 export type CourierInboxButtonTheme = CourierButtonTheme;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-missing-release-tag) "CourierInboxDatasetFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
