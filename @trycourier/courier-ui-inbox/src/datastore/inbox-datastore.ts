@@ -144,7 +144,11 @@ export class CourierInboxDatastore {
     }
   }
 
-  public async readMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async readMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Don't mark as read if already read
     if (message.read) {
       return;
@@ -154,10 +158,16 @@ export class CourierInboxDatastore {
       dataset.readMessage(message);
     }
 
-    await Courier.shared.client?.inbox.read({ messageId: message.messageId });
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.read({ messageId: message.messageId });
+    }
   }
 
-  public async unreadMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async unreadMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Don't mark as unread if already unread
     if (!message.read) {
       return;
@@ -167,10 +177,16 @@ export class CourierInboxDatastore {
       dataset.unreadMessage(message);
     }
 
-    await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
+    }
   }
 
-  public async openMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async openMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Don't mark as opened if already opened
     if (message.opened) {
       return;
@@ -180,10 +196,16 @@ export class CourierInboxDatastore {
       dataset.openMessage(message);
     }
 
-    await Courier.shared.client?.inbox.open({ messageId: message.messageId });
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.open({ messageId: message.messageId });
+    }
   }
 
-  public async unarchiveMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async unarchiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Don't unarchive if already unarchived
     if (!message.archived) {
       return;
@@ -193,10 +215,16 @@ export class CourierInboxDatastore {
       dataset.unarchiveMessage(message);
     }
 
-    await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
+    }
   }
 
-  public async archiveMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async archiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Don't archive if already archived
     if (message.archived) {
       return;
@@ -206,13 +234,19 @@ export class CourierInboxDatastore {
       dataset.archiveMessage(message);
     }
 
-    await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
+    }
   }
 
-  public async clickMessage({ message }: { message: InboxMessage }): Promise<void> {
+  public async clickMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     // Clicking a message does not mutate it locally
 
-    if (message.trackingIds?.clickTrackingId) {
+    if (message.trackingIds?.clickTrackingId && canCallApi) {
       await Courier.shared.client?.inbox.click({
         messageId: message.messageId,
         trackingId: message.trackingIds.clickTrackingId
@@ -221,30 +255,48 @@ export class CourierInboxDatastore {
   }
 
   /** Archive all messages for the specified dataset. */
-  public async archiveAllMessages(): Promise<void> {
+  public async archiveAllMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.archiveAllMessages();
     }
 
-    await Courier.shared.client?.inbox.archiveAll();
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.archiveAll();
+    }
   }
 
   /** Mark all messages read across all datasets. */
-  public async readAllMessages(): Promise<void> {
+  public async readAllMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.readAllMessages();
     }
 
-    await Courier.shared.client?.inbox.readAll();
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.readAll();
+    }
   }
 
   /** Archive all read messages for the specified dataset. */
-  public async archiveReadMessages(): Promise<void> {
+  public async archiveReadMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
+    if (canCallApi !== undefined && canCallApi !== true) {
+      Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
+    }
+
     for (let dataset of this._datasets.values()) {
       dataset.archiveReadMessages();
     }
 
-    await Courier.shared.client?.inbox.archiveRead();
+    if (canCallApi) {
+      await Courier.shared.client?.inbox.archiveRead();
+    }
   }
 
   /**

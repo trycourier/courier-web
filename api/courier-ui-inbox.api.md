@@ -142,17 +142,23 @@ export class CourierInboxDatastore {
     addDataStoreListener(listener: CourierInboxDataStoreListener): void;
     // (undocumented)
     addMessage(message: InboxMessage): void;
-    archiveAllMessages(): Promise<void>;
+    archiveAllMessages({ canCallApi }?: {
+        canCallApi?: boolean;
+    }): Promise<void>;
     // @deprecated (undocumented)
     get archiveDataSet(): InboxDataSet;
     // (undocumented)
-    archiveMessage({ message }: {
+    archiveMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
-    archiveReadMessages(): Promise<void>;
+    archiveReadMessages({ canCallApi }?: {
+        canCallApi?: boolean;
+    }): Promise<void>;
     // (undocumented)
-    clickMessage({ message }: {
+    clickMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
     // (undocumented)
     createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void;
@@ -172,13 +178,17 @@ export class CourierInboxDatastore {
     }): Promise<void>;
     loadUnreadCountsForTabs(tabIds: string[]): Promise<void>;
     // (undocumented)
-    openMessage({ message }: {
+    openMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
-    readAllMessages(): Promise<void>;
+    readAllMessages({ canCallApi }?: {
+        canCallApi?: boolean;
+    }): Promise<void>;
     // (undocumented)
-    readMessage({ message }: {
+    readMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
     // (undocumented)
     removeDataStoreListener(listener: CourierInboxDataStoreListener): void;
@@ -187,14 +197,16 @@ export class CourierInboxDatastore {
     // (undocumented)
     get totalUnreadCount(): number;
     // (undocumented)
-    unarchiveMessage({ message }: {
+    unarchiveMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
     // @deprecated (undocumented)
     get unreadCount(): number;
     // (undocumented)
-    unreadMessage({ message }: {
+    unreadMessage({ message, canCallApi }: {
         message: InboxMessage;
+        canCallApi?: boolean;
     }): Promise<void>;
     // (undocumented)
     upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage): void;
