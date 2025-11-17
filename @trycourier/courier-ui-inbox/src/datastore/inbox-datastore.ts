@@ -13,6 +13,8 @@ export class CourierInboxDatastore {
 
   private _datasets: Map<string, CourierInboxDataset> = new Map();
   private _listeners: CourierInboxDataStoreListener[] = [];
+  private _removeMessageEventListener?: () => void;
+
 
   private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
@@ -74,7 +76,15 @@ export class CourierInboxDatastore {
     }
 
     try {
-      socket.addMessageEventListener(event => this.handleMessageEvent(event));
+      // Remove any existing listener before adding a new one.
+      // This both prevents multiple listeners from being added to the same WebSocket client
+      // and makes sure the listener is on the current WebSocket client (rather than maintaining
+      // one from a stale client).
+      if (this._removeMessageEventListener) {
+        this._removeMessageEventListener();
+      }
+
+      this._removeMessageEventListener = socket.addMessageEventListener(event => this.handleMessageEvent(event));
 
       // If the socket is already connecting or open, return early
       if (socket.isConnecting || socket.isOpen) {

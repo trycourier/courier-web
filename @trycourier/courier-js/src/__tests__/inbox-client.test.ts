@@ -4,12 +4,28 @@ import { getClient } from './utils';
 describe('InboxClient', () => {
   const courierClient = getClient();
 
-  it('should fetch messages', async () => {
-    const result = await courierClient.inbox.getMessages({
-      paginationLimit: 10,
+  describe('getMessages', () => {
+    it('should fetch messages and unread count', async () => {
+      const result = await courierClient.inbox.getMessages({
+        paginationLimit: 10,
+      });
+      expect(result.data?.messages?.nodes).toBeDefined();
+      expect(result.data?.messages?.pageInfo).toBeDefined();
+      expect(result.data?.unreadCount).toBeDefined();
     });
-    expect(result.data?.messages?.nodes).toBeDefined();
-    expect(result.data?.messages?.pageInfo).toBeDefined();
+
+    it('should fetch messages with filters', async () => {
+      const result = await courierClient.inbox.getMessages({
+        filter: {
+          status: 'unread',
+          tags: ['my-tag'],
+        }
+      });
+
+      expect(result.data?.messages?.nodes).toBeDefined();
+      expect(result.data?.messages?.pageInfo).toBeDefined();
+      expect(result.data?.unreadCount).toBeDefined();
+    });
   });
 
   it('should fetch archived messages', async () => {
@@ -18,6 +34,7 @@ describe('InboxClient', () => {
     });
     expect(result.data?.messages?.nodes).toBeDefined();
     expect(result.data?.messages?.pageInfo).toBeDefined();
+    expect(result.data?.unreadCount).toBeDefined();
   });
 
   it('should return unread message count', async () => {
