@@ -147,7 +147,7 @@ export class CourierInboxDatastore {
     addMessage(message: InboxMessage): void;
     archiveAllMessages(): Promise<void>;
     // @deprecated (undocumented)
-    get archiveDataSet(): InboxDataSet | undefined;
+    get archiveDataSet(): InboxDataSet;
     // (undocumented)
     archiveMessage({ message }: {
         message: InboxMessage;
@@ -166,7 +166,7 @@ export class CourierInboxDatastore {
     // (undocumented)
     getDatasetById(datasetId: string): InboxDataSet | undefined;
     // @deprecated (undocumented)
-    get inboxDataSet(): InboxDataSet | undefined;
+    get inboxDataSet(): InboxDataSet;
     // (undocumented)
     listenForUpdates(): Promise<void>;
     load(props?: {
@@ -602,6 +602,7 @@ export type CourierInboxTheme = {
                 inbox?: CourierInboxFilterItemTheme;
                 archive?: CourierInboxFilterItemTheme;
                 unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
+                inactiveUnreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
             };
             menus?: {
                 popup?: CourierInboxPopupTheme;
