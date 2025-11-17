@@ -8,6 +8,7 @@ import { Context } from 'react';
 import { Courier } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierInbox } from '@trycourier/courier-ui-inbox';
+import { CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFeedType } from '@trycourier/courier-ui-inbox';
 import { CourierInboxHeaderFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxListItemActionFactoryProps } from '@trycourier/courier-ui-inbox';
@@ -76,6 +77,7 @@ export interface CourierInboxPopupMenuProps {
 // @public (undocumented)
 export interface CourierInboxProps {
     darkTheme?: CourierInboxTheme;
+    feeds?: CourierInboxFeed[];
     feedType?: CourierInboxFeedType;
     height?: string;
     lightTheme?: CourierInboxTheme;

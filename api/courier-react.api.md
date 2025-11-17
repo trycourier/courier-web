@@ -16,7 +16,9 @@ import { CourierFilterMenuTheme } from '@trycourier/courier-ui-inbox';
 import { CourierGetInboxMessageResponse } from '@trycourier/courier-js';
 import { CourierGetInboxMessagesResponse } from '@trycourier/courier-js';
 import { CourierInboxButtonTheme } from '@trycourier/courier-ui-inbox';
+import { CourierInboxDatasetFilter } from '@trycourier/courier-ui-inbox';
 import { CourierInbox as CourierInboxElement } from '@trycourier/courier-ui-inbox';
+import { CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFeedType } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFilterItemTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFontTheme } from '@trycourier/courier-ui-inbox';
@@ -38,6 +40,7 @@ import { CourierInboxSkeletonLoadingStateTheme } from '@trycourier/courier-ui-in
 import { CourierInboxStateEmptyFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxStateErrorFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxStateLoadingFactoryProps } from '@trycourier/courier-ui-inbox';
+import { CourierInboxTab } from '@trycourier/courier-ui-inbox';
 import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadCountIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadDotIndicatorTheme } from '@trycourier/courier-ui-inbox';
@@ -104,7 +107,11 @@ export const CourierInbox: ForwardRefExoticComponent<CourierInboxProps & RefAttr
 
 export { CourierInboxButtonTheme }
 
+export { CourierInboxDatasetFilter }
+
 export { CourierInboxElement }
+
+export { CourierInboxFeed }
 
 export { CourierInboxFeedType }
 
@@ -152,6 +159,8 @@ export { CourierInboxStateEmptyFactoryProps }
 export { CourierInboxStateErrorFactoryProps }
 
 export { CourierInboxStateLoadingFactoryProps }
+
+export { CourierInboxTab }
 
 export { CourierInboxTheme }
 

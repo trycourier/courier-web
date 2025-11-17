@@ -87,6 +87,9 @@ export class CourierInbox extends CourierBaseElement {
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     get currentFeed(): CourierInboxFeedType | string;
     // (undocumented)
+    get currentTab(): string;
+    getFeeds(): CourierInboxFeed[];
+    // (undocumented)
     static get id(): string;
     // (undocumented)
     static get observedAttributes(): string[];
@@ -99,10 +102,13 @@ export class CourierInbox extends CourierBaseElement {
     onMessageLongPress(handler?: (props: CourierInboxListItemFactoryProps) => void): void;
     refresh(): void;
     removeHeader(): void;
+    setActiveTab(tabId: string): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setDarkTheme(theme: CourierInboxTheme): void;
     setEmptyState(factory: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => HTMLElement): void;
     setErrorState(factory: (props: CourierInboxStateErrorFactoryProps | undefined | null) => HTMLElement): void;
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    setFeeds(feeds: CourierInboxFeed[]): void;
     setFeedType(feedType: CourierInboxFeedType | string): void;
     setHeader(factory: (props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -120,9 +126,11 @@ export class CourierInbox extends CourierBaseElement {
 // @public (undocumented)
 export type CourierInboxButtonTheme = CourierButtonTheme;
 
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // Warning: (ae-missing-release-tag) "CourierInboxDatasetFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export type CourierInboxDatasetFilter = {
     tags?: string[];
     archived?: boolean;
@@ -150,7 +158,7 @@ export class CourierInboxDatastore {
         message: InboxMessage;
     }): Promise<void>;
     // (undocumented)
-    createDatasetsFromFilters(filters: Map<string, CourierInboxDatasetFilter>): void;
+    createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void;
     fetchNextPageOfMessages(props: {
         feedType?: CourierInboxFeedType;
         datasetId?: string;
@@ -165,6 +173,7 @@ export class CourierInboxDatastore {
         canUseCache: boolean;
         datasetIds?: string[];
     }): Promise<void>;
+    loadUnreadCountsForTabs(tabIds: string[]): Promise<void>;
     // (undocumented)
     openMessage({ message }: {
         message: InboxMessage;
@@ -191,7 +200,7 @@ export class CourierInboxDatastore {
         message: InboxMessage;
     }): Promise<void>;
     // (undocumented)
-    upsertMessage(message: InboxMessage): void;
+    upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage): void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxDatastoreEvents" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -225,6 +234,15 @@ export class CourierInboxDataStoreListener {
     remove(): void;
 }
 
+// Warning: (ae-missing-release-tag) "CourierInboxFeed" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type CourierInboxFeed = {
+    id: string;
+    label: string;
+    tabs: CourierInboxTab[];
+};
+
 // Warning: (ae-missing-release-tag) "CourierInboxFeedType" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated (undocumented)
@@ -250,6 +268,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     constructor(props: {
         themeManager: CourierInboxThemeManager;
         onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void;
+        onTabChange: (tabId: string) => void;
     });
     // (undocumented)
     build(newElement: HTMLElement | undefined | null): void;
@@ -267,6 +286,12 @@ export class CourierInboxHeader extends CourierFactoryElement {
     onComponentUmounted(): void;
     // (undocumented)
     render(props: CourierInboxHeaderFactoryProps): void;
+    // (undocumented)
+    setFeeds(feeds: CourierInboxFeed[]): void;
+    // (undocumented)
+    setSelectedTab(tabId: string): void;
+    // (undocumented)
+    updateTabUnreadCount(tabId: string, count: number): void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierInboxHeaderFactoryProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -281,7 +306,7 @@ export type CourierInboxHeaderFactoryProps = {
 // Warning: (ae-missing-release-tag) "CourierInboxHeaderMenuItemId" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead';
+export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead' | string;
 
 // Warning: (ae-missing-release-tag) "CourierInboxIconButtonTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -527,6 +552,33 @@ export type CourierInboxStateLoadingFactoryProps = {
     feedType: CourierInboxFeedType | string;
 };
 
+// Warning: (ae-missing-release-tag) "CourierInboxTab" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type CourierInboxTab = {
+    id: string;
+    label: string;
+    filter: CourierInboxDatasetFilter;
+};
+
+// Warning: (ae-missing-release-tag) "CourierInboxTabsTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierInboxTabsTheme = {
+    default?: {
+        borderColor?: string;
+        font?: CourierInboxFontTheme;
+    };
+    hover?: {
+        borderColor?: string;
+        font?: CourierInboxFontTheme;
+    };
+    selected?: {
+        borderColor?: string;
+        font?: CourierInboxFontTheme;
+    };
+};
+
 // Warning: (ae-missing-release-tag) "CourierInboxTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -544,6 +596,7 @@ export type CourierInboxTheme = {
         header?: {
             backgroundColor?: string;
             shadow?: string;
+            tabs?: CourierInboxTabsTheme;
             filters?: {
                 font?: CourierInboxFontTheme;
                 inbox?: CourierInboxFilterItemTheme;

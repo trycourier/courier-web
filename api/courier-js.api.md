@@ -307,6 +307,7 @@ export class InboxClient extends Client {
         startCursor?: string;
         filter?: CourierGetInboxMessagesQueryFilter;
     }): Promise<CourierGetInboxMessagesResponse>;
+    getUnreadCounts(filtersMap: Record<string, CourierGetInboxMessagesQueryFilter>): Promise<Record<string, number>>;
     getUnreadMessageCount(): Promise<number>;
     open(props: {
         messageId: string;

@@ -178,11 +178,13 @@ export type CourierFontTheme = {
 //
 // @public (undocumented)
 export class CourierIcon extends CourierBaseElement {
-    constructor(color?: string, svg?: string);
+    constructor(color?: string, svg?: string, size?: string);
     // (undocumented)
     static get id(): string;
     // (undocumented)
     updateColor(color: string): void;
+    // (undocumented)
+    updateSize(size: string): void;
     // (undocumented)
     updateSVG(svg: string): void;
 }
@@ -191,7 +193,7 @@ export class CourierIcon extends CourierBaseElement {
 //
 // @public (undocumented)
 export class CourierIconButton extends CourierBaseElement {
-    constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string, borderRadius?: string, height?: string, width?: string);
+    constructor(svg?: string, color?: string, backgroundColor?: string, hoverBackgroundColor?: string, activeBackgroundColor?: string, borderRadius?: string, height?: string, width?: string, iconSize?: string);
     // (undocumented)
     static get id(): string;
     // (undocumented)
@@ -202,6 +204,8 @@ export class CourierIconButton extends CourierBaseElement {
     updateHoverBackgroundColor(color: string): void;
     // (undocumented)
     updateIconColor(color: string): void;
+    // (undocumented)
+    updateIconSize(size: string): void;
     // (undocumented)
     updateIconSVG(svg: string): void;
 }
@@ -231,6 +235,7 @@ export const CourierIconSVGs: {
     archiveRead: string;
     unread: string;
     unarchive: string;
+    chevronDown: string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierIconTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

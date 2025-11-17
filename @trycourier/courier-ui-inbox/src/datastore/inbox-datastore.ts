@@ -334,13 +334,37 @@ export class CourierInboxDatastore {
   }
 
   /** @deprecated - update callers to use getDataSetById('inbox') */
-  public get inboxDataSet(): InboxDataSet | undefined {
-    return this.getDatasetById('inbox');
+  public get inboxDataSet(): InboxDataSet {
+    const dataset =  this.getDatasetById('inbox');
+
+    if (dataset) {
+      return dataset;
+    }
+
+    return {
+      feedType: 'inbox',
+      messages: [],
+      unreadCount: 0,
+      canPaginate: false,
+      paginationCursor: null
+    };
   }
 
   /** @deprecated - update callers to use getDataSetById('archive') */
-  public get archiveDataSet(): InboxDataSet | undefined {
-    return this.getDatasetById('archive');
+  public get archiveDataSet(): InboxDataSet {
+    const dataset =  this.getDatasetById('archive');
+
+    if (dataset) {
+      return dataset;
+    }
+
+    return {
+      feedType: 'archive',
+      messages: [],
+      unreadCount: 0,
+      canPaginate: false,
+      paginationCursor: null
+    };
   }
 
   /** @deprecated - update callers to use totalUnreadCount or get the unreadCount for a specific dataset */
