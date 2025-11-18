@@ -5,6 +5,22 @@ import { CourierInboxDataset } from "./inbox-dataset";
 import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
+import { copyInboxDataSet } from "../utils/utils";
+
+/**
+ * Snapshot of a single dataset's state for rollback purposes
+ */
+interface DatasetSnapshot {
+  id: string;
+  dataset: InboxDataSet;
+}
+
+/**
+ * Snapshot of the entire datastore state for rollback purposes
+ */
+interface DatastoreSnapshot {
+  datasets: DatasetSnapshot[];
+}
 
 export class CourierInboxDatastore {
   private static readonly TAG = "CourierInboxDatastore";
@@ -164,13 +180,15 @@ export class CourierInboxDatastore {
       return;
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.readMessage(message);
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.readMessage(message);
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.read({ messageId: message.messageId });
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.read({ messageId: message.messageId });
+      }
+    });
   }
 
   public async unreadMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
@@ -183,13 +201,15 @@ export class CourierInboxDatastore {
       return;
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.unreadMessage(message);
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.unreadMessage(message);
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
+      }
+    });
   }
 
   public async openMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
@@ -202,13 +222,15 @@ export class CourierInboxDatastore {
       return;
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.openMessage(message);
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.openMessage(message);
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.open({ messageId: message.messageId });
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.open({ messageId: message.messageId });
+      }
+    });
   }
 
   public async unarchiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
@@ -221,13 +243,15 @@ export class CourierInboxDatastore {
       return;
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.unarchiveMessage(message);
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.unarchiveMessage(message);
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
+      }
+    });
   }
 
   public async archiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
@@ -240,13 +264,15 @@ export class CourierInboxDatastore {
       return;
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.archiveMessage(message);
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.archiveMessage(message);
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
+      }
+    });
   }
 
   public async clickMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
@@ -254,13 +280,24 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
     }
 
-    // Clicking a message does not mutate it locally
-
+    // Clicking a message does not mutate it locally, but we still want error handling
     if (message.trackingIds?.clickTrackingId && canCallApi) {
-      await Courier.shared.client?.inbox.click({
-        messageId: message.messageId,
-        trackingId: message.trackingIds.clickTrackingId
-      });
+      try {
+        await Courier.shared.client?.inbox.click({
+          messageId: message.messageId,
+          trackingId: message.trackingIds.clickTrackingId
+        });
+      } catch (error) {
+        // Log error
+        Courier.shared.client?.options.logger?.error(`[${CourierInboxDatastore.TAG}] Error clicking message:`, error);
+
+        // Notify listeners of error
+        this._listeners.forEach(listener => {
+          listener.events.onError?.(error as Error);
+        });
+
+        // Do NOT re-throw - swallow the error for backward compatibility
+      }
     }
   }
 
@@ -270,13 +307,15 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.archiveAllMessages();
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.archiveAllMessages();
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.archiveAll();
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.archiveAll();
+      }
+    });
   }
 
   /** Mark all messages read across all datasets. */
@@ -285,13 +324,15 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.readAllMessages();
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.readAllMessages();
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.readAll();
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.readAll();
+      }
+    });
   }
 
   /** Archive all read messages for the specified dataset. */
@@ -300,13 +341,15 @@ export class CourierInboxDatastore {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
     }
 
-    for (let dataset of this._datasets.values()) {
-      dataset.archiveReadMessages();
-    }
+    await this.executeWithRollback(async () => {
+      for (let dataset of this._datasets.values()) {
+        dataset.archiveReadMessages();
+      }
 
-    if (canCallApi) {
-      await Courier.shared.client?.inbox.archiveRead();
-    }
+      if (canCallApi) {
+        await Courier.shared.client?.inbox.archiveRead();
+      }
+    });
   }
 
   /**
@@ -520,6 +563,70 @@ export class CourierInboxDatastore {
 
   private clearDatasets() {
     this._datasets.clear();
+  }
+
+  /**
+   * Create a snapshot of all datasets for rollback purposes.
+   * This captures the current state of all messages and metadata.
+   */
+  private createDatastoreSnapshot(): DatastoreSnapshot {
+    const snapshots: DatasetSnapshot[] = [];
+
+    for (const [id, dataset] of this._datasets.entries()) {
+      const datasetState = dataset.toInboxDataset();
+      if (datasetState) {
+        const copy = copyInboxDataSet(datasetState);
+        if (copy) {
+          snapshots.push({
+            id,
+            dataset: copy
+          });
+        }
+      }
+    }
+
+    return { datasets: snapshots };
+  }
+
+  /**
+   * Restore all datasets from a snapshot, reverting any mutations.
+   * This is used for rollback when API calls fail.
+   */
+  private restoreDatastoreSnapshot(snapshot: DatastoreSnapshot): void {
+    for (const datasetSnapshot of snapshot.datasets) {
+      const dataset = this._datasets.get(datasetSnapshot.id);
+      if (dataset) {
+        dataset.restoreFromSnapshot(datasetSnapshot.dataset);
+      }
+    }
+  }
+
+  /**
+   * Execute an operation with automatic rollback on failure.
+   * Snapshots all datasets before the operation and restores them if the operation throws.
+   *
+   * Note: Errors are caught and logged, but not re-thrown to match the behavior
+   * for backwards compatibility with the legacy (inbox/archive) datastore implementation.
+   *
+   * Note: This method exists at the datastore level (rather than dataset) to handle
+   * errors from API calls.
+   */
+  private async executeWithRollback<T>(
+    operation: () => Promise<T>
+  ): Promise<T | void> {
+    const snapshot = this.createDatastoreSnapshot();
+
+    try {
+      return await operation();
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error(`[${CourierInboxDatastore.TAG}] Error during operation:`, error);
+
+      this.restoreDatastoreSnapshot(snapshot);
+
+      this._listeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
+    }
   }
 
   public static get shared(): CourierInboxDatastore {

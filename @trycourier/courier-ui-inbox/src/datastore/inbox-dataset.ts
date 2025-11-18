@@ -518,4 +518,22 @@ export class CourierInboxDataset {
   private static getISONow() {
     return new Date().toISOString();
   }
+
+  /**
+   * Restore this dataset from a snapshot.
+   *
+   * Note: _firstFetchComplete and _prefetchUnreadCount do not need to be restored
+   * as they indicate specific lifecycle stages for the dataset.
+   */
+  public restoreFromSnapshot(snapshot: InboxDataSet): void {
+    this._messages = snapshot.messages.map(m => copyMessage(m));
+
+    this._hasNextPage = snapshot.canPaginate;
+    this._lastPaginationCursor = snapshot.paginationCursor ?? undefined;
+
+    this._datastoreListeners.forEach(listener => {
+      listener.events.onDataSetChange?.(snapshot, this._id);
+      listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+    });
+  }
 }
