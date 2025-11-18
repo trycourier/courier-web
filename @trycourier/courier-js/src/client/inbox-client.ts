@@ -133,52 +133,14 @@ export class InboxClient extends Client {
    * @param paginationLimit - Number of messages to return per page (default: 24)
    * @param startCursor - Cursor for pagination
    * @returns Promise resolving to paginated archived messages response
+   *
+   * @deprecated - replace usages with {@link InboxClient.getMessages}, passing the filter `{ archived: true }`
    */
   public async getArchivedMessages(props?: { paginationLimit?: number; startCursor?: string; }): Promise<CourierGetInboxMessagesResponse> {
-    const query = `
-      query GetInboxMessages(
-        $params: FilterParamsInput = { ${this.options.tenantId ? `accountId: "${this.options.tenantId}"` : ''}, archived: true }
-        $limit: Int = ${props?.paginationLimit ?? 24}
-        $after: String ${props?.startCursor ? `= "${props.startCursor}"` : ''}
-      ) {
-        count(params: $params)
-        messages(params: $params, limit: $limit, after: $after) {
-          totalCount
-          pageInfo {
-            startCursor
-            hasNextPage
-          }
-          nodes {
-            messageId
-            read
-            archived
-            created
-            opened
-            title
-            preview
-            data
-            tags
-            trackingIds {
-              clickTrackingId
-            }
-            actions {
-              content
-              data
-              href
-            }
-          }
-        }
-      }
-    `;
-
-    return graphql({
-      options: this.options,
-      query,
-      headers: {
-        'x-courier-user-id': this.options.userId,
-        'Authorization': `Bearer ${this.options.accessToken}`
-      },
-      url: this.options.apiUrls.inbox.graphql,
+    return this.getMessages({
+      paginationLimit: props?.paginationLimit,
+      startCursor: props?.startCursor,
+      filter: { archived: true }
     });
   }
 

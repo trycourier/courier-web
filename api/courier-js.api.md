@@ -298,6 +298,7 @@ export class InboxClient extends Client {
         messageId: string;
         trackingId: string;
     }): Promise<void>;
+    // @deprecated
     getArchivedMessages(props?: {
         paginationLimit?: number;
         startCursor?: string;
