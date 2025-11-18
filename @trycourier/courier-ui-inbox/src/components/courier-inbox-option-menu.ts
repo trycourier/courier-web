@@ -284,6 +284,10 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     this.refreshMenuItems();
   }
 
+  public setVisible(visible: boolean) {
+    this.style.display = visible ? 'inline-block' : 'none';
+  }
+
 }
 
 registerElement(CourierInboxOptionMenu);

@@ -65,7 +65,7 @@ export class CourierInboxDataset {
    */
   get unreadCount(): number {
     // If we have messages or have completed first fetch, calculate from messages
-    if (this._messages.length > 0 || this._firstFetchComplete) {
+    if (this._messages.length > 0 && this._firstFetchComplete) {
       return this._messages.filter(m => !m.read).length;
     }
     // Otherwise use the preloaded count

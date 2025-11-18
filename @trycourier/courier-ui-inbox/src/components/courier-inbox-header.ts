@@ -189,6 +189,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._unreadCount = props.unreadCount;
 
     const feedOption = this.getFeedOptions().find(opt => opt.id === this._activeFeedId);
+    const feedOptions = this.getFeedOptions();
     const activeFeed = this._feeds.find(feed => feed.id === this._activeFeedId);
     const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
 
@@ -196,6 +197,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._titleComponent?.updateSelectedOption(feedOption, this._activeFeedId);
       this._filterMenu?.selectOption(feedOption);
     }
+
+    // Show/hide filter menu based on number of feeds
+    this._filterMenu?.setVisible(feedOptions.length > 1);
 
     // Update unread badge - hide if there are multiple tabs
     const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
@@ -236,6 +240,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Selected default menu
     this._filterMenu.selectOption(feedOptions[0]);
+
+    // Set initial visibility based on number of feeds
+    this._filterMenu.setVisible(feedOptions.length > 1);
 
     // Create unread badge
     this._unreadBadge = new CourierUnreadCountBadge({
@@ -312,6 +319,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
       if (oldFilterMenu.parentNode) {
         oldFilterMenu.parentNode.replaceChild(this._filterMenu, oldFilterMenu);
       }
+
+      // Show/hide filter menu based on number of feeds
+      this._filterMenu.setVisible(feedOptions.length > 1);
 
       // Update the title section with the new default option
       if (feedOptions.length > 0) {
