@@ -1,4 +1,4 @@
-import { CourierInboxDatastore } from "./datastore";
+import { CourierInboxDatastore } from "./inbox-datastore";
 import { CourierInboxDatastoreEvents } from "./datatore-events";
 
 export class CourierInboxDataStoreListener {
