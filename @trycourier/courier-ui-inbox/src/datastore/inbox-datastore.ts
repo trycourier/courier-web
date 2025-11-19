@@ -22,6 +22,14 @@ interface DatastoreSnapshot {
   datasets: DatasetSnapshot[];
 }
 
+/**
+ * Shared datastore for Inbox components.
+ *
+ * CourierInboxDatastore is a singleton. Use `CourierInboxDatastore.shared`
+ * to access the shared instance.
+ *
+ * @public
+ */
 export class CourierInboxDatastore {
   private static readonly TAG = "CourierInboxDatastore";
 
@@ -44,6 +52,14 @@ export class CourierInboxDatastore {
     this._messageMutationPublisher.addSubscriber(this._messageMutationSubscriber);
   }
 
+  /**
+   * Instantiate the datastore with the feeds specified.
+   *
+   * Feeds are added to the datastore as datasets. Each feed has a respective
+   * dataset. Existing datasets will be cleared before the feeds specified are added.
+   *
+   * @param feeds - The feeds with which to instantiate the datastore
+   */
   public createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void {
     const datasets = new Map<string, CourierInboxDatasetFilter>(
       feeds.flatMap(feed => feed.tabs).map(tab => [tab.id, tab.filter])
@@ -67,13 +83,20 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Add a message to the datastore.
+   *
+   * The message will be added to any datasets for which it qualifies.
+   *
+   * @param message - The message to add
+   */
   public addMessage(message: InboxMessage) {
     for (let dataset of this._datasets.values()) {
       dataset.addMessage(message);
     }
   }
 
-  public upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage) {
+  private upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage) {
     for (let [datasetId, dataset] of this._datasets.entries()) {
       // Skip the originating dataset to avoid duplicate processing
       if (datasetId === originatingDatasetId) {
@@ -83,6 +106,12 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Listen for real-time message updates from the Courier backend.
+   *
+   * If an existing WebSocket connection is open, it will be re-used. If not,
+   * a new connection will be opened.
+   */
   public async listenForUpdates() {
     const socket = Courier.shared.client?.inbox.socket;
 
@@ -154,6 +183,10 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Add a datastore listener, whose callbacks will be called in response to various message events.
+   * @param listener - The listener instance to add
+   */
   public addDataStoreListener(listener: CourierInboxDataStoreListener): void {
     this._listeners.push(listener);
 
@@ -162,6 +195,10 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Remove a datastore listener.
+   * @param listener - The listener instance to remove
+   */
   public removeDataStoreListener(listener: CourierInboxDataStoreListener): void {
     this._listeners = this._listeners.filter(l => l !== listener);
 
@@ -170,6 +207,11 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Mark a message as read.
+   * @param message - The message to mark as read
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async readMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -191,6 +233,11 @@ export class CourierInboxDatastore {
     });
   }
 
+  /**
+   * Mark a message as unread.
+   * @param message - The message to mark as unread
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async unreadMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -212,6 +259,11 @@ export class CourierInboxDatastore {
     });
   }
 
+  /**
+   * Mark a message as opened.
+   * @param message - The message to mark as opened
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async openMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -233,6 +285,11 @@ export class CourierInboxDatastore {
     });
   }
 
+  /**
+   * Unarchive a message.
+   * @param message - The message to unarchive
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async unarchiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -254,6 +311,11 @@ export class CourierInboxDatastore {
     });
   }
 
+  /**
+   * Archive a message.
+   * @param message - The message to archive
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async archiveMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -275,6 +337,11 @@ export class CourierInboxDatastore {
     });
   }
 
+  /**
+   * Track a click event for a message.
+   * @param message - The message that was clicked
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async clickMessage({ message, canCallApi = true }: { message: InboxMessage; canCallApi?: boolean }): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -301,7 +368,10 @@ export class CourierInboxDatastore {
     }
   }
 
-  /** Archive all messages for the specified dataset. */
+  /**
+   * Archive all messages for the specified dataset.
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async archiveAllMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -318,7 +388,10 @@ export class CourierInboxDatastore {
     });
   }
 
-  /** Mark all messages read across all datasets. */
+  /**
+   * Mark all messages read across all datasets.
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async readAllMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -335,7 +408,10 @@ export class CourierInboxDatastore {
     });
   }
 
-  /** Archive all read messages for the specified dataset. */
+  /**
+   * Archive all read messages for the specified dataset.
+   * @param canCallApi - This parameter is deprecated and will be removed in a future version.
+   */
   public async archiveReadMessages({ canCallApi = true }: { canCallApi?: boolean } = {}): Promise<void> {
     if (canCallApi !== undefined && canCallApi !== true) {
       Courier.shared.client?.options.logger?.warn(`[${CourierInboxDatastore.TAG}] canCallApi is deprecated and will be removed in a future version.`);
@@ -359,7 +435,7 @@ export class CourierInboxDatastore {
    *  - canUseCache: If true and the dataset has already been loaded once, this will return the dataset from memory.
    *  - datasetIds: Optional: The set of dataset IDs to load. If unset, all known datasets will be loaded.
    *
-   * @param props - options to load datasets, see method documentation
+   * @param props - Options to load datasets, see method documentation
    */
   public async load(props?: { canUseCache: boolean, datasetIds?: string[] }): Promise<void> {
     const client = Courier.shared.client;
@@ -397,7 +473,7 @@ export class CourierInboxDatastore {
    * Please migrate to pass the same identifier as datasetId.
    * While both options are present, exactly one is required.
    *
-   * @param props - options to fetch the next page of messages, see method documetation
+   * @param props - Options to fetch the next page of messages, see method documetation
    */
   public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId?: string }): Promise<InboxDataSet | null> {
     const client = Courier.shared.client;
@@ -425,6 +501,7 @@ export class CourierInboxDatastore {
     return this.fetchNextPageForDataset({ dataset: datasetToFetch });
   }
 
+  /** Get the total unread count across all datasets. */
   public get totalUnreadCount(): number {
     let unreadCount = 0;
     for (let dataset of this._datasets.values()) {
@@ -434,11 +511,19 @@ export class CourierInboxDatastore {
     return unreadCount;
   }
 
+  /**
+   * Get the {@link InboxDataSet} representation of the dataset ID specified.
+   * @param datasetId - The dataset ID to get
+   */
   public getDatasetById(datasetId: string): InboxDataSet | undefined {
     return this._datasets.get(datasetId)?.toInboxDataset();
   }
 
-  /** @deprecated - update callers to use getDataSetById('inbox') */
+  /**
+   * Get the 'inbox' dataset, or an default instance of {@link InboxDataSet} if it doesn't exist.
+   *
+   * @deprecated - Update callers to use `getDatasetById('inbox')`
+   */
   public get inboxDataSet(): InboxDataSet {
     const dataset =  this.getDatasetById('inbox');
 
@@ -455,7 +540,11 @@ export class CourierInboxDatastore {
     };
   }
 
-  /** @deprecated - update callers to use getDataSetById('archive') */
+  /**
+   * Get the 'archive' dataset, or an default instance of {@link InboxDataSet} if it doesn't exist.
+   *
+   * @deprecated - Update callers to use `getDataSetById('archive')`
+   */
   public get archiveDataSet(): InboxDataSet {
     const dataset =  this.getDatasetById('archive');
 
@@ -472,7 +561,11 @@ export class CourierInboxDatastore {
     };
   }
 
-  /** @deprecated - update callers to use totalUnreadCount or get the unreadCount for a specific dataset */
+  /**
+   * Get sum of unread counts across all datasets.
+   *
+   * @deprecated - Update callers to use {@link CourierInboxDatastore.totalUnreadCount} or for a specific dataset {@link CourierInboxDatastore.getDatasetById} which exposes a specific dataset's unread count.
+   */
   public get unreadCount(): number {
     return this.totalUnreadCount;
   }
@@ -510,6 +603,13 @@ export class CourierInboxDatastore {
     Courier.shared.client?.options.logger?.warn(``);
   }
 
+  /**
+   * Update all messages across all datasets from an InboxMessageEvent.
+   * This only handles InboxMessageEvents that do not specify a messageId
+   * and mutate all messages.
+   *
+   * Related: {@link CourierInboxDatastore.updateMessage}
+   */
   private updateAllMessages(event: InboxMessageEvent) {
     for (let dataset of this._datasets.values()) {
       switch (event) {
@@ -528,6 +628,12 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Update a single message across all datasets from an InboxMessageEvent.
+   * This only handles InboxMessageEvents that specify a messageId.
+   *
+   * Related: {@link CourierInboxDatastore.updateAllMessages}
+   */
   private updateMessage(messageId: string, event: InboxMessageEvent) {
     for (let dataset of this._datasets.values()) {
       const message = dataset.getMessage(messageId);
@@ -590,7 +696,7 @@ export class CourierInboxDatastore {
 
   /**
    * Restore all datasets from a snapshot, reverting any mutations.
-   * This is used for rollback when API calls fail.
+   * This is used for rollback when API calls or updates to downstream datasets fail.
    */
   private restoreDatastoreSnapshot(snapshot: DatastoreSnapshot): void {
     for (const datasetSnapshot of snapshot.datasets) {
@@ -629,6 +735,12 @@ export class CourierInboxDatastore {
     }
   }
 
+  /**
+   * Get the shared instance of CourierInboxDatastore.
+   *
+   * CourierInboxDatastore is a singleton. Instance methods should be accessed
+   * through this `shared` static accessor.
+   */
   public static get shared(): CourierInboxDatastore {
     if (!CourierInboxDatastore.instance) {
       CourierInboxDatastore.instance = new CourierInboxDatastore();

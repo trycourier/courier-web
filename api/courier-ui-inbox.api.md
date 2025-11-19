@@ -134,20 +134,15 @@ export type CourierInboxDatasetFilter = {
     status?: 'read' | 'unread';
 };
 
-// Warning: (ae-missing-release-tag) "CourierInboxDatastore" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class CourierInboxDatastore {
-    // (undocumented)
     addDataStoreListener(listener: CourierInboxDataStoreListener): void;
-    // (undocumented)
     addMessage(message: InboxMessage): void;
     archiveAllMessages({ canCallApi }?: {
         canCallApi?: boolean;
     }): Promise<void>;
-    // @deprecated (undocumented)
+    // @deprecated
     get archiveDataSet(): InboxDataSet;
-    // (undocumented)
     archiveMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
@@ -155,29 +150,24 @@ export class CourierInboxDatastore {
     archiveReadMessages({ canCallApi }?: {
         canCallApi?: boolean;
     }): Promise<void>;
-    // (undocumented)
     clickMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
     }): Promise<void>;
-    // (undocumented)
     createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void;
     fetchNextPageOfMessages(props: {
         feedType?: CourierInboxFeedType;
         datasetId?: string;
     }): Promise<InboxDataSet | null>;
-    // (undocumented)
     getDatasetById(datasetId: string): InboxDataSet | undefined;
-    // @deprecated (undocumented)
+    // @deprecated
     get inboxDataSet(): InboxDataSet;
-    // (undocumented)
     listenForUpdates(): Promise<void>;
     load(props?: {
         canUseCache: boolean;
         datasetIds?: string[];
     }): Promise<void>;
     loadUnreadCountsForTabs(tabIds: string[]): Promise<void>;
-    // (undocumented)
     openMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
@@ -185,36 +175,26 @@ export class CourierInboxDatastore {
     readAllMessages({ canCallApi }?: {
         canCallApi?: boolean;
     }): Promise<void>;
-    // (undocumented)
     readMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
     }): Promise<void>;
-    // (undocumented)
     removeDataStoreListener(listener: CourierInboxDataStoreListener): void;
-    // (undocumented)
     static get shared(): CourierInboxDatastore;
-    // (undocumented)
     get totalUnreadCount(): number;
-    // (undocumented)
     unarchiveMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
     }): Promise<void>;
-    // @deprecated (undocumented)
+    // @deprecated
     get unreadCount(): number;
-    // (undocumented)
     unreadMessage({ message, canCallApi }: {
         message: InboxMessage;
         canCallApi?: boolean;
     }): Promise<void>;
-    // (undocumented)
-    upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage): void;
 }
 
-// Warning: (ae-missing-release-tag) "CourierInboxDatastoreEvents" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export class CourierInboxDatastoreEvents {
     // (undocumented)
     onDataSetChange?(_: InboxDataSet, __: CourierInboxFeedType | string): void;

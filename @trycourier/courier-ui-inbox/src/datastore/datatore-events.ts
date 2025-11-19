@@ -2,6 +2,12 @@ import { CourierInboxFeedType } from "../types/feed-type";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { InboxMessage } from "@trycourier/courier-js";
 
+/**
+ * Event callbacks which may be fully or partially implemented to be called when
+ * {@link CourierInboxDatastore} has updates.
+ *
+ * @public
+ */
 export class CourierInboxDatastoreEvents {
   /**
    * @public
