@@ -4,7 +4,7 @@ import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../ty
 import { CourierInboxDataset } from "./inbox-dataset";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
-import { copyInboxDataSet } from "../utils/utils";
+import { copyInboxDataSet, copyMessage } from "../utils/utils";
 
 /**
  * Snapshot of a single dataset's state for rollback purposes
@@ -227,7 +227,8 @@ export class CourierInboxDatastore {
 
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const afterMessage = { ...beforeMessage, read: CourierInboxDatastore.getISONow() };
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.read = CourierInboxDatastore.getISONow();
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
@@ -261,7 +262,8 @@ export class CourierInboxDatastore {
 
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const afterMessage = { ...beforeMessage, read: undefined };
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.read = undefined;
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
@@ -295,7 +297,8 @@ export class CourierInboxDatastore {
 
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const afterMessage = { ...beforeMessage, opened: CourierInboxDatastore.getISONow() };
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.opened = CourierInboxDatastore.getISONow();
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
@@ -329,7 +332,8 @@ export class CourierInboxDatastore {
 
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const afterMessage = { ...beforeMessage, archived: undefined };
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.archived = undefined;
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
@@ -363,7 +367,8 @@ export class CourierInboxDatastore {
 
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const afterMessage = { ...beforeMessage, archived: CourierInboxDatastore.getISONow() };
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.archived = CourierInboxDatastore.getISONow();
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
@@ -421,7 +426,8 @@ export class CourierInboxDatastore {
       // Mutate all messages in global store that aren't already archived
       for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
         if (!beforeMessage.archived) {
-          const afterMessage = { ...beforeMessage, archived: archiveDate };
+          const afterMessage = copyMessage(beforeMessage);
+          afterMessage.archived = archiveDate;
           this._globalMessages.set(messageId, afterMessage);
           this.upsertMessage(beforeMessage, afterMessage);
         }
@@ -448,7 +454,8 @@ export class CourierInboxDatastore {
       // Mutate all messages in global store that aren't already read
       for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
         if (!beforeMessage.read) {
-          const afterMessage = { ...beforeMessage, read: readDate };
+          const afterMessage = copyMessage(beforeMessage);
+          afterMessage.read = readDate;
           this._globalMessages.set(messageId, afterMessage);
           this.upsertMessage(beforeMessage, afterMessage);
         }
@@ -475,7 +482,8 @@ export class CourierInboxDatastore {
       // Mutate all read messages in global store that aren't already archived
       for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
         if (beforeMessage.read && !beforeMessage.archived) {
-          const afterMessage = { ...beforeMessage, archived: archiveDate };
+          const afterMessage = copyMessage(beforeMessage);
+          afterMessage.archived = archiveDate;
           this._globalMessages.set(messageId, afterMessage);
           this.upsertMessage(beforeMessage, afterMessage);
         }
@@ -702,17 +710,20 @@ export class CourierInboxDatastore {
       switch (event) {
         case InboxMessageEvent.MarkAllRead:
           if (!beforeMessage.read) {
-            afterMessage = { ...beforeMessage, read: timestamp };
+            afterMessage = copyMessage(beforeMessage);
+            afterMessage.read = timestamp;
           }
           break;
         case InboxMessageEvent.ArchiveAll:
           if (!beforeMessage.archived) {
-            afterMessage = { ...beforeMessage, archived: timestamp };
+            afterMessage = copyMessage(beforeMessage);
+            afterMessage.archived = timestamp;
           }
           break;
         case InboxMessageEvent.ArchiveRead:
           if (beforeMessage.read && !beforeMessage.archived) {
-            afterMessage = { ...beforeMessage, archived: timestamp };
+            afterMessage = copyMessage(beforeMessage);
+            afterMessage.archived = timestamp;
           }
           break;
         default:
@@ -743,19 +754,24 @@ export class CourierInboxDatastore {
 
     switch (event) {
       case InboxMessageEvent.Archive:
-        afterMessage = { ...beforeMessage, archived: CourierInboxDatastore.getISONow() };
+        afterMessage = copyMessage(beforeMessage);
+        afterMessage.archived = CourierInboxDatastore.getISONow();
         break;
       case InboxMessageEvent.Opened:
-        afterMessage = { ...beforeMessage, opened: CourierInboxDatastore.getISONow() };
+        afterMessage = copyMessage(beforeMessage);
+        afterMessage.opened = CourierInboxDatastore.getISONow();
         break;
       case InboxMessageEvent.Read:
-        afterMessage = { ...beforeMessage, read: CourierInboxDatastore.getISONow() };
+        afterMessage = copyMessage(beforeMessage);
+        afterMessage.read = CourierInboxDatastore.getISONow();
         break;
       case InboxMessageEvent.Unarchive:
-        afterMessage = { ...beforeMessage, archived: undefined };
+        afterMessage = copyMessage(beforeMessage);
+        afterMessage.archived = undefined;
         break;
       case InboxMessageEvent.Unread:
-        afterMessage = { ...beforeMessage, read: undefined };
+        afterMessage = copyMessage(beforeMessage);
+        afterMessage.read = undefined;
         break;
       case InboxMessageEvent.Clicked:
       case InboxMessageEvent.Unopened:
