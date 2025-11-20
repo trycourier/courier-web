@@ -65,18 +65,53 @@ export function copyInboxDataSet(dataSet?: InboxDataSet): InboxDataSet | undefin
 
 }
 
+/**
+ * Compare the mutable fields of two InboxMessages.
+ * @param message1 - The first inbox message to compare
+ * @param message2 - The second inbox message to compare
+ * @returns True if the mutable fields are equal, false otherwise
+ */
+export function mutableInboxMessageFieldsEqual(message1: InboxMessage, message2: InboxMessage): boolean {
+  // Compare only mutable state fields
+  if (message1.archived !== message2.archived) {
+    return false;
+  }
+  if (message1.read !== message2.read) {
+    return false;
+  }
+  if (message1.opened !== message2.opened) {
+    return false;
+  }
+
+  return true;
+}
+
 export function getMessageTime(message: InboxMessage): string {
-  if (!message.created) return 'Now';
+  if (!message.created) {
+    return 'Now';
+  }
 
   const now = new Date();
   const messageDate = new Date(message.created);
   const diffInSeconds = Math.floor((now.getTime() - messageDate.getTime()) / 1000);
 
-  if (diffInSeconds < 5) return 'Now';
-  if (diffInSeconds < 60) return `${diffInSeconds}s`;
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 604800)}w`;
+  if (diffInSeconds < 5) {
+    return 'Now';
+  }
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds}s`;
+  }
+  if (diffInSeconds < 3600) {
+    return `${Math.floor(diffInSeconds / 60)}m`;
+  }
+  if (diffInSeconds < 86400) {
+    return `${Math.floor(diffInSeconds / 3600)}h`;
+  }
+  if (diffInSeconds < 604800) {
+    return `${Math.floor(diffInSeconds / 86400)}d`;
+  }
+  if (diffInSeconds < 31536000) {
+    return `${Math.floor(diffInSeconds / 604800)}w`;
+  }
   return `${Math.floor(diffInSeconds / 31536000)}y`;
 }

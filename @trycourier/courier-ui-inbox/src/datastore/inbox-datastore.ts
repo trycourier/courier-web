@@ -2,7 +2,6 @@ import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } f
 import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
-import { InboxMessageMutationPublisher, InboxMessageMutationSubscriber } from "./inbox-message-mutation-publisher";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxFeedType } from "../types/feed-type";
 import { copyInboxDataSet } from "../utils/utils";
@@ -39,17 +38,11 @@ export class CourierInboxDatastore {
   private _listeners: CourierInboxDataStoreListener[] = [];
   private _removeMessageEventListener?: () => void;
 
-
-  private _messageMutationPublisher = InboxMessageMutationPublisher.shared;
-  private _messageMutationSubscriber: InboxMessageMutationSubscriber = {
-    handleMessage: (originatingDatasetId, message) => {
-      this.upsertMessage(originatingDatasetId, message);
-    }
-  };
+  /** Global message store - single source of truth for all messages across datasets */
+  private _globalMessages = new Map<string, InboxMessage>();
 
   /** Access CourierInboxDatastore through {@link CourierInboxDatastore.shared} */
   private constructor() {
-    this._messageMutationPublisher.addSubscriber(this._messageMutationSubscriber);
   }
 
   /**
@@ -91,18 +84,18 @@ export class CourierInboxDatastore {
    * @param message - The message to add
    */
   public addMessage(message: InboxMessage) {
+    // Add to global store
+    this._globalMessages.set(message.messageId, message);
+
+    // Add to all qualifying datasets
     for (let dataset of this._datasets.values()) {
       dataset.addMessage(message);
     }
   }
 
-  private upsertMessage(originatingDatasetId: string | undefined, message: InboxMessage) {
+  private upsertMessage(beforeMessage: InboxMessage, afterMessage: InboxMessage) {
     for (let [datasetId, dataset] of this._datasets.entries()) {
-      // Skip the originating dataset to avoid duplicate processing
-      if (datasetId === originatingDatasetId) {
-        continue;
-      }
-      dataset.upsertMessage(message);
+      dataset.upsertMessage(beforeMessage, afterMessage);
     }
   }
 
@@ -178,7 +171,7 @@ export class CourierInboxDatastore {
       // If datasets changed out while the request was in progress,
       // we'll update a dataset with the same ID, but otherwise pass through
       if (dataset) {
-        dataset.setPrefetchUnreadCount(count);
+        dataset.setUnreadCount(count);
       }
     }
   }
@@ -223,9 +216,13 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.readMessage(message);
-      }
+      // Mutate in global store
+      const beforeMessage = this._globalMessages.get(message.messageId) || message;
+      const afterMessage = { ...beforeMessage, read: CourierInboxDatastore.getISONow() };
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets
+      this.upsertMessage(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.read({ messageId: message.messageId });
@@ -249,9 +246,13 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.unreadMessage(message);
-      }
+      // Mutate in global store
+      const beforeMessage = this._globalMessages.get(message.messageId) || message;
+      const afterMessage = { ...beforeMessage, read: undefined };
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets
+      this.upsertMessage(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
@@ -275,9 +276,13 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.openMessage(message);
-      }
+      // Mutate in global store
+      const beforeMessage = this._globalMessages.get(message.messageId) || message;
+      const afterMessage = { ...beforeMessage, opened: CourierInboxDatastore.getISONow() };
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets
+      this.upsertMessage(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.open({ messageId: message.messageId });
@@ -301,9 +306,13 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.unarchiveMessage(message);
-      }
+      // Mutate in global store
+      const beforeMessage = this._globalMessages.get(message.messageId) || message;
+      const afterMessage = { ...beforeMessage, archived: undefined };
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets
+      this.upsertMessage(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
@@ -327,9 +336,13 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.archiveMessage(message);
-      }
+      // Mutate in global store
+      const beforeMessage = this._globalMessages.get(message.messageId) || message;
+      const afterMessage = { ...beforeMessage, archived: CourierInboxDatastore.getISONow() };
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets
+      this.upsertMessage(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
@@ -378,8 +391,15 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.archiveAllMessages();
+      const archiveDate = CourierInboxDatastore.getISONow();
+
+      // Mutate all messages in global store that aren't already archived
+      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
+        if (!beforeMessage.archived) {
+          const afterMessage = { ...beforeMessage, archived: archiveDate };
+          this._globalMessages.set(messageId, afterMessage);
+          this.upsertMessage(beforeMessage, afterMessage);
+        }
       }
 
       if (canCallApi) {
@@ -398,8 +418,15 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.readAllMessages();
+      const readDate = CourierInboxDatastore.getISONow();
+
+      // Mutate all messages in global store that aren't already read
+      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
+        if (!beforeMessage.read) {
+          const afterMessage = { ...beforeMessage, read: readDate };
+          this._globalMessages.set(messageId, afterMessage);
+          this.upsertMessage(beforeMessage, afterMessage);
+        }
       }
 
       if (canCallApi) {
@@ -418,8 +445,15 @@ export class CourierInboxDatastore {
     }
 
     await this.executeWithRollback(async () => {
-      for (let dataset of this._datasets.values()) {
-        dataset.archiveReadMessages();
+      const archiveDate = CourierInboxDatastore.getISONow();
+
+      // Mutate all read messages in global store that aren't already archived
+      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
+        if (beforeMessage.read && !beforeMessage.archived) {
+          const afterMessage = { ...beforeMessage, archived: archiveDate };
+          this._globalMessages.set(messageId, afterMessage);
+          this.upsertMessage(beforeMessage, afterMessage);
+        }
       }
 
       if (canCallApi) {
@@ -463,7 +497,25 @@ export class CourierInboxDatastore {
   }
 
   private async loadDatasets(props: { canUseCache: boolean, datasets: CourierInboxDataset[] }): Promise<void> {
-    await Promise.all(props.datasets.map(dataset => dataset.loadDataset(props.canUseCache)));
+    await Promise.all(props.datasets.map(async (dataset) => {
+      await dataset.loadDataset(props.canUseCache);
+      // Sync loaded messages to global store
+      this.syncDatasetMessagesToGlobalStore(dataset);
+    }));
+  }
+
+  /**
+   * Sync messages from a dataset to the global message store.
+   * This is called after datasets load messages to ensure the global store has all messages.
+   */
+  private syncDatasetMessagesToGlobalStore(dataset: CourierInboxDataset): void {
+    const datasetState = dataset.toInboxDataset();
+    for (const message of datasetState.messages) {
+      // Only add if not already in global store (don't overwrite)
+      if (!this._globalMessages.has(message.messageId)) {
+        this._globalMessages.set(message.messageId, message);
+      }
+    }
   }
 
   /**
@@ -571,7 +623,12 @@ export class CourierInboxDatastore {
   }
 
   private async fetchNextPageForDataset(props: { dataset: CourierInboxDataset }): Promise<InboxDataSet | null> {
-    return await props.dataset.fetchNextPageOfMessages();
+    const result = await props.dataset.fetchNextPageOfMessages();
+    if (result) {
+      // Sync newly loaded messages to global store
+      this.syncDatasetMessagesToGlobalStore(props.dataset);
+    }
+    return result;
   }
 
   private handleMessageEvent(envelope: InboxMessageEventEnvelope) {
@@ -611,19 +668,34 @@ export class CourierInboxDatastore {
    * Related: {@link CourierInboxDatastore.updateMessage}
    */
   private updateAllMessages(event: InboxMessageEvent) {
-    for (let dataset of this._datasets.values()) {
+    const timestamp = CourierInboxDatastore.getISONow();
+
+    for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
+      let afterMessage: InboxMessage | null = null;
+
       switch (event) {
         case InboxMessageEvent.MarkAllRead:
-          dataset.readAllMessages();
+          if (!beforeMessage.read) {
+            afterMessage = { ...beforeMessage, read: timestamp };
+          }
           break;
         case InboxMessageEvent.ArchiveAll:
-          dataset.archiveAllMessages();
+          if (!beforeMessage.archived) {
+            afterMessage = { ...beforeMessage, archived: timestamp };
+          }
           break;
         case InboxMessageEvent.ArchiveRead:
-          dataset.archiveReadMessages();
+          if (beforeMessage.read && !beforeMessage.archived) {
+            afterMessage = { ...beforeMessage, archived: timestamp };
+          }
           break;
         default:
           break;
+      }
+
+      if (afterMessage) {
+        this._globalMessages.set(messageId, afterMessage);
+        this.upsertMessage(beforeMessage, afterMessage);
       }
     }
   }
@@ -635,40 +707,47 @@ export class CourierInboxDatastore {
    * Related: {@link CourierInboxDatastore.updateAllMessages}
    */
   private updateMessage(messageId: string, event: InboxMessageEvent) {
-    for (let dataset of this._datasets.values()) {
-      const message = dataset.getMessage(messageId);
-
-      // Message is not present in the dataset
-      if (!message) {
-        continue;
-      }
-
-      switch (event) {
-        case InboxMessageEvent.Archive:
-          dataset.archiveMessage(message);
-          break;
-        case InboxMessageEvent.Opened:
-          dataset.openMessage(message);
-          break;
-        case InboxMessageEvent.Read:
-          dataset.readMessage(message);
-          break;
-        case InboxMessageEvent.Unarchive:
-          dataset.unarchiveMessage(message);
-          break;
-        case InboxMessageEvent.Unread:
-          dataset.unreadMessage(message);
-          break;
-        case InboxMessageEvent.Clicked:
-        case InboxMessageEvent.Unopened:
-        default:
-          break;
-      }
+    // Get the message from global store
+    const beforeMessage = this._globalMessages.get(messageId);
+    if (!beforeMessage) {
+      return;
     }
+
+    let afterMessage: InboxMessage;
+
+    switch (event) {
+      case InboxMessageEvent.Archive:
+        afterMessage = { ...beforeMessage, archived: CourierInboxDatastore.getISONow() };
+        break;
+      case InboxMessageEvent.Opened:
+        afterMessage = { ...beforeMessage, opened: CourierInboxDatastore.getISONow() };
+        break;
+      case InboxMessageEvent.Read:
+        afterMessage = { ...beforeMessage, read: CourierInboxDatastore.getISONow() };
+        break;
+      case InboxMessageEvent.Unarchive:
+        afterMessage = { ...beforeMessage, archived: undefined };
+        break;
+      case InboxMessageEvent.Unread:
+        afterMessage = { ...beforeMessage, read: undefined };
+        break;
+      case InboxMessageEvent.Clicked:
+      case InboxMessageEvent.Unopened:
+      default:
+        return;
+    }
+
+    // Update global store and propagate to datasets
+    this._globalMessages.set(messageId, afterMessage);
+    this.upsertMessage(beforeMessage, afterMessage);
   }
 
   private clearDatasets() {
     this._datasets.clear();
+  }
+
+  private static getISONow(): string {
+    return new Date().toISOString();
   }
 
   /**

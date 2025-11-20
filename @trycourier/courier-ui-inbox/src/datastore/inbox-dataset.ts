@@ -1,7 +1,6 @@
 import { Courier, InboxMessage } from "@trycourier/courier-js";
-import { copyMessage } from "../utils/utils";
+import { copyMessage, mutableInboxMessageFieldsEqual } from "../utils/utils";
 import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
-import { InboxMessageMutationPublisher } from "./inbox-message-mutation-publisher";
 import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 
@@ -32,7 +31,6 @@ export class CourierInboxDataset {
   private _lastPaginationCursor?: string;
 
   private readonly _filter: CourierInboxDatasetFilter;
-  private readonly _messageMutationPublisher = InboxMessageMutationPublisher.shared;
   private readonly _datastoreListeners: CourierInboxDataStoreListener[] = [];
 
   /**
@@ -42,7 +40,7 @@ export class CourierInboxDataset {
    * After messages are fetched, unread count is derived from this._messages.
    * Access via this.unreadCount, where this behavior is codified.
    */
-  private _prefetchUnreadCount: number | null = null;
+  private _unreadCount: number = 0;
 
   public constructor(
     id: string,
@@ -58,26 +56,22 @@ export class CourierInboxDataset {
     };
   }
 
-  /**
-   * Get the current unread count.
-   * If messages have been loaded, calculates from messages.
-   * Otherwise returns the preloaded count (or 0).
-   */
+  /** Get the current unread count. */
   get unreadCount(): number {
-    // If we have messages or have completed first fetch, calculate from messages
-    if (this._messages.length > 0 && this._firstFetchComplete) {
-      return this._messages.filter(m => !m.read).length;
-    }
-    // Otherwise use the preloaded count
-    return this._prefetchUnreadCount ?? 0;
+    return this._unreadCount;
+  }
+
+  /** Private setter for unread count. */
+  private set unreadCount(count: number) {
+    this._unreadCount = count > 0 ? count : 0;
   }
 
   /**
-   * Set the unread count without loading messages.
-   * Used for batch loading tab badges before messages are fetched.
+   * Set the unread count explicitly.
+   * Used for batch loading unread counts for all datasets before messages are fetched.
    */
-  public setPrefetchUnreadCount(count: number): void {
-    this._prefetchUnreadCount = count;
+  public setUnreadCount(count: number): void {
+    this.unreadCount = count;
     this._datastoreListeners.forEach(listener => {
       listener.events.onUnreadCountChange?.(count, this._id);
     });
@@ -106,6 +100,10 @@ export class CourierInboxDataset {
     if (this.messageQualifiesForDataset(messageCopy)) {
       this._messages.splice(insertIndex, 0, messageCopy);
 
+      if (!messageCopy.read) {
+        this.unreadCount += 1;
+      }
+
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageAdd?.(messageCopy, insertIndex, this._id);
         listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
@@ -121,23 +119,33 @@ export class CourierInboxDataset {
    * Insert or update a message in the dataset, potentially removing the message
    * if the update operation makes it no longer qualify for the dataset's filters.
    *
+   * upsertMessage also updates this.unreadCount (or delegates the update to addMessage/removeMessage).
+   *
    * @param message the message to upsert
    * @returns true if the message still qualifies for the dataset and was upserted, false if the message was removed
    */
-  upsertMessage(message: InboxMessage): boolean {
-    const index = this.indexOfMessage(message);
+  upsertMessage(beforeMessage: InboxMessage, afterMessage: InboxMessage): boolean {
+    const index = this.indexOfMessage(afterMessage);
     const existingMessage = this._messages[index];
-    const newMessage = copyMessage(message);
+    const newMessage = copyMessage(afterMessage);
+
+    // The message was already upserted
+    // Exit early to prevent double-counting changes to the unread count
+    if (existingMessage && mutableInboxMessageFieldsEqual(existingMessage, newMessage)) {
+      return true;
+    }
 
     // Message is already in dataset
-    if (index > -1) {
-
+    if (existingMessage) {
       // Message still qualifies for dataset after mutation
       if (this.messageQualifiesForDataset(newMessage)) {
-        this._messages.splice(index, 1, newMessage);
+        const unreadChange = this.calculateUnreadChange(existingMessage, newMessage);
 
-        // Notify listeners of count change
+        this._messages.splice(index, 1, newMessage);
+        this.unreadCount += unreadChange;
+
         this._datastoreListeners.forEach(listener => {
+          listener.events.onMessageUpdate?.(newMessage, index, this._id);
           listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
         });
 
@@ -150,9 +158,66 @@ export class CourierInboxDataset {
     }
 
     // Message is not yet in the dataset
-    const insertIndex = this.findInsertIndex(message);
-    this.addMessage(message, insertIndex);
-    return true;
+    // Check if the after-mutation message qualifies for this dataset
+    if (this.messageQualifiesForDataset(afterMessage)) {
+      // Add the message to the dataset
+      const insertIndex = this.findInsertIndex(afterMessage);
+      this._messages.splice(insertIndex, 0, copyMessage(afterMessage));
+
+      // Calculate unread count change based on the transition
+      // If beforeMessage qualified, this is a state change (e.g., unread -> read on an important message)
+      // If beforeMessage didn't qualify, this is a new message to this dataset
+      const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
+      const unreadChange = beforeQualifies
+        ? this.calculateUnreadChange(beforeMessage, afterMessage)
+        : (!afterMessage.read ? 1 : 0);
+
+      this.unreadCount += unreadChange;
+
+      this._datastoreListeners.forEach(listener => {
+        listener.events.onMessageAdd?.(afterMessage, insertIndex, this._id);
+        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+      });
+
+      return true;
+    }
+
+    // At this point the message was neither removed, added, nor updated
+    // We must still determine if the mutation affects the unread count for this dataset
+    //
+    // Consider the scenario where the unread count for this dataset has been loaded, but its messages have not.
+    // In another dataset, a message which affects the unread count here is marked read.
+    // We should update the unread count, even though the message hasn't been loaded here yet.
+
+    // The message would have been in the dataset before the mutation
+    const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
+    const unreadChange = this.calculateUnreadChange(beforeMessage, afterMessage);
+
+    if (beforeQualifies) {
+      this.unreadCount += unreadChange;
+
+      this._datastoreListeners.forEach(listener => {
+        listener.events.onMessageUpdate?.(newMessage, index, this._id);
+        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+      });
+    }
+
+    return false;
+  }
+
+  private calculateUnreadChange(beforeMessage: InboxMessage, afterMessage: InboxMessage): number {
+    // Message transitioned from read to unread
+    if (beforeMessage.read && !afterMessage.read) {
+      return 1;
+    }
+
+    // Message transitioned from unread to read
+    if (!beforeMessage.read && afterMessage.read) {
+      return -1;
+    }
+
+    // Message did not change read states
+    return 0;
   }
 
   /**
@@ -166,6 +231,10 @@ export class CourierInboxDataset {
     if (indexToRemove > -1) {
       this._messages.splice(indexToRemove, 1);
 
+      if (!message.read) {
+        this.unreadCount -= 1;
+      }
+
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageRemove?.(message, indexToRemove, this._id);
         listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
@@ -175,108 +244,6 @@ export class CourierInboxDataset {
     }
 
     return false;
-  }
-
-  archiveReadMessages() {
-    const archiveDate = CourierInboxDataset.getISONow();
-
-    const mutation = (message: InboxMessage) => {
-      message.archived = archiveDate;
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !!message.read && !message.archived;
-    }
-
-    this.applyDatasetMutation(mutation, predicate);
-  }
-
-  archiveAllMessages() {
-    const archiveDate = CourierInboxDataset.getISONow();
-
-    const mutation = (message: InboxMessage) => {
-      message.archived = archiveDate;
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !message.archived;
-    }
-
-    this.applyDatasetMutation(mutation, predicate);
-  }
-
-  readAllMessages() {
-    const readDate = CourierInboxDataset.getISONow();
-
-    const mutation = (message: InboxMessage) => {
-      message.read = readDate;
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !message.read;
-    }
-
-    this.applyDatasetMutation(mutation, predicate);
-  }
-
-  archiveMessage(message: InboxMessage) {
-    const mutation = (message: InboxMessage) => {
-      message.archived = CourierInboxDataset.getISONow();
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !message.archived;
-    }
-
-    this.applyMessageMutation(message, mutation, predicate);
-  }
-
-  unarchiveMessage(message: InboxMessage) {
-    const mutation = (message: InboxMessage) => {
-      message.archived = undefined;
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !!message.archived;
-    }
-
-    this.applyMessageMutation(message, mutation, predicate);
-  }
-
-  readMessage(message: InboxMessage) {
-    const mutation = (message: InboxMessage) => {
-      message.read = CourierInboxDataset.getISONow();
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !message.read;
-    }
-
-    this.applyMessageMutation(message, mutation, predicate);
-  }
-
-  unreadMessage(message: InboxMessage) {
-    const mutation = (message: InboxMessage) => {
-      message.read = undefined;
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !!message.read;
-    }
-
-    this.applyMessageMutation(message, mutation, predicate);
-  }
-
-  openMessage(message: InboxMessage) {
-    const mutation = (message: InboxMessage) => {
-      message.opened = CourierInboxDataset.getISONow();
-    }
-
-    const predicate = (message: InboxMessage) => {
-      return !message.opened;
-    }
-
-    this.applyMessageMutation(message, mutation, predicate);
   }
 
   getMessage(messageId: string): InboxMessage | undefined {
@@ -373,88 +340,6 @@ export class CourierInboxDataset {
     }
   }
 
-  /**
-   * Mutate the message set according to the mutation and predicate provided.
-   *
-   * @param mutation - function defining the in-place mutation to apply to a message
-   * @param predicate - function defining the predicate for which the mutation should be applied
-   */
-  private applyDatasetMutation(
-    mutation: (message: InboxMessage) => void,
-    predicate: (message: InboxMessage) => boolean
-  ) {
-    const unreadCountBeforeMutation = this.unreadCount;
-    const mutatedMessages = [];
-    const messageSetAfterMutation = [];
-
-    for (let i = 0; i < this._messages.length; i++) {
-      const messageCopy = copyMessage(this._messages[i]);
-
-      // Mutate the message
-      if (predicate(messageCopy)) {
-        mutation(messageCopy)
-
-        // Aggregate mutated messages to upsert into datasets
-        mutatedMessages.push(messageCopy);
-      }
-
-      // Message is still in dataset
-      const messageQualifiesForDataset = this.messageQualifiesForDataset(messageCopy);
-      if (messageQualifiesForDataset) {
-        messageSetAfterMutation.push(messageCopy);
-      }
-    }
-
-    // Update this dataset and publish mutated messages for other datasets
-    this._messages = messageSetAfterMutation;
-    mutatedMessages.forEach(message => {
-      this._messageMutationPublisher.publishMessage(this._id, message);
-    });
-
-    const unreadCountAfterMutation = this.unreadCount;
-
-    this._datastoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
-
-      if (unreadCountBeforeMutation !== unreadCountAfterMutation) {
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
-      }
-    });
-  }
-
-  private applyMessageMutation(
-    message: InboxMessage,
-    mutation: (message: InboxMessage) => void,
-    predicate: (message: InboxMessage) => boolean
-  ) {
-    const index = this.indexOfMessage(message);
-
-    if (index < 0 || !predicate(message)) {
-      return;
-    }
-
-    const messageCopy = copyMessage(message);
-    mutation(messageCopy);
-
-    const mutatedMessageQualifies = this.messageQualifiesForDataset(messageCopy);
-
-    if (mutatedMessageQualifies) {
-      this._messages.splice(index, 1, messageCopy);
-
-      // Notify listeners
-      this._datastoreListeners.forEach(listener => {
-        listener.events.onMessageUpdate?.(messageCopy, index, this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
-      });
-    } else {
-      this.removeMessage(message);
-    }
-
-    // Publish the mutation to other datasets. The originating dataset (this one) ignores
-    // the published message to avoid duplicate processing.
-    this._messageMutationPublisher.publishMessage(this._id, messageCopy);
-  }
-
   private indexOfMessage(message: InboxMessage): number {
     return this._messages.findIndex(m => m.messageId === message.messageId);
   }
@@ -479,15 +364,22 @@ export class CourierInboxDataset {
   }
 
   private messageQualifiesForDataset(message: InboxMessage): boolean {
+    console.log(`[${this._id}] messageQualifiesForDataset check for message ${message.messageId}:`, {
+      message: { read: message.read, archived: message.archived, tags: message.tags },
+      filter: this._filter
+    });
+
     // Is the message archived state compatible with the dataset?
     if (message.archived && !this._filter.archived ||
         !message.archived && this._filter.archived) {
+      console.log(`[${this._id}] ❌ Archived state mismatch: message.archived=${!!message.archived}, filter.archived=${this._filter.archived}`);
       return false;
     }
 
     // Is the message read state compatible with the dataset?
     if (message.read && this._filter.status === 'unread' ||
         !message.read && this._filter.status === 'read') {
+      console.log(`[${this._id}] ❌ Read state mismatch: message.read=${!!message.read}, filter.status=${this._filter.status}`);
       return false;
     }
 
@@ -496,38 +388,40 @@ export class CourierInboxDataset {
 
     // If the dataset requires tags, does the message have tags?
     if (this._filter.tags && !message.tags) {
+      console.log(`[${this._id}] ❌ Dataset requires tags but message has none`);
       return false;
     }
 
     // Does one of the message's tags match this dataset's tags?
     if (this._filter.tags && message.tags) {
-      for (const tag in this._filter.tags) {
+      for (const tag of this._filter.tags) {
         if (message.tags.includes(tag)) {
+          console.log(`[${this._id}] ✅ Tag match found: ${tag}`);
           return true;
         }
       }
+      console.log(`[${this._id}] ❌ No matching tags found`);
+      return false;
     }
 
     // Either:
     //  - dataset and message have no tags
     //  - dataset doesn't require tags and
     //    the dataset and message have compatible read and archived states
+    console.log(`[${this._id}] ✅ Message qualifies (no tag filtering required)`);
     return true;
-  }
-
-  private static getISONow() {
-    return new Date().toISOString();
   }
 
   /**
    * Restore this dataset from a snapshot.
    *
-   * Note: _firstFetchComplete and _prefetchUnreadCount do not need to be restored
-   * as they indicate specific lifecycle stages for the dataset.
+   * Note: _firstFetchComplete does not need to be restored
+   * as it indicates specific lifecycle stages for the dataset.
    */
   public restoreFromSnapshot(snapshot: InboxDataSet): void {
     this._messages = snapshot.messages.map(m => copyMessage(m));
 
+    this.unreadCount = snapshot.unreadCount;
     this._hasNextPage = snapshot.canPaginate;
     this._lastPaginationCursor = snapshot.paginationCursor ?? undefined;
 
