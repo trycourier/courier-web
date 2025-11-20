@@ -94,7 +94,7 @@ export class CourierInboxDatastore {
   }
 
   private upsertMessage(beforeMessage: InboxMessage, afterMessage: InboxMessage) {
-    for (let [datasetId, dataset] of this._datasets.entries()) {
+    for (let dataset of this._datasets.values()) {
       dataset.upsertMessage(beforeMessage, afterMessage);
     }
   }
