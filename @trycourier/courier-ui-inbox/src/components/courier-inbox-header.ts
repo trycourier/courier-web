@@ -169,8 +169,8 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._actionMenu?.setOptions(this.getActionOptions());
   }
 
-  private handleOptionMenuItemClick(feedType: CourierInboxFeedType | string, option: CourierInboxMenuOption) {
-    this._activeFeedId = feedType;
+  private handleOptionMenuItemClick(feedId: CourierInboxFeedType | string, option: CourierInboxMenuOption) {
+    this._activeFeedId = feedId;
     if (this._titleComponent) {
       this._titleComponent.updateSelectedOption(option, this._activeFeedId);
     }
@@ -181,7 +181,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._tabsComponent?.setFeed(activeFeed);
     }
 
-    this._onFeedTypeChange(feedType);
+    this._onFeedTypeChange(feedId);
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {

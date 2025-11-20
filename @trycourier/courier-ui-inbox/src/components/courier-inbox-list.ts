@@ -22,7 +22,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _feedType: CourierInboxFeedType | string = 'inbox';
+  private _feedId: CourierInboxFeedType | string = 'inbox';
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
@@ -36,7 +36,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onRefresh: () => void;
 
   // Factories
-  private _onPaginationTrigger?: (feedType: CourierInboxFeedType | string) => void;
+  private _onPaginationTrigger?: (feedId: CourierInboxFeedType | string) => void;
   private _listItemFactory?: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement;
   private _paginationItemFactory?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement;
   private _loadingStateFactory?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement;
@@ -166,8 +166,8 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setFeedType(feedType: CourierInboxFeedType | string): void {
-    this._feedType = feedType;
+  public setFeedType(feedId: CourierInboxFeedType | string): void {
+    this._feedId = feedId;
     this._error = null;
     this._isLoading = true;
     this.render();
@@ -237,7 +237,7 @@ export class CourierInboxList extends CourierBaseElement {
     const themeMode = this._themeSubscription.manager.mode;
     return {
       title: {
-        text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
+        text: empty?.title?.text ?? `No ${this._feedId} messages yet`,
         textColor: empty?.title?.font?.color,
         fontFamily: empty?.title?.font?.family,
         fontSize: empty?.title?.font?.size,
@@ -288,7 +288,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Error state
     if (this._error) {
       this._errorContainer = new CourierInfoState(this.errorProps);
-      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
+      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._feedId, error: this._error }));
       this.appendChild(this._errorContainer);
       return;
     }
@@ -296,7 +296,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Loading state
     if (this._isLoading) {
       const loadingElement = new CourierInboxSkeletonList(this.theme);
-      loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
+      loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedId }));
       this.appendChild(loadingElement);
       return;
     }
@@ -304,7 +304,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Empty state
     if (this._messages.length === 0) {
       this._emptyContainer = new CourierInfoState(this.emptyProps);
-      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._feedType }));
+      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._feedId }));
       this.appendChild(this._emptyContainer);
       return;
     }
@@ -320,7 +320,7 @@ export class CourierInboxList extends CourierBaseElement {
         return;
       }
       const listItem = new CourierInboxListItem(this._themeSubscription.manager, this._canClickListItems, this._canLongPressListItems);
-      listItem.setMessage(message, this._feedType);
+      listItem.setMessage(message, this._feedId);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
       listItem.setOnItemLongPress((message) => this._onMessageLongPress?.(message, index));
@@ -332,8 +332,8 @@ export class CourierInboxList extends CourierBaseElement {
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
         theme: this.theme,
-        customItem: this._paginationItemFactory?.({ feedType: this._feedType }),
-        onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
+        customItem: this._paginationItemFactory?.({ feedType: this._feedId }),
+        onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedId),
       });
       list.appendChild(paginationItem);
     }

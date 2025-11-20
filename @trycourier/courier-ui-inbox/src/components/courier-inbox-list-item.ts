@@ -17,7 +17,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
-  private _feedType: CourierInboxFeedType | string = 'inbox';
+  private _feedId: CourierInboxFeedType | string = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
@@ -334,7 +334,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
     let options: CourierInboxListItemActionMenuOption[] = [];
 
-    const isArchiveFeed = this._feedType === 'archive';
+    const isArchiveFeed = this._feedId === 'archive';
 
     // Only add read/unread option if not in archive feed
     if (!isArchiveFeed) {
@@ -399,9 +399,9 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // Public API
-  public setMessage(message: InboxMessage, feedType: CourierInboxFeedType | string): void {
+  public setMessage(message: InboxMessage, feedId: CourierInboxFeedType | string): void {
     this._message = message;
-    this._feedType = feedType;
+    this._feedId = feedId;
     this._updateContent();
   }
 
@@ -431,7 +431,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     }
 
     // Unread marker
-    this.classList.toggle('unread', !this._message.read && this._feedType !== 'archive');
+    this.classList.toggle('unread', !this._message.read && this._feedId !== 'archive');
 
     if (this._titleElement) {
       this._titleElement.textContent = this._message.title || 'Untitled Message';

@@ -82,17 +82,17 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this._style?.remove();
   }
 
-  private refreshTheme(feedType: string) {
-    this._feedId = feedType;
+  private refreshTheme(feedId: string) {
+    this._feedId = feedId;
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
     }
     this.updateFeedTitle();
   }
 
-  public updateSelectedOption(option: CourierInboxMenuOption, feedType: CourierInboxFeedType | string) {
+  public updateSelectedOption(option: CourierInboxMenuOption, feedId: CourierInboxFeedType | string) {
     this._option = option;
-    this._feedId = feedType;
+    this._feedId = feedId;
     this.updateFeedTitle();
   }
 

@@ -330,7 +330,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     // (undocumented)
     onComponentUnmounted(): void;
     // (undocumented)
-    setMessage(message: InboxMessage, feedType: CourierInboxFeedType | string): void;
+    setMessage(message: InboxMessage, feedId: CourierInboxFeedType | string): void;
     // (undocumented)
     setOnItemActionClick(cb: (message: InboxMessage, action: InboxAction) => void): void;
     // (undocumented)
