@@ -364,22 +364,15 @@ export class CourierInboxDataset {
   }
 
   private messageQualifiesForDataset(message: InboxMessage): boolean {
-    console.log(`[${this._id}] messageQualifiesForDataset check for message ${message.messageId}:`, {
-      message: { read: message.read, archived: message.archived, tags: message.tags },
-      filter: this._filter
-    });
-
     // Is the message archived state compatible with the dataset?
     if (message.archived && !this._filter.archived ||
         !message.archived && this._filter.archived) {
-      console.log(`[${this._id}] ❌ Archived state mismatch: message.archived=${!!message.archived}, filter.archived=${this._filter.archived}`);
       return false;
     }
 
     // Is the message read state compatible with the dataset?
     if (message.read && this._filter.status === 'unread' ||
         !message.read && this._filter.status === 'read') {
-      console.log(`[${this._id}] ❌ Read state mismatch: message.read=${!!message.read}, filter.status=${this._filter.status}`);
       return false;
     }
 
@@ -388,7 +381,6 @@ export class CourierInboxDataset {
 
     // If the dataset requires tags, does the message have tags?
     if (this._filter.tags && !message.tags) {
-      console.log(`[${this._id}] ❌ Dataset requires tags but message has none`);
       return false;
     }
 
@@ -396,11 +388,9 @@ export class CourierInboxDataset {
     if (this._filter.tags && message.tags) {
       for (const tag of this._filter.tags) {
         if (message.tags.includes(tag)) {
-          console.log(`[${this._id}] ✅ Tag match found: ${tag}`);
           return true;
         }
       }
-      console.log(`[${this._id}] ❌ No matching tags found`);
       return false;
     }
 
@@ -408,7 +398,6 @@ export class CourierInboxDataset {
     //  - dataset and message have no tags
     //  - dataset doesn't require tags and
     //    the dataset and message have compatible read and archived states
-    console.log(`[${this._id}] ✅ Message qualifies (no tag filtering required)`);
     return true;
   }
 
