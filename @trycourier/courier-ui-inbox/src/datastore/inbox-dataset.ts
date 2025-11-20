@@ -284,6 +284,7 @@ export class CourierInboxDataset {
 
     // Unpack response and call listeners
     this._messages = [...fetchedDataset.messages];
+    this.unreadCount = fetchedDataset.unreadCount;
     this._hasNextPage = fetchedDataset.canPaginate;
     this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
     this._firstFetchComplete = true;

@@ -662,6 +662,7 @@ export class CourierInboxDatastore {
     // Handle new message
     if (event === InboxMessageEvent.NewMessage) {
       const message = envelope.data as InboxMessage;
+      this._globalMessages.set(message.messageId, message);
       for (let dataset of this._datasets.values()) {
         dataset.addMessage(message);
       }
@@ -769,6 +770,7 @@ export class CourierInboxDatastore {
 
   private clearDatasets() {
     this._datasets.clear();
+    this._globalMessages.clear();
   }
 
   private static getISONow(): string {
