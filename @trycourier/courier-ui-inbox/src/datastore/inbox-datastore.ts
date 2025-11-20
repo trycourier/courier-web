@@ -40,7 +40,7 @@ export class CourierInboxDatastore {
   private _removeMessageEventListener?: () => void;
 
   /**
-   * Global message store is a map of <Message ID, Message> for all messages
+   * Global message store is a map of Message ID to Message for all messages
    * that have been loaded.
    *
    * This acts as the source of truth to apply messages mutations to a message

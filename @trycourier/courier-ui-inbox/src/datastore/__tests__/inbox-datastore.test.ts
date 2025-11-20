@@ -2,7 +2,6 @@ import { InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxDatastore } from "../inbox-datastore";
 import { CourierInboxFeed } from "../../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore-listener";
-import { CourierInboxDataset } from "../inbox-dataset";
 
 const mockGetMessages = jest.fn();
 const mockGetArchivedMessages = jest.fn();
