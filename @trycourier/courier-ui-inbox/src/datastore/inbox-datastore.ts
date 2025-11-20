@@ -215,9 +215,13 @@ export class CourierInboxDatastore {
       return;
     }
 
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const beforeMessage = this._globalMessages.get(message.messageId) || message;
       const afterMessage = { ...beforeMessage, read: CourierInboxDatastore.getISONow() };
       this._globalMessages.set(message.messageId, afterMessage);
 
@@ -245,9 +249,13 @@ export class CourierInboxDatastore {
       return;
     }
 
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const beforeMessage = this._globalMessages.get(message.messageId) || message;
       const afterMessage = { ...beforeMessage, read: undefined };
       this._globalMessages.set(message.messageId, afterMessage);
 
@@ -275,9 +283,13 @@ export class CourierInboxDatastore {
       return;
     }
 
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const beforeMessage = this._globalMessages.get(message.messageId) || message;
       const afterMessage = { ...beforeMessage, opened: CourierInboxDatastore.getISONow() };
       this._globalMessages.set(message.messageId, afterMessage);
 
@@ -305,9 +317,13 @@ export class CourierInboxDatastore {
       return;
     }
 
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const beforeMessage = this._globalMessages.get(message.messageId) || message;
       const afterMessage = { ...beforeMessage, archived: undefined };
       this._globalMessages.set(message.messageId, afterMessage);
 
@@ -335,9 +351,13 @@ export class CourierInboxDatastore {
       return;
     }
 
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
     await this.executeWithRollback(async () => {
       // Mutate in global store
-      const beforeMessage = this._globalMessages.get(message.messageId) || message;
       const afterMessage = { ...beforeMessage, archived: CourierInboxDatastore.getISONow() };
       this._globalMessages.set(message.messageId, afterMessage);
 
