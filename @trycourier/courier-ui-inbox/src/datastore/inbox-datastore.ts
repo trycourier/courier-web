@@ -19,6 +19,7 @@ interface DatasetSnapshot {
  */
 interface DatastoreSnapshot {
   datasets: DatasetSnapshot[];
+  globalMessages: Map<string, InboxMessage>;
 }
 
 /**
@@ -98,7 +99,7 @@ export class CourierInboxDatastore {
     }
   }
 
-  private upsertMessage(beforeMessage: InboxMessage, afterMessage: InboxMessage) {
+  private updateDatasetsWithMessageChange(beforeMessage: InboxMessage, afterMessage: InboxMessage) {
     for (let dataset of this._datasets.values()) {
       dataset.updateWithMessageChange(beforeMessage, afterMessage);
     }
@@ -232,7 +233,7 @@ export class CourierInboxDatastore {
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
-      this.upsertMessage(beforeMessage, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.read({ messageId: message.messageId });
@@ -267,7 +268,7 @@ export class CourierInboxDatastore {
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
-      this.upsertMessage(beforeMessage, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.unread({ messageId: message.messageId });
@@ -302,7 +303,7 @@ export class CourierInboxDatastore {
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
-      this.upsertMessage(beforeMessage, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.open({ messageId: message.messageId });
@@ -337,7 +338,7 @@ export class CourierInboxDatastore {
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
-      this.upsertMessage(beforeMessage, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.unarchive({ messageId: message.messageId });
@@ -372,7 +373,7 @@ export class CourierInboxDatastore {
       this._globalMessages.set(message.messageId, afterMessage);
 
       // Update all datasets
-      this.upsertMessage(beforeMessage, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
       if (canCallApi) {
         await Courier.shared.client?.inbox.archive({ messageId: message.messageId });
@@ -429,7 +430,7 @@ export class CourierInboxDatastore {
           const afterMessage = copyMessage(beforeMessage);
           afterMessage.archived = archiveDate;
           this._globalMessages.set(messageId, afterMessage);
-          this.upsertMessage(beforeMessage, afterMessage);
+          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
         }
       }
 
@@ -457,7 +458,7 @@ export class CourierInboxDatastore {
           const afterMessage = copyMessage(beforeMessage);
           afterMessage.read = readDate;
           this._globalMessages.set(messageId, afterMessage);
-          this.upsertMessage(beforeMessage, afterMessage);
+          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
         }
       }
 
@@ -485,7 +486,7 @@ export class CourierInboxDatastore {
           const afterMessage = copyMessage(beforeMessage);
           afterMessage.archived = archiveDate;
           this._globalMessages.set(messageId, afterMessage);
-          this.upsertMessage(beforeMessage, afterMessage);
+          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
         }
       }
 
@@ -732,7 +733,7 @@ export class CourierInboxDatastore {
 
       if (afterMessage) {
         this._globalMessages.set(messageId, afterMessage);
-        this.upsertMessage(beforeMessage, afterMessage);
+        this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
       }
     }
   }
@@ -781,7 +782,7 @@ export class CourierInboxDatastore {
 
     // Update global store and propagate to datasets
     this._globalMessages.set(messageId, afterMessage);
-    this.upsertMessage(beforeMessage, afterMessage);
+    this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
   }
 
   private clearDatasets() {
@@ -794,7 +795,7 @@ export class CourierInboxDatastore {
   }
 
   /**
-   * Create a snapshot of all datasets for rollback purposes.
+   * Create a snapshot of all datasets and global messages for rollback purposes.
    * This captures the current state of all messages and metadata.
    */
   private createDatastoreSnapshot(): DatastoreSnapshot {
@@ -813,14 +814,30 @@ export class CourierInboxDatastore {
       }
     }
 
-    return { datasets: snapshots };
+    // Snapshot global messages
+    const globalMessagesSnapshot = new Map<string, InboxMessage>();
+    for (const [messageId, message] of this._globalMessages.entries()) {
+      globalMessagesSnapshot.set(messageId, copyMessage(message));
+    }
+
+    return {
+      datasets: snapshots,
+      globalMessages: globalMessagesSnapshot
+    };
   }
 
   /**
-   * Restore all datasets from a snapshot, reverting any mutations.
+   * Restore all datasets and global messages from a snapshot, reverting any mutations.
    * This is used for rollback when API calls or updates to downstream datasets fail.
    */
   private restoreDatastoreSnapshot(snapshot: DatastoreSnapshot): void {
+    // Restore global messages
+    this._globalMessages.clear();
+    for (const [messageId, message] of snapshot.globalMessages.entries()) {
+      this._globalMessages.set(messageId, copyMessage(message));
+    }
+
+    // Restore datasets
     for (const datasetSnapshot of snapshot.datasets) {
       const dataset = this._datasets.get(datasetSnapshot.id);
       if (dataset) {
