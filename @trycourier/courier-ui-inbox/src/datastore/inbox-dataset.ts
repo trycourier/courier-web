@@ -116,28 +116,37 @@ export class CourierInboxDataset {
   }
 
   /**
-   * Insert or update a message in the dataset, potentially removing the message
-   * if the update operation makes it no longer qualify for the dataset's filters.
+   * Update the messages and unread count for the dataset based on a change in a message.
    *
-   * upsertMessage also updates this.unreadCount (or delegates the update to addMessage/removeMessage).
+   * Based on a message's change (unread -> read, archived -> unarchived, etc) this method
+   * inserts, updates, removes, or excludes it from the dataset. Given the before/existing
+   * and after states, it updates the unread count.
    *
-   * @param message the message to upsert
-   * @returns true if the message still qualifies for the dataset and was upserted, false if the message was removed
+   * The before state identifies messages that would qualify for the dataset
+   * before the dataset (or a particular message in the dataset) has been loaded.
+   * These messages may not be explicitly removed from the dataset since they aren't
+   * yet present, but may have an effect on the unread count.
+   *
+   * @param beforeMessage the message before the change
+   * @param afterMessage the message after the change
+   * @returns true if afterMessage qualifies for the dataset and was inserted or updated, false if the message was removed
    */
-  upsertMessage(beforeMessage: InboxMessage, afterMessage: InboxMessage): boolean {
+  updateWithMessageChange(beforeMessage: InboxMessage, afterMessage: InboxMessage): boolean {
     const index = this.indexOfMessage(afterMessage);
     const existingMessage = this._messages[index];
     const newMessage = copyMessage(afterMessage);
 
-    // The message was already upserted
+    // The message was already inserted or updated
     // Exit early to prevent double-counting changes to the unread count
     if (existingMessage && mutableInboxMessageFieldsEqual(existingMessage, newMessage)) {
       return true;
     }
 
-    // Message is already in dataset
+    // Message is already in dataset but hasn't been updated yet
     if (existingMessage) {
+
       // Message still qualifies for dataset after mutation
+      // Update it in place and modify unread count based on the state change
       if (this.messageQualifiesForDataset(newMessage)) {
         const unreadChange = this.calculateUnreadChange(existingMessage, newMessage);
 
@@ -153,6 +162,7 @@ export class CourierInboxDataset {
       }
 
       // Message no longer qualifies for dataset
+      // Remove it, which may also update unread count
       this.removeMessage(existingMessage);
       return false;
     }
@@ -160,16 +170,22 @@ export class CourierInboxDataset {
     // Message is not yet in the dataset
     // Check if the after-mutation message qualifies for this dataset
     if (this.messageQualifiesForDataset(afterMessage)) {
+
       // Add the message to the dataset
+      // We re-implement the addMessage logic here since the unreadCount change logic differs
+      // from the public method
       const insertIndex = this.findInsertIndex(afterMessage);
       this._messages.splice(insertIndex, 0, copyMessage(afterMessage));
 
       // Calculate unread count change based on the transition
-      // If beforeMessage qualified, this is a state change (e.g., unread -> read on an important message)
-      // If beforeMessage didn't qualify, this is a new message to this dataset
       const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
       const unreadChange = beforeQualifies
+        // If beforeMessage qualified but wasn't present, this is a state change and could either
+        //   increment or decrement the unread count
         ? this.calculateUnreadChange(beforeMessage, afterMessage)
+
+        // If beforeMessage didn't qualify, this is a new message to this dataset
+        // Update unread count based on afterMessage's read state
         : (!afterMessage.read ? 1 : 0);
 
       this.unreadCount += unreadChange;
@@ -182,19 +198,19 @@ export class CourierInboxDataset {
       return true;
     }
 
-    // At this point the message was neither removed, added, nor updated
-    // We must still determine if the mutation affects the unread count for this dataset
+    // At this point the message was neither updated, removed, nor added.
+    // We must still determine if the mutation affects the unread count for this dataset.
     //
     // Consider the scenario where the unread count for this dataset has been loaded, but its messages have not.
     // In another dataset, a message which affects the unread count here is marked read.
     // We should update the unread count, even though the message hasn't been loaded here yet.
 
-    // The message would have been in the dataset before the mutation
+    // beforeMessage would have qualified if the dataset and/or message were loaded
     const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
-    const unreadChange = this.calculateUnreadChange(beforeMessage, afterMessage);
-
     if (beforeQualifies) {
-      this.unreadCount += unreadChange;
+
+      // Update unreadCount based on the transition
+      this.unreadCount += this.calculateUnreadChange(beforeMessage, afterMessage);
 
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageUpdate?.(newMessage, index, this._id);
