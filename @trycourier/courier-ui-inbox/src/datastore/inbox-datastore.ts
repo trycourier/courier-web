@@ -38,12 +38,17 @@ export class CourierInboxDatastore {
   private _listeners: CourierInboxDataStoreListener[] = [];
   private _removeMessageEventListener?: () => void;
 
-  /** Global message store - single source of truth for all messages across datasets */
+  /**
+   * Global message store is a map of <Message ID, Message> for all messages
+   * that have been loaded.
+   *
+   * This acts as the source of truth to apply messages mutations to a message
+   * given its ID and propagate those mutations to individual datasets.
+   */
   private _globalMessages = new Map<string, InboxMessage>();
 
   /** Access CourierInboxDatastore through {@link CourierInboxDatastore.shared} */
-  private constructor() {
-  }
+  private constructor() {}
 
   /**
    * Instantiate the datastore with the feeds specified.

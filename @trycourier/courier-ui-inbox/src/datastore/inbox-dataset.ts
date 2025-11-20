@@ -37,8 +37,12 @@ export class CourierInboxDataset {
    * The unread count loaded before messages are fetched.
    * Used to show unread badge counts on tabs before the user clicks into them.
    *
-   * After messages are fetched, unread count is derived from this._messages.
-   * Access via this.unreadCount, where this behavior is codified.
+   * Unread count is maintained manually (rather than derived from _messages) because:
+   *
+   * 1. We load unread counts for all tabs in view before their messages are loaded.
+   * 2. The set of loaded messages may not fully reflect the unread count for a tab.
+   *    Messages are paginated, so unread messages may be present on the server but
+   *    but not on the client.
    */
   private _unreadCount: number = 0;
 
@@ -181,7 +185,7 @@ export class CourierInboxDataset {
       const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
       const unreadChange = beforeQualifies
         // If beforeMessage qualified but wasn't present, this is a state change and could either
-        //   increment or decrement the unread count
+        // increment or decrement the unread count
         ? this.calculateUnreadChange(beforeMessage, afterMessage)
 
         // If beforeMessage didn't qualify, this is a new message to this dataset
