@@ -77,14 +77,30 @@ export interface CourierBrand {
     name: string;
     // (undocumented)
     published: number;
-    // Warning: (ae-forgotten-export) The symbol "CourierBrandSettings" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     settings?: CourierBrandSettings;
     // (undocumented)
     updated: number;
     // (undocumented)
     version: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandSettings" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandSettings {
+    // Warning: (ae-forgotten-export) The symbol "CourierBrandColors" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    colors?: CourierBrandColors;
+    // Warning: (ae-forgotten-export) The symbol "CourierBrandEmail" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    email?: CourierBrandEmail;
+    // Warning: (ae-forgotten-export) The symbol "CourierBrandInApp" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    inapp?: CourierBrandInApp;
 }
 
 // Warning: (ae-missing-release-tag) "CourierClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -102,8 +118,6 @@ export class CourierClient extends Client {
     readonly preferences: PreferenceClient;
     // (undocumented)
     readonly tokens: TokenClient;
-    // Warning: (ae-forgotten-export) The symbol "TrackingClient" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     readonly tracking: TrackingClient;
 }
@@ -167,6 +181,27 @@ export interface CourierGetInboxMessagesResponse {
             nodes?: InboxMessage[];
         };
     };
+}
+
+// Warning: (ae-forgotten-export) The symbol "CourierSocket" needs to be exported by the entry point index.d.ts
+// Warning: (ae-missing-release-tag) "CourierInboxSocket" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export class CourierInboxSocket extends CourierSocket {
+    constructor(options: CourierClientOptions);
+    addMessageEventListener(listener: (message: InboxMessageEventEnvelope) => void): () => void;
+    // (undocumented)
+    onClose(_: CloseEvent): Promise<void>;
+    // (undocumented)
+    onError(_: Event): Promise<void>;
+    // Warning: (ae-forgotten-export) The symbol "ServerMessage" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    onMessageReceived(data: ServerMessage): Promise<void>;
+    // (undocumented)
+    onOpen(_: Event): Promise<void>;
+    sendSubscribe(): void;
+    sendUnsubscribe(): void;
 }
 
 // Warning: (ae-missing-release-tag) "CourierProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -301,8 +336,6 @@ export class InboxClient extends Client {
         messageId: string;
     }): Promise<void>;
     readAll(): Promise<void>;
-    // Warning: (ae-forgotten-export) The symbol "CourierInboxSocket" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     readonly socket: CourierInboxSocket;
     unarchive(props: {
@@ -433,6 +466,28 @@ export class TokenClient extends Client {
         device?: CourierDevice;
     }): Promise<void>;
 }
+
+// Warning: (ae-missing-release-tag) "TrackingClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class TrackingClient extends Client {
+    postInboundCourier(props: {
+        event: string;
+        messageId: string;
+        type: 'track';
+        properties?: Record<string, any>;
+    }): Promise<{
+        messageId: string;
+    }>;
+    postTrackingUrl(props: {
+        url: string;
+        event: CourierTrackingEvent;
+    }): Promise<void>;
+}
+
+// Warnings were encountered during analysis:
+//
+// dist/client/tracking-client.d.ts:30:9 - (ae-forgotten-export) The symbol "CourierTrackingEvent" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

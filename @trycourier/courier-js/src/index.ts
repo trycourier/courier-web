@@ -22,7 +22,7 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 
 // Types
 import { CourierApiUrls } from './types/courier-api-urls';
-import { CourierBrand } from './types/brands';
+import { CourierBrand, CourierBrandSettings } from './types/brands';
 import {
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -47,11 +47,16 @@ import { TokenClient } from './client/token-client';
 import { PreferenceClient } from './client/preference-client';
 import { InboxClient } from './client/inbox-client';
 import { ListClient } from './client/list-client';
+import { TrackingClient } from './client/tracking-client';
+
+// Socket
+import { CourierInboxSocket } from './socket/courier-inbox-socket';
 
 export type {
   CourierProps,
   CourierClientOptions,
   CourierBrand,
+  CourierBrandSettings,
   CourierApiUrls,
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -79,6 +84,8 @@ export {
   PreferenceClient,
   InboxClient,
   ListClient,
+  TrackingClient,
+  CourierInboxSocket,
 };
 
 // Listeners
