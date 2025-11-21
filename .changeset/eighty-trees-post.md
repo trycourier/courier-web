@@ -1,5 +1,5 @@
 ---
-"@trycourier/courier-js": minor
+"@trycourier/courier-js": patch
 ---
 
 Exposing more types
