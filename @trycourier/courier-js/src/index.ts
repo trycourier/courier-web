@@ -49,9 +49,6 @@ import { InboxClient } from './client/inbox-client';
 import { ListClient } from './client/list-client';
 import { TrackingClient } from './client/tracking-client';
 
-// Socket
-import { CourierInboxSocket } from './socket/courier-inbox-socket';
-
 export type {
   CourierProps,
   CourierClientOptions,
@@ -85,7 +82,6 @@ export {
   InboxClient,
   ListClient,
   TrackingClient,
-  CourierInboxSocket,
 };
 
 // Listeners
