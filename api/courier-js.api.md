@@ -183,27 +183,6 @@ export interface CourierGetInboxMessagesResponse {
     };
 }
 
-// Warning: (ae-forgotten-export) The symbol "CourierSocket" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "CourierInboxSocket" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public
-export class CourierInboxSocket extends CourierSocket {
-    constructor(options: CourierClientOptions);
-    addMessageEventListener(listener: (message: InboxMessageEventEnvelope) => void): () => void;
-    // (undocumented)
-    onClose(_: CloseEvent): Promise<void>;
-    // (undocumented)
-    onError(_: Event): Promise<void>;
-    // Warning: (ae-forgotten-export) The symbol "ServerMessage" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    onMessageReceived(data: ServerMessage): Promise<void>;
-    // (undocumented)
-    onOpen(_: Event): Promise<void>;
-    sendSubscribe(): void;
-    sendUnsubscribe(): void;
-}
-
 // Warning: (ae-missing-release-tag) "CourierProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -336,6 +315,8 @@ export class InboxClient extends Client {
         messageId: string;
     }): Promise<void>;
     readAll(): Promise<void>;
+    // Warning: (ae-forgotten-export) The symbol "CourierInboxSocket" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
     readonly socket: CourierInboxSocket;
     unarchive(props: {
