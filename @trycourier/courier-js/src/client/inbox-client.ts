@@ -78,7 +78,8 @@ export class InboxClient extends Client {
   }
 
   /**
-   * Get unread counts for multiple filters in a single query
+   * Get unread counts for multiple filters in a single query.
+   *
    * @param filtersMap - Map of dataset ID to filter
    * @returns Promise resolving to map of dataset ID to unread count
    */
@@ -88,6 +89,10 @@ export class InboxClient extends Client {
     // Build query variables and field aliases
     const variables: string[] = [];
     const fields: string[] = [];
+
+    // Map from the user-provided dataset ID to a GraphQL-safe alias.
+    // We keep track of this mapping so it can be reversed and we can return
+    // a mapping from user-provided dataset ID to unread count.
     const sanitizedIdMapping: Record<string, string> = {};
 
     for (const [datasetId, filter] of Object.entries(filtersMap)) {
@@ -117,7 +122,8 @@ export class InboxClient extends Client {
       url: this.options.apiUrls.inbox.graphql,
     });
 
-    // Parse response data into Record<string, number> using original IDs
+    // Parse response data back into a map of user-provided ID to unread count
+    // from the GraphQL-safe aliases used in the query.
     const result: Record<string, number> = {};
     if (response.data) {
       for (const [sanitizedId, originalId] of Object.entries(sanitizedIdMapping)) {
