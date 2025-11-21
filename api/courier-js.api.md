@@ -85,20 +85,58 @@ export interface CourierBrand {
     version: string;
 }
 
+// Warning: (ae-missing-release-tag) "CourierBrandColors" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandColors {
+    // (undocumented)
+    primary?: string;
+    // (undocumented)
+    secondary?: string;
+    // (undocumented)
+    tertiary?: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandEmail" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandEmail {
+    // (undocumented)
+    footer?: {
+        markdown?: string;
+    };
+    // (undocumented)
+    head?: {
+        inheritDefault?: boolean;
+    };
+    // (undocumented)
+    header?: {
+        barColor?: string;
+    };
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandInApp" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandInApp {
+    // (undocumented)
+    borderRadius?: string;
+    // (undocumented)
+    disableCourierFooter?: boolean;
+    // (undocumented)
+    disableMessageIcon?: boolean;
+    // (undocumented)
+    placement?: string;
+}
+
 // Warning: (ae-missing-release-tag) "CourierBrandSettings" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export interface CourierBrandSettings {
-    // Warning: (ae-forgotten-export) The symbol "CourierBrandColors" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     colors?: CourierBrandColors;
-    // Warning: (ae-forgotten-export) The symbol "CourierBrandEmail" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     email?: CourierBrandEmail;
-    // Warning: (ae-forgotten-export) The symbol "CourierBrandInApp" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     inapp?: CourierBrandInApp;
 }

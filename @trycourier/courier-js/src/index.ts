@@ -22,7 +22,7 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 
 // Types
 import { CourierApiUrls } from './types/courier-api-urls';
-import { CourierBrand, CourierBrandSettings } from './types/brands';
+import { CourierBrand, CourierBrandSettings, CourierBrandColors, CourierBrandEmail, CourierBrandInApp } from './types/brands';
 import {
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -54,6 +54,9 @@ export type {
   CourierClientOptions,
   CourierBrand,
   CourierBrandSettings,
+  CourierBrandColors,
+  CourierBrandEmail,
+  CourierBrandInApp,
   CourierApiUrls,
   CourierUserPreferences,
   CourierUserPreferencesStatus,
