@@ -67,7 +67,16 @@ output differs from the API spec in the PR.
 ### Updating the API spec
 
 If you make changes to the public API surface, re-run API Extractor locally to update
-the spec in the same PR. For example, to update the spec for **@trycourier/courier-js**:
+the spec in the same PR. API Extractor generates the spec from the _built_ package, rather
+than the source files.
+
+For example, to update the spec for **@trycourier/courier-js**, build the package:
+
+```sh
+yarn workspace @trycourier/courier-js run build
+```
+
+Then run API Extractor:
 
 ```sh
 yarn workspace @trycourier/courier-js run generate-api-doc --local
