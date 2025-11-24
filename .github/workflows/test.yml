@@ -1,0 +1,39 @@
+name: test
+
+on:
+    pull_request:
+        types: [opened, reopened, synchronize]
+    push:
+        branches:
+            - "main"
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.x"
+                  cache: "yarn"
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+            - name: Build all packages
+              run: yarn build-packages:ci
+            - name: Run all tests
+              run: |
+                  yarn workspace @trycourier/courier-js run test
+                  yarn workspace @trycourier/courier-react run test
+                  yarn workspace @trycourier/courier-react-17 run test
+                  yarn workspace @trycourier/courier-ui-inbox run test
+                  yarn workspace @trycourier/courier-ui-toast run test
+              env:
+                  JWT: ${{ secrets.JWT }}
+                  USER_ID: ${{ vars.USER_ID }}
+                  COURIER_REST_URL: ${{ vars.COURIER_REST_URL }}
+                  COURIER_GRAPHQL_URL: ${{ vars.COURIER_GRAPHQL_URL }}
+                  INBOX_GRAPHQL_URL: ${{ vars.INBOX_GRAPHQL_URL }}
+                  INBOX_WEBSOCKET_URL: ${{ vars.INBOX_WEBSOCKET_URL }}
+                  BRAND_ID: ${{ vars.BRAND_ID }}
+                  TOPIC_ID: ${{ vars.TOPIC_ID }}
