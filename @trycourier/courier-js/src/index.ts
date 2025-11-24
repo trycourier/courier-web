@@ -39,6 +39,7 @@ import {
   InboxAction,
 } from './types/inbox';
 import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/messages';
+import { CourierTrackingEvent } from './types/tracking-event';
 
 // Client
 import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';
@@ -71,6 +72,7 @@ export type {
   InboxMessage,
   InboxAction,
   InboxMessageEventEnvelope,
+  CourierTrackingEvent,
 };
 
 export {
