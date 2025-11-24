@@ -77,14 +77,68 @@ export interface CourierBrand {
     name: string;
     // (undocumented)
     published: number;
-    // Warning: (ae-forgotten-export) The symbol "CourierBrandSettings" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     settings?: CourierBrandSettings;
     // (undocumented)
     updated: number;
     // (undocumented)
     version: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandColors" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandColors {
+    // (undocumented)
+    primary?: string;
+    // (undocumented)
+    secondary?: string;
+    // (undocumented)
+    tertiary?: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandEmail" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandEmail {
+    // (undocumented)
+    footer?: {
+        markdown?: string;
+    };
+    // (undocumented)
+    head?: {
+        inheritDefault?: boolean;
+    };
+    // (undocumented)
+    header?: {
+        barColor?: string;
+    };
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandInApp" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandInApp {
+    // (undocumented)
+    borderRadius?: string;
+    // (undocumented)
+    disableCourierFooter?: boolean;
+    // (undocumented)
+    disableMessageIcon?: boolean;
+    // (undocumented)
+    placement?: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierBrandSettings" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierBrandSettings {
+    // (undocumented)
+    colors?: CourierBrandColors;
+    // (undocumented)
+    email?: CourierBrandEmail;
+    // (undocumented)
+    inapp?: CourierBrandInApp;
 }
 
 // Warning: (ae-missing-release-tag) "CourierClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -102,8 +156,6 @@ export class CourierClient extends Client {
     readonly preferences: PreferenceClient;
     // (undocumented)
     readonly tokens: TokenClient;
-    // Warning: (ae-forgotten-export) The symbol "TrackingClient" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     readonly tracking: TrackingClient;
 }
@@ -194,6 +246,11 @@ export interface CourierToken {
     // (undocumented)
     provider_key: string;
 }
+
+// Warning: (ae-missing-release-tag) "CourierTrackingEvent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierTrackingEvent = 'CLICKED' | 'DELIVERED' | 'OPENED' | 'READ' | 'UNREAD';
 
 // Warning: (ae-missing-release-tag) "CourierUserPreferences" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -431,6 +488,24 @@ export class TokenClient extends Client {
         token: string;
         provider: string;
         device?: CourierDevice;
+    }): Promise<void>;
+}
+
+// Warning: (ae-missing-release-tag) "TrackingClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export class TrackingClient extends Client {
+    postInboundCourier(props: {
+        event: string;
+        messageId: string;
+        type: 'track';
+        properties?: Record<string, any>;
+    }): Promise<{
+        messageId: string;
+    }>;
+    postTrackingUrl(props: {
+        url: string;
+        event: CourierTrackingEvent;
     }): Promise<void>;
 }
 

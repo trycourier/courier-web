@@ -196,5 +196,23 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Generate Production API Doc (courier-js)",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "build-packages:ci",
+        "&&",
+        "yarn",
+        "workspace",
+        "@trycourier/courier-js",
+        "run",
+        "generate-api-doc"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
   ]
 }

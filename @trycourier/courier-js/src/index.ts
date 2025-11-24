@@ -22,7 +22,7 @@ Y8,           i8'    ,8I   I8,    ,8I  ,8'    8I   88   I8, ,8I  ,8'    8I
 
 // Types
 import { CourierApiUrls } from './types/courier-api-urls';
-import { CourierBrand } from './types/brands';
+import { CourierBrand, CourierBrandSettings, CourierBrandColors, CourierBrandEmail, CourierBrandInApp } from './types/brands';
 import {
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -39,6 +39,7 @@ import {
   InboxAction,
 } from './types/inbox';
 import { InboxMessageEvent, InboxMessageEventEnvelope } from './types/socket/protocol/messages';
+import { CourierTrackingEvent } from './types/tracking-event';
 
 // Client
 import { CourierClient, CourierClientOptions, CourierProps } from './client/courier-client';
@@ -47,11 +48,16 @@ import { TokenClient } from './client/token-client';
 import { PreferenceClient } from './client/preference-client';
 import { InboxClient } from './client/inbox-client';
 import { ListClient } from './client/list-client';
+import { TrackingClient } from './client/tracking-client';
 
 export type {
   CourierProps,
   CourierClientOptions,
   CourierBrand,
+  CourierBrandSettings,
+  CourierBrandColors,
+  CourierBrandEmail,
+  CourierBrandInApp,
   CourierApiUrls,
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -66,6 +72,7 @@ export type {
   InboxMessage,
   InboxAction,
   InboxMessageEventEnvelope,
+  CourierTrackingEvent,
 };
 
 export {
@@ -79,6 +86,7 @@ export {
   PreferenceClient,
   InboxClient,
   ListClient,
+  TrackingClient,
 };
 
 // Listeners
