@@ -247,6 +247,11 @@ export interface CourierToken {
     provider_key: string;
 }
 
+// Warning: (ae-missing-release-tag) "CourierTrackingEvent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierTrackingEvent = 'CLICKED' | 'DELIVERED' | 'OPENED' | 'READ' | 'UNREAD';
+
 // Warning: (ae-missing-release-tag) "CourierUserPreferences" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -503,10 +508,6 @@ export class TrackingClient extends Client {
         event: CourierTrackingEvent;
     }): Promise<void>;
 }
-
-// Warnings were encountered during analysis:
-//
-// dist/client/tracking-client.d.ts:30:9 - (ae-forgotten-export) The symbol "CourierTrackingEvent" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
