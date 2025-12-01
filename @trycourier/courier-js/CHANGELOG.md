@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 2.1.3
+
+### Patch Changes
+
+- [#132](https://github.com/trycourier/courier-web/pull/132) [`1b99be2`](https://github.com/trycourier/courier-web/commit/1b99be223433bb05889abec2475a8df5387e8c63) Thanks [@mikemilla](https://github.com/mikemilla)! - Exposing more types
+
 ## 2.1.2
 
 ### Patch Changes
