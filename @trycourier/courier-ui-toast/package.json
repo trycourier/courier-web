@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-toast",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Toast components for the Courier web UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -31,7 +31,7 @@
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-js": "2.1.2",
+    "@trycourier/courier-js": "2.1.3",
     "@trycourier/courier-ui-core": "1.0.14"
   },
   "devDependencies": {
