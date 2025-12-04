@@ -1,5 +1,5 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 
 export function markAsRead(message: InboxMessage): Promise<void> {
   return CourierInboxDatastore.shared.readMessage({ message });

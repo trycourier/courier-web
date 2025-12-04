@@ -120,6 +120,21 @@ export type CourierActionMenuTheme = {
   archiveRead?: CourierMenuItemTheme;
 }
 
+export type CourierInboxTabsTheme = {
+  default?: {
+    borderColor?: string;
+    font?: CourierInboxFontTheme;
+  };
+  hover?: {
+    borderColor?: string;
+    font?: CourierInboxFontTheme;
+  };
+  selected?: {
+    borderColor?: string;
+    font?: CourierInboxFontTheme;
+  };
+}
+
 export type CourierInboxTheme = {
   popup?: {
     button?: CourierInboxMenuButtonTheme;
@@ -134,11 +149,13 @@ export type CourierInboxTheme = {
     header?: {
       backgroundColor?: string;
       shadow?: string;
+      tabs?: CourierInboxTabsTheme;
       filters?: {
         font?: CourierInboxFontTheme;
         inbox?: CourierInboxFilterItemTheme;
         archive?: CourierInboxFilterItemTheme;
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
+        inactiveUnreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -184,6 +201,32 @@ export const defaultLightTheme: CourierInboxTheme = {
     header: {
       backgroundColor: CourierColors.white[500],
       shadow: `0px 1px 0px 0px ${CourierColors.gray[500]}`,
+      tabs: {
+        default: {
+          borderColor: 'transparent',
+          font: {
+            color: CourierColors.gray[600],
+            family: undefined,
+            size: '14px'
+          }
+        },
+        hover: {
+          borderColor: 'transparent',
+          font: {
+            color: CourierColors.gray[600],
+            family: undefined,
+            size: '14px'
+          }
+        },
+        selected: {
+          borderColor: CourierColors.blue[500],
+          font: {
+            color: CourierColors.blue[500],
+            family: undefined,
+            size: '14px'
+          }
+        }
+      },
       filters: {
         font: {
           color: CourierColors.black[500],
@@ -213,6 +256,16 @@ export const defaultLightTheme: CourierInboxTheme = {
           backgroundColor: CourierColors.blue[500],
           borderRadius: '4px',
           padding: '2px 6px',
+        },
+        inactiveUnreadIndicator: {
+          font: {
+            color: CourierColors.gray[600],
+            family: undefined,
+            size: '12px'
+          },
+          backgroundColor: CourierColors.gray[500],
+          borderRadius: '4px',
+          padding: '2px 6px',
         }
       },
       menus: {
@@ -240,11 +293,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           button: {
             icon: {
               color: CourierColors.black[500],
-              svg: CourierIconSVGs.filter
+              svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.black[500_10],
-            activeBackgroundColor: CourierColors.black[500_20],
+            hoverBackgroundColor: 'transparent',
+            activeBackgroundColor: 'transparent',
           },
           inbox: {
             icon: {
@@ -429,6 +482,32 @@ export const defaultDarkTheme: CourierInboxTheme = {
     header: {
       backgroundColor: CourierColors.black[500],
       shadow: `0px 1px 0px 0px ${CourierColors.gray[400]}`,
+      tabs: {
+        default: {
+          borderColor: 'transparent',
+          font: {
+            color: CourierColors.white[500],
+            family: undefined,
+            size: '14px'
+          }
+        },
+        hover: {
+          borderColor: CourierColors.gray[400],
+          font: {
+            color: CourierColors.gray[400],
+            family: undefined,
+            size: '14px'
+          }
+        },
+        selected: {
+          borderColor: CourierColors.blue[500],
+          font: {
+            color: CourierColors.blue[500],
+            family: undefined,
+            size: '14px'
+          }
+        }
+      },
       filters: {
         font: {
           color: CourierColors.white[500],
@@ -458,6 +537,16 @@ export const defaultDarkTheme: CourierInboxTheme = {
           backgroundColor: CourierColors.blue[500],
           borderRadius: '4px',
           padding: '3px 8px',
+        },
+        inactiveUnreadIndicator: {
+          font: {
+            color: CourierColors.white[500],
+            family: undefined,
+            size: '12px'
+          },
+          backgroundColor: 'transparent',
+          borderRadius: '4px',
+          padding: '3px 8px',
         }
       },
       menus: {
@@ -485,11 +574,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           button: {
             icon: {
               color: CourierColors.white[500],
-              svg: CourierIconSVGs.filter
+              svg: CourierIconSVGs.chevronDown
             },
             backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.white[500_10],
-            activeBackgroundColor: CourierColors.white[500_20],
+            hoverBackgroundColor: 'transparent',
+            activeBackgroundColor: 'transparent',
           },
           inbox: {
             icon: {
@@ -672,6 +761,34 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       header: {
         ...defaultTheme.inbox?.header,
         ...theme.inbox?.header,
+        tabs: {
+          ...defaultTheme.inbox?.header?.tabs,
+          ...theme.inbox?.header?.tabs,
+          default: {
+            ...defaultTheme.inbox?.header?.tabs?.default,
+            ...theme.inbox?.header?.tabs?.default,
+            font: {
+              ...defaultTheme.inbox?.header?.tabs?.default?.font,
+              ...theme.inbox?.header?.tabs?.default?.font
+            }
+          },
+          hover: {
+            ...defaultTheme.inbox?.header?.tabs?.hover,
+            ...theme.inbox?.header?.tabs?.hover,
+            font: {
+              ...defaultTheme.inbox?.header?.tabs?.hover?.font,
+              ...theme.inbox?.header?.tabs?.hover?.font
+            }
+          },
+          selected: {
+            ...defaultTheme.inbox?.header?.tabs?.selected,
+            ...theme.inbox?.header?.tabs?.selected,
+            font: {
+              ...defaultTheme.inbox?.header?.tabs?.selected?.font,
+              ...theme.inbox?.header?.tabs?.selected?.font
+            }
+          }
+        },
         filters: {
           ...defaultTheme.inbox?.header?.filters,
           ...theme.inbox?.header?.filters,
@@ -694,6 +811,10 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           unreadIndicator: {
             ...defaultTheme.inbox?.header?.filters?.unreadIndicator,
             ...theme.inbox?.header?.filters?.unreadIndicator
+          },
+          inactiveUnreadIndicator: {
+            ...defaultTheme.inbox?.header?.filters?.inactiveUnreadIndicator,
+            ...theme.inbox?.header?.filters?.inactiveUnreadIndicator
           }
         },
         menus: {

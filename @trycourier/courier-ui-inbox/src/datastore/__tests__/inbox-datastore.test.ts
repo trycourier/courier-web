@@ -1,11 +1,14 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxDatastore } from "../datastore";
+import { CourierInboxDatastore } from "../inbox-datastore";
+import { CourierInboxFeed } from "../../types/inbox-data-set";
+import { CourierInboxDataStoreListener } from "../datastore-listener";
 
 const mockGetMessages = jest.fn();
 const mockGetArchivedMessages = jest.fn();
 const mockGetUnreadMessageCount = jest.fn();
 const mockArchiveRead = jest.fn();
 const mockArchiveAll = jest.fn();
+const mockArchive = jest.fn();
 const mockOpen = jest.fn();
 const mockRead = jest.fn();
 const mockUnread = jest.fn();
@@ -30,6 +33,7 @@ jest.mock("@trycourier/courier-js", () => ({
           getUnreadMessageCount: () => mockGetUnreadMessageCount(),
           archiveRead: () => mockArchiveRead(),
           archiveAll: () => mockArchiveAll(),
+          archive: () => mockArchive(),
           open: () => mockOpen(),
           read: () => mockRead(),
           unread: () => mockUnread(),
@@ -41,6 +45,7 @@ jest.mock("@trycourier/courier-js", () => ({
           logger: {
             error: jest.fn(),
             info: jest.fn(),
+            warn: jest.fn(),
           },
           userId: "123",
         },
@@ -70,6 +75,19 @@ const UNREAD_MESSAGE: InboxMessage = {
   created: "2021-01-01",
 };
 
+const DEFAULT_FEEDS: CourierInboxFeed[] = [
+  {
+    id: 'inbox-feed',
+    label: 'Inbox',
+    tabs: [{ id: 'inbox', label: 'Inbox', filter: {}}]
+  },
+  {
+    id: 'archive-feed',
+    label: 'Archive',
+    tabs: [{ id: 'archive', label: 'Archive', filter: { archived: true }}]
+  }
+];
+
 describe("CourierInboxDatastore", () => {
 
   beforeEach(() => {
@@ -79,6 +97,7 @@ describe("CourierInboxDatastore", () => {
     mockGetMessages.mockResolvedValue({
       data: {
         count: 0,
+        unreadCount: 0,
         messages: {
           nodes: [],
         },
@@ -87,12 +106,15 @@ describe("CourierInboxDatastore", () => {
     mockGetArchivedMessages.mockResolvedValue({
       data: {
         count: 0,
+        unreadCount: 0,
         messages: {
           nodes: [],
         },
       },
     });
     mockGetUnreadMessageCount.mockResolvedValue(0);
+
+    CourierInboxDatastore.shared.createDatasetsFromFeeds(DEFAULT_FEEDS);
   });
 
   describe('archiveAllMessages', () => {
@@ -100,6 +122,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
+          unreadCount: 1,
           messages: {
             nodes: [READ_MESSAGE, UNREAD_MESSAGE],
           },
@@ -110,10 +133,14 @@ describe("CourierInboxDatastore", () => {
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
 
+      expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(1);
+
       await datastore.archiveAllMessages();
 
       expect(datastore.inboxDataSet.messages.length).toBe(0);
       expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(0);
+      expect(datastore.getDatasetById('archive')?.unreadCount).toBe(1);
       expect(mockArchiveAll).toHaveBeenCalled();
     });
 
@@ -121,6 +148,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
+          unreadCount: 1,
           messages: {
             nodes: [READ_MESSAGE, UNREAD_MESSAGE],
           },
@@ -141,26 +169,39 @@ describe("CourierInboxDatastore", () => {
 
   describe("archiveReadMessages", () => {
     it("should archive all read messages", async () => {
-      mockGetMessages.mockResolvedValue({
+      // inbox messages response
+      mockGetMessages.mockResolvedValueOnce({
         data: {
           count: 2,
+          unreadCount: 1,
           messages: {
             nodes: [READ_MESSAGE, UNREAD_MESSAGE],
           },
         },
-      });
+      })
+      // archive messages response
+      .mockResolvedValueOnce({
+        data: {
+          count: 0,
+          unreadCount: 0,
+          messages: {
+            nodes: [],
+          },
+        },
+      })
       mockGetUnreadMessageCount.mockResolvedValue(1);
 
-      // Load the inbox and archive feeds
+      // Load the inbox and archive feeds in the order the responses are mocked
       const datastore = CourierInboxDatastore.shared;
-      await datastore.load({ canUseCache: false });
+      await datastore.load({ canUseCache: false, datasetIds: ['inbox'] });
+      await datastore.load({ canUseCache: false, datasetIds: ['archive'] });
 
       await datastore.archiveReadMessages();
 
       expect(datastore.inboxDataSet.messages.length).toBe(1);
       expect(datastore.archiveDataSet.messages.length).toBe(1);
       expect(datastore.inboxDataSet.messages[0]).toEqual(UNREAD_MESSAGE);
-      expect(datastore.archiveDataSet.messages[0]).toEqual(READ_MESSAGE);
+      expect(datastore.archiveDataSet.messages[0]).toMatchObject({ ...READ_MESSAGE, archived: expect.any(String) });
     });
 
     it("should archive multiple read messages", async () => {
@@ -172,6 +213,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
+          unreadCount: 0,
           messages: {
             nodes: [READ_MESSAGE, readMessage2],
           },
@@ -193,6 +235,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 1,
           messages: {
             nodes: [UNREAD_MESSAGE],
           },
@@ -214,6 +257,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 1,
           messages: {
             nodes: [UNREAD_MESSAGE],
           },
@@ -229,7 +273,7 @@ describe("CourierInboxDatastore", () => {
       const originalMessage = { ...UNREAD_MESSAGE };
       await datastore.openMessage({ message: UNREAD_MESSAGE });
 
-      // UNREAD_MESSAGE wasn't mutated and the dataset message is unchanged
+      // UNREAD_MESSAGE wasn't mutated and the dataset message is unchanged (rollback successful)
       expect(UNREAD_MESSAGE.opened).toBeUndefined();
       expect(datastore.inboxDataSet.messages).toHaveLength(1);
       expect(datastore.inboxDataSet.messages[0]).toEqual(originalMessage);
@@ -243,6 +287,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 1,
           messages: {
             nodes: [openedMessage],
           },
@@ -263,6 +308,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 1,
           messages: {
             nodes: [UNREAD_MESSAGE],
           },
@@ -285,6 +331,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 1,
           messages: {
             nodes: [UNREAD_MESSAGE],
           },
@@ -294,13 +341,13 @@ describe("CourierInboxDatastore", () => {
 
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
-      expect(datastore.unreadCount).toBe(1);
+      expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(1);
 
       await datastore.readMessage({ message: UNREAD_MESSAGE });
 
       expect(datastore.inboxDataSet.messages).toHaveLength(1);
       expect(datastore.inboxDataSet.messages[0].read).toBeDefined();
-      expect(datastore.unreadCount).toBe(0);
+      expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(0);
     });
   });
 
@@ -309,6 +356,7 @@ describe("CourierInboxDatastore", () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
+          unreadCount: 0,
           messages: {
             nodes: [READ_MESSAGE],
           },
@@ -399,6 +447,134 @@ describe("CourierInboxDatastore", () => {
 
       expect(mockAddMessageEventListener).toHaveBeenCalled();
       expect(mockConnect).toHaveBeenCalled();
+    });
+  });
+
+  describe("dataset rollbacks", () => {
+    it("should rollback mutations across all datasets when API call fails", async () => {
+      // Create a message that will appear in both inbox and archive datasets
+      const sharedMessage: InboxMessage = {
+        messageId: "shared-1",
+        title: "Shared Message",
+        body: "This message appears in multiple datasets",
+        preview: "Preview",
+        actions: [],
+        data: {},
+        created: "2021-01-01",
+      };
+
+      // Mock to return the shared message only for inbox dataset
+      mockGetMessages.mockImplementation(() => {
+        return Promise.resolve({
+          data: {
+            count: 1,
+            unreadCount: 1,
+            messages: { nodes: [sharedMessage] },
+          },
+        });
+      });
+
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+      mockRead.mockRejectedValue(new Error("API Error"));
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+
+      // Verify initial state - message is in inbox only
+      // (archive dataset filters it out because it's not archived)
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].read).toBeUndefined();
+
+      // Attempt to read the message - API will fail but error is swallowed
+      await datastore.readMessage({ message: sharedMessage });
+
+      // Verify rollback - message should still be unread in inbox
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].read).toBeUndefined();
+      expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(1);
+    });
+
+    it("should rollback archive operation that moves message between datasets", async () => {
+      const messageToArchive: InboxMessage = {
+        messageId: "archive-test-1",
+        title: "Message to Archive",
+        body: "This will be archived",
+        preview: "Preview",
+        actions: [],
+        data: {},
+        created: "2021-01-01",
+      };
+
+      // Mock to return message in inbox
+      mockGetMessages.mockImplementation(() => {
+        return Promise.resolve({
+          data: {
+            count: 1,
+            unreadCount: 1,
+            messages: { nodes: [messageToArchive] },
+          },
+        });
+      });
+
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+
+      // Mock the archive API call to fail
+      mockArchive.mockRejectedValue(new Error("Archive API call failed"));
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+
+      // Verify initial state - message is in inbox
+      const inboxBefore = datastore.getDatasetById('inbox');
+      expect(inboxBefore?.messages).toHaveLength(1);
+
+      // Attempt to archive - API will fail but error is swallowed
+      await datastore.archiveMessage({ message: messageToArchive });
+
+      // Verify rollback - message should still be in inbox and not archived
+      const inboxAfter = datastore.getDatasetById('inbox');
+      expect(inboxAfter?.messages).toHaveLength(1);
+      expect(inboxAfter?.messages[0].archived).toBeUndefined();
+    });
+
+    it("should call onError listener when rollback occurs", async () => {
+      const testMessage: InboxMessage = {
+        messageId: "error-test-1",
+        title: "Error Test",
+        body: "Testing error handling",
+        preview: "Preview",
+        actions: [],
+        data: {},
+        created: "2021-01-01",
+      };
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 1,
+          unreadCount: 1,
+          messages: { nodes: [testMessage] },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+      mockRead.mockRejectedValue(new Error("API Error"));
+
+      const onErrorMock = jest.fn();
+      const datastore = CourierInboxDatastore.shared;
+
+      // Add a listener with onError callback
+      const listener = new CourierInboxDataStoreListener({
+        onError: onErrorMock,
+      });
+      datastore.addDataStoreListener(listener);
+
+      await datastore.load({ canUseCache: false });
+
+      // Attempt operation that will fail (error is swallowed)
+      await datastore.readMessage({ message: testMessage });
+
+      // Verify onError was called
+      expect(onErrorMock).toHaveBeenCalledTimes(1);
+      expect(onErrorMock).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 });
