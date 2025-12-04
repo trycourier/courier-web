@@ -1,5 +1,5 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, useState } from "react";
-import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
+import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
@@ -17,8 +17,8 @@ export interface CourierInboxProps {
   /** Theme mode: "light", "dark", or "system". Defaults to "system" */
   mode?: CourierComponentThemeMode;
 
-  /** Type of feed to display in the inbox ("inbox" or "archive"). Defaults to "inbox" */
-  feedType?: CourierInboxFeedType;
+  /** Type of feed to display in the inbox. Defaults to "inbox" */
+  feedType?: string;
 
   /** Array of feeds to display in the inbox. Each feed contains tabs with different filters. */
   feeds?: CourierInboxFeed[];

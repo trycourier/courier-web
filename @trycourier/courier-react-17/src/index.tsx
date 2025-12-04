@@ -55,7 +55,6 @@ export type {
   CourierInboxListItemActionFactoryProps,
   CourierInboxPaginationItemFactoryProps,
   CourierInboxMenuButtonFactoryProps,
-  CourierInboxFeedType,
   CourierInboxFeed,
   CourierInboxTab,
   CourierInboxDatasetFilter

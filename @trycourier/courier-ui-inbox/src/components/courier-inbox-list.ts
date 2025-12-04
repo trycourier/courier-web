@@ -3,7 +3,6 @@ import { CourierBaseElement, CourierInfoState, injectGlobalStyle, registerElemen
 import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
@@ -22,7 +21,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _feedId: CourierInboxFeedType | string = 'inbox';
+  private _feedId: string = 'inbox';
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
@@ -36,7 +35,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onRefresh: () => void;
 
   // Factories
-  private _onPaginationTrigger?: (feedId: CourierInboxFeedType | string) => void;
+  private _onPaginationTrigger?: (feedId: string) => void;
   private _listItemFactory?: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement;
   private _paginationItemFactory?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement;
   private _loadingStateFactory?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement;
@@ -64,7 +63,7 @@ export class CourierInboxList extends CourierBaseElement {
     canClickListItems: boolean,
     canLongPressListItems: boolean,
     onRefresh: () => void,
-    onPaginationTrigger: (feedType: CourierInboxFeedType | string) => void,
+    onPaginationTrigger: (feedType: string) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onMessageActionClick: (message: InboxMessage, action: InboxAction, index: number) => void,
     onMessageLongPress: (message: InboxMessage, index: number) => void
@@ -166,7 +165,7 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setFeedType(feedId: CourierInboxFeedType | string): void {
+  public setFeedType(feedId: string): void {
     this._feedId = feedId;
     this._error = null;
     this._isLoading = true;

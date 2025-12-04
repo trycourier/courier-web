@@ -1,8 +1,7 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxFeedType } from "./feed-type";
 
 export type InboxDataSet = {
-  feedType: CourierInboxFeedType | string;
+  feedType: string;
   messages: InboxMessage[];
   unreadCount: number;
   canPaginate: boolean;

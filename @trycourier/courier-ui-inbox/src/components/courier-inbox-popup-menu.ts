@@ -3,7 +3,6 @@ import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -38,7 +37,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   /** Returns the current feed type. */
-  get currentFeed(): CourierInboxFeedType | string {
+  get currentFeed(): string {
     return this._inbox?.currentFeed ?? 'inbox';
   }
 
@@ -424,7 +423,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
    * Set the feed type for the inbox.
    * @param feedType The feed type to set.
    */
-  public setFeedType(feedType: CourierInboxFeedType) {
+  public setFeedType(feedType: string) {
     this._inbox?.setFeedType(feedType);
   }
 

@@ -5,7 +5,6 @@ import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectG
 import { CourierInboxFeed, CourierInboxTab, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
@@ -22,7 +21,7 @@ export class CourierInbox extends CourierBaseElement {
   private _currentTabId: string = 'inbox-tab';
 
   /** Returns the current feed type. */
-  get currentFeed(): CourierInboxFeedType | string {
+  get currentFeed(): string {
     return this._currentFeed;
   }
 
@@ -107,7 +106,7 @@ export class CourierInbox extends CourierBaseElement {
     // Header
     this._header = new CourierInboxHeader({
       themeManager: this._themeManager,
-      onFeedTypeChange: (feedType: CourierInboxFeedType | string) => {
+      onFeedTypeChange: (feedType: string) => {
         this.setFeedType(feedType);
       },
       onTabChange: (tabId: string) => {
@@ -130,7 +129,7 @@ export class CourierInbox extends CourierBaseElement {
       onRefresh: () => {
         this.refresh();
       },
-      onPaginationTrigger: async (feedType: CourierInboxFeedType | string) => {
+      onPaginationTrigger: async (feedType: string) => {
         try {
           await CourierInboxDatastore.shared.fetchNextPageOfMessages({
             datasetId: feedType
@@ -383,7 +382,7 @@ export class CourierInbox extends CourierBaseElement {
    * Sets the feed type for the inbox (e.g., "inbox" or "archive").
    * @param feedType - The feed type to display.
    */
-  public setFeedType(feedType: CourierInboxFeedType | string) {
+  public setFeedType(feedType: string) {
     // Do not swap if current feed is same
     if (this._currentFeed === feedType) {
       return;
@@ -590,12 +589,12 @@ export class CourierInbox extends CourierBaseElement {
       {
         id: 'inbox',
         label: 'Inbox',
-        tabs: [{ id: 'inbox-tab', label: 'Inbox', filter: {}}]
+        tabs: [{ id: 'inbox-tab', label: 'Inbox', filter: {} }]
       },
       {
         id: 'archive',
         label: 'Archive',
-        tabs: [{ id: 'archive-tab', label: 'Archive', filter: { archived: true }}]
+        tabs: [{ id: 'archive-tab', label: 'Archive', filter: { archived: true } }]
       }
     ];
   }

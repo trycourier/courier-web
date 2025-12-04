@@ -1,6 +1,5 @@
 import { useEffect, useRef, forwardRef, ReactNode, useContext, useState } from 'react';
 import {
-  CourierInboxFeedType,
   CourierInboxHeaderFactoryProps,
   CourierInboxListItemActionFactoryProps,
   CourierInboxListItemFactoryProps,
@@ -47,9 +46,6 @@ export interface CourierInboxPopupMenuProps {
 
   /** Theme mode: 'light', 'dark', or 'system'. */
   mode?: CourierComponentThemeMode;
-
-  /** Type of feed to display in the popup menu ('inbox' or 'archive'). */
-  feedType?: CourierInboxFeedType;
 
   /** Callback fired when a message is clicked. */
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -118,21 +114,6 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
     function getEl(): CourierInboxPopupMenuElement | null {
       return inboxRef.current;
     }
-
-    // Use a ref to track the last set feedType to prevent duplicate state changes
-    const lastFeedTypeRef = useRef<CourierInboxFeedType | undefined>(undefined);
-
-    useEffect(() => {
-      const menu = getEl();
-      if (!menu) return;
-      // Only set feedType if it has changed from the last set value
-      if (props.feedType !== lastFeedTypeRef.current) {
-        lastFeedTypeRef.current = props.feedType;
-        queueMicrotask(() => {
-          menu.setFeedType?.(props.feedType ?? 'inbox');
-        });
-      }
-    }, [props.feedType, elementReady]);
 
     // Handle message click
     useEffect(() => {

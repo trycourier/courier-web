@@ -1,6 +1,5 @@
 import { CourierBaseElement, CourierIcon, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 
@@ -90,7 +89,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     this.updateFeedTitle();
   }
 
-  public updateSelectedOption(option: CourierInboxMenuOption, feedId: CourierInboxFeedType | string) {
+  public updateSelectedOption(option: CourierInboxMenuOption, feedId: string) {
     this._option = option;
     this._feedId = feedId;
     this.updateFeedTitle();

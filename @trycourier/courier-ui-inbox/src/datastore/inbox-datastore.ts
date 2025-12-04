@@ -3,7 +3,6 @@ import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { copyInboxDataSet, copyMessage } from "../utils/utils";
 
 /**
@@ -49,7 +48,7 @@ export class CourierInboxDatastore {
   private _globalMessages = new Map<string, InboxMessage>();
 
   /** Access CourierInboxDatastore through {@link CourierInboxDatastore.shared} */
-  private constructor() {}
+  private constructor() { }
 
   /**
    * Instantiate the datastore with the feeds specified.
@@ -561,7 +560,7 @@ export class CourierInboxDatastore {
    *
    * @param props - Options to fetch the next page of messages, see method documetation
    */
-  public async fetchNextPageOfMessages(props: { feedType?: CourierInboxFeedType, datasetId?: string }): Promise<InboxDataSet | null> {
+  public async fetchNextPageOfMessages(props: { feedType?: string, datasetId?: string }): Promise<InboxDataSet | null> {
     const client = Courier.shared.client;
 
     if (!client?.options.userId) {
@@ -611,7 +610,7 @@ export class CourierInboxDatastore {
    * @deprecated - Update callers to use `getDatasetById('inbox')`
    */
   public get inboxDataSet(): InboxDataSet {
-    const dataset =  this.getDatasetById('inbox');
+    const dataset = this.getDatasetById('inbox');
 
     if (dataset) {
       return dataset;
@@ -632,7 +631,7 @@ export class CourierInboxDatastore {
    * @deprecated - Update callers to use `getDataSetById('archive')`
    */
   public get archiveDataSet(): InboxDataSet {
-    const dataset =  this.getDatasetById('archive');
+    const dataset = this.getDatasetById('archive');
 
     if (dataset) {
       return dataset;
@@ -680,8 +679,8 @@ export class CourierInboxDatastore {
 
     // Handle all-messages updates
     const isAllMessagesEvent = event === InboxMessageEvent.ArchiveAll ||
-        event === InboxMessageEvent.ArchiveRead ||
-        event === InboxMessageEvent.MarkAllRead;
+      event === InboxMessageEvent.ArchiveRead ||
+      event === InboxMessageEvent.MarkAllRead;
     if (isAllMessagesEvent) {
       this.updateAllMessages(event);
     }

@@ -1,4 +1,3 @@
-import { CourierInboxFeedType } from "../types/feed-type";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { InboxMessage } from "@trycourier/courier-js";
 
@@ -12,11 +11,11 @@ export class CourierInboxDatastoreEvents {
   /**
    * @public
    */
-  public onDataSetChange?(_: InboxDataSet, __: CourierInboxFeedType | string): void { }
+  public onDataSetChange?(_: InboxDataSet, __: string): void { }
   /**
    * @public
    */
-  public onPageAdded?(_: InboxDataSet, __: CourierInboxFeedType | string): void { }
+  public onPageAdded?(_: InboxDataSet, __: string): void { }
   /**
    * @public
    * @param _ - the new unread count
@@ -26,15 +25,15 @@ export class CourierInboxDatastoreEvents {
   /**
    * @public
    */
-  public onMessageAdd?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void { }
+  public onMessageAdd?(_: InboxMessage, __: number, ___: string): void { }
   /**
    * @public
    */
-  public onMessageRemove?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void { }
+  public onMessageRemove?(_: InboxMessage, __: number, ___: string): void { }
   /**
    * @public
    */
-  public onMessageUpdate?(_: InboxMessage, __: number, ___: CourierInboxFeedType | string): void { }
+  public onMessageUpdate?(_: InboxMessage, __: number, ___: string): void { }
   /**
    * @public
    */

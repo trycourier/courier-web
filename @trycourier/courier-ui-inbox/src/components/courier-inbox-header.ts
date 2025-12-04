@@ -1,4 +1,3 @@
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierIconSVGs, CourierFactoryElement, registerElement, CourierColors, injectGlobalStyle } from "@trycourier/courier-ui-core";
 import { CourierInboxOptionMenu, CourierInboxMenuOption } from "./courier-inbox-option-menu";
 import { CourierInboxHeaderTitle } from "./courier-inbox-header-title";
@@ -10,7 +9,7 @@ import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxHeaderTabs } from "./courier-inbox-header-tabs";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
-export type CourierInboxHeaderMenuItemId = CourierInboxFeedType | 'markAllRead' | 'archiveAll' | 'archiveRead' | string;
+export type CourierInboxHeaderMenuItemId = string | 'markAllRead' | 'archiveAll' | 'archiveRead';
 
 export class CourierInboxHeader extends CourierFactoryElement {
 
@@ -22,7 +21,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  private _activeFeedId: CourierInboxFeedType | string = 'inbox';
+  private _activeFeedId: string = 'inbox';
   private _unreadCount: number = 0;
   private _feeds: CourierInboxFeed[] = [];
 
@@ -35,7 +34,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _style?: HTMLStyleElement;
 
   // Callbacks
-  private _onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void;
+  private _onFeedTypeChange: (feedType: string) => void;
   private _onTabChange: (tabId: string) => void;
 
   static get observedAttributes() {
@@ -48,7 +47,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
-    onFeedTypeChange: (feedType: CourierInboxFeedType | string) => void,
+    onFeedTypeChange: (feedType: string) => void,
     onTabChange: (tabId: string) => void
   }) {
     super();
@@ -169,7 +168,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._actionMenu?.setOptions(this.getActionOptions());
   }
 
-  private handleOptionMenuItemClick(feedId: CourierInboxFeedType | string, option: CourierInboxMenuOption) {
+  private handleOptionMenuItemClick(feedId: string, option: CourierInboxMenuOption) {
     this._activeFeedId = feedId;
     if (this._titleComponent) {
       this._titleComponent.updateSelectedOption(option, this._activeFeedId);

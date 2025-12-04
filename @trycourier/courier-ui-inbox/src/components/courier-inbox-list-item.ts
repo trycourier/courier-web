@@ -1,6 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
@@ -17,7 +16,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
-  private _feedId: CourierInboxFeedType | string = 'inbox';
+  private _feedId: string = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
@@ -399,7 +398,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // Public API
-  public setMessage(message: InboxMessage, feedId: CourierInboxFeedType | string): void {
+  public setMessage(message: InboxMessage, feedId: string): void {
     this._message = message;
     this._feedId = feedId;
     this._updateContent();
