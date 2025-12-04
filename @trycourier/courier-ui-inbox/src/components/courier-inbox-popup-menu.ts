@@ -36,11 +36,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     return this._themeManager.getTheme();
   }
 
-  /** Returns the current feed type. */
-  get currentFeed(): string {
-    return this._inbox?.currentFeed ?? 'inbox';
-  }
-
   /**
    * Set the light theme for the popup menu.
    * @param theme The light theme object to set.
@@ -165,7 +160,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         transform: translateZ(0);
         will-change: transform;
       }
-
+        
       ${CourierInboxPopupMenu.id} #unread-badge {
         position: absolute;
         top: -8px;
@@ -229,10 +224,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   /**
    * Called when the unread count changes.
-   * @param _ The new unread count (unused)
-   * @param __ The ID of the dataset for which the unread count changed (unused)
+   * @param _ The new unread count (unused).
    */
-  public onUnreadCountChange(_: number, __: string): void {
+  public onUnreadCountChange(_: number): void {
     this.render();
   }
 
@@ -419,14 +413,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     }
   }
 
-  /**
-   * Set the feed type for the inbox.
-   * @param feedType The feed type to set.
-   */
-  public setFeedType(feedType: string) {
-    this._inbox?.setFeedType(feedType);
-  }
-
   // Factory methods
   /**
    * Set a custom header factory for the inbox.
@@ -493,7 +479,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   private render() {
-    const unreadCount = CourierInboxDatastore.shared.totalUnreadCount;
+    const unreadCount = CourierInboxDatastore.shared.unreadCount;
     if (!this._triggerButton) return;
 
     switch (this._popupMenuButtonFactory) {

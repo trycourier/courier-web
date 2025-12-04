@@ -106,11 +106,12 @@ export class CourierInbox extends CourierBaseElement {
     // Header
     this._header = new CourierInboxHeader({
       themeManager: this._themeManager,
-      onFeedTypeChange: (feedType: string) => {
-        this.setFeedType(feedType);
+      onFeedChange: (feed: CourierInboxFeed) => {
+        console.log('onFeedChange', feed);
+        // this.setFeedType(feedType);
       },
-      onTabChange: (tabId: string) => {
-        this.setActiveTab(tabId);
+      onTabChange: (tab: CourierInboxTab) => {
+        this.setActiveTab(tab.id);
       }
     });
     this._header.setFeeds(this._feeds);
@@ -378,33 +379,33 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
-  /**
-   * Sets the feed type for the inbox (e.g., "inbox" or "archive").
-   * @param feedType - The feed type to display.
-   */
-  public setFeedType(feedType: string) {
-    // Do not swap if current feed is same
-    if (this._currentFeed === feedType) {
-      return;
-    }
+  // /**
+  //  * Sets the feed type for the inbox (e.g., "inbox" or "archive").
+  //  * @param feedType - The feed type to display.
+  //  */
+  // public setFeedType(feedType: string) {
+  //   // Do not swap if current feed is same
+  //   if (this._currentFeed === feedType) {
+  //     return;
+  //   }
 
-    // Update state
-    this._currentFeed = feedType;
+  //   // Update state
+  //   this._currentFeed = feedType;
 
-    // Update to the first tab of the new feed
-    const newFeed = this._feeds.find(feed => feed.id === feedType);
-    if (newFeed && newFeed.tabs.length > 0) {
-      this._currentTabId = newFeed.tabs[0].id;
-    }
+  //   // Update to the first tab of the new feed
+  //   const newFeed = this._feeds.find(feed => feed.id === feedType);
+  //   if (newFeed && newFeed.tabs.length > 0) {
+  //     this._currentTabId = newFeed.tabs[0].id;
+  //   }
 
-    // Switch to the new tab and update unread counts for all tabs in the feed
-    this.switchToTab(this._currentTabId);
+  //   // Switch to the new tab and update unread counts for all tabs in the feed
+  //   this.switchToTab(this._currentTabId);
 
-    // Update unread counts for all tabs in the new feed
-    if (newFeed) {
-      this.updateTabUnreadCounts(newFeed.tabs);
-    }
-  }
+  //   // Update unread counts for all tabs in the new feed
+  //   if (newFeed) {
+  //     this.updateTabUnreadCounts(newFeed.tabs);
+  //   }
+  // }
 
   /**
    * Sets the active tab for the current feed.

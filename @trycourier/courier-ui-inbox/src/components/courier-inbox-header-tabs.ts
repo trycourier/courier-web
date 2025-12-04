@@ -16,7 +16,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
 
   private _feed?: CourierInboxFeed;
   private _selectedTabId?: string;
-  private _onTabClick: (tabId: string) => void;
+  private _onTabClick: (tab: CourierInboxTab) => void;
 
   // Components
   private _style?: HTMLStyleElement;
@@ -28,7 +28,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
     return this._themeSubscription.manager.getTheme();
   }
 
-  constructor(props: { themeManager: CourierInboxThemeManager, onTabClick: (tabId: string) => void }) {
+  constructor(props: { themeManager: CourierInboxThemeManager, onTabClick: (tab: CourierInboxTab) => void }) {
     super();
     this._themeManager = props.themeManager;
     this._onTabClick = props.onTabClick;
@@ -184,7 +184,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
     el.appendChild(unreadBadge);
 
     el.addEventListener('click', () => {
-      this._onTabClick(tab.id);
+      this._onTabClick(tab);
     });
 
     return el;

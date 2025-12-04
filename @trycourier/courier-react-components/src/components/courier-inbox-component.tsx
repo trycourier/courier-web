@@ -194,15 +194,6 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     });
   }, [props.feeds, elementReady]);
 
-  // Set feed type
-  useEffect(() => {
-    const inbox = getEl();
-    if (!inbox) return;
-    queueMicrotask(() => {
-      inbox.setFeedType(props.feedType || 'inbox');
-    });
-  }, [props.feedType, elementReady]);
-
   const children = (
     /* @ts-ignore */
     <courier-inbox
