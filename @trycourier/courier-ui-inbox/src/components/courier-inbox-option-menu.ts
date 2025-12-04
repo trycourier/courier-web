@@ -1,22 +1,18 @@
 import { CourierBaseElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
-import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
 import { CourierInboxIconTheme } from "../types/courier-inbox-theme";
 
 export type CourierInboxMenuOptionType = 'filters' | 'actions';
 
 export type CourierInboxMenuOption = {
-  id: CourierInboxHeaderMenuItemId;
+  id: string;
   text: string;
   icon: CourierInboxIconTheme;
-  selectionIcon?: CourierInboxIconTheme | null;
   onClick: (option: CourierInboxMenuOption) => void;
 };
 
 export class CourierInboxOptionMenu extends CourierBaseElement {
-
-  private static readonly MENU_BORDER_PADDING_PX = 6;
 
   static get id(): string {
     return 'courier-inbox-option-menu';
@@ -81,6 +77,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       ${CourierInboxOptionMenu.id} {
         position: relative;
         display: inline-block;
+        background: red;
       }
 
       ${CourierInboxOptionMenu.id} .menu {
@@ -95,10 +92,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         min-width: 200px;
         overflow: hidden;
         padding: 4px 0;
-      }
-
-      ${CourierInboxOptionMenu.id} .menu.anchor-right {
-        right: -${CourierInboxOptionMenu.MENU_BORDER_PADDING_PX}px;
       }
 
       ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {

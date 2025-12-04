@@ -62,8 +62,8 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
   public refreshTheme() {
 
     // Set selected icon color
-    this._selectionIcon?.updateColor(this._option.selectionIcon?.color ?? 'red');
-    this._selectionIcon?.updateSVG(this._option.selectionIcon?.svg ?? CourierIconSVGs.check);
+    // this._selectionIcon?.updateColor(this._option.selectionIcon?.color ?? 'red');
+    // this._selectionIcon?.updateSVG(this._option.selectionIcon?.svg ?? CourierIconSVGs.check);
 
     if (this._title) {
       this._title.textContent = this._option.text ?? 'Missing Text';

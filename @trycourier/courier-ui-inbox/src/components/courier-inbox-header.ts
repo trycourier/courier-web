@@ -9,8 +9,6 @@ import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxHeaderTabs } from "./courier-inbox-header-tabs";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
-export type CourierInboxHeaderMenuItemId = string | 'markAllRead' | 'archiveAll' | 'archiveRead';
-
 export class CourierInboxHeader extends CourierFactoryElement {
 
   static get id(): string {
@@ -73,40 +71,36 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private getActionOptions(): CourierInboxMenuOption[] {
     const theme = this._themeSubscription.manager.getTheme();
     const actionMenu = theme.inbox?.header?.menus?.actions;
-
     return [
       {
-        id: 'markAllRead',
+        id: 'make_all_read',
         text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
         icon: {
           color: actionMenu?.markAllRead?.icon?.color ?? 'red',
           svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
         },
-        selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
           CourierInboxDatastore.shared.readAllMessages();
         }
       },
       {
-        id: 'archiveAll',
+        id: 'archive_all',
         text: actionMenu?.archiveAll?.text ?? 'Archive All',
         icon: {
           color: actionMenu?.archiveAll?.icon?.color ?? 'red',
           svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
         },
-        selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
           CourierInboxDatastore.shared.archiveAllMessages();
         }
       },
       {
-        id: 'archiveRead',
+        id: 'archive_read',
         text: actionMenu?.archiveRead?.text ?? 'Archive Read',
         icon: {
           color: actionMenu?.archiveRead?.icon?.color ?? 'red',
           svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
         },
-        selectionIcon: null,
         onClick: (_: CourierInboxMenuOption) => {
           CourierInboxDatastore.shared.archiveReadMessages();
         }
@@ -239,7 +233,6 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   static getStyles(theme: CourierInboxTheme): string {
-
     return `
       ${CourierInboxHeader.id} {
         display: flex;
@@ -283,7 +276,6 @@ export class CourierInboxHeader extends CourierFactoryElement {
         gap: 4px;
       }
     `;
-
   }
 
 }
