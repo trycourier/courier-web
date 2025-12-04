@@ -3,8 +3,6 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
 import { CourierInboxIconTheme } from "../types/courier-inbox-theme";
 
-export type CourierInboxMenuOptionType = 'filters' | 'actions';
-
 export type CourierInboxMenuOption = {
   id: string;
   text: string;
@@ -44,6 +42,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       this.refreshTheme();
     });
 
+    // Initial class: closed (not open by default)
+    this.classList.add('closed');
   }
 
   onComponentMounted() {
@@ -53,7 +53,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     document.addEventListener('click', this.handleOutsideClick.bind(this));
 
     this.refreshTheme();
-
   }
 
   onComponentUnmounted() {
@@ -66,7 +65,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     return `
       ${CourierInboxOptionMenu.id} {
-        display: none;
         position: absolute;
         top: 42px;
         border-radius: ${theme.inbox?.header?.menus?.popup?.borderRadius ?? '6px'};
@@ -81,6 +79,10 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
       ${CourierInboxOptionMenu.id}.open {
         display: block;
+      }
+
+      ${CourierInboxOptionMenu.id}.closed {
+        display: none;
       }
 
       ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {
@@ -175,26 +177,10 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     });
   }
 
-  // /** Calculate the left offset relative to the inbox header to anchor the menu to the left border. */
-  // private calculateMenuLeftOffset(): number {
-  //   if (!this._menu) {
-  //     return 0;
-  //   }
-
-  //   const rect = this.getBoundingClientRect();
-  //   const inboxHeader = this.closest('courier-inbox-header');
-  //   if (!inboxHeader) {
-  //     return 0;
-  //   }
-
-  //   const headerRect = inboxHeader.getBoundingClientRect();
-  //   const offsetFromLeft = rect.left - headerRect.left;
-  //   return offsetFromLeft;
-  // }
-
   public toggleMenu() {
     this._isOpen = !this._isOpen;
     this.classList.toggle('open', this._isOpen);
+    this.classList.toggle('closed', !this._isOpen);
     if (this._isOpen) {
       this._onMenuOpen?.();
     }
@@ -203,6 +189,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   public closeMenu() {
     this._isOpen = false;
     this.classList.remove('open');
+    this.classList.add('closed');
   }
 
   private handleOutsideClick(event: MouseEvent) {
