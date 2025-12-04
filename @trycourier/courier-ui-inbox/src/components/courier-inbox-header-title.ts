@@ -1,7 +1,7 @@
-import { CourierBaseElement, CourierIcon, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxMenuOption } from "./courier-inbox-option-menu";
+import { CourierBaseElement, CourierIcon, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxFeed } from "../types/inbox-data-set";
 
 export class CourierInboxHeaderTitle extends CourierBaseElement {
 
@@ -13,8 +13,7 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  private _option: CourierInboxMenuOption;
-  private _feedId: string = 'inbox';
+  private _feed: CourierInboxFeed;
 
   // Components
   private _style?: HTMLStyleElement;
@@ -25,26 +24,30 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
     return this._themeSubscription.manager.getTheme();
   }
 
-  constructor(themeManager: CourierInboxThemeManager, option: CourierInboxMenuOption) {
+  constructor(themeManager: CourierInboxThemeManager, feed: CourierInboxFeed) {
     super();
 
-    this._option = option;
+    this._feed = feed;
 
     // Subscribe to the theme bus
     this._themeSubscription = themeManager.subscribe((_) => {
-      this.refreshTheme(this._feedId);
+      this.refreshTheme(this._feed.id);
     });
 
   }
 
   static getStyles(theme: CourierInboxTheme): string {
-
     return `
       ${CourierInboxHeaderTitle.id} {
         display: flex;
         align-items: center;
         gap: 8px;
         position: relative;
+        transition: background 0.2s;
+      }
+
+      ${CourierInboxHeaderTitle.id}:hover {
+        background: red;
       }
 
       ${CourierInboxHeaderTitle.id} courier-icon {
@@ -66,13 +69,13 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
 
     this._style = injectGlobalStyle(CourierInboxHeaderTitle.id, CourierInboxHeaderTitle.getStyles(this.theme));
 
-    this._iconElement = new CourierIcon(undefined, this._option.icon.svg);
+    this._iconElement = new CourierIcon(undefined, this._feed.label);
     this._titleElement = document.createElement('h2');
 
     this.appendChild(this._iconElement);
     this.appendChild(this._titleElement);
 
-    this.refreshTheme(this._feedId);
+    this.refreshTheme(this._feed.id);
 
   }
 
@@ -82,28 +85,22 @@ export class CourierInboxHeaderTitle extends CourierBaseElement {
   }
 
   private refreshTheme(feedId: string) {
-    this._feedId = feedId;
+    console.log('refreshTheme', feedId);
     if (this._style) {
       this._style.textContent = CourierInboxHeaderTitle.getStyles(this.theme);
     }
     this.updateFeedTitle();
   }
 
-  public updateSelectedOption(option: CourierInboxMenuOption, feedId: string) {
-    this._option = option;
-    this._feedId = feedId;
-    this.updateFeedTitle();
-  }
-
   private updateFeedTitle() {
     if (this._titleElement) {
-      this._titleElement.textContent = this._option.text;
+      this._titleElement.textContent = this._feed.label;
     }
 
-    if (this._iconElement) {
-      this._iconElement.updateSVG(this._option?.icon.svg ?? CourierIconSVGs.inbox);
-      this._iconElement.updateColor(this._option?.icon.color ?? 'red');
-    }
+    // if (this._iconElement) {
+    //   this._iconElement.updateSVG(this._option?.icon.svg ?? CourierIconSVGs.inbox);
+    //   this._iconElement.updateColor(this._option?.icon.color ?? 'red');
+    // }
   }
 }
 

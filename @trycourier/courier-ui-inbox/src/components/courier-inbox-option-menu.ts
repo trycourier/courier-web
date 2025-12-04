@@ -26,9 +26,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  // Various configuration is set based on _type, a future improvement
-  // may be to parameterize that config so it can be set on the menu directly.
-  private _type: CourierInboxMenuOptionType;
   private _selectedIndex: number = 0;
   private _options: CourierInboxMenuOption[];
   private _selectable: boolean;
@@ -39,10 +36,9 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private _menu?: HTMLDivElement;
   private _style?: HTMLStyleElement;
 
-  constructor(themeManager: CourierInboxThemeManager, type: CourierInboxMenuOptionType, selectable: boolean, options: CourierInboxMenuOption[], onMenuOpen: () => void) {
+  constructor(themeManager: CourierInboxThemeManager, selectable: boolean, options: CourierInboxMenuOption[], onMenuOpen: () => void) {
     super();
 
-    this._type = type;
     this._selectable = selectable;
     this._options = options;
     this._selectedIndex = 0;
@@ -61,7 +57,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     this._menuButton = this.createMenuButton();
     this._menu = document.createElement('div');
-    this._menu.className = `menu ${this._type}`;
+    this._menu.className = `menu`;
 
     this.appendChild(this._menuButton);
     this.appendChild(this._menu);
@@ -165,16 +161,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     // Get menu
     const menu = theme.inbox?.header?.menus;
-    const isFilter = this._type === 'filters';
-    const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
-    const defaultIcon = isFilter ? CourierIconSVGs.chevronDown : CourierIconSVGs.overflow;
-
-    // Actions menu is anchored right, filter menu position is calculated dynamically
-    if (!isFilter) {
-      this._menu?.classList.add('anchor-right');
-    } else {
-      this._menu?.classList.remove('anchor-right');
-    }
+    const buttonConfig = menu?.filters?.button;
+    const defaultIcon = CourierIconSVGs.chevronDown;
 
     this._menuButton?.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
     this._menuButton?.updateIconColor(buttonConfig?.icon?.color ?? 'red');
@@ -187,21 +175,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   private createMenuButton(): CourierIconButton {
-    if (this._type === 'filters') {
-      return new CourierIconButton(
-        /* svg */ CourierIconSVGs.chevronDown,
-        /* color */ undefined,
-        /* backgroundColor */ undefined,
-        /* hoverBackgroundColor */ 'transparent',
-        /* activeBackgroundColor */ 'transparent',
-        /* borderRadius */ undefined,
-        /* height */ undefined,
-        /* width */ '20px',
-        /* iconSize */ '20px'
-      );
-    } else {
-      return new CourierIconButton(CourierIconSVGs.overflow);
-    }
+    return new CourierIconButton(CourierIconSVGs.overflow);
   }
 
   public setOptions(options: CourierInboxMenuOption[]) {
@@ -233,22 +207,22 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     });
   }
 
-  /** Calculate the left offset relative to the inbox header to anchor the menu to the left border. */
-  private calculateMenuLeftOffset(): number {
-    if (!this._menu) {
-      return 0;
-    }
+  // /** Calculate the left offset relative to the inbox header to anchor the menu to the left border. */
+  // private calculateMenuLeftOffset(): number {
+  //   if (!this._menu) {
+  //     return 0;
+  //   }
 
-    const rect = this.getBoundingClientRect();
-    const inboxHeader = this.closest('courier-inbox-header');
-    if (!inboxHeader) {
-      return 0;
-    }
+  //   const rect = this.getBoundingClientRect();
+  //   const inboxHeader = this.closest('courier-inbox-header');
+  //   if (!inboxHeader) {
+  //     return 0;
+  //   }
 
-    const headerRect = inboxHeader.getBoundingClientRect();
-    const offsetFromLeft = rect.left - headerRect.left;
-    return offsetFromLeft;
-  }
+  //   const headerRect = inboxHeader.getBoundingClientRect();
+  //   const offsetFromLeft = rect.left - headerRect.left;
+  //   return offsetFromLeft;
+  // }
 
   private toggleMenu(event: Event) {
     event.stopPropagation();
@@ -256,12 +230,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     if (this._menu) {
       this._menu.style.display = isOpening ? 'block' : 'none';
     }
-
-    if (this._menu && this._type === 'filters') {
-      const leftOffset = this.calculateMenuLeftOffset();
-      this._menu.style.left = `-${leftOffset - CourierInboxOptionMenu.MENU_BORDER_PADDING_PX}px`
-    }
-
     if (isOpening) {
       this._onMenuOpen();
     }
