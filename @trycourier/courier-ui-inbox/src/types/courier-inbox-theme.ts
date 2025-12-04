@@ -272,7 +272,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         popup: {
           backgroundColor: CourierColors.white[500],
           border: `1px solid ${CourierColors.gray[500]}`,
-          borderRadius: '4px',
+          borderRadius: '6px',
           shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
           list: {
             hoverBackgroundColor: CourierColors.gray[200],
@@ -553,7 +553,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         popup: {
           backgroundColor: CourierColors.black[500],
           border: `1px solid ${CourierColors.gray[400]}`,
-          borderRadius: '4px',
+          borderRadius: '6px',
           shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
           list: {
             hoverBackgroundColor: CourierColors.white[500_10],
