@@ -6,11 +6,6 @@ export type CourierInboxIconTheme = CourierIconTheme;
 export type CourierInboxButtonTheme = CourierButtonTheme;
 export type CourierInboxIconButtonTheme = CourierIconButtonTheme;
 
-export type CourierInboxFilterItemTheme = {
-  icon?: CourierInboxIconTheme;
-  text?: string;
-}
-
 export type CourierInboxUnreadDotIndicatorTheme = {
   backgroundColor?: string;
   borderRadius?: string;
@@ -150,12 +145,11 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       shadow?: string;
       tabs?: CourierInboxTabsTheme;
-      filters?: {
+      feeds?: {
         font?: CourierInboxFontTheme;
-        inbox?: CourierInboxFilterItemTheme;
-        archive?: CourierInboxFilterItemTheme;
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
         inactiveUnreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
+        switchIcon?: CourierIconTheme;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -227,25 +221,15 @@ export const defaultLightTheme: CourierInboxTheme = {
           }
         }
       },
-      filters: {
+      feeds: {
         font: {
           color: CourierColors.black[500],
           family: undefined,
-          size: '18px'
+          size: '16px'
         },
-        inbox: {
-          icon: {
-            color: CourierColors.black[500],
-            svg: CourierIconSVGs.inbox
-          },
-          text: 'Inbox'
-        },
-        archive: {
-          icon: {
-            color: CourierColors.black[500],
-            svg: CourierIconSVGs.archive
-          },
-          text: 'Archive'
+        switchIcon: {
+          color: CourierColors.black[500],
+          svg: CourierIconSVGs.chevronDown
         },
         unreadIndicator: {
           font: {
@@ -508,25 +492,15 @@ export const defaultDarkTheme: CourierInboxTheme = {
           }
         }
       },
-      filters: {
+      feeds: {
         font: {
           color: CourierColors.white[500],
           family: undefined,
-          size: '18px'
+          size: '16px'
         },
-        inbox: {
-          icon: {
-            color: CourierColors.white[500],
-            svg: CourierIconSVGs.inbox
-          },
-          text: 'Inbox'
-        },
-        archive: {
-          icon: {
-            color: CourierColors.white[500],
-            svg: CourierIconSVGs.archive
-          },
-          text: 'Archive'
+        switchIcon: {
+          color: CourierColors.white[500],
+          svg: CourierIconSVGs.chevronDown
         },
         unreadIndicator: {
           font: {
@@ -789,32 +763,20 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             }
           }
         },
-        filters: {
-          ...defaultTheme.inbox?.header?.filters,
-          ...theme.inbox?.header?.filters,
-          inbox: {
-            ...defaultTheme.inbox?.header?.filters?.inbox,
-            ...theme.inbox?.header?.filters?.inbox,
-            icon: {
-              ...defaultTheme.inbox?.header?.filters?.inbox?.icon,
-              ...theme.inbox?.header?.filters?.inbox?.icon
-            }
-          },
-          archive: {
-            ...defaultTheme.inbox?.header?.filters?.archive,
-            ...theme.inbox?.header?.filters?.archive,
-            icon: {
-              ...defaultTheme.inbox?.header?.filters?.archive?.icon,
-              ...theme.inbox?.header?.filters?.archive?.icon
-            }
-          },
+        feeds: {
+          ...defaultTheme.inbox?.header?.feeds,
+          ...theme.inbox?.header?.feeds,
           unreadIndicator: {
-            ...defaultTheme.inbox?.header?.filters?.unreadIndicator,
-            ...theme.inbox?.header?.filters?.unreadIndicator
+            ...defaultTheme.inbox?.header?.feeds?.unreadIndicator,
+            ...theme.inbox?.header?.feeds?.unreadIndicator
           },
           inactiveUnreadIndicator: {
-            ...defaultTheme.inbox?.header?.filters?.inactiveUnreadIndicator,
-            ...theme.inbox?.header?.filters?.inactiveUnreadIndicator
+            ...defaultTheme.inbox?.header?.feeds?.inactiveUnreadIndicator,
+            ...theme.inbox?.header?.feeds?.inactiveUnreadIndicator
+          },
+          switchIcon: {
+            ...defaultTheme.inbox?.header?.feeds?.switchIcon,
+            ...theme.inbox?.header?.feeds?.switchIcon
           }
         },
         menus: {

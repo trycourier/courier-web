@@ -94,22 +94,22 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
       }
 
       ${CourierInboxHeaderTabs.id} .tab.selected {
-        border-bottom-color: ${tabs?.selected?.borderColor ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? 'steelblue'};
+        border-bottom-color: ${tabs?.selected?.borderColor ?? theme.inbox?.header?.feeds?.font?.color ?? 'red'};
       }
 
       ${CourierInboxHeaderTabs.id} .tab-label {
         font-size: ${tabs?.default?.font?.size ?? '14px'};
         font-family: ${tabs?.default?.font?.family ?? 'inherit'};
         font-weight: ${tabs?.default?.font?.weight ?? 'inherit'};
-        color: ${tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+        color: ${tabs?.default?.font?.color ?? theme.inbox?.header?.feeds?.font?.color ?? '#000'};
       }
 
       ${CourierInboxHeaderTabs.id} .tab:hover .tab-label {
-        color: ${tabs?.hover?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+        color: ${tabs?.hover?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.feeds?.font?.color ?? '#000'};
       }
 
       ${CourierInboxHeaderTabs.id} .tab.selected .tab-label {
-        color: ${tabs?.selected?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.filters?.inbox?.icon?.color ?? '#000'};
+        color: ${tabs?.selected?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.feeds?.font?.color ?? '#000'};
       }
     `;
   }
@@ -175,9 +175,9 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
 
     const label = document.createElement('div');
     label.className = 'tab-label';
-    label.innerText = tab.label;
+    label.innerText = tab.title;
 
-    const unreadBadge = new CourierUnreadCountBadge({ themeBus: this._themeManager, location: 'header' });
+    const unreadBadge = new CourierUnreadCountBadge({ themeBus: this._themeManager });
     this._tabBadges.set(tab.id, unreadBadge);
 
     el.appendChild(label);

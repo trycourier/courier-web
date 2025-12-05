@@ -65,7 +65,6 @@ export type {
   CourierInboxTheme,
   CourierInboxFontTheme,
   CourierInboxIconTheme,
-  CourierInboxFilterItemTheme,
   CourierInboxUnreadCountIndicatorTheme,
   CourierInboxUnreadDotIndicatorTheme,
   CourierInboxIconButtonTheme,
@@ -76,7 +75,6 @@ export type {
   CourierInboxSkeletonLoadingStateTheme,
   CourierInboxInfoStateTheme,
   CourierMenuItemTheme,
-  CourierFilterMenuTheme,
   CourierActionMenuTheme
 } from '@trycourier/courier-ui-inbox';
 

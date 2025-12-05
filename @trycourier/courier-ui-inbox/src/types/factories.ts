@@ -1,8 +1,12 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
+import { CourierInboxFeed } from "./inbox-data-set";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
-  feedType: string;
+  feeds: CourierInboxFeed[];
+  activeFeedId: string;
+  activeTabId: string;
+  showTabs: boolean;
   unreadCount: number;
   messageCount: number;
 }

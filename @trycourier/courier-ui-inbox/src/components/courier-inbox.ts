@@ -17,8 +17,8 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   // State
-  private _currentFeed: string = 'inbox';
-  private _currentTabId: string = 'inbox-tab';
+  private _currentFeed: string = 'inbox_feed';
+  private _currentTabId: string = 'inbox_tab';
 
   /** Returns the current feed type. */
   get currentFeed(): string {
@@ -27,6 +27,14 @@ export class CourierInbox extends CourierBaseElement {
 
   get currentTab(): string {
     return this._currentTabId;
+  }
+
+  /** Returns the current tab. */
+  private _showTabs = true;
+
+  /** Returns whether the tabs are currently visible. */
+  get showTabs(): boolean {
+    return this._showTabs;
   }
 
   // Theming
@@ -62,6 +70,15 @@ export class CourierInbox extends CourierBaseElement {
     this._themeManager.setMode(mode);
   }
 
+  /**
+   * Set whether the tabs are currently visible.
+   * @param show Whether the tabs should be visible.
+   */
+  public setShowTabs(show: boolean) {
+    this._showTabs = show;
+    this.updateHeader();
+  }
+
   // Components
   private _inboxStyle?: HTMLStyleElement;
   private _unreadIndicatorStyle?: HTMLStyleElement;
@@ -69,7 +86,7 @@ export class CourierInbox extends CourierBaseElement {
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
   private _unreadCount: number = 0;
-  private _feeds: CourierInboxFeed[] = CourierInbox.createDefaultFeeds();
+  private _feeds: CourierInboxFeed[] = CourierInbox.defaultFeeds();
 
   // Header
   private _header?: CourierInboxHeader;
@@ -82,9 +99,6 @@ export class CourierInbox extends CourierBaseElement {
 
   // Default props
   private _defaultProps = {
-    title: 'Inbox',
-    icon: CourierIconSVGs.inbox,
-    feedType: this._currentFeed,
     height: 'auto'
   };
 
@@ -106,6 +120,9 @@ export class CourierInbox extends CourierBaseElement {
     // Header
     this._header = new CourierInboxHeader({
       themeManager: this._themeManager,
+      initialFeedId: this._currentFeed,
+      initialTabId: this._currentTabId,
+      feeds: this._feeds,
       onFeedChange: (feed: CourierInboxFeed) => {
         console.log('onFeedChange', feed);
         // this.setFeedType(feedType);
@@ -221,6 +238,8 @@ export class CourierInbox extends CourierBaseElement {
       onUnreadCountChange: (unreadCount: number, datasetId: string) => {
         // Always update the tab badges for all tabs
         this._header?.updateTabUnreadCount(datasetId, unreadCount);
+
+        // TODO: Update the unread count for a specific tab and feed
 
         // Only update the main unread count if it's the current tab
         if (this._currentTabId === datasetId) {
@@ -445,6 +464,9 @@ export class CourierInbox extends CourierBaseElement {
       canUseCache: true,
       datasetIds: [tabId]
     });
+
+    // Update the header
+    this._header?.setFeedButtonUnreadCount(this._unreadCount, !this._showTabs);
   }
 
   /**
@@ -537,16 +559,13 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private updateHeader() {
-    // Find the feed that contains the current tab
-    const currentFeed = this._feeds.find(feed =>
-      feed.tabs.some(tab => tab.id === this._currentTabId)
-    );
-    const feedType = currentFeed?.id ?? this._currentFeed;
-
-    const props = {
-      feedType: feedType,
+    const props: CourierInboxHeaderFactoryProps = {
+      feeds: this._feeds,
+      activeFeedId: this._currentFeed,
+      activeTabId: this._currentTabId,
       unreadCount: this._unreadCount,
       messageCount: this._list?.messages.length ?? 0,
+      showTabs: this._showTabs,
     };
 
     switch (this._headerFactory) {
@@ -585,17 +604,30 @@ export class CourierInbox extends CourierBaseElement {
     }
   }
 
-  private static createDefaultFeeds(): CourierInboxFeed[] {
+  private static defaultFeeds(): CourierInboxFeed[] {
     return [
       {
-        id: 'inbox',
-        label: 'Inbox',
-        tabs: [{ id: 'inbox-tab', label: 'Inbox', filter: {} }]
+        id: 'inbox_feed',
+        title: 'Inbox',
+        icon: {
+          color: 'red',
+          svg: CourierIconSVGs.inbox
+        },
+        tabs: [
+          { id: 'inbox_tab', title: 'Inbox', filter: {} },
+          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+        ]
       },
       {
-        id: 'archive',
-        label: 'Archive',
-        tabs: [{ id: 'archive-tab', label: 'Archive', filter: { archived: true } }]
+        id: 'archive_feed',
+        title: 'Archive',
+        icon: {
+          color: 'red',
+          svg: CourierIconSVGs.archive
+        },
+        tabs: [
+          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+        ]
       }
     ];
   }

@@ -78,13 +78,13 @@ const UNREAD_MESSAGE: InboxMessage = {
 const DEFAULT_FEEDS: CourierInboxFeed[] = [
   {
     id: 'inbox-feed',
-    label: 'Inbox',
-    tabs: [{ id: 'inbox', label: 'Inbox', filter: {}}]
+    title: 'Inbox',
+    tabs: [{ id: 'inbox', title: 'Inbox', filter: {} }]
   },
   {
     id: 'archive-feed',
-    label: 'Archive',
-    tabs: [{ id: 'archive', label: 'Archive', filter: { archived: true }}]
+    title: 'Archive',
+    tabs: [{ id: 'archive', title: 'Archive', filter: { archived: true } }]
   }
 ];
 
@@ -179,16 +179,16 @@ describe("CourierInboxDatastore", () => {
           },
         },
       })
-      // archive messages response
-      .mockResolvedValueOnce({
-        data: {
-          count: 0,
-          unreadCount: 0,
-          messages: {
-            nodes: [],
+        // archive messages response
+        .mockResolvedValueOnce({
+          data: {
+            count: 0,
+            unreadCount: 0,
+            messages: {
+              nodes: [],
+            },
           },
-        },
-      })
+        })
       mockGetUnreadMessageCount.mockResolvedValue(1);
 
       // Load the inbox and archive feeds in the order the responses are mocked

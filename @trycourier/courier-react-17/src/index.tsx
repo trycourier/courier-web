@@ -65,7 +65,6 @@ export type {
   CourierInboxTheme,
   CourierInboxFontTheme,
   CourierInboxIconTheme,
-  CourierInboxFilterItemTheme,
   CourierInboxUnreadCountIndicatorTheme,
   CourierInboxUnreadDotIndicatorTheme,
   CourierInboxIconButtonTheme,
