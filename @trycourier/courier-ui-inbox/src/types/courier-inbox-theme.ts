@@ -144,6 +144,8 @@ export type CourierInboxTheme = {
         font?: CourierInboxFontTheme;
         menuDropDownIcon?: CourierIconTheme;
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
+        hoverBackgroundColor?: string;
+        activeBackgroundColor?: string;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -216,6 +218,8 @@ export const defaultLightTheme: CourierInboxTheme = {
       },
       feedButton: {
         currentFeedIconColor: CourierColors.black[500],
+        hoverBackgroundColor: CourierColors.black[500_10],
+        activeBackgroundColor: CourierColors.black[500_20],
         font: {
           color: CourierColors.black[500],
           family: undefined,
@@ -453,6 +457,8 @@ export const defaultDarkTheme: CourierInboxTheme = {
       },
       feedButton: {
         currentFeedIconColor: CourierColors.white[500],
+        hoverBackgroundColor: CourierColors.white[500_10],
+        activeBackgroundColor: CourierColors.white[500_20],
         font: {
           color: CourierColors.white[500],
           family: undefined,

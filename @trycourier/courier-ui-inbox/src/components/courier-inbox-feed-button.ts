@@ -60,7 +60,11 @@ export class CourierInboxFeedButton extends CourierBaseElement {
       }
 
       ${CourierInboxFeedButton.id}:hover {
-        background: red;
+        background: ${theme.inbox?.header?.feedButton?.hoverBackgroundColor ?? 'red'};
+      }
+
+      ${CourierInboxFeedButton.id}:active {
+        background: ${theme.inbox?.header?.feedButton?.activeBackgroundColor ?? 'red'};
       }
 
       ${CourierInboxFeedButton.id} courier-icon {
@@ -126,8 +130,8 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     this.refreshTheme();
   }
 
-  public hasMultipleFeeds(): boolean {
-    return this._feeds.length > 1;
+  public setUnreadCount(count: number) {
+    this._unreadBadge?.setCount(count);
   }
 
   public setFeeds(feeds: CourierInboxFeed[]) {
@@ -139,6 +143,18 @@ export class CourierInboxFeedButton extends CourierBaseElement {
 
   public setSelectedFeed(feedId: string) {
     this._selectedFeed = this._feeds.find(feed => feed.id === feedId);
+    this.refreshSelectedFeed();
+  }
+
+  private refreshTheme() {
+    if (this._style) {
+      this._style.textContent = CourierInboxFeedButton.getStyles(this.theme);
+    }
+    this.refreshSelectedFeed();
+    this.refreshSwitchIcon();
+  }
+
+  private refreshSelectedFeed() {
     if (this._selectedFeed) {
       this._iconElement?.updateSVG(this._selectedFeed.iconSVG ?? CourierIconSVGs.inbox);
       this._iconElement?.updateColor(this.theme.inbox?.header?.feedButton?.currentFeedIconColor ?? 'red');
@@ -148,24 +164,11 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     }
   }
 
-  public setUnreadCount(count: number) {
-    this._unreadBadge?.setCount(count);
-  }
-
-  public showUnreadCountBadge(show: boolean) {
-    if (this._unreadBadge) {
-      this._unreadBadge.style.display = show ? 'flex' : 'none';
-    }
-  }
-
-  private refreshTheme() {
-    if (this._style) {
-      this._style.textContent = CourierInboxFeedButton.getStyles(this.theme);
-    }
-    if (this._iconElement) {
-      const icon = this.theme.inbox?.header?.feedButton?.menuDropDownIcon;
-      this._iconElement.updateSVG(icon?.svg ?? CourierIconSVGs.chevronDown);
-      this._iconElement.updateColor(icon?.color ?? 'red');
+  private refreshSwitchIcon() {
+    if (this._switchIconElement) {
+      const switchIcon = this.theme.inbox?.header?.feedButton?.menuDropDownIcon;
+      this._switchIconElement.updateSVG(switchIcon?.svg ?? CourierIconSVGs.chevronDown);
+      this._switchIconElement.updateColor(switchIcon?.color ?? 'red');
     }
   }
 

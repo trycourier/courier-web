@@ -4,7 +4,7 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxFeed, CourierInboxTab } from "../types/inbox-data-set";
 import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 
-export class CourierInboxHeaderTabs extends CourierFactoryElement {
+export class CourierInboxTabs extends CourierFactoryElement {
 
   static get id(): string {
     return 'courier-inbox-header-tabs';
@@ -38,7 +38,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxHeaderTabs.id, CourierInboxHeaderTabs.getStyles(this.theme));
+    this._style = injectGlobalStyle(CourierInboxTabs.id, CourierInboxTabs.getStyles(this.theme));
   }
 
   onComponentUnmounted() {
@@ -71,14 +71,14 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
     const tabs = theme.inbox?.header?.tabs;
 
     return `
-      ${CourierInboxHeaderTabs.id} .tabs-container {
+      ${CourierInboxTabs.id} .tabs-container {
         display: flex;
         flex-direction: row;
         gap: 16px;
         padding: 0 16px;
       }
 
-      ${CourierInboxHeaderTabs.id} .tab {
+      ${CourierInboxTabs.id} .tab {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -89,40 +89,29 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
         margin: -1px;
       }
 
-      ${CourierInboxHeaderTabs.id} .tab:hover {
+      ${CourierInboxTabs.id} .tab:hover {
         border-bottom-color: ${tabs?.hover?.borderColor ?? theme.inbox?.header?.backgroundColor ?? '#e0e0e0'};
       }
 
-      ${CourierInboxHeaderTabs.id} .tab.selected {
+      ${CourierInboxTabs.id} .tab.selected {
         border-bottom-color: ${tabs?.selected?.borderColor ?? theme.inbox?.header?.feedButton?.font?.color ?? 'red'};
       }
 
-      ${CourierInboxHeaderTabs.id} .tab-label {
+      ${CourierInboxTabs.id} .tab-label {
         font-size: ${tabs?.default?.font?.size ?? '14px'};
         font-family: ${tabs?.default?.font?.family ?? 'inherit'};
         font-weight: ${tabs?.default?.font?.weight ?? 'inherit'};
         color: ${tabs?.default?.font?.color ?? theme.inbox?.header?.feedButton?.font?.color ?? '#000'};
       }
 
-      ${CourierInboxHeaderTabs.id} .tab:hover .tab-label {
+      ${CourierInboxTabs.id} .tab:hover .tab-label {
         color: ${tabs?.hover?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.feedButton?.font?.color ?? '#000'};
       }
 
-      ${CourierInboxHeaderTabs.id} .tab.selected .tab-label {
+      ${CourierInboxTabs.id} .tab.selected .tab-label {
         color: ${tabs?.selected?.font?.color ?? tabs?.default?.font?.color ?? theme.inbox?.header?.feedButton?.font?.color ?? '#000'};
       }
     `;
-  }
-
-  public setFeed(feed: CourierInboxFeed) {
-    // Only rebuild if the feed has actually changed
-    const feedChanged = this._feed?.id !== feed.id;
-    this._feed = feed;
-
-    // If component is already mounted and feed changed, rebuild the tabs
-    if (this._container && feedChanged) {
-      this.rebuild();
-    }
   }
 
   public setSelectedTab(tabId: string) {
@@ -146,7 +135,7 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
 
   private refreshTheme() {
     if (this._style) {
-      this._style.textContent = CourierInboxHeaderTabs.getStyles(this.theme);
+      this._style.textContent = CourierInboxTabs.getStyles(this.theme);
     }
   }
 
@@ -190,27 +179,27 @@ export class CourierInboxHeaderTabs extends CourierFactoryElement {
     return el;
   }
 
-  private rebuild() {
-    // Clear existing tabs
-    this._tabElements.clear();
-    this._tabBadges.clear();
-    if (this._container) {
-      this._container.innerHTML = '';
-    }
+  // private rebuild() {
+  //   // Clear existing tabs
+  //   this._tabElements.clear();
+  //   this._tabBadges.clear();
+  //   if (this._container) {
+  //     this._container.innerHTML = '';
+  //   }
 
-    // Rebuild tabs
-    if (this._feed && this._container) {
-      for (let tab of this._feed.tabs) {
-        const tabElement = this.createTab(tab);
-        this._container.append(tabElement);
-        this._tabElements.set(tab.id, tabElement);
-      }
-    }
+  //   // Rebuild tabs
+  //   if (this._feed && this._container) {
+  //     for (let tab of this._feed.tabs) {
+  //       const tabElement = this.createTab(tab);
+  //       this._container.append(tabElement);
+  //       this._tabElements.set(tab.id, tabElement);
+  //     }
+  //   }
 
-    // Update badge states after rebuild
-    this.updateBadgeStates();
-  }
+  //   // Update badge states after rebuild
+  //   this.updateBadgeStates();
+  // }
 
 }
 
-registerElement(CourierInboxHeaderTabs);
+registerElement(CourierInboxTabs);
