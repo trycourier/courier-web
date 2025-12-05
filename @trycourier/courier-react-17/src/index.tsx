@@ -75,7 +75,6 @@ export type {
   CourierInboxSkeletonLoadingStateTheme,
   CourierInboxInfoStateTheme,
   CourierMenuItemTheme,
-  CourierFilterMenuTheme,
   CourierActionMenuTheme
 } from '@trycourier/courier-ui-inbox';
 

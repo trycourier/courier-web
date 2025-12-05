@@ -165,7 +165,7 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setFeedType(feedId: string): void {
+  public setSelectedFeed(feedId: string): void {
     this._feedId = feedId;
     this._error = null;
     this._isLoading = true;

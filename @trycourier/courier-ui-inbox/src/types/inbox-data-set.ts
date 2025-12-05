@@ -1,5 +1,4 @@
 import { InboxMessage } from "@trycourier/courier-js";
-import { CourierIconTheme } from "@trycourier/courier-ui-core";
 
 export type InboxDataSet = {
   feedType: string;
@@ -61,8 +60,8 @@ export type CourierInboxFeed = {
   /** The display name for this feed. */
   title: string;
 
-  /** The icon for this feed. */
-  icon?: CourierIconTheme;
+  /** The icon for this feed as an SVG. */
+  iconSVG?: string;
 
   /** The tabs that make up this feed. */
   tabs: CourierInboxTab[];

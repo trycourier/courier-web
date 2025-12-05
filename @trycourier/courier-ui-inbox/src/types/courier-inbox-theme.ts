@@ -102,12 +102,6 @@ export type CourierMenuItemTheme = {
   text?: string;
 }
 
-export type CourierFilterMenuTheme = {
-  button?: CourierInboxIconButtonTheme;
-  inbox?: CourierMenuItemTheme;
-  archive?: CourierMenuItemTheme;
-}
-
 export type CourierActionMenuTheme = {
   button?: CourierInboxIconButtonTheme;
   markAllRead?: CourierMenuItemTheme;
@@ -145,15 +139,14 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       shadow?: string;
       tabs?: CourierInboxTabsTheme;
-      feeds?: {
+      feedButton?: {
+        currentFeedIconColor?: string;
         font?: CourierInboxFontTheme;
+        menuDropDownIcon?: CourierIconTheme;
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
-        inactiveUnreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
-        switchIcon?: CourierIconTheme;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
-        filters?: CourierFilterMenuTheme;
         actions?: CourierActionMenuTheme;
       }
     }
@@ -221,13 +214,14 @@ export const defaultLightTheme: CourierInboxTheme = {
           }
         }
       },
-      feeds: {
+      feedButton: {
+        currentFeedIconColor: CourierColors.black[500],
         font: {
           color: CourierColors.black[500],
           family: undefined,
           size: '16px'
         },
-        switchIcon: {
+        menuDropDownIcon: {
           color: CourierColors.black[500],
           svg: CourierIconSVGs.chevronDown
         },
@@ -241,16 +235,6 @@ export const defaultLightTheme: CourierInboxTheme = {
           borderRadius: '4px',
           padding: '2px 6px',
         },
-        inactiveUnreadIndicator: {
-          font: {
-            color: CourierColors.gray[600],
-            family: undefined,
-            size: '12px'
-          },
-          backgroundColor: CourierColors.gray[500],
-          borderRadius: '4px',
-          padding: '2px 6px',
-        }
       },
       menus: {
         popup: {
@@ -271,31 +255,6 @@ export const defaultLightTheme: CourierInboxTheme = {
               color: CourierColors.black[500],
               svg: CourierIconSVGs.check
             }
-          }
-        },
-        filters: {
-          button: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.chevronDown
-            },
-            backgroundColor: 'transparent',
-            hoverBackgroundColor: 'transparent',
-            activeBackgroundColor: 'transparent',
-          },
-          inbox: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.inbox
-            },
-            text: 'Inbox'
-          },
-          archive: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.archive
-            },
-            text: 'Archive'
           }
         },
         actions: {
@@ -492,13 +451,14 @@ export const defaultDarkTheme: CourierInboxTheme = {
           }
         }
       },
-      feeds: {
+      feedButton: {
+        currentFeedIconColor: CourierColors.white[500],
         font: {
           color: CourierColors.white[500],
           family: undefined,
           size: '16px'
         },
-        switchIcon: {
+        menuDropDownIcon: {
           color: CourierColors.white[500],
           svg: CourierIconSVGs.chevronDown
         },
@@ -512,16 +472,6 @@ export const defaultDarkTheme: CourierInboxTheme = {
           borderRadius: '4px',
           padding: '3px 8px',
         },
-        inactiveUnreadIndicator: {
-          font: {
-            color: CourierColors.white[500],
-            family: undefined,
-            size: '12px'
-          },
-          backgroundColor: 'transparent',
-          borderRadius: '4px',
-          padding: '3px 8px',
-        }
       },
       menus: {
         popup: {
@@ -542,31 +492,6 @@ export const defaultDarkTheme: CourierInboxTheme = {
               color: CourierColors.white[500],
               svg: CourierIconSVGs.check
             }
-          }
-        },
-        filters: {
-          button: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.chevronDown
-            },
-            backgroundColor: 'transparent',
-            hoverBackgroundColor: 'transparent',
-            activeBackgroundColor: 'transparent',
-          },
-          inbox: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.inbox
-            },
-            text: 'Inbox'
-          },
-          archive: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.archive
-            },
-            text: 'Archive'
           }
         },
         actions: {
@@ -763,21 +688,13 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             }
           }
         },
-        feeds: {
-          ...defaultTheme.inbox?.header?.feeds,
-          ...theme.inbox?.header?.feeds,
+        feedButton: {
+          ...defaultTheme.inbox?.header?.feedButton,
+          ...theme.inbox?.header?.feedButton,
           unreadIndicator: {
-            ...defaultTheme.inbox?.header?.feeds?.unreadIndicator,
-            ...theme.inbox?.header?.feeds?.unreadIndicator
+            ...defaultTheme.inbox?.header?.feedButton?.unreadIndicator,
+            ...theme.inbox?.header?.feedButton?.unreadIndicator
           },
-          inactiveUnreadIndicator: {
-            ...defaultTheme.inbox?.header?.feeds?.inactiveUnreadIndicator,
-            ...theme.inbox?.header?.feeds?.inactiveUnreadIndicator
-          },
-          switchIcon: {
-            ...defaultTheme.inbox?.header?.feeds?.switchIcon,
-            ...theme.inbox?.header?.feeds?.switchIcon
-          }
         },
         menus: {
           ...defaultTheme.inbox?.header?.menus,
@@ -795,26 +712,6 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
               selectionIcon: {
                 ...defaultTheme.inbox?.header?.menus?.popup?.list?.selectionIcon,
                 ...theme.inbox?.header?.menus?.popup?.list?.selectionIcon
-              }
-            }
-          },
-          filters: {
-            ...defaultTheme.inbox?.header?.menus?.filters,
-            ...theme.inbox?.header?.menus?.filters,
-            inbox: {
-              ...defaultTheme.inbox?.header?.menus?.filters?.inbox,
-              ...theme.inbox?.header?.menus?.filters?.inbox,
-              icon: {
-                ...defaultTheme.inbox?.header?.menus?.filters?.inbox?.icon,
-                ...theme.inbox?.header?.menus?.filters?.inbox?.icon
-              }
-            },
-            archive: {
-              ...defaultTheme.inbox?.header?.menus?.filters?.archive,
-              ...theme.inbox?.header?.menus?.filters?.archive,
-              icon: {
-                ...defaultTheme.inbox?.header?.menus?.filters?.archive?.icon,
-                ...theme.inbox?.header?.menus?.filters?.archive?.icon
               }
             }
           },

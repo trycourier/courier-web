@@ -34,7 +34,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
     this._selectable = selectable;
     this._options = options;
-    this._selectedIndex = 0;
     this._onMenuOpen = onMenuOpen;
 
     // Handle the theme change
@@ -47,11 +46,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   onComponentMounted() {
-
     this._style = injectGlobalStyle(CourierInboxOptionMenu.id, this.getStyles());
-
     document.addEventListener('click', this.handleOutsideClick.bind(this));
-
     this.refreshTheme();
   }
 
@@ -129,7 +125,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       }
 
       ${CourierInboxOptionMenuItem.id} .check-icon {
-        display: none;
+        display: block;
       }
     `;
   }
@@ -167,10 +163,16 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       });
 
       menuItem.addEventListener('click', () => {
-        this._selectedIndex = index;
+
+        // Select if possible
+        if (this._selectable) {
+          this.selectionItemAtIndex(index);
+        }
+
+        // Handle the click
         option.onClick(option);
-        this.refreshMenuItems();
         this.closeMenu();
+
       });
 
       this.appendChild(menuItem);
@@ -198,9 +200,20 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     }
   }
 
-  public selectOption(option: CourierInboxMenuOption) {
-    this._selectedIndex = this._options.findIndex(o => o.id === option.id);
-    this.refreshMenuItems();
+  public selectionItemAtIndex(index: number) {
+    if (!this._selectable) {
+      return;
+    }
+
+    this._selectedIndex = index;
+
+    // Update all menu items to reflect the new selection
+    this._options.forEach((_, idx) => {
+      const item = this.children[idx] as CourierInboxOptionMenuItem;
+      if (item && item.setSelected) {
+        item.setSelected(idx === index);
+      }
+    });
   }
 
   public setVisible(visible: boolean) {

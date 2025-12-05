@@ -12,6 +12,7 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
   private _option: CourierInboxMenuOption;
   private _isSelectedable: boolean;
   private _isSelected?: boolean;
+  private _theme: CourierInboxThemeManager;
 
   // Components
   private _content?: HTMLDivElement;
@@ -24,6 +25,7 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
     this._option = props.option;
     this._isSelected = props.isSelected;
     this._isSelectedable = props.selectable;
+    this._theme = props.themeManager;
   }
 
   onComponentMounted() {
@@ -41,6 +43,7 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
     spacer.className = 'spacer';
 
     this._selectionIcon = new CourierIcon(CourierIconSVGs.check);
+    this._selectionIcon.classList.add('check-icon');
 
     this._content.appendChild(this._itemIcon);
     this._content.appendChild(this._title);
@@ -53,7 +56,7 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
 
     this.appendChild(this._content);
 
-    this._selectionIcon.style.display = this._isSelected ? 'block' : 'none';
+    this.updateSelectionState();
 
     this.refreshTheme();
 
@@ -61,17 +64,31 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
 
   public refreshTheme() {
 
-    // Set selected icon color
-    // this._selectionIcon?.updateColor(this._option.selectionIcon?.color ?? 'red');
-    // this._selectionIcon?.updateSVG(this._option.selectionIcon?.svg ?? CourierIconSVGs.check);
-
+    // Set title text
     if (this._title) {
       this._title.textContent = this._option.text ?? 'Missing Text';
     }
 
+    // Set selected icon color
+    const theme = this._theme.getTheme();
+    this._selectionIcon?.updateColor(theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.color ?? 'red');
+    this._selectionIcon?.updateSVG(theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.svg ?? CourierIconSVGs.check);
+
+    // Set item icon color and SVG
     this._itemIcon?.updateColor(this._option.icon?.color ?? 'red');
     this._itemIcon?.updateSVG(this._option.icon?.svg ?? CourierIconSVGs.inbox);
 
+  }
+
+  public setSelected(isSelected: boolean) {
+    this._isSelected = isSelected;
+    this.updateSelectionState();
+  }
+
+  private updateSelectionState() {
+    if (this._selectionIcon) {
+      this._selectionIcon.style.display = this._isSelected ? 'block' : 'none';
+    }
   }
 
 }

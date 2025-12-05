@@ -51,19 +51,19 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
       }
 
       ${CourierUnreadCountBadge.id}.active {
-        background-color: ${theme.inbox?.header?.feeds?.unreadIndicator?.backgroundColor};
-        color: ${theme.inbox?.header?.feeds?.unreadIndicator?.font?.color};
-        border-radius: ${theme.inbox?.header?.feeds?.unreadIndicator?.borderRadius};
-        font-size: ${theme.inbox?.header?.feeds?.unreadIndicator?.font?.size};
-        padding: ${theme.inbox?.header?.feeds?.unreadIndicator?.padding};
+        background-color: ${theme.inbox?.header?.feedButton?.unreadIndicator?.backgroundColor};
+        color: ${theme.inbox?.header?.feedButton?.unreadIndicator?.font?.color};
+        border-radius: ${theme.inbox?.header?.feedButton?.unreadIndicator?.borderRadius};
+        font-size: ${theme.inbox?.header?.feedButton?.unreadIndicator?.font?.size};
+        padding: ${theme.inbox?.header?.feedButton?.unreadIndicator?.padding};
       }
 
       ${CourierUnreadCountBadge.id}.inactive {
-        background-color: ${theme.inbox?.header?.feeds?.inactiveUnreadIndicator?.backgroundColor};
-        color: ${theme.inbox?.header?.feeds?.inactiveUnreadIndicator?.font?.color};
-        border-radius: ${theme.inbox?.header?.feeds?.inactiveUnreadIndicator?.borderRadius};
-        font-size: ${theme.inbox?.header?.feeds?.inactiveUnreadIndicator?.font?.size};
-        padding: ${theme.inbox?.header?.feeds?.inactiveUnreadIndicator?.padding};
+        background-color: ${theme.inbox?.header?.feedButton?.unreadIndicator?.backgroundColor};
+        color: ${theme.inbox?.header?.feedButton?.unreadIndicator?.font?.color};
+        border-radius: ${theme.inbox?.header?.feedButton?.unreadIndicator?.borderRadius};
+        font-size: ${theme.inbox?.header?.feedButton?.unreadIndicator?.font?.size};
+        padding: ${theme.inbox?.header?.feedButton?.unreadIndicator?.padding};
       }
     `
   }

@@ -24,6 +24,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _titleComponent?: CourierInboxFeedButton;
   private _actionMenuButton?: CourierIconButton;
   private _actionMenu?: CourierInboxOptionMenu;
+  private _feedMenu?: CourierInboxOptionMenu;
   private _tabsComponent?: CourierInboxHeaderTabs;
   private _style?: HTMLStyleElement;
 
@@ -41,16 +42,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
-    initialFeedId: string,
-    initialTabId: string,
-    feeds: CourierInboxFeed[],
     onFeedChange: (feed: CourierInboxFeed) => void,
     onTabChange: (tab: CourierInboxTab) => void
   }) {
     super();
-
-    // Set the feeds and active feed
-    this._feeds = props.feeds;
 
     // Subscribe to the theme bus
     this._themeSubscription = props.themeManager.subscribe((_) => {
@@ -116,9 +111,26 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._style.textContent = CourierInboxHeader.getStyles(this.theme);
     }
 
-    console.log('_onFeedChange', this._onFeedChange);
-
     this._actionMenu?.setOptions(this.getActionOptions());
+    this._feedMenu?.setOptions(this.getFeedMenuOptions());
+  }
+
+  private getFeedMenuOptions(): CourierInboxMenuOption[] {
+    return this._feeds.map((feed, index) => ({
+      id: feed.id,
+      text: feed.title,
+      icon: {
+        color: this.theme.inbox?.header?.feedButton?.currentFeedIconColor ?? 'red',
+        svg: feed.iconSVG ?? CourierIconSVGs.inbox
+      },
+      onClick: (_: CourierInboxMenuOption) => {
+        this._titleComponent?.setSelectedFeed(feed.id);
+        this._feedMenu?.selectionItemAtIndex(index);
+        this._onFeedChange(feed);
+        // Update tabs when feed changes
+        this._tabsComponent?.setFeed(feed);
+      }
+    }));
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {
@@ -148,9 +160,29 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   defaultElement(): HTMLElement {
-    // With no filter menu, just get the first feed as title source
-    this._titleComponent = new CourierInboxFeedButton(this._themeSubscription.manager, this._feeds);
+    // Create feed button
+    this._titleComponent = new CourierInboxFeedButton(
+      this._themeSubscription.manager,
+      this._feeds
+    );
     this._titleComponent.setSelectedFeed(this._feeds[0].id);
+
+    // Feed menu (only if there are multiple feeds)
+    if (this._feeds.length > 1) {
+      this._feedMenu = new CourierInboxOptionMenu(
+        this._themeSubscription.manager,
+        true, // selectable
+        this.getFeedMenuOptions()
+      );
+      this._feedMenu.setPosition({ left: '12px', top: '51px' });
+
+      // Add click handler to feed button to toggle menu
+      this._titleComponent.style.cursor = 'pointer';
+      this._titleComponent.addEventListener('click', (event: Event) => {
+        event.stopPropagation();
+        this._feedMenu?.toggleMenu();
+      });
+    }
 
     // Action menu
     this._actionMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, false, this.getActionOptions());
@@ -169,7 +201,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._actionMenu?.toggleMenu();
     });
 
-    // Create title section WITHOUT filter menu
+    // Create title section with feed button
     const titleSection = document.createElement('div');
     titleSection.className = 'title';
     titleSection.appendChild(this._titleComponent);
@@ -177,11 +209,6 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Create flexible spacer
     const spacer = document.createElement('div');
     spacer.className = 'spacer';
-
-    // // Create and setup actions section (just the action menu now)
-    // const actions = document.createElement('div');
-    // actions.className = 'actions';
-    // actions.appendChild(this._actionMenu);
 
     const headerContent = document.createElement('div');
     headerContent.className = 'header-content';
@@ -191,11 +218,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Add action menu button and menu
     headerContent.appendChild(this._actionMenuButton);
     headerContent.appendChild(this._actionMenu);
-    // headerContent.appendChild(actions);
+
+    // Add feed menu if it exists (for multiple feeds)
+    if (this._feedMenu) {
+      headerContent.appendChild(this._feedMenu);
+    }
 
     // Create tabs component
     const activeFeed = this._titleComponent?.selectedFeed;
-    // const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
 
     this._tabsComponent = new CourierInboxHeaderTabs({
       themeManager: this._themeSubscription.manager,
@@ -212,9 +242,6 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Build the tabs component
     this._tabsComponent.build(undefined);
 
-    // Set initial visibility based on tab count
-    // this._tabsComponent.setVisible(hasMultipleTabs);
-
     const header = document.createElement('div');
     header.className = 'header';
     header.appendChild(headerContent);
@@ -224,22 +251,12 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   public setFeeds(feeds: CourierInboxFeed[]) {
+    if (feeds.length === 0) {
+      throw new Error('[CourierInboxHeader] Cannot set feeds to an empty array.');
+    }
     this._feeds = feeds;
     this._titleComponent?.setFeeds(feeds);
-    this._titleComponent
     this._titleComponent?.setSelectedFeed(feeds[0].id);
-    // No filter menu logic necessary. May want to update the title, unread badge, or tabs if needed.
-
-    // // Update title with the first feed
-    // if (this._titleComponent && feeds.length > 0) {
-    //   // this._titleComponent.updateSelectedOption(feeds[0], feeds[0].id);
-
-    //   // Update badge visibility/count
-    //   const activeFeed = feeds.find(feed => feed.id === this._activeFeedId);
-    //   const hasMultipleTabs = (activeFeed?.tabs.length ?? 0) > 1;
-    //   const unreadCount = hasMultipleTabs ? 0 : this._unreadCount;
-    //   this._unreadBadge?.setCount(unreadCount);
-    // }
   }
 
   static getStyles(theme: CourierInboxTheme): string {
