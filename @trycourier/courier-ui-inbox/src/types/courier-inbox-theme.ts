@@ -109,7 +109,17 @@ export type CourierActionMenuTheme = {
   archiveRead?: CourierMenuItemTheme;
 }
 
+export type CourierInboxTabsBorderRadius =
+  | string
+  | {
+    topLeft?: string;
+    topRight?: string;
+    bottomLeft?: string;
+    bottomRight?: string;
+  };
+
 export type CourierInboxTabsTheme = {
+  borderRadius?: CourierInboxTabsBorderRadius;
   default?: {
     backgroundColor?: string;
     hoverBackgroundColor?: string;
@@ -197,11 +207,15 @@ export const defaultLightTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.white[500],
       shadow: `0px 1px 0px 0px ${CourierColors.gray[500]}`,
       tabs: {
+        borderRadius: {
+          topLeft: '4px',
+          topRight: '4px'
+        },
         default: {
           indicatorColor: 'transparent',
           backgroundColor: 'transparent',
-          hoverBackgroundColor: CourierColors.black[500_10],
-          activeBackgroundColor: CourierColors.black[500_20],
+          hoverBackgroundColor: CourierColors.gray[200],
+          activeBackgroundColor: CourierColors.gray[500],
           font: {
             color: CourierColors.gray[600],
             family: undefined,
@@ -213,7 +227,7 @@ export const defaultLightTheme: CourierInboxTheme = {
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.gray[500],
+            backgroundColor: CourierColors.black[500_10],
             borderRadius: '4px',
             padding: '2px 6px',
           }
@@ -222,8 +236,8 @@ export const defaultLightTheme: CourierInboxTheme = {
           indicatorColor: CourierColors.blue[500],
           indicatorHeight: '1px',
           backgroundColor: 'transparent',
-          hoverBackgroundColor: CourierColors.black[500_10],
-          activeBackgroundColor: CourierColors.black[500_20],
+          hoverBackgroundColor: CourierColors.gray[200],
+          activeBackgroundColor: CourierColors.gray[500],
           font: {
             color: CourierColors.blue[500],
             family: undefined,
@@ -243,8 +257,8 @@ export const defaultLightTheme: CourierInboxTheme = {
       },
       feedButton: {
         currentFeedIconColor: CourierColors.black[500],
-        hoverBackgroundColor: CourierColors.black[500_10],
-        activeBackgroundColor: CourierColors.black[500_20],
+        hoverBackgroundColor: CourierColors.gray[200],
+        activeBackgroundColor: CourierColors.gray[500],
         font: {
           color: CourierColors.black[500],
           family: undefined,
@@ -293,8 +307,8 @@ export const defaultLightTheme: CourierInboxTheme = {
               svg: CourierIconSVGs.overflow
             },
             backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.black[500_10],
-            activeBackgroundColor: CourierColors.black[500_20],
+            hoverBackgroundColor: CourierColors.gray[200],
+            activeBackgroundColor: CourierColors.gray[500],
           },
           markAllRead: {
             icon: {
@@ -455,6 +469,10 @@ export const defaultDarkTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.black[500],
       shadow: `0px 1px 0px 0px ${CourierColors.gray[400]}`,
       tabs: {
+        borderRadius: {
+          topLeft: '4px',
+          topRight: '4px'
+        },
         default: {
           indicatorColor: 'transparent',
           indicatorHeight: '1px',
@@ -468,11 +486,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           },
           unreadIndicator: {
             font: {
-              color: CourierColors.gray[600],
+              color: CourierColors.white[500],
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.gray[500],
+            backgroundColor: CourierColors.white[500_10],
             borderRadius: '4px',
             padding: '3px 8px',
           }

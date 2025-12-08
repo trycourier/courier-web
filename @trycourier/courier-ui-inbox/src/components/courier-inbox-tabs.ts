@@ -64,14 +64,32 @@ export class CourierInboxTabs extends CourierBaseElement {
   static getStyles(theme: CourierInboxTheme): string {
     const tabs = theme.inbox?.header?.tabs;
 
+    // Helper function to convert borderRadius to CSS
+    const getBorderRadius = (borderRadius?: string | { topLeft?: string; topRight?: string; bottomLeft?: string; bottomRight?: string }): string => {
+      if (!borderRadius) return '';
+      if (typeof borderRadius === 'string') {
+        return `border-radius: ${borderRadius};`;
+      }
+      const parts: string[] = [];
+      if (borderRadius.topLeft) parts.push(borderRadius.topLeft);
+      else parts.push('0');
+      if (borderRadius.topRight) parts.push(borderRadius.topRight);
+      else parts.push('0');
+      if (borderRadius.bottomRight) parts.push(borderRadius.bottomRight);
+      else parts.push('0');
+      if (borderRadius.bottomLeft) parts.push(borderRadius.bottomLeft);
+      else parts.push('0');
+      return `border-radius: ${parts.join(' ')};`;
+    };
+
     return `
       ${CourierInboxTabs.id} {
         position: relative;
         display: flex;
         flex-direction: row;
-        gap: 8px;
+        gap: 4px;
         height: 44px;
-        padding: 0 12px;
+        padding: 0 10px;
         margin-top: -6px;
       }
 
@@ -80,9 +98,11 @@ export class CourierInboxTabs extends CourierBaseElement {
         position: relative;
         display: flex;
         align-items: center;
-        padding: 0 8px;
+        padding: 0 10px;
         cursor: pointer;
         transition: all 0.2s ease;
+        user-select: none;
+        ${getBorderRadius(tabs?.borderRadius)}
       }
 
       ${CourierInboxTabs.id} .tab {
@@ -119,6 +139,7 @@ export class CourierInboxTabs extends CourierBaseElement {
         font-family: ${tabs?.default?.font?.family ?? 'inherit'};
         font-weight: ${tabs?.default?.font?.weight ?? 'inherit'};
         color: ${tabs?.default?.font?.color ?? 'red'};
+        user-select: none;
       }
 
       ${CourierInboxTabs.id} .tab.selected .tab-label {
