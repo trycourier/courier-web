@@ -185,6 +185,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._feedButtonClickHandler = (event: Event) => {
       event.stopPropagation();
       this._feedMenu?.toggleMenu();
+      this._actionMenu?.closeMenu();
     };
     this.updateFeedButtonInteraction();
 
@@ -198,6 +199,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._actionMenuButton.addEventListener('click', (event: Event) => {
       event.stopPropagation();
       this._actionMenu?.toggleMenu();
+      this._feedMenu?.closeMenu();
     });
 
     // Create title section with feed button

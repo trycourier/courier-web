@@ -44,7 +44,6 @@ export class CourierInbox extends CourierBaseElement {
         iconSVG: CourierIconSVGs.inbox,
         tabs: [
           { id: 'inbox_inbox_tab', title: 'Inbox', filter: {} },
-          { id: 'inbox_all_tab', title: 'All', filter: {} },
           { id: 'inbox_archive_tab', title: 'Archive', filter: { archived: true } }
         ]
       },
@@ -451,14 +450,17 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
-  private reloadListForTab() {
+  private async reloadListForTab() {
     this._list?.setSelectedFeed(this._currentTabId);
 
     // Load data for the tab
-    CourierInboxDatastore.shared.load({
+    await CourierInboxDatastore.shared.load({
       canUseCache: true,
       datasetIds: [this._currentTabId]
     });
+
+    // Scroll to top
+    this._list?.scrollToTop(false);
   }
 
   /**

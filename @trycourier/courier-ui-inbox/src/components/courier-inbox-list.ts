@@ -21,7 +21,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _feedId: string = 'inbox';
+  private _datasetId: string = 'inbox_inbox_tab';
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
@@ -166,7 +166,7 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   public setSelectedFeed(feedId: string): void {
-    this._feedId = feedId;
+    this._datasetId = feedId;
     this._error = null;
     this._isLoading = true;
     this.render();
@@ -287,7 +287,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Error state
     if (this._error) {
       this._errorContainer = new CourierInfoState(this.errorProps);
-      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._feedId, error: this._error }));
+      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._datasetId, error: this._error }));
       this.appendChild(this._errorContainer);
       return;
     }
@@ -295,7 +295,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Loading state
     if (this._isLoading) {
       const loadingElement = new CourierInboxSkeletonList(this.theme);
-      loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedId }));
+      loadingElement.build(this._loadingStateFactory?.({ feedType: this._datasetId }));
       this.appendChild(loadingElement);
       return;
     }
@@ -303,7 +303,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Empty state
     if (this._messages.length === 0) {
       this._emptyContainer = new CourierInfoState(this.emptyProps);
-      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._feedId }));
+      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._datasetId }));
       this.appendChild(this._emptyContainer);
       return;
     }
@@ -331,8 +331,8 @@ export class CourierInboxList extends CourierBaseElement {
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
         theme: this.theme,
-        customItem: this._paginationItemFactory?.({ feedType: this._feedId }),
-        onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedId),
+        customItem: this._paginationItemFactory?.({ feedType: this._datasetId }),
+        onPaginationTrigger: () => this._onPaginationTrigger?.(this._datasetId),
       });
       list.appendChild(paginationItem);
     }
