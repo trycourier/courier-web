@@ -372,6 +372,10 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
+  public scrollToTop(animate: boolean = true): void {
+    this.scrollTo({ top: 0, behavior: animate ? 'smooth' : 'instant' });
+  }
+
 }
 
 registerElement(CourierInboxList);

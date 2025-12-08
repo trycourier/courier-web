@@ -154,14 +154,16 @@ export class CourierInbox extends CourierBaseElement {
       },
       onTabChange: (tab: CourierInboxTab) => {
         this.selectTab(tab.id);
+      },
+      onTabReselected: (_tab: CourierInboxTab) => {
+        this._list?.scrollToTop();
       }
     });
-    this._header.setFeeds(this._feeds);
-    this._header.build(undefined);
-    this.appendChild(this._header);
 
-    // // Initial render to set correct unread badge visibility
-    // this.updateHeader();
+    // Build the element and set the initial feeds
+    this._header.build(undefined);
+    this._header.setFeeds(this._feeds);
+    this.appendChild(this._header);
 
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
@@ -213,8 +215,6 @@ export class CourierInbox extends CourierBaseElement {
         this._onMessageLongPress?.({ message, index });
       }
     });
-
-    this.refreshTheme();
 
     this.appendChild(this._list);
 
@@ -296,6 +296,7 @@ export class CourierInbox extends CourierBaseElement {
       return;
     }
 
+    this.refreshTheme();
     this.refresh();
 
   }
@@ -521,6 +522,7 @@ export class CourierInbox extends CourierBaseElement {
    * @throws if feeds includes a duplicate feed or tab ID
    */
   public setFeeds(_feeds: CourierInboxFeed[]) {
+    this._header?.setFeeds(_feeds);
     // const feedIds: string[] = [];
     // const tabIds: string[] = [];
 

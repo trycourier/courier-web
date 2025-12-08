@@ -111,17 +111,21 @@ export type CourierActionMenuTheme = {
 
 export type CourierInboxTabsTheme = {
   default?: {
-    borderColor?: string;
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
     font?: CourierInboxFontTheme;
-  };
-  hover?: {
-    borderColor?: string;
-    font?: CourierInboxFontTheme;
-  };
+    indicatorColor?: string;
+    indicatorHeight?: string;
+  },
   selected?: {
-    borderColor?: string;
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
     font?: CourierInboxFontTheme;
-  };
+    indicatorColor?: string;
+    indicatorHeight?: string;
+  }
 }
 
 export type CourierInboxTheme = {
@@ -192,15 +196,10 @@ export const defaultLightTheme: CourierInboxTheme = {
       shadow: `0px 1px 0px 0px ${CourierColors.gray[500]}`,
       tabs: {
         default: {
-          borderColor: 'transparent',
-          font: {
-            color: CourierColors.gray[600],
-            family: undefined,
-            size: '14px'
-          }
-        },
-        hover: {
-          borderColor: 'transparent',
+          indicatorColor: 'transparent',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.black[500_10],
+          activeBackgroundColor: CourierColors.black[500_20],
           font: {
             color: CourierColors.gray[600],
             family: undefined,
@@ -208,7 +207,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           }
         },
         selected: {
-          borderColor: CourierColors.blue[500],
+          indicatorColor: CourierColors.blue[500],
+          indicatorHeight: '1px',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.black[500_10],
+          activeBackgroundColor: CourierColors.black[500_20],
           font: {
             color: CourierColors.blue[500],
             family: undefined,
@@ -431,23 +434,23 @@ export const defaultDarkTheme: CourierInboxTheme = {
       shadow: `0px 1px 0px 0px ${CourierColors.gray[400]}`,
       tabs: {
         default: {
-          borderColor: 'transparent',
+          indicatorColor: 'transparent',
+          indicatorHeight: '1px',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20],
           font: {
             color: CourierColors.white[500],
             family: undefined,
             size: '14px'
           }
         },
-        hover: {
-          borderColor: CourierColors.gray[400],
-          font: {
-            color: CourierColors.gray[400],
-            family: undefined,
-            size: '14px'
-          }
-        },
         selected: {
-          borderColor: CourierColors.blue[500],
+          indicatorColor: CourierColors.blue[500],
+          indicatorHeight: '1px',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20],
           font: {
             color: CourierColors.blue[500],
             family: undefined,
@@ -675,14 +678,6 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             font: {
               ...defaultTheme.inbox?.header?.tabs?.default?.font,
               ...theme.inbox?.header?.tabs?.default?.font
-            }
-          },
-          hover: {
-            ...defaultTheme.inbox?.header?.tabs?.hover,
-            ...theme.inbox?.header?.tabs?.hover,
-            font: {
-              ...defaultTheme.inbox?.header?.tabs?.hover?.font,
-              ...theme.inbox?.header?.tabs?.hover?.font
             }
           },
           selected: {
