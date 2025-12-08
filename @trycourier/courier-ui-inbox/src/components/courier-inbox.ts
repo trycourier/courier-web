@@ -466,7 +466,6 @@ export class CourierInbox extends CourierBaseElement {
       const feed = this._feeds.find(f => f.id === feedId);
       if (feed && feed.tabs && feed.tabs.length > 0) {
         const firstTabId = feed.tabs[0].id;
-        console.log('resetting to first tab', firstTabId);
         this._header?.selectFeed(feedId, firstTabId);
         this.selectTab(firstTabId);
       }
@@ -475,7 +474,6 @@ export class CourierInbox extends CourierBaseElement {
 
     // Set the current feed and update the header
     this._currentFeedId = feedId;
-    console.log('selecting feed', feedId, 'current tab', this._currentTabId);
     this._header?.selectFeed(feedId, this._currentTabId);
     this.selectTab(this._currentTabId);
   }
