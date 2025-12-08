@@ -18,6 +18,7 @@ export class CourierInboxTabs extends CourierBaseElement {
   private _tabs: CourierInboxTab[] = [];
   private _onTabClick: (tab: CourierInboxTab) => void;
   private _onTabReselected: (tab: CourierInboxTab) => void;
+  private _tabBadges: Map<string, CourierUnreadCountBadge> = new Map();
 
   // Components
   private _style?: HTMLStyleElement;
@@ -89,6 +90,7 @@ export class CourierInboxTabs extends CourierBaseElement {
         position: relative;
         display: flex;
         align-items: center;
+        gap: 8px;
         border-bottom: ${tabs?.default?.indicatorHeight ?? '1px'} solid ${tabs?.default?.indicatorColor ?? 'transparent'};
       }
 
@@ -127,6 +129,7 @@ export class CourierInboxTabs extends CourierBaseElement {
 
   public setTabs(tabs: CourierInboxTab[]) {
     this._tabs = tabs;
+    this._tabBadges.clear(); // Clear existing badges when tabs are reset
     this.render();
   }
 
@@ -137,10 +140,10 @@ export class CourierInboxTabs extends CourierBaseElement {
   }
 
   public updateTabUnreadCount(tabId: string, count: number) {
-    // const badge = this._tabBadges.get(tabId);
-    // if (badge) {
-    //   badge.setCount(count);
-    // }
+    const badge = this._tabBadges.get(tabId);
+    if (badge) {
+      badge.setCount(count);
+    }
   }
 
   private refreshTheme() {
@@ -166,9 +169,9 @@ export class CourierInboxTabs extends CourierBaseElement {
   }
 
   private updateBadgeStates() {
-    // for (let [tabId, badge] of this._tabBadges) {
-    //   badge.setActive(tabId === this._selectedTabId);
-    // }
+    for (let [tabId, badge] of this._tabBadges) {
+      badge.setActive(tabId === this._selectedTabId);
+    }
   }
 
   private createTab(tab: CourierInboxTab): HTMLDivElement {
@@ -186,7 +189,11 @@ export class CourierInboxTabs extends CourierBaseElement {
     label.className = 'tab-label';
     label.innerText = tab.title;
 
-    const unreadBadge = new CourierUnreadCountBadge({ themeBus: this._themeManager });
+    const unreadBadge = new CourierUnreadCountBadge({
+      themeBus: this._themeManager,
+      location: "tab"
+    });
+    this._tabBadges.set(tab.id, unreadBadge);
 
     el.appendChild(label);
     el.appendChild(unreadBadge);

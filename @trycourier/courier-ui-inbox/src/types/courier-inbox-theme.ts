@@ -117,6 +117,7 @@ export type CourierInboxTabsTheme = {
     font?: CourierInboxFontTheme;
     indicatorColor?: string;
     indicatorHeight?: string;
+    unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
   },
   selected?: {
     backgroundColor?: string;
@@ -125,6 +126,7 @@ export type CourierInboxTabsTheme = {
     font?: CourierInboxFontTheme;
     indicatorColor?: string;
     indicatorHeight?: string;
+    unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
   }
 }
 
@@ -204,6 +206,16 @@ export const defaultLightTheme: CourierInboxTheme = {
             color: CourierColors.gray[600],
             family: undefined,
             size: '14px'
+          },
+          unreadIndicator: {
+            font: {
+              color: CourierColors.gray[600],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.gray[500],
+            borderRadius: '4px',
+            padding: '2px 6px',
           }
         },
         selected: {
@@ -216,6 +228,16 @@ export const defaultLightTheme: CourierInboxTheme = {
             color: CourierColors.blue[500],
             family: undefined,
             size: '14px'
+          },
+          unreadIndicator: {
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.blue[500],
+            borderRadius: '4px',
+            padding: '2px 6px',
           }
         }
       },
@@ -443,6 +465,16 @@ export const defaultDarkTheme: CourierInboxTheme = {
             color: CourierColors.white[500],
             family: undefined,
             size: '14px'
+          },
+          unreadIndicator: {
+            font: {
+              color: CourierColors.gray[600],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.gray[500],
+            borderRadius: '4px',
+            padding: '3px 8px',
           }
         },
         selected: {
@@ -455,6 +487,16 @@ export const defaultDarkTheme: CourierInboxTheme = {
             color: CourierColors.blue[500],
             family: undefined,
             size: '14px'
+          },
+          unreadIndicator: {
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.blue[500],
+            borderRadius: '4px',
+            padding: '3px 8px',
           }
         }
       },
@@ -678,6 +720,14 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             font: {
               ...defaultTheme.inbox?.header?.tabs?.default?.font,
               ...theme.inbox?.header?.tabs?.default?.font
+            },
+            unreadIndicator: {
+              ...defaultTheme.inbox?.header?.tabs?.default?.unreadIndicator,
+              ...theme.inbox?.header?.tabs?.default?.unreadIndicator,
+              font: {
+                ...defaultTheme.inbox?.header?.tabs?.default?.unreadIndicator?.font,
+                ...theme.inbox?.header?.tabs?.default?.unreadIndicator?.font
+              }
             }
           },
           selected: {
@@ -686,6 +736,14 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             font: {
               ...defaultTheme.inbox?.header?.tabs?.selected?.font,
               ...theme.inbox?.header?.tabs?.selected?.font
+            },
+            unreadIndicator: {
+              ...defaultTheme.inbox?.header?.tabs?.selected?.unreadIndicator,
+              ...theme.inbox?.header?.tabs?.selected?.unreadIndicator,
+              font: {
+                ...defaultTheme.inbox?.header?.tabs?.selected?.unreadIndicator?.font,
+                ...theme.inbox?.header?.tabs?.selected?.unreadIndicator?.font
+              }
             }
           }
         },

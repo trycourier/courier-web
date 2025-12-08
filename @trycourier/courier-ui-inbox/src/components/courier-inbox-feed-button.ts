@@ -123,6 +123,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     // Unread badge
     this._unreadBadge = new CourierUnreadCountBadge({
       themeBus: this._themeSubscription.manager,
+      location: "feed"
     });
     this.appendChild(this._unreadBadge);
 

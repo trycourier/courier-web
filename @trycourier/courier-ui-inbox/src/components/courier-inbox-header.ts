@@ -141,8 +141,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
       this._feeds = props.feeds;
       this._feedButton.setFeeds(props.feeds);
       this._feedButton.setSelectedFeed(props.activeFeedId);
-      // Hide, if we are showing tabs or show the unread count. Will hide if unread count is 0.
-      this._feedButton.setUnreadCount(!props.showTabs ? 0 : props.unreadCount);
+      // If showTabs is true, tabs will show unread counts, so hide it on feed button
+      // If showTabs is false, feed button should show the unread count
+      this._feedButton.setUnreadCount(props.showTabs ? 0 : props.unreadCount);
       // Update feed button interaction based on number of feeds
       this.updateFeedButtonInteraction();
     }
@@ -303,6 +304,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
     if (tabs.length > 0) {
       this._tabs?.setTabs(tabs);
       this._tabs?.setSelectedTab(tabId);
+
+      // Immediately update unread counts for all tabs from the datastore
+      for (const tab of tabs) {
+        const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
+        if (dataset) {
+          this._tabs?.updateTabUnreadCount(tab.id, dataset.unreadCount);
+        }
+      }
     }
   }
 
