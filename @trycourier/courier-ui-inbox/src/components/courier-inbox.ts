@@ -35,6 +35,29 @@ export class CourierInbox extends CourierBaseElement {
     return this._feedTabMap.get(feedId) ?? 'unknown_tab';
   }
 
+  /** Returns the default feeds for the inbox. */
+  private static defaultFeeds(): CourierInboxFeed[] {
+    return [
+      {
+        id: 'inbox_feed',
+        title: 'Inbox',
+        iconSVG: CourierIconSVGs.inbox,
+        tabs: [
+          { id: 'inbox_tab', title: 'Inbox', filter: {} },
+          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+        ]
+      },
+      {
+        id: 'archive_feed',
+        title: 'Archive',
+        iconSVG: CourierIconSVGs.archive,
+        tabs: [
+          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+        ]
+      }
+    ];
+  }
+
   /** Returns the current tab. */
   private _showTabs = true;
 
@@ -91,7 +114,6 @@ export class CourierInbox extends CourierBaseElement {
   private _list?: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
-  private _unreadCount: number = 0;
   private _feeds: CourierInboxFeed[] = CourierInbox.defaultFeeds();
 
   // Header
@@ -117,7 +139,7 @@ export class CourierInbox extends CourierBaseElement {
     this._themeManager = themeManager ?? new CourierInboxThemeManager(defaultLightTheme);
   }
 
-  private setInitialFeedAndTab() {
+  private resetInitialFeedAndTab() {
     if (!this._feeds.length) {
       throw new Error('No feeds are available to initialize.');
     }
@@ -138,9 +160,95 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   onComponentMounted() {
+    this.attachElements();
+    this.setupThemeSubscription();
+    this.setupAuthListener();
+    this.initializeInboxData();
+  }
 
-    // Initialize the feed-tab map with the current feed and tab
-    this.setInitialFeedAndTab();
+  private setupThemeSubscription() {
+
+    // Subscribe to theme changes
+    this._themeManager.subscribe((_) => {
+      this.refreshTheme();
+    });
+
+    // Refresh the theme
+    this.refreshTheme();
+  }
+
+  private setupAuthListener() {
+    this._authListener = Courier.shared.addAuthenticationListener(async ({ userId }) => {
+      if (userId) {
+        await this.refresh();
+      }
+    });
+  }
+
+  private initializeInboxData() {
+
+    // Reset the initial feed and tab
+    this.resetInitialFeedAndTab();
+
+    // Create the datasets from the feeds
+    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
+
+    // Create the data store listener
+    this._datastoreListener = new CourierInboxDataStoreListener({
+      onError: (error: Error) => {
+        this._list?.setError(error);
+      },
+      onDataSetChange: (dataSet: InboxDataSet, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
+          this._list?.setDataSet(dataSet);
+          this.updateHeader();
+        }
+      },
+      onPageAdded: (dataSet: InboxDataSet, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
+          this._list?.addPage(dataSet);
+          this.updateHeader();
+        }
+      },
+      onMessageAdd: (message: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
+          this._list?.addMessage(message, index);
+          this.updateHeader();
+        }
+      },
+      onMessageRemove: (_: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
+          this._list?.removeMessage(index);
+          this.updateHeader();
+        }
+      },
+      onMessageUpdate: (message: InboxMessage, index: number, datasetId: string) => {
+        if (this._currentTabId === datasetId) {
+          this._list?.updateMessage(message, index);
+          this.updateHeader();
+        }
+      },
+      onUnreadCountChange: (unreadCount: number, datasetId: string) => {
+        // Always update the tab badges for all tabs
+        this._header?.updateTabUnreadCount(datasetId, unreadCount);
+
+        // TODO: Update the unread count for a specific tab and feed
+
+        // Only update the main unread count if it's the current tab
+        if (this._currentTabId === datasetId) {
+          this.updateHeader();
+        }
+      }
+    });
+
+    // Add the data store listener to the datastore
+    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+
+    // Refresh the inbox
+    this.refresh();
+  }
+
+  private attachElements() {
 
     // Inject style
     this._inboxStyle = injectGlobalStyle(CourierInbox.id, this.getStyles());
@@ -217,87 +325,6 @@ export class CourierInbox extends CourierBaseElement {
     });
 
     this.appendChild(this._list);
-
-    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
-
-    // Load unread counts for all tabs immediately (single GraphQL query)
-    const allTabIds = this._feeds.flatMap(feed => feed.tabs.map(tab => tab.id));
-    CourierInboxDatastore.shared.loadUnreadCountsForTabs(allTabIds);
-
-    // Attach the datastore listener
-    this._datastoreListener = new CourierInboxDataStoreListener({
-      onError: (error: Error) => {
-        this._list?.setError(error);
-      },
-      onDataSetChange: (dataSet: InboxDataSet, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.setDataSet(dataSet);
-          this.updateHeader();
-        }
-      },
-      onPageAdded: (dataSet: InboxDataSet, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.addPage(dataSet);
-          this.updateHeader();
-        }
-      },
-      onMessageAdd: (message: InboxMessage, index: number, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.addMessage(message, index);
-          this.updateHeader();
-        }
-      },
-      onMessageRemove: (_: InboxMessage, index: number, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.removeMessage(index);
-          this.updateHeader();
-        }
-      },
-      onMessageUpdate: (message: InboxMessage, index: number, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.updateMessage(message, index);
-          this.updateHeader();
-        }
-      },
-      onUnreadCountChange: (unreadCount: number, datasetId: string) => {
-        // Always update the tab badges for all tabs
-        this._header?.updateTabUnreadCount(datasetId, unreadCount);
-
-        // TODO: Update the unread count for a specific tab and feed
-
-        // Only update the main unread count if it's the current tab
-        if (this._currentTabId === datasetId) {
-          this._unreadCount = unreadCount;
-          this.updateHeader();
-        }
-      }
-    });
-
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
-
-    // Initialize unread counts for all tabs
-    this.initializeTabUnreadCounts();
-
-    // Refresh the theme on change
-    this._themeManager.subscribe((_) => {
-      this.refreshTheme();
-    });
-
-    // Listen for authentication state changes
-    this._authListener = Courier.shared.addAuthenticationListener(async ({ userId }) => {
-      if (userId) {
-        await this.refresh();
-      }
-    });
-
-    // Refresh the inbox if the user is already signed in
-    if (!Courier.shared.client?.options.userId) {
-      Courier.shared.client?.options.logger.error('No user signed in. Please call Courier.shared.signIn(...) to load the inbox.')
-      return;
-    }
-
-    this.refreshTheme();
-    this.refresh();
 
   }
 
@@ -464,11 +491,6 @@ export class CourierInbox extends CourierBaseElement {
    * @param tabId - The tab ID to switch to.
    */
   private switchToTab(tabId: string) {
-    // Update the unread count from the dataset immediately
-    const dataset = CourierInboxDatastore.shared.getDatasetById(tabId);
-    if (dataset) {
-      this._unreadCount = dataset.unreadCount;
-    }
 
     // Update components
     this._list?.setSelectedFeed(tabId);
@@ -477,14 +499,11 @@ export class CourierInbox extends CourierBaseElement {
     // Update the header
     this.updateHeader();
 
-    // // Load data for the tab (will use cache if available)
-    // CourierInboxDatastore.shared.load({
-    //   canUseCache: true,
-    //   datasetIds: [tabId]
-    // });
-
-    // // Update the header
-    // this._header?.setFeedButtonUnreadCount(this._unreadCount, !this._showTabs);
+    // Load data for the tab (will use cache if available)
+    CourierInboxDatastore.shared.load({
+      canUseCache: true,
+      datasetIds: [tabId]
+    });
   }
 
   /**
@@ -580,11 +599,16 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private updateHeader() {
+    const tabId = this._currentTabId;
+    if (!tabId) {
+      return;
+    }
+    const unreadCount = CourierInboxDatastore.shared.getDatasetById(tabId)?.unreadCount ?? 0;
     const props: CourierInboxHeaderFactoryProps = {
       feeds: this._feeds,
       activeFeedId: this._currentFeedId,
       activeTabId: this._currentTabId,
-      unreadCount: this._unreadCount,
+      unreadCount: unreadCount,
       messageCount: this._list?.messages.length ?? 0,
       showTabs: this._showTabs,
     };
@@ -608,51 +632,35 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private async load(props: { canUseCache: boolean }) {
+
+    // Load the inbox data
     await CourierInboxDatastore.shared.load(props);
 
     // Update all tab unread counts immediately after loading data
-    this.initializeTabUnreadCounts();
-
-    // Connect to socket for realtime updates (don't wait for this)
-    await CourierInboxDatastore.shared.listenForUpdates();
-  }
-
-  private initializeTabUnreadCounts() {
-    // Initialize unread counts for all tabs from the datastore
     for (const feed of this._feeds) {
       this.updateTabUnreadCounts(feed.tabs);
     }
-  }
 
-  private static defaultFeeds(): CourierInboxFeed[] {
-    return [
-      {
-        id: 'inbox_feed',
-        title: 'Inbox',
-        iconSVG: CourierIconSVGs.inbox,
-        tabs: [
-          { id: 'inbox_tab', title: 'Inbox', filter: {} },
-          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
-        ]
-      },
-      {
-        id: 'archive_feed',
-        title: 'Archive',
-        iconSVG: CourierIconSVGs.archive,
-        tabs: [
-          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
-        ]
-      }
-    ];
+    // Connect to socket for realtime updates (don't wait for this)
+    await CourierInboxDatastore.shared.listenForUpdates();
   }
 
   /**
    * Forces a reload of the inbox data, bypassing the cache.
    */
   public async refresh() {
+
+    // Refresh the inbox if the user is already signed in
+    if (!Courier.shared.client?.options.userId) {
+      Courier.shared.client?.options.logger.error('No user signed in. Please call Courier.shared.signIn(...) to load the inbox.')
+      return;
+    }
+
+    // Load the inbox data
     return this.load({
       canUseCache: false
     });
+
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {

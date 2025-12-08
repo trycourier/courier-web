@@ -236,7 +236,7 @@ export class CourierInboxList extends CourierBaseElement {
     const themeMode = this._themeSubscription.manager.mode;
     return {
       title: {
-        text: empty?.title?.text ?? `No ${this._feedId} messages yet`,
+        text: empty?.title?.text ?? `No messages yet`,
         textColor: empty?.title?.font?.color,
         fontFamily: empty?.title?.font?.family,
         fontSize: empty?.title?.font?.size,
