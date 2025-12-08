@@ -41,7 +41,7 @@ export class CourierInboxSkeletonListItem extends CourierBaseElement {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        padding: 12px;
+        padding: 16px 20px 16px 20px;
         width: 100%;
         box-sizing: border-box;
       }

@@ -319,7 +319,7 @@ export class CourierInboxList extends CourierBaseElement {
         return;
       }
       const listItem = new CourierInboxListItem(this._themeSubscription.manager, this._canClickListItems, this._canLongPressListItems);
-      listItem.setMessage(message, this._feedId);
+      listItem.setMessage(message);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
       listItem.setOnItemLongPress((message) => this._onMessageLongPress?.(message, index));

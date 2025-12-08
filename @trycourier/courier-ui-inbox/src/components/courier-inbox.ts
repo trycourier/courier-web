@@ -451,7 +451,7 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
-  private loadCurrentTab() {
+  private reloadListForTab() {
     this._list?.setSelectedFeed(this._currentTabId);
 
     // Load data for the tab
@@ -491,18 +491,12 @@ export class CourierInbox extends CourierBaseElement {
    */
   public selectTab(tabId: string) {
 
-    // Scroll to top if the tab is the same
-    if (this._currentTabId === tabId) {
-      this._list?.scrollToTop();
-      return;
-    }
-
     // Save the selected tab for the current feed
     this._feedTabMap.set(this._currentFeedId, tabId);
 
     // Update components
     this._header?.setSelectedTab(tabId);
-    this.loadCurrentTab();
+    this.reloadListForTab();
   }
 
   /**

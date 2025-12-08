@@ -16,7 +16,6 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
-  private _feedId: string = 'inbox';
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
@@ -333,37 +332,35 @@ export class CourierInboxListItem extends CourierBaseElement {
     const menuTheme = this._theme.inbox?.list?.item?.menu?.item;
     let options: CourierInboxListItemActionMenuOption[] = [];
 
-    const isArchiveFeed = this._feedId === 'archive';
+    const isArchived = !!this._message?.archived;
 
-    // Only add read/unread option if not in archive feed
-    if (!isArchiveFeed) {
-      options.push({
-        id: this._message?.read ? 'unread' : 'read',
-        icon: {
-          svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
-          color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
-        },
-        onClick: () => {
-          if (this._message) {
-            if (this._message.read) {
-              CourierInboxDatastore.shared.unreadMessage({ message: this._message });
-            } else {
-              CourierInboxDatastore.shared.readMessage({ message: this._message });
-            }
-          }
-        },
-      });
-    }
-
+    // Always add read/unread option
     options.push({
-      id: isArchiveFeed ? 'unarchive' : 'archive',
+      id: this._message?.read ? 'unread' : 'read',
       icon: {
-        svg: isArchiveFeed ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
-        color: isArchiveFeed ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+        svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
+        color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
       },
       onClick: () => {
         if (this._message) {
-          if (isArchiveFeed) {
+          if (this._message.read) {
+            CourierInboxDatastore.shared.unreadMessage({ message: this._message });
+          } else {
+            CourierInboxDatastore.shared.readMessage({ message: this._message });
+          }
+        }
+      },
+    });
+
+    options.push({
+      id: isArchived ? 'unarchive' : 'archive',
+      icon: {
+        svg: isArchived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
+        color: isArchived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+      },
+      onClick: () => {
+        if (this._message) {
+          if (isArchived) {
             CourierInboxDatastore.shared.unarchiveMessage({ message: this._message });
           } else {
             CourierInboxDatastore.shared.archiveMessage({ message: this._message });
@@ -398,9 +395,8 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // Public API
-  public setMessage(message: InboxMessage, feedId: string): void {
+  public setMessage(message: InboxMessage): void {
     this._message = message;
-    this._feedId = feedId;
     this._updateContent();
   }
 
@@ -430,7 +426,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     }
 
     // Unread marker
-    this.classList.toggle('unread', !this._message.read && this._feedId !== 'archive');
+    this.classList.toggle('unread', !this._message.read);
 
     if (this._titleElement) {
       this._titleElement.textContent = this._message.title || 'Untitled Message';
