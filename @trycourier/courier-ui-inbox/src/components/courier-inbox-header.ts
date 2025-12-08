@@ -129,7 +129,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
         svg: feed.iconSVG ?? CourierIconSVGs.inbox
       },
       onClick: (_: CourierInboxMenuOption) => {
-        this.selectFeed(feed.id);
+        this.selectFeed(feed.id, feed.tabs[0].id); // TODO
         this._onFeedChange(feed);
       }
     }));
@@ -273,11 +273,15 @@ export class CourierInboxHeader extends CourierFactoryElement {
       throw new Error('[CourierInboxHeader] Cannot set feeds to an empty array.');
     }
 
+    if (!feeds[0].tabs.length) {
+      throw new Error('[CourierInboxHeader] First feed does not have a tab.');
+    }
+
     this._feeds = feeds;
 
     // Set the feeds and select the first feed
     this._feedButton?.setFeeds(feeds);
-    this.selectFeed(feeds[0].id);
+    this.selectFeed(feeds[0].id, feeds[0].tabs[0].id);
 
     // Set the feed menu options
     this._feedMenu?.setOptions(this.getFeedMenuOptions());
@@ -286,7 +290,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this.updateFeedButtonInteraction();
   }
 
-  public selectFeed(feedId: string) {
+  public selectFeed(feedId: string, tabId: string) {
     // Set the selected feed
     this._feedButton?.setSelectedFeed(feedId);
     const feedIndex = this._feeds.findIndex(feed => feed.id === feedId);
@@ -296,7 +300,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     const tabs = this._feeds.find(feed => feed.id === feedId)?.tabs ?? [];
     if (tabs.length > 0) {
       this._tabs?.setTabs(tabs);
-      this._tabs?.setSelectedTab(tabs[0].id);
+      this._tabs?.setSelectedTab(tabId);
     }
   }
 

@@ -43,8 +43,9 @@ export class CourierInbox extends CourierBaseElement {
         title: 'Inbox',
         iconSVG: CourierIconSVGs.inbox,
         tabs: [
-          { id: 'inbox_tab', title: 'Inbox', filter: {} },
-          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+          { id: 'inbox_inbox_tab', title: 'Inbox', filter: {} },
+          { id: 'inbox_all_tab', title: 'All', filter: {} },
+          { id: 'inbox_archive_tab', title: 'Archive', filter: { archived: true } }
         ]
       },
       {
@@ -52,7 +53,7 @@ export class CourierInbox extends CourierBaseElement {
         title: 'Archive',
         iconSVG: CourierIconSVGs.archive,
         tabs: [
-          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+          { id: 'archive_archive_tab', title: 'Archive', filter: { archived: true } }
         ]
       }
     ];
@@ -450,60 +451,58 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
+  private loadCurrentTab() {
+    this._list?.setSelectedFeed(this._currentTabId);
+
+    // Load data for the tab
+    CourierInboxDatastore.shared.load({
+      canUseCache: true,
+      datasetIds: [this._currentTabId]
+    });
+  }
+
   /**
    * Sets the active feed for the inbox.
    * @param feedId - The feed ID to display.
    */
   public selectFeed(feedId: string) {
-    // Do not swap if the current feed is the same
+    // If reselecting the current feed, reset to first tab and reload
     if (this._currentFeedId === feedId) {
+      const feed = this._feeds.find(f => f.id === feedId);
+      if (feed && feed.tabs && feed.tabs.length > 0) {
+        const firstTabId = feed.tabs[0].id;
+        console.log('resetting to first tab', firstTabId);
+        this._header?.selectFeed(feedId, firstTabId);
+        this.selectTab(firstTabId);
+      }
       return;
     }
 
     // Set the current feed and update the header
     this._currentFeedId = feedId;
-    this.updateHeader();
-    this.switchToTab(this._currentTabId);
-  }
-
-  /**
-   * Sets the active tab for the current feed.
-   * @param tabId - The tab ID to display.
-   */
-  public selectTab(tabId: string) {
-    // Do not swap if current tab is same
-    if (this._currentTabId === tabId) {
-      return;
-    }
-
-    // Save the selected tab for the current feed
-    this._feedTabMap.set(this._currentFeedId, tabId);
-
-    // Switch to the new tab
-    this.switchToTab(tabId);
-
-    // Update the header
-    this.updateHeader();
+    console.log('selecting feed', feedId, 'current tab', this._currentTabId);
+    this._header?.selectFeed(feedId, this._currentTabId);
+    this.selectTab(this._currentTabId);
   }
 
   /**
    * Switches to a tab by updating components and loading data.
    * @param tabId - The tab ID to switch to.
    */
-  private switchToTab(tabId: string) {
+  public selectTab(tabId: string) {
+
+    // Scroll to top if the tab is the same
+    if (this._currentTabId === tabId) {
+      this._list?.scrollToTop();
+      return;
+    }
+
+    // Save the selected tab for the current feed
+    this._feedTabMap.set(this._currentFeedId, tabId);
 
     // Update components
-    this._list?.setSelectedFeed(tabId);
     this._header?.setSelectedTab(tabId);
-
-    // Update the header
-    this.updateHeader();
-
-    // Load data for the tab (will use cache if available)
-    CourierInboxDatastore.shared.load({
-      canUseCache: true,
-      datasetIds: [tabId]
-    });
+    this.loadCurrentTab();
   }
 
   /**
@@ -607,7 +606,7 @@ export class CourierInbox extends CourierBaseElement {
     const props: CourierInboxHeaderFactoryProps = {
       feeds: this._feeds,
       activeFeedId: this._currentFeedId,
-      activeTabId: this._currentTabId,
+      activeTabId: tabId,
       unreadCount: unreadCount,
       messageCount: this._list?.messages.length ?? 0,
       showTabs: this._showTabs,

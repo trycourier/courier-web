@@ -132,7 +132,7 @@ export class CourierInboxTabs extends CourierBaseElement {
 
   public setSelectedTab(tabId: string) {
     this._selectedTabId = tabId;
-    this.updateTabStyles();
+    this.reloadTabs();
     this.updateBadgeStates();
   }
 
@@ -149,7 +149,7 @@ export class CourierInboxTabs extends CourierBaseElement {
     }
   }
 
-  private updateTabStyles() {
+  private reloadTabs() {
     for (let child of Array.from(this.children)) {
       if (child instanceof HTMLElement && child.classList.contains('tab-container')) {
         const tabId = child.getAttribute('data-tab-id');
