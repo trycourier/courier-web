@@ -212,6 +212,7 @@ export const defaultLightTheme: CourierInboxTheme = {
           topRight: '4px'
         },
         default: {
+          indicatorHeight: '1px',
           indicatorColor: 'transparent',
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.gray[200],
@@ -233,8 +234,8 @@ export const defaultLightTheme: CourierInboxTheme = {
           }
         },
         selected: {
-          indicatorColor: CourierColors.blue[500],
           indicatorHeight: '1px',
+          indicatorColor: CourierColors.blue[500],
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.gray[200],
           activeBackgroundColor: CourierColors.gray[500],
@@ -474,8 +475,8 @@ export const defaultDarkTheme: CourierInboxTheme = {
           topRight: '4px'
         },
         default: {
-          indicatorColor: 'transparent',
           indicatorHeight: '1px',
+          indicatorColor: 'transparent',
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.white[500_10],
           activeBackgroundColor: CourierColors.white[500_20],
@@ -496,8 +497,8 @@ export const defaultDarkTheme: CourierInboxTheme = {
           }
         },
         selected: {
-          indicatorColor: CourierColors.blue[500],
           indicatorHeight: '1px',
+          indicatorColor: CourierColors.blue[500],
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.white[500_10],
           activeBackgroundColor: CourierColors.white[500_20],

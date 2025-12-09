@@ -42,8 +42,10 @@ export class CourierInbox extends CourierBaseElement {
         title: 'Inbox',
         iconSVG: CourierIconSVGs.inbox,
         tabs: [
-          { id: 'inbox_inbox_tab', title: 'Inbox', filter: {} },
-          { id: 'inbox_archive_tab', title: 'Archive', filter: { archived: true } }
+          { id: 'overview_tab', title: 'Overview', filter: {} },
+          { id: 'unread_tab', title: 'Unread', filter: { status: 'unread' } },
+          { id: 'read_tab', title: 'Read', filter: { status: 'read' } },
+          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
         ]
       },
       {
@@ -51,7 +53,7 @@ export class CourierInbox extends CourierBaseElement {
         title: 'Archive',
         iconSVG: CourierIconSVGs.archive,
         tabs: [
-          { id: 'archive_archive_tab', title: 'Archive', filter: { archived: true } }
+          { id: 'archived_tab', title: 'Archived', filter: { archived: true } }
         ]
       }
     ];
