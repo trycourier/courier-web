@@ -387,13 +387,13 @@ export class CourierInboxDataset {
   private messageQualifiesForDataset(message: InboxMessage): boolean {
     // Is the message archived state compatible with the dataset?
     if (message.archived && !this._filter.archived ||
-        !message.archived && this._filter.archived) {
+      !message.archived && this._filter.archived) {
       return false;
     }
 
     // Is the message read state compatible with the dataset?
     if (message.read && this._filter.status === 'unread' ||
-        !message.read && this._filter.status === 'read') {
+      !message.read && this._filter.status === 'read') {
       return false;
     }
 

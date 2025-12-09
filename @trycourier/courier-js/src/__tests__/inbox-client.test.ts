@@ -1,3 +1,4 @@
+import { CourierGetInboxMessagesQueryFilter } from '../types/inbox';
 import { InboxMessageEvent } from '../types/socket/protocol/messages';
 import { getClient } from './utils';
 
@@ -41,6 +42,28 @@ describe('InboxClient', () => {
     const result = await courierClient.inbox.getUnreadMessageCount();
     expect(typeof result).toBe('number');
     expect(result).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should get unread counts for multiple filters', async () => {
+    const filtersMap: Record<string, CourierGetInboxMessagesQueryFilter> = {
+      'all-messages': {},
+      'unread-messages': { status: 'unread' },
+      'read-messages': { status: 'read' },
+      'tagged-messages': { tags: ['my-tag'] },
+      'unread-tagged': { status: 'unread', tags: ['my-tag'] }
+    };
+
+    const result = await courierClient.inbox.getUnreadCounts(filtersMap);
+
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+
+    // Verify all dataset IDs from input are present in output
+    for (const datasetId of Object.keys(filtersMap)) {
+      expect(result).toHaveProperty(datasetId);
+      expect(typeof result[datasetId]).toBe('number');
+      expect(result[datasetId]).toBeGreaterThanOrEqual(0);
+    }
   });
 
   it('should track click events', async () => {

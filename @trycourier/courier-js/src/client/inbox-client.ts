@@ -86,7 +86,29 @@ export class InboxClient extends Client {
   public async getUnreadCounts(
     filtersMap: Record<string, CourierGetInboxMessagesQueryFilter>
   ): Promise<Record<string, number>> {
-    // Build query variables and field aliases
+    const result: Record<string, number> = {};
+    
+    // Separate filters: those with status 'read' can be optimized to return 0,
+    // others need to be queried
+    const filtersToQuery: Record<string, CourierGetInboxMessagesQueryFilter> = {};
+    
+    for (const [datasetId, filter] of Object.entries(filtersMap)) {
+      if (filter.status === 'read') {
+        // Optimization: if status is 'read', unread count is always 0
+        // TODO: We should remove this at somepoint. There is a bug in the backend that is returning more than 0 for read messages.
+        result[datasetId] = 0;
+      } else {
+        // This filter needs to be queried
+        filtersToQuery[datasetId] = filter;
+      }
+    }
+
+    // If no filters need to be queried, return early
+    if (Object.keys(filtersToQuery).length === 0) {
+      return result;
+    }
+
+    // Build query variables and field aliases for remaining filters
     const variables: string[] = [];
     const fields: string[] = [];
 
@@ -95,7 +117,7 @@ export class InboxClient extends Client {
     // a mapping from user-provided dataset ID to unread count.
     const sanitizedIdMapping: Record<string, string> = {};
 
-    for (const [datasetId, filter] of Object.entries(filtersMap)) {
+    for (const [datasetId, filter] of Object.entries(filtersToQuery)) {
       const sanitizedId = InboxClient.sanitizeGraphQLIdentifier(datasetId);
       sanitizedIdMapping[sanitizedId] = datasetId;
 
@@ -124,7 +146,6 @@ export class InboxClient extends Client {
 
     // Parse response data back into a map of user-provided ID to unread count
     // from the GraphQL-safe aliases used in the query.
-    const result: Record<string, number> = {};
     if (response.data) {
       for (const [sanitizedId, originalId] of Object.entries(sanitizedIdMapping)) {
         result[originalId] = response.data[sanitizedId] ?? 0;
