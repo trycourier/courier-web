@@ -117,12 +117,15 @@ export class CourierInboxList extends CourierBaseElement {
   static getStyles(theme: CourierInboxTheme): string {
 
     const list = theme.inbox?.list;
+    const scrollbar = list?.scrollbar;
 
     return `
       ${CourierInboxList.id} {
         flex: 1;
         width: 100%;
         background-color: ${list?.backgroundColor ?? 'red'};
+        scrollbar-width: ${scrollbar?.width ?? 'thin'};
+        scrollbar-color: ${scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.2)'} ${scrollbar?.trackBackgroundColor ?? 'transparent'};
       }
 
       ${CourierInboxList.id} ul {
@@ -130,6 +133,25 @@ export class CourierInboxList extends CourierBaseElement {
         padding: 0;
         margin: 0;
         height: 100%;
+      }
+
+      /* Webkit scrollbar styling - show thumb, hide track background, overlay above content */
+      ${CourierInboxList.id}::-webkit-scrollbar {
+        width: ${scrollbar?.width ?? '8px'};
+        height: ${scrollbar?.height ?? '8px'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-track {
+        background: ${scrollbar?.trackBackgroundColor ?? 'transparent'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-thumb {
+        background: ${scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.2)'};
+        border-radius: ${scrollbar?.borderRadius ?? '4px'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-thumb:hover {
+        background: ${scrollbar?.thumbHoverColor ?? scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.3)'};
       }
     `;
 

@@ -31,6 +31,9 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   static getStyles(theme: CourierInboxTheme): string {
 
     const menu = theme.inbox?.list?.item?.menu;
+    const transition = menu?.animation;
+    const initialTransform = transition?.initialTransform ?? 'translate3d(0, 0, 0)';
+    const visibleTransform = transition?.visibleTransform ?? 'translate3d(0, 0, 0)';
 
     return `
       ${CourierInboxListItemMenu.id} {
@@ -43,14 +46,16 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         user-select: none;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.15s;
+        transition: ${transition?.transition ?? 'all 0.2s ease'};
         overflow: hidden;
+        transform: ${initialTransform};
+        will-change: transform, opacity;
       }
 
       ${CourierInboxListItemMenu.id}.visible {
-        display: block;
         opacity: 1;
         pointer-events: auto;
+        transform: ${visibleTransform};
       }
 
       ${CourierInboxListItemMenu.id} ul.menu {
@@ -127,13 +132,32 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   show() {
+    // Set display first
     this.style.display = 'block';
-    this.classList.add('visible');
+    this.classList.remove('visible');
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.classList.add('visible');
+      });
+    });
   }
 
   hide() {
-    this.style.display = 'none';
+    // Remove visible class to trigger transition
     this.classList.remove('visible');
+
+    // Wait for transition to complete, then set display none
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.target !== this) return;
+      if (!this.classList.contains('visible')) {
+        this.style.display = 'none';
+        this.removeEventListener('transitionend', handleTransitionEnd);
+      }
+    };
+
+    this.addEventListener('transitionend', handleTransitionEnd);
   }
 }
 

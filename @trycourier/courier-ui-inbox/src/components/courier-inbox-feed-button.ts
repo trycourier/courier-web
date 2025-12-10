@@ -63,7 +63,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
         align-items: center;
         gap: 8px;
         position: relative;
-        transition: background 0.2s;
+        transition: ${theme.inbox?.header?.feedButton?.transition ?? 'all 0.2s ease'};
         border-radius: 6px;
         padding-top: 4px;
         padding-bottom: 4px;

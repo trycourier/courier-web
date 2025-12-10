@@ -155,7 +155,7 @@ export class CourierInboxListItem extends CourierBaseElement {
         border-bottom: ${list?.item?.divider ?? '1px solid red'};
         font-family: inherit;
         cursor: default;
-        transition: background-color 0.2s ease;
+        transition: ${list?.item?.transition ?? 'all 0.2s ease'};
         margin: 0;
         width: 100%;
         box-sizing: border-box;
@@ -378,7 +378,6 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     if (menu && menu.enabled && this._menu && this._timeElement) {
       this._menu.setOptions(this._getMenuOptions());
-      this._menu.style.display = 'block';
       this._menu.show();
       this._timeElement.style.opacity = '0';
     }
@@ -389,7 +388,6 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     if (menu && menu.enabled && this._menu && this._timeElement) {
       this._menu.hide();
-      this._menu.style.display = 'none';
       this._timeElement.style.opacity = '1';
     }
   }

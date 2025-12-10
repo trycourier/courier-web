@@ -163,6 +163,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   static getStyles(theme: CourierInboxTheme, width: string, height: string): string {
+    const transition = theme.popup?.window?.animation;
+    const initialTransform = transition?.initialTransform ?? 'translate3d(-10px, -10px, 0) scale(0.9)';
+    const visibleTransform = transition?.visibleTransform ?? 'translate3d(0, 0, 0) scale(1)';
+
     return `
       ${CourierInboxPopupMenu.id} {
         display: inline-block;
@@ -185,8 +189,15 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         width: ${width};
         height: ${height};
         overflow: hidden;
-        transform: translateZ(0);
-        will-change: transform;
+        transform: ${initialTransform};
+        will-change: transform, opacity;
+        transition: ${transition?.transition ?? 'all 0.2s ease'};
+        opacity: 0;
+      }
+
+      ${CourierInboxPopupMenu.id} .popup.visible {
+        opacity: 1;
+        transform: ${visibleTransform};
       }
         
       ${CourierInboxPopupMenu.id} #unread-badge {
@@ -370,16 +381,61 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     event.stopPropagation();
     if (!this._popup) return;
 
-    const isVisible = this._popup.style.display === 'block';
-    this._popup.style.display = isVisible ? 'none' : 'block';
+    const isVisible = this._popup.classList.contains('visible');
+    if (isVisible) {
+      this.hidePopup();
+    } else {
+      this.showPopup();
+    }
+  }
+
+  /**
+   * Show the popup menu with transition.
+   */
+  private showPopup() {
+    if (!this._popup) return;
+
+    // Set display first
+    this._popup.style.display = 'block';
+    this._popup.classList.remove('visible');
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (this._popup) {
+          this._popup.classList.add('visible');
+        }
+      });
+    });
+  }
+
+  /**
+   * Hide the popup menu with transition.
+   */
+  private hidePopup() {
+    if (!this._popup) return;
+
+    // Remove visible class to trigger transition
+    this._popup.classList.remove('visible');
+
+    // Wait for transition to complete, then set display none
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.target !== this._popup) return;
+      if (e.propertyName !== 'opacity') return;
+      if (this._popup && !this._popup.classList.contains('visible')) {
+        this._popup.style.display = 'none';
+        this._popup.removeEventListener('transitionend', handleTransitionEnd);
+      }
+    };
+
+    this._popup.addEventListener('transitionend', handleTransitionEnd);
   }
 
   /**
    * Close the popup menu.
    */
   public closePopup() {
-    if (!this._popup) return;
-    this._popup.style.display = 'none';
+    this.hidePopup();
   }
 
   private handleOutsideClick = (event: MouseEvent) => {
@@ -402,7 +458,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     if (clickIsInsideAllowedArea) return;
 
     // Otherwise, it really was an outside click – hide the popup
-    this._popup.style.display = 'none';
+    this.hidePopup();
   };
 
   /**

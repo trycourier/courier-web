@@ -16,6 +16,7 @@
 
   <script type="module">
     import { Courier } from '@trycourier/courier-ui-inbox';
+    import { CourierIconSVGs } from '@trycourier/courier-ui-core';
 
     // Authenticate the user with the inbox
     Courier.shared.signIn({
@@ -26,11 +27,93 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
+    // Set custom feeds - inbox with multiple tabs, archive with single tab
+    inbox.setFeeds([
+      {
+        id: 'inbox_feed',
+        title: 'Inbox',
+        iconSVG: CourierIconSVGs.inbox,
+        tabs: [
+          {
+            id: 'tab1',
+            title: 'Tab 1',
+            filter: {}
+          },
+          {
+            id: 'tab2',
+            title: 'Tab 2',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab3',
+            title: 'Tab 3',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab4',
+            title: 'Tab 4',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab5',
+            title: 'Tab 5',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab6',
+            title: 'Tab 6',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab7',
+            title: 'Tab 7',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab8',
+            title: 'Tab 8',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab9',
+            title: 'Tab 9',
+            filter: { tags: ['tag'] }
+          },
+          {
+            id: 'tab10',
+            title: 'Tab 10',
+            filter: { tags: ['tag'] }
+          }
+        ]
+      },
+      {
+        id: 'archive_feed',
+        title: 'Archive',
+        iconSVG: CourierIconSVGs.archive,
+        tabs: [
+          {
+            id: 'archived',
+            title: 'Archived Messages',
+            filter: {
+              archived: true
+            }
+          }
+        ]
+      }
+    ]);
+
     const theme = {
       popup: {
         button: {
           unreadDotIndicator: {
             backgroundColor: "#8B5CF6"
+          }
+        },
+        window: {
+          animation: {
+            transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+            initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+            visibleTransform: 'translate3d(0, 0, 0) scale(1)'
           }
         }
       },

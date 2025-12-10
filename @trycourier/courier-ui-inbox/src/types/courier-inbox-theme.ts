@@ -24,11 +24,18 @@ export type CourierInboxMenuButtonTheme = CourierInboxIconButtonTheme & {
   unreadDotIndicator?: CourierInboxUnreadDotIndicatorTheme;
 }
 
+export type CourierInboxAnimationTheme = {
+  transition?: string;
+  initialTransform?: string;
+  visibleTransform?: string;
+}
+
 export type CourierInboxPopupTheme = {
   backgroundColor?: string;
   border?: string;
   borderRadius?: string;
   shadow?: string;
+  animation?: CourierInboxAnimationTheme;
   list?: {
     font?: CourierInboxFontTheme;
     selectionIcon?: CourierInboxIconTheme;
@@ -43,6 +50,7 @@ export type CourierInboxListItemTheme = {
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   activeBackgroundColor?: string;
+  transition?: string;
   title?: CourierInboxFontTheme;
   subtitle?: CourierInboxFontTheme;
   time?: CourierInboxFontTheme;
@@ -63,6 +71,7 @@ export type CourierInboxListItemTheme = {
     border?: string;
     borderRadius?: string;
     shadow?: string;
+    animation?: CourierInboxAnimationTheme;
     longPress?: {
       displayDuration?: number;
       vibrationDuration?: number;
@@ -118,8 +127,18 @@ export type CourierInboxTabsBorderRadius =
     bottomRight?: string;
   };
 
+export type CourierInboxListScrollbarTheme = {
+  trackBackgroundColor?: string;
+  thumbColor?: string;
+  thumbHoverColor?: string;
+  width?: string;
+  height?: string;
+  borderRadius?: string;
+}
+
 export type CourierInboxTabsTheme = {
   borderRadius?: CourierInboxTabsBorderRadius;
+  transition?: string;
   default?: {
     backgroundColor?: string;
     hoverBackgroundColor?: string;
@@ -148,6 +167,7 @@ export type CourierInboxTheme = {
       borderRadius?: string;
       border?: string;
       shadow?: string;
+      animation?: CourierInboxAnimationTheme;
     };
   }
   inbox?: {
@@ -163,6 +183,7 @@ export type CourierInboxTheme = {
         unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
         hoverBackgroundColor?: string;
         activeBackgroundColor?: string;
+        transition?: string;
       }
       menus?: {
         popup?: CourierInboxPopupTheme;
@@ -171,6 +192,7 @@ export type CourierInboxTheme = {
     }
     list?: {
       backgroundColor?: string;
+      scrollbar?: CourierInboxListScrollbarTheme;
       item?: CourierInboxListItemTheme;
     },
     loading?: CourierInboxSkeletonLoadingStateTheme,
@@ -200,7 +222,12 @@ export const defaultLightTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.white[500],
       borderRadius: '8px',
       border: `1px solid ${CourierColors.gray[500]}`,
-      shadow: `0px 8px 16px -4px ${CourierColors.gray[500]}`
+      shadow: `0px 8px 16px -4px ${CourierColors.gray[500]}`,
+      animation: {
+        transition: 'none',
+        initialTransform: 'translate3d(0, 0, 0)',
+        visibleTransform: 'translate3d(0, 0, 0)'
+      }
     }
   },
   inbox: {
@@ -213,6 +240,7 @@ export const defaultLightTheme: CourierInboxTheme = {
           topLeft: '4px',
           topRight: '4px'
         },
+        transition: 'all 0.2s ease',
         default: {
           indicatorHeight: '1px',
           indicatorColor: 'transparent',
@@ -262,6 +290,7 @@ export const defaultLightTheme: CourierInboxTheme = {
         currentFeedIconColor: CourierColors.black[500],
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
+        transition: 'all 0.2s ease',
         font: {
           color: CourierColors.black[500],
           family: undefined,
@@ -288,6 +317,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           border: `1px solid ${CourierColors.gray[500]}`,
           borderRadius: '6px',
           shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
           list: {
             hoverBackgroundColor: CourierColors.gray[200],
             activeBackgroundColor: CourierColors.gray[500],
@@ -339,11 +373,20 @@ export const defaultLightTheme: CourierInboxTheme = {
     },
     list: {
       backgroundColor: CourierColors.white[500],
+      scrollbar: {
+        trackBackgroundColor: 'transparent',
+        thumbColor: CourierColors.black[500_20],
+        thumbHoverColor: CourierColors.black[500_20],
+        width: '8px',
+        height: '8px',
+        borderRadius: '4px'
+      },
       item: {
         backgroundColor: 'transparent',
         unreadIndicatorColor: CourierColors.blue[500],
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
+        transition: 'all 0.2s ease',
         actions: {
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.gray[200],
@@ -379,6 +422,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           border: `1px solid ${CourierColors.gray[500]}`,
           borderRadius: '4px',
           shadow: `0px 2px 4px -2px ${CourierColors.gray[500]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
           longPress: {
             displayDuration: 4000,
             vibrationDuration: 50
@@ -464,7 +512,12 @@ export const defaultDarkTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.black[500],
       borderRadius: '8px',
       border: `1px solid ${CourierColors.gray[400]}`,
-      shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`
+      shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
+      animation: {
+        transition: 'none',
+        initialTransform: 'translate3d(0, 0, 0)',
+        visibleTransform: 'translate3d(0, 0, 0)'
+      }
     }
   },
   inbox: {
@@ -477,6 +530,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
           topLeft: '4px',
           topRight: '4px'
         },
+        transition: 'all 0.2s ease',
         default: {
           indicatorHeight: '1px',
           indicatorColor: 'transparent',
@@ -526,6 +580,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
         currentFeedIconColor: CourierColors.white[500],
         hoverBackgroundColor: CourierColors.white[500_10],
         activeBackgroundColor: CourierColors.white[500_20],
+        transition: 'all 0.2s ease',
         font: {
           color: CourierColors.white[500],
           family: undefined,
@@ -552,6 +607,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           border: `1px solid ${CourierColors.gray[400]}`,
           borderRadius: '6px',
           shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
           list: {
             hoverBackgroundColor: CourierColors.white[500_10],
             activeBackgroundColor: CourierColors.white[500_20],
@@ -603,11 +663,20 @@ export const defaultDarkTheme: CourierInboxTheme = {
     },
     list: {
       backgroundColor: CourierColors.black[500],
+      scrollbar: {
+        trackBackgroundColor: 'transparent',
+        thumbColor: CourierColors.white[500_20],
+        thumbHoverColor: CourierColors.white[500_20],
+        width: '8px',
+        height: '8px',
+        borderRadius: '4px'
+      },
       item: {
         backgroundColor: 'transparent',
         unreadIndicatorColor: CourierColors.blue[500],
         hoverBackgroundColor: CourierColors.white[500_10],
         activeBackgroundColor: CourierColors.white[500_20],
+        transition: 'all 0.2s ease',
         actions: {
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.white[500_10],
@@ -643,6 +712,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           border: `1px solid ${CourierColors.gray[400]}`,
           borderRadius: '4px',
           shadow: `0px 2px 4px -2px ${CourierColors.white[500_20]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
           longPress: {
             displayDuration: 4000,
             vibrationDuration: 50
@@ -726,7 +800,11 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       },
       window: {
         ...defaultTheme.popup?.window,
-        ...theme.popup?.window
+        ...theme.popup?.window,
+        animation: {
+          ...defaultTheme.popup?.window?.animation,
+          ...theme.popup?.window?.animation
+        }
       }
     },
     inbox: {
@@ -787,6 +865,10 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           popup: {
             ...defaultTheme.inbox?.header?.menus?.popup,
             ...theme.inbox?.header?.menus?.popup,
+            animation: {
+              ...defaultTheme.inbox?.header?.menus?.popup?.animation,
+              ...theme.inbox?.header?.menus?.popup?.animation
+            },
             list: {
               ...defaultTheme.inbox?.header?.menus?.popup?.list,
               ...theme.inbox?.header?.menus?.popup?.list,
@@ -833,12 +915,20 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       list: {
         ...defaultTheme.inbox?.list,
         ...theme.inbox?.list,
+        scrollbar: {
+          ...defaultTheme.inbox?.list?.scrollbar,
+          ...theme.inbox?.list?.scrollbar
+        },
         item: {
           ...defaultTheme.inbox?.list?.item,
           ...theme.inbox?.list?.item,
           menu: {
             ...defaultTheme.inbox?.list?.item?.menu,
             ...theme.inbox?.list?.item?.menu,
+            animation: {
+              ...defaultTheme.inbox?.list?.item?.menu?.animation,
+              ...theme.inbox?.list?.item?.menu?.animation
+            },
             item: {
               ...defaultTheme.inbox?.list?.item?.menu?.item,
               ...theme.inbox?.list?.item?.menu?.item,

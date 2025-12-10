@@ -95,7 +95,7 @@ export class CourierInboxTabs extends CourierBaseElement {
         width: 100%;
         max-width: 100%;
         min-width: 0;
-        margin-top: -6px;
+        margin-top: -5px;
         overflow-x: auto;
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE and Edge */
@@ -120,7 +120,7 @@ export class CourierInboxTabs extends CourierBaseElement {
         display: flex;
         align-items: center;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: ${tabs?.transition ?? 'all 0.2s ease'};
         user-select: none;
         padding: 0 10px;
         flex-shrink: 0;
