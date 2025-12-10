@@ -7,7 +7,7 @@ import { CourierUnreadCountBadge } from "./courier-unread-count-badge";
 export class CourierInboxTabs extends CourierBaseElement {
 
   static get id(): string {
-    return 'courier-inbox-header-tabs';
+    return 'courier-inbox-tabs';
   }
 
   // Theme
@@ -51,11 +51,18 @@ export class CourierInboxTabs extends CourierBaseElement {
     // Clear the existing tabs
     this.innerHTML = '';
 
-    // Create the tab elements
+    // Create a single container that holds all tabs
+    const tabContainer = document.createElement('div');
+    tabContainer.className = 'tab-container';
+
+    // Create the tab elements inside the container
     for (let tab of this._tabs) {
       const tabElement = this.createTab(tab);
-      this.appendChild(tabElement);
+      tabContainer.appendChild(tabElement);
     }
+
+    // Append the container to the main element
+    this.appendChild(tabContainer);
 
     // Set the theme of the button
     this.refreshTheme();
@@ -85,52 +92,71 @@ export class CourierInboxTabs extends CourierBaseElement {
     return `
       ${CourierInboxTabs.id} {
         position: relative;
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        height: 44px;
-        padding: 0 10px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
         margin-top: -6px;
+        overflow-x: auto;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        height: 41px;
+      }
+
+      ${CourierInboxTabs.id}::-webkit-scrollbar {
+        display: none;
       }
 
       ${CourierInboxTabs.id} .tab-container {
-        margin-top: 1px;
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        padding: 0 10px;
+        width: fit-content;
+        height: 100%;
+      }
+
+      ${CourierInboxTabs.id} .tab-item {
         position: relative;
         display: flex;
         align-items: center;
-        padding: 0 10px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: background 0.2s;
         user-select: none;
+        padding: 0 10px;
+        flex-shrink: 0;
+        height: 100%;
         ${getBorderRadius(tabs?.borderRadius)}
       }
 
       ${CourierInboxTabs.id} .tab {
-        height: 100%;
         position: relative;
         display: flex;
         align-items: center;
         gap: 8px;
         border-bottom: ${tabs?.default?.indicatorHeight ?? '1px'} solid ${tabs?.default?.indicatorColor ?? 'transparent'};
+        height: 40px;
+        min-width: 40px;
+        justify-content: center;
+        position: relative;
       }
 
-      ${CourierInboxTabs.id} .tab-container:hover {
+      ${CourierInboxTabs.id} .tab-item:hover {
         background-color: ${tabs?.default?.hoverBackgroundColor ?? 'transparent'};
       }
 
-      ${CourierInboxTabs.id} .tab-container:active {
+      ${CourierInboxTabs.id} .tab-item:active {
         background-color: ${tabs?.default?.activeBackgroundColor ?? 'transparent'};
       }
 
       ${CourierInboxTabs.id} .tab.selected {
-        border-bottom: ${tabs?.selected?.indicatorHeight ?? '1px'} solid ${tabs?.selected?.indicatorColor ?? 'transparent'};
+        border-bottom: ${(tabs?.selected?.indicatorHeight ?? '1px')} solid ${(tabs?.selected?.indicatorColor ?? 'transparent')};
       }
 
-      ${CourierInboxTabs.id} .tab-container:hover.selected {
+      ${CourierInboxTabs.id} .tab-item:hover.selected {
         background-color: ${tabs?.selected?.hoverBackgroundColor ?? 'transparent'};
       }
 
-      ${CourierInboxTabs.id} .tab-container:active.selected {
+      ${CourierInboxTabs.id} .tab-item:active.selected {
         background-color: ${tabs?.selected?.activeBackgroundColor ?? 'transparent'};
       }
 
@@ -140,6 +166,7 @@ export class CourierInboxTabs extends CourierBaseElement {
         font-weight: ${tabs?.default?.font?.weight ?? 'inherit'};
         color: ${tabs?.default?.font?.color ?? 'red'};
         user-select: none;
+        white-space: nowrap;
       }
 
       ${CourierInboxTabs.id} .tab.selected .tab-label {
@@ -174,8 +201,11 @@ export class CourierInboxTabs extends CourierBaseElement {
   }
 
   private reloadTabs() {
-    for (let child of Array.from(this.children)) {
-      if (child instanceof HTMLElement && child.classList.contains('tab-container')) {
+    const tabContainer = this.querySelector('.tab-container');
+    if (!tabContainer) return;
+
+    for (let child of Array.from(tabContainer.children)) {
+      if (child instanceof HTMLElement && child.classList.contains('tab-item')) {
         const tabId = child.getAttribute('data-tab-id');
         const tabElement = child.querySelector('.tab');
         if (tabElement instanceof HTMLElement) {
@@ -197,7 +227,7 @@ export class CourierInboxTabs extends CourierBaseElement {
 
   private createTab(tab: CourierInboxTab): HTMLDivElement {
     const container = document.createElement('div');
-    container.className = 'tab-container';
+    container.className = 'tab-item';
     container.setAttribute('data-tab-id', tab.id);
 
     const el = document.createElement('div');

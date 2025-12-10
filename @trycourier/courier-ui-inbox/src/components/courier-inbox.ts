@@ -16,7 +16,7 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   // State
-  private _currentFeedId: string = 'inbox_feed';
+  private _currentFeedId: string = CourierInbox.defaultFeeds()[0].id;
   private _feedTabMap: Map<string, string> = new Map();
 
   /** Returns the current feed type. */
@@ -35,17 +35,18 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   /** Returns the default feeds for the inbox. */
-  private static defaultFeeds(): CourierInboxFeed[] {
+  public static defaultFeeds(): CourierInboxFeed[] {
     return [
       {
         id: 'inbox_feed',
         title: 'Inbox',
         iconSVG: CourierIconSVGs.inbox,
         tabs: [
-          { id: 'overview_tab', title: 'Overview', filter: {} },
-          { id: 'unread_tab', title: 'Unread', filter: { status: 'unread' } },
-          { id: 'read_tab', title: 'Read', filter: { status: 'read' } },
-          { id: 'archive_tab', title: 'Archive', filter: { archived: true } }
+          {
+            id: 'all_messages',
+            title: 'All Messages',
+            filter: {}
+          }
         ]
       },
       {
@@ -53,18 +54,22 @@ export class CourierInbox extends CourierBaseElement {
         title: 'Archive',
         iconSVG: CourierIconSVGs.archive,
         tabs: [
-          { id: 'archived_tab', title: 'Archived', filter: { archived: true } }
+          {
+            id: 'archived_messages',
+            title: 'Archived Messages',
+            filter: {
+              archived: true
+            }
+          }
         ]
       }
     ];
   }
 
-  /** Returns the current tab. */
-  private _showTabs = true;
-
-  /** Returns whether the tabs are currently visible. */
+  /** Returns whether the tabs are currently visible based on the current feed having more than 1 tab. */
   get showTabs(): boolean {
-    return this._showTabs;
+    const currentFeed = this._feeds.find(feed => feed.id === this._currentFeedId);
+    return (currentFeed?.tabs?.length ?? 0) > 1;
   }
 
   // Theming
@@ -81,6 +86,7 @@ export class CourierInbox extends CourierBaseElement {
    * @param theme The light theme object to set.
    */
   public setLightTheme(theme: CourierInboxTheme) {
+    console.log('setLightTheme', theme);
     this._themeManager.setLightTheme(theme);
   }
 
@@ -100,14 +106,6 @@ export class CourierInbox extends CourierBaseElement {
     this._themeManager.setMode(mode);
   }
 
-  /**
-   * Set whether the tabs are currently visible.
-   * @param show Whether the tabs should be visible.
-   */
-  public setShowTabs(show: boolean) {
-    this._showTabs = show;
-    this.updateHeader();
-  }
 
   // Components
   private _inboxStyle?: HTMLStyleElement;
@@ -144,6 +142,9 @@ export class CourierInbox extends CourierBaseElement {
       throw new Error('No feeds are available to initialize.');
     }
 
+    // Clear the feed tab map
+    this._feedTabMap.clear();
+
     // Set the default (first) tab for each feed in the map
     for (const feed of this._feeds) {
       if (!feed.tabs || !feed.tabs.length) {
@@ -154,16 +155,40 @@ export class CourierInbox extends CourierBaseElement {
     }
 
     // Optionally set current feed and tab if not already set
-    if (!this._currentFeedId) {
-      this._currentFeedId = this._feeds[0].id;
-    }
+    this._currentFeedId = this._feeds[0].id;
   }
 
   onComponentMounted() {
+    this.readInitialThemeAttributes();
     this.attachElements();
     this.setupThemeSubscription();
     this.setupAuthListener();
     this.initializeInboxData();
+  }
+
+  private readInitialThemeAttributes() {
+    const lightTheme = this.getAttribute('light-theme');
+    if (lightTheme) {
+      try {
+        this.setLightTheme(JSON.parse(lightTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse light-theme attribute:', error);
+      }
+    }
+
+    const darkTheme = this.getAttribute('dark-theme');
+    if (darkTheme) {
+      try {
+        this.setDarkTheme(JSON.parse(darkTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse dark-theme attribute:', error);
+      }
+    }
+
+    const mode = this.getAttribute('mode');
+    if (mode) {
+      this._themeManager.setMode(mode as CourierComponentThemeMode);
+    }
   }
 
   private setupThemeSubscription() {
@@ -268,8 +293,8 @@ export class CourierInbox extends CourierBaseElement {
     });
 
     // Build the element and set the initial feeds
-    this._header.build(undefined);
-    this._header.setFeeds(this._feeds);
+    this._header?.build(undefined);
+    this._header?.setFeeds(this._feeds);
     this.appendChild(this._header);
 
     // Create list and ensure it's properly initialized
@@ -446,7 +471,7 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private async reloadListForTab() {
-    this._list?.setSelectedFeed(this._currentTabId);
+    this._list?.selectDataset(this._currentTabId);
 
     // Load data for the tab
     await CourierInboxDatastore.shared.load({
@@ -508,77 +533,33 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   /**
-   * Set the feeds for this Inbox, replacing any existing feeds.
-   *
-   * By default, feeds are set to:
-   *
-   * ```
-   * [
-   *   {
-   *     label: 'Inbox',
-   *     tabs: [{ label: 'Inbox', id: 'inbox', filter: {}}],
-   *   },
-   *   {
-   *     label: 'Archive',
-   *     tabs: [{ label: 'Archive', id: 'archive', filter: { archived: true }}],
-   *   }
-   * ]
-   * ```
-   *
-   * @param feeds - the list of feeds to set for the Inbox
-   * @throws if feeds includes a duplicate feed or tab ID
+   * Sets the feeds for the inbox.
+   * @param feeds - The feeds to set for the inbox.
    */
-  public setFeeds(_feeds: CourierInboxFeed[]) {
-    this._header?.setFeeds(_feeds);
-    // const feedIds: string[] = [];
-    // const tabIds: string[] = [];
+  public setFeeds(feeds: CourierInboxFeed[]) {
+    this._feeds = feeds;
 
-    // // Validate feeds and tabs have unique IDs
-    // for (let feed of feeds) {
-    //   if (feedIds.includes(feed.id)) {
-    //     throw new Error(`[CourierInbox] Duplicate feed ID [${feed.id}] passed to setFeeds.`);
-    //   }
+    // Reset the initial feed and tab
+    this.resetInitialFeedAndTab();
 
-    //   feedIds.push(feed.id);
+    // Create datasets from the feeds
+    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
 
-    //   for (let tab of feed.tabs) {
-    //     if (tabIds.includes(tab.id)) {
-    //       throw new Error(`[CourierInbox] Duplicate tab ID [${tab.id}] passed to setFeeds.`);
-    //     }
+    // Update the header with new feeds
+    this._header?.setFeeds(this._feeds);
 
-    //     tabIds.push(tab.id);
-    //   }
-    // }
+    // Select the correct feed and tab before updating header to avoid tabs flashing
+    this._header?.selectFeed(this._currentFeedId, this._currentTabId);
 
-    // this._feeds = feeds;
+    // Update header (now with correct feed/tab selected)
+    this.updateHeader();
 
-    // // Select the first feed and tab if it exists
-    // if (this._feeds.length > 0 && this._feeds[0].tabs.length > 0) {
-    //   this._currentFeedId = feeds[0].id;
-    //   this._currentTabId = feeds[0].tabs[0].id;
-    //   // Initialize the map with the first feed and tab
-    //   this._feedTabMap.set(this._currentFeedId, this._currentTabId);
-    // }
+    // Reload the list for the current tab
+    this._list?.selectDataset(this._currentTabId);
+    this._list?.scrollToTop(false);
 
-    // // If the component is already mounted, we need to update everything
-    // if (this._header && this._list) {
-    //   // Create datasets for the new feeds and load unread counts
-    //   CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
-    //   CourierInboxDatastore.shared.loadUnreadCountsForTabs(tabIds);
-
-    //   // Update the list and header to show the current tab
-    //   this._list.setFeedType(this._currentTabId);
-    //   this._header.setFeeds(this._feeds);
-    //   this._header.setSelectedTab(this._currentTabId);
-    //   this.updateHeader();
-
-    //   // Load messages for the current tab
-    //   CourierInboxDatastore.shared.load({
-    //     canUseCache: true,
-    //     datasetIds: [this._currentTabId]
-    //   });
-    // }
-    // // If not mounted yet, just update the feeds - onComponentMounted will handle the rest
+    // Refresh the inbox data
+    this.refresh();
   }
 
   /** Get the current set of feeds. */
@@ -598,7 +579,7 @@ export class CourierInbox extends CourierBaseElement {
       activeTabId: tabId,
       unreadCount: unreadCount,
       messageCount: this._list?.messages.length ?? 0,
-      showTabs: this._showTabs,
+      showTabs: this.showTabs,
     };
 
     switch (this._headerFactory) {

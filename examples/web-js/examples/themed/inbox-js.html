@@ -27,9 +27,20 @@
     const theme = {
       inbox: {
         header: {
-          filters: {
+          feedButton: {
             unreadIndicator: {
               backgroundColor: "#8B5CF6"
+            }
+          },
+          tabs: {
+            selected: {
+              indicatorColor: "#8B5CF6",
+              font: {
+                color: "#8B5CF6"
+              },
+              unreadIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
             }
           }
         },
@@ -48,6 +59,26 @@
     // Set the mode
     // This will force light, dark or system theme mode
     inbox.setMode('light');
+
+    // Set some feeds
+    inbox.setFeeds([
+      {
+        id: 'notifications',
+        title: 'Notifications',
+        tabs: [
+          {
+            id: 'all-notifications',
+            title: 'All',
+            filter: {}
+          },
+          {
+            id: 'archived-notifications',
+            title: 'Archived',
+            filter: { archived: true }
+          }
+        ]
+      }
+    ]);
 
   </script>
 

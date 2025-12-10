@@ -1,4 +1,4 @@
-import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierFactoryElement, CourierIconButton, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
@@ -13,6 +13,7 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
 
   // Components
   private _style?: HTMLStyleElement;
+  private _shadowRoot?: ShadowRoot;
   private _container?: HTMLDivElement;
   private _triggerButton?: CourierIconButton;
   private _unreadBadge?: HTMLDivElement;
@@ -29,15 +30,17 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxMenuButton.id, CourierInboxMenuButton.getStyles(this.theme));
+    this.attachElements();
+    this.refreshTheme();
   }
 
   onComponentUnmounted() {
     this._themeSubscription.unsubscribe();
-    this._style?.remove();
   }
 
-  defaultElement(): HTMLElement {
+  private attachElements() {
+    // Attach shadow DOM
+    this._shadowRoot = this.attachShadow({ mode: 'closed' });
 
     // Create trigger button container
     this._container = document.createElement('div');
@@ -53,22 +56,31 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
 
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadBadge);
-    this.appendChild(this._container);
 
-    // Set the theme of the button
-    this.refreshTheme();
+    // Create and add style
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles();
+    this._shadowRoot.appendChild(this._style);
+    this._shadowRoot.appendChild(this._container);
+  }
 
-    return this._container;
+  defaultElement(): HTMLElement {
+    // Elements are created in attachElements() which is called from onComponentMounted()
+    return document.createElement('div');
   }
 
   static getStyles(theme: CourierInboxTheme): string {
     return `
-      ${CourierInboxMenuButton.id} .menu-button-container {
+      :host {
+        display: inline-block;
+      }
+
+      .menu-button-container {
         position: relative;
         display: inline-block;
       }
         
-      ${CourierInboxMenuButton.id} .unread-badge {
+      .unread-badge {
         position: absolute;
         top: 2px;
         right: 2px;
@@ -83,6 +95,10 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     `;
   }
 
+  private getStyles(): string {
+    return CourierInboxMenuButton.getStyles(this.theme);
+  }
+
   public onUnreadCountChange(unreadCount: number): void {
     if (this._unreadBadge) {
       this._unreadBadge.style.display = unreadCount > 0 ? 'block' : 'none';
@@ -92,6 +108,9 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   }
 
   private refreshTheme() {
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
     this._triggerButton?.updateIconColor(this.theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
     this._triggerButton?.updateIconSVG(this.theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
     this._triggerButton?.updateBackgroundColor(this.theme?.popup?.button?.backgroundColor ?? 'transparent');

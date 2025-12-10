@@ -9,6 +9,7 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
 import { openMessage } from "../utils/extensions";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxList extends CourierBaseElement {
 
@@ -21,7 +22,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _datasetId: string = 'inbox_inbox_tab';
+  private _datasetId: string = CourierInbox.defaultFeeds()[0].tabs[0].id;
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
@@ -165,8 +166,8 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setSelectedFeed(feedId: string): void {
-    this._datasetId = feedId;
+  public selectDataset(datasetId: string): void {
+    this._datasetId = datasetId;
     this._error = null;
     this._isLoading = true;
     this.render();

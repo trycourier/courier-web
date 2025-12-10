@@ -20,6 +20,45 @@
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
     });
+
+    // Reference the element
+    const inbox = document.querySelector('courier-inbox');
+
+    const theme = {
+      inbox: {
+        header: {
+          feedButton: {
+            unreadIndicator: {
+              backgroundColor: "#8B5CF6"
+            }
+          },
+          tabs: {
+            selected: {
+              indicatorColor: "#8B5CF6",
+              font: {
+                color: "#8B5CF6"
+              },
+              unreadIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
+            }
+          }
+        },
+        list: {
+          item: {
+            unreadIndicatorColor: "#8B5CF6"
+          }
+        }
+      }
+    }
+
+    // Set the theme
+    inbox.setLightTheme(theme);
+    inbox.setDarkTheme(theme);
+
+    // Set the mode
+    // This will force light, dark or system theme mode
+    inbox.setMode('light');
   </script>
 
 </body>

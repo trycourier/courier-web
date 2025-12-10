@@ -154,6 +154,7 @@ export type CourierInboxTheme = {
     header?: {
       backgroundColor?: string;
       shadow?: string;
+      border?: string;
       tabs?: CourierInboxTabsTheme;
       feedButton?: {
         currentFeedIconColor?: string;
@@ -205,7 +206,8 @@ export const defaultLightTheme: CourierInboxTheme = {
   inbox: {
     header: {
       backgroundColor: CourierColors.white[500],
-      shadow: `0px 1px 0px 0px ${CourierColors.gray[500]}`,
+      shadow: `none`,
+      border: `1px solid ${CourierColors.gray[500]}`,
       tabs: {
         borderRadius: {
           topLeft: '4px',
@@ -468,7 +470,8 @@ export const defaultDarkTheme: CourierInboxTheme = {
   inbox: {
     header: {
       backgroundColor: CourierColors.black[500],
-      shadow: `0px 1px 0px 0px ${CourierColors.gray[400]}`,
+      shadow: `none`,
+      border: `1px solid ${CourierColors.gray[400]}`,
       tabs: {
         borderRadius: {
           topLeft: '4px',
@@ -771,7 +774,11 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           ...theme.inbox?.header?.feedButton,
           unreadIndicator: {
             ...defaultTheme.inbox?.header?.feedButton?.unreadIndicator,
-            ...theme.inbox?.header?.feedButton?.unreadIndicator
+            ...theme.inbox?.header?.feedButton?.unreadIndicator,
+            font: {
+              ...defaultTheme.inbox?.header?.feedButton?.unreadIndicator?.font,
+              ...theme.inbox?.header?.feedButton?.unreadIndicator?.font
+            }
           },
         },
         menus: {

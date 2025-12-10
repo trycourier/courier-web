@@ -137,20 +137,16 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   public render(props: CourierInboxHeaderFactoryProps): void {
     if (this._feedButton) {
-      // Update feeds array to track interaction state
       this._feeds = props.feeds;
       this._feedButton.setFeeds(props.feeds);
       this._feedButton.setSelectedFeed(props.activeFeedId);
-      // If showTabs is true, tabs will show unread counts, so hide it on feed button
-      // If showTabs is false, feed button should show the unread count
       this._feedButton.setUnreadCount(props.showTabs ? 0 : props.unreadCount);
-      // Update feed button interaction based on number of feeds
       this.updateFeedButtonInteraction();
     }
     if (this._tabs) {
+      this._tabs.style.display = props.showTabs ? 'flex' : 'none';
       this._tabs.setSelectedTab(props.activeTabId);
       this._tabs.updateTabUnreadCount(props.activeTabId, props.unreadCount);
-      this._tabs.style.display = props.showTabs ? 'flex' : 'none';
     }
   }
 
@@ -301,15 +297,16 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Set the selected tabs
     const tabs = this._feeds.find(feed => feed.id === feedId)?.tabs ?? [];
-    if (tabs.length > 0) {
-      this._tabs?.setTabs(tabs);
-      this._tabs?.setSelectedTab(tabId);
+    if (tabs.length > 0 && this._tabs) {
+      this._tabs.style.display = tabs.length > 1 ? 'flex' : 'none';
+      this._tabs.setTabs(tabs);
+      this._tabs.setSelectedTab(tabId);
 
       // Immediately update unread counts for all tabs from the datastore
       for (const tab of tabs) {
         const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
         if (dataset) {
-          this._tabs?.updateTabUnreadCount(tab.id, dataset.unreadCount);
+          this._tabs.updateTabUnreadCount(tab.id, dataset.unreadCount);
         }
       }
     }
@@ -325,8 +322,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
         display: flex;
         flex-direction: column;
         flex: 1;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        position: relative;
+        overflow-y: visible;
         background-color: ${theme.inbox?.header?.backgroundColor ?? CourierColors.white[500]};
         box-shadow: ${theme.inbox?.header?.shadow ?? `0px 1px 0px 0px red`};
+        border-bottom: ${theme.inbox?.header?.border ?? '1px solid red'};
         z-index: 100;
       }
 
@@ -340,6 +343,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
         align-items: center;
         justify-content: space-between;
         flex: 1;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        position: relative;
+        box-sizing: border-box;
       }
 
       ${CourierInboxHeader.id} .title {

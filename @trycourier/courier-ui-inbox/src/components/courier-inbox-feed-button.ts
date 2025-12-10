@@ -44,7 +44,19 @@ export class CourierInboxFeedButton extends CourierBaseElement {
 
   }
 
-  static getStyles(theme: CourierInboxTheme): string {
+  private getStyles(theme: CourierInboxTheme): string {
+    const hasMultipleFeeds = this._feeds.length > 1;
+    const hoverStyle = hasMultipleFeeds
+      ? `${CourierInboxFeedButton.id}:hover {
+        background: ${theme.inbox?.header?.feedButton?.hoverBackgroundColor ?? 'red'};
+      }`
+      : '';
+    const activeStyle = hasMultipleFeeds
+      ? `${CourierInboxFeedButton.id}:active {
+        background: ${theme.inbox?.header?.feedButton?.activeBackgroundColor ?? 'red'};
+      }`
+      : '';
+
     return `
       ${CourierInboxFeedButton.id} {
         display: flex;
@@ -59,13 +71,9 @@ export class CourierInboxFeedButton extends CourierBaseElement {
         padding-right: 8px;
       }
 
-      ${CourierInboxFeedButton.id}:hover {
-        background: ${theme.inbox?.header?.feedButton?.hoverBackgroundColor ?? 'red'};
-      }
+      ${hoverStyle}
 
-      ${CourierInboxFeedButton.id}:active {
-        background: ${theme.inbox?.header?.feedButton?.activeBackgroundColor ?? 'red'};
-      }
+      ${activeStyle}
 
       ${CourierInboxFeedButton.id} courier-icon {
         display: flex;
@@ -100,7 +108,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
   }
 
   private render() {
-    this._style = injectGlobalStyle(CourierInboxFeedButton.id, CourierInboxFeedButton.getStyles(this.theme));
+    this._style = injectGlobalStyle(CourierInboxFeedButton.id, this.getStyles(this.theme));
 
     // Icon
     this._iconElement = new CourierIcon();
@@ -140,6 +148,8 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     if (this._switchIconElement) {
       this._switchIconElement.style.display = this._feeds.length > 1 ? 'flex' : 'none';
     }
+    // Refresh theme to update hover/active styles based on feed count
+    this.refreshTheme();
   }
 
   public setSelectedFeed(feedId: string) {
@@ -149,10 +159,11 @@ export class CourierInboxFeedButton extends CourierBaseElement {
 
   private refreshTheme() {
     if (this._style) {
-      this._style.textContent = CourierInboxFeedButton.getStyles(this.theme);
+      this._style.textContent = this.getStyles(this.theme);
     }
     this.refreshSelectedFeed();
     this.refreshSwitchIcon();
+    this.refreshUnreadBadge();
   }
 
   private refreshSelectedFeed() {
@@ -170,6 +181,12 @@ export class CourierInboxFeedButton extends CourierBaseElement {
       const switchIcon = this.theme.inbox?.header?.feedButton?.menuDropDownIcon;
       this._switchIconElement.updateSVG(switchIcon?.svg ?? CourierIconSVGs.chevronDown);
       this._switchIconElement.updateColor(switchIcon?.color ?? 'red');
+    }
+  }
+
+  private refreshUnreadBadge() {
+    if (this._unreadBadge) {
+      this._unreadBadge.refreshTheme();
     }
   }
 

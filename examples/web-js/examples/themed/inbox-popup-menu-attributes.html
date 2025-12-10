@@ -12,7 +12,40 @@
 
   <div style="padding: 24px;">
     <courier-inbox-popup-menu mode="light" popup-alignment="top-left" top="44px" left="44px" popup-width="340px"
-      popup-height="400px"></courier-inbox-popup-menu>
+      popup-height="400px" light-theme='{
+        "popup": {
+          "button": {
+            "unreadDotIndicator": {
+              "backgroundColor": "#8B5CF6"
+            }
+          }
+        },
+        "inbox": {
+          "header": {
+            "feedButton": {
+              "unreadIndicator": {
+                "backgroundColor": "#8B5CF6"
+              }
+            },
+            "tabs": {
+              "selected": {
+                "indicatorColor": "#8B5CF6",
+                "font": {
+                  "color": "#8B5CF6"
+                },
+                "unreadIndicator": {
+                  "backgroundColor": "#8B5CF6"
+                }
+              }
+            }
+          },
+          "list": {
+            "item": {
+              "unreadIndicatorColor": "#8B5CF6"
+            }
+          }
+        }
+      }'></courier-inbox-popup-menu>
   </div>
 
   <script type="module">

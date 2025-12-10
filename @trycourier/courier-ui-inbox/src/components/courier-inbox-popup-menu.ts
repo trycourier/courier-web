@@ -3,6 +3,7 @@ import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
+import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -87,6 +88,8 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   onComponentMounted() {
+    // Read initial theme attributes
+    this.readInitialThemeAttributes();
 
     // Inject the styles to the head
     this._style = injectGlobalStyle(CourierInboxPopupMenu.id, CourierInboxPopupMenu.getStyles(this.theme, this._width, this._height));
@@ -126,6 +129,31 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._style?.remove();
     this._datastoreListener?.remove();
     this._themeManager.cleanup();
+  }
+
+  private readInitialThemeAttributes() {
+    const lightTheme = this.getAttribute('light-theme');
+    if (lightTheme) {
+      try {
+        this.setLightTheme(JSON.parse(lightTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse light-theme attribute:', error);
+      }
+    }
+
+    const darkTheme = this.getAttribute('dark-theme');
+    if (darkTheme) {
+      try {
+        this.setDarkTheme(JSON.parse(darkTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse dark-theme attribute:', error);
+      }
+    }
+
+    const mode = this.getAttribute('mode');
+    if (mode) {
+      this._themeManager.setMode(mode as CourierComponentThemeMode);
+    }
   }
 
   private refreshTheme() {
@@ -476,6 +504,58 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   public setMenuButton(factory: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement) {
     this._popupMenuButtonFactory = factory;
     this.render();
+  }
+
+  /**
+   * Returns whether the tabs are currently visible.
+   */
+  get showTabs(): boolean {
+    return this._inbox?.showTabs ?? false;
+  }
+
+  /**
+   * Sets the active feed for the inbox.
+   * @param feedId The feed ID to display.
+   */
+  public selectFeed(feedId: string) {
+    this._inbox?.selectFeed(feedId);
+  }
+
+  /**
+   * Switches to a tab by updating components and loading data.
+   * @param tabId The tab ID to switch to.
+   */
+  public selectTab(tabId: string) {
+    this._inbox?.selectTab(tabId);
+  }
+
+  /**
+   * Set the feeds for this Inbox, replacing any existing feeds.
+   * @param feeds The list of feeds to set for the Inbox.
+   */
+  public setFeeds(feeds: CourierInboxFeed[]) {
+    this._inbox?.setFeeds(feeds);
+  }
+
+  /**
+   * Get the current set of feeds.
+   */
+  public getFeeds() {
+    return this._inbox?.getFeeds() ?? [];
+  }
+
+  /**
+   * Returns the current feed type.
+   */
+  get currentFeedId(): string {
+    return this._inbox?.currentFeedId ?? '';
+  }
+
+  /**
+   * Forces a reload of the inbox data, bypassing the cache.
+   */
+  public async refresh() {
+    return this._inbox?.refresh();
   }
 
   private render() {

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courier Inbox - Custom Feed</title>
+  <link rel="stylesheet" href="./../../styles.css">
+</head>
+
+<body>
+
+  <courier-inbox id="inbox"></courier-inbox>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    // Reference the courier-inbox element
+    const inbox = document.getElementById('inbox');
+
+    // Set custom feeds - 4 feeds with different numbers of tabs
+    inbox.setFeeds([
+      {
+        id: 'notifications',
+        title: 'Notifications',
+        tabs: [
+          {
+            id: 'all-notifications',
+            title: 'All',
+            filter: {}
+          },
+          {
+            id: 'unread-notifications',
+            title: 'Unread',
+            filter: { status: 'unread' }
+          }
+        ]
+      },
+      {
+        id: 'orders',
+        title: 'Orders',
+        tabs: [
+          {
+            id: 'all-orders',
+            title: 'All Orders',
+            filter: { tags: ['order'] }
+          },
+          {
+            id: 'pending-orders',
+            title: 'Pending',
+            filter: { tags: ['order', 'pending'] }
+          },
+          {
+            id: 'processing-orders',
+            title: 'Processing',
+            filter: { tags: ['order', 'processing'] }
+          },
+          {
+            id: 'shipped-orders',
+            title: 'Shipped',
+            filter: { tags: ['order', 'shipped'] }
+          },
+          {
+            id: 'delivered-orders',
+            title: 'Delivered',
+            filter: { tags: ['order', 'delivered'] }
+          }
+        ]
+      },
+      {
+        id: 'activity',
+        title: 'Activity',
+        tabs: [
+          {
+            id: 'all-activity',
+            title: 'All Activity',
+            filter: {}
+          },
+          {
+            id: 'today',
+            title: 'Today',
+            filter: {}
+          },
+          {
+            id: 'this-week',
+            title: 'This Week',
+            filter: {}
+          },
+          {
+            id: 'this-month',
+            title: 'This Month',
+            filter: {}
+          },
+          {
+            id: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
+          },
+          {
+            id: 'comments',
+            title: 'Comments',
+            filter: { tags: ['comment'] }
+          },
+          {
+            id: 'likes',
+            title: 'Likes',
+            filter: { tags: ['like'] }
+          }
+        ]
+      },
+      {
+        id: 'comprehensive',
+        title: 'Comprehensive',
+        tabs: [
+          {
+            id: 'all-messages',
+            title: 'All Messages',
+            filter: {}
+          },
+          {
+            id: 'unread',
+            title: 'Unread',
+            filter: { status: 'unread' }
+          },
+          {
+            id: 'important',
+            title: 'Important',
+            filter: { tags: ['important'] }
+          },
+          {
+            id: 'payments',
+            title: 'Payments',
+            filter: { tags: ['payment'] }
+          },
+          {
+            id: 'security',
+            title: 'Security',
+            filter: { tags: ['security'] }
+          },
+          {
+            id: 'team',
+            title: 'Team',
+            filter: { tags: ['team'] }
+          },
+          {
+            id: 'marketing',
+            title: 'Marketing',
+            filter: { tags: ['marketing'] }
+          },
+          {
+            id: 'support',
+            title: 'Support',
+            filter: { tags: ['support'] }
+          },
+          {
+            id: 'system',
+            title: 'System',
+            filter: { tags: ['system'] }
+          },
+          {
+            id: 'social',
+            title: 'Social',
+            filter: { tags: ['social'] }
+          },
+          {
+            id: 'updates',
+            title: 'Updates',
+            filter: { tags: ['update'] }
+          },
+          {
+            id: 'alerts',
+            title: 'Alerts',
+            filter: { tags: ['alert'] }
+          }
+        ]
+      }
+    ]);
+
+    // Handle message clicks
+    inbox.onMessageClick(({ message, index }) => {
+      alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
+    });
+  </script>
+
+</body>
+
+</html>
