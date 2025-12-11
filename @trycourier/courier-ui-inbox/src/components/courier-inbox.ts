@@ -255,9 +255,7 @@ export class CourierInbox extends CourierBaseElement {
       },
       onUnreadCountChange: (unreadCount: number, datasetId: string) => {
         // Always update the tab badges for all tabs
-        this._header?.updateTabUnreadCount(datasetId, unreadCount);
-
-        // TODO: Update the unread count for a specific tab and feed
+        this._header?.tabs?.updateTabUnreadCount(datasetId, unreadCount);
 
         // Only update the main unread count if it's the current tab
         if (this._currentTabId === datasetId) {
@@ -283,6 +281,11 @@ export class CourierInbox extends CourierBaseElement {
       themeManager: this._themeManager,
       onFeedChange: (feed: CourierInboxFeed) => {
         this.selectFeed(feed.id);
+      },
+      onFeedReselected: (feed: CourierInboxFeed) => {
+        this.selectTab(feed.tabs[0].id, true);
+        this._list?.scrollToTop();
+        this._header?.tabs?.scrollToStart();
       },
       onTabChange: (tab: CourierInboxTab) => {
         this.selectTab(tab.id);
@@ -470,7 +473,7 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.setCanLongPressListItems(handler !== undefined);
   }
 
-  private async reloadListForTab() {
+  private async reloadListForTab(animate: boolean = true) {
     this._list?.selectDataset(this._currentTabId);
 
     // Load data for the tab
@@ -480,7 +483,7 @@ export class CourierInbox extends CourierBaseElement {
     });
 
     // Scroll to top
-    this._list?.scrollToTop(false);
+    this._list?.scrollToTop(animate);
   }
 
   /**
@@ -508,15 +511,16 @@ export class CourierInbox extends CourierBaseElement {
   /**
    * Switches to a tab by updating components and loading data.
    * @param tabId - The tab ID to switch to.
+   * @param animate - Whether to animate the scroll to top.
    */
-  public selectTab(tabId: string) {
+  public selectTab(tabId: string, animate: boolean = false) {
 
     // Save the selected tab for the current feed
     this._feedTabMap.set(this._currentFeedId, tabId);
 
     // Update components
-    this._header?.setSelectedTab(tabId);
-    this.reloadListForTab();
+    this._header?.tabs?.setSelectedTab(tabId);
+    this.reloadListForTab(animate);
   }
 
   /**
@@ -527,7 +531,7 @@ export class CourierInbox extends CourierBaseElement {
     for (const tab of tabs) {
       const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
       if (dataset) {
-        this._header?.updateTabUnreadCount(tab.id, dataset.unreadCount);
+        this._header?.tabs?.updateTabUnreadCount(tab.id, dataset.unreadCount);
       }
     }
   }

@@ -194,6 +194,17 @@ export class CourierInboxTabs extends CourierBaseElement {
     }
   }
 
+  public scrollToStart(animate: boolean = true) {
+    if (animate) {
+      this.scrollTo({
+        left: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      this.scrollLeft = 0;
+    }
+  }
+
   private refreshTheme() {
     if (this._style) {
       this._style.textContent = CourierInboxTabs.getStyles(this.theme);
