@@ -27,76 +27,64 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
-    // Set custom feeds - inbox with multiple tabs, archive with single tab
+    // Set custom feeds with the specified structure
     inbox.setFeeds([
       {
-        id: 'inbox_feed',
-        title: 'Inbox',
-        iconSVG: CourierIconSVGs.inbox,
+        id: 'all',
+        title: 'All',
         tabs: [
           {
-            id: 'tab1',
-            title: 'Tab 1',
+            id: 'all',
+            title: 'All',
             filter: {}
-          },
-          {
-            id: 'tab2',
-            title: 'Tab 2',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab3',
-            title: 'Tab 3',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab4',
-            title: 'Tab 4',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab5',
-            title: 'Tab 5',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab6',
-            title: 'Tab 6',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab7',
-            title: 'Tab 7',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab8',
-            title: 'Tab 8',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab9',
-            title: 'Tab 9',
-            filter: { tags: ['tag'] }
-          },
-          {
-            id: 'tab10',
-            title: 'Tab 10',
-            filter: { tags: ['tag'] }
           }
         ]
       },
       {
-        id: 'archive_feed',
-        title: 'Archive',
-        iconSVG: CourierIconSVGs.archive,
+        id: 'jobs',
+        title: 'Jobs',
         tabs: [
           {
-            id: 'archived',
-            title: 'Archived Messages',
-            filter: {
-              archived: true
-            }
+            id: 'jobs',
+            title: 'Jobs',
+            filter: { tags: ['job'] }
+          }
+        ]
+      },
+      {
+        id: 'my-posts',
+        title: 'My Posts',
+        tabs: [
+          {
+            id: 'all-my-posts',
+            title: 'All',
+            filter: { tags: ['my_post'] }
+          },
+          {
+            id: 'comments',
+            title: 'Comments',
+            filter: { tags: ['comment'] }
+          },
+          {
+            id: 'reactions',
+            title: 'Reactions',
+            filter: { tags: ['reaction'] }
+          },
+          {
+            id: 'reposts',
+            title: 'Reposts',
+            filter: { tags: ['repost'] }
+          }
+        ]
+      },
+      {
+        id: 'mentions',
+        title: 'Mentions',
+        tabs: [
+          {
+            id: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
           }
         ]
       }
@@ -119,9 +107,23 @@
       },
       inbox: {
         header: {
-          feedButton: {
-            unreadIndicator: {
-              backgroundColor: "#8B5CF6"
+          feeds: {
+            button: {
+              unreadCountIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
+            },
+            menu: {
+              animation: {
+                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)'
+              },
+              list: {
+                selectedIcon: {
+                  color: "#8B5CF6"
+                }
+              }
             }
           },
           tabs: {
@@ -133,6 +135,13 @@
               unreadIndicator: {
                 backgroundColor: "#8B5CF6"
               }
+            }
+          },
+          actions: {
+            animation: {
+              transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+              initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
+              visibleTransform: 'translate3d(0, 0, 0) scale(1)'
             }
           }
         },

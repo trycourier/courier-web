@@ -71,8 +71,8 @@ export class CourierInboxOptionMenuItem extends CourierBaseElement {
 
     // Set selected icon color
     const theme = this._theme.getTheme();
-    this._selectionIcon?.updateColor(theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.color ?? 'red');
-    this._selectionIcon?.updateSVG(theme.inbox?.header?.menus?.popup?.list?.selectionIcon?.svg ?? CourierIconSVGs.check);
+    this._selectionIcon?.updateColor(theme.inbox?.header?.feeds?.menu?.list?.selectedIcon?.color ?? 'red');
+    this._selectionIcon?.updateSVG(theme.inbox?.header?.feeds?.menu?.list?.selectedIcon?.svg ?? CourierIconSVGs.check);
 
     // Set item icon color and SVG
     this._itemIcon?.updateColor(this._option.icon?.color ?? 'red');

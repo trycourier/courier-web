@@ -27,9 +27,11 @@
     const theme = {
       inbox: {
         header: {
-          feedButton: {
-            unreadIndicator: {
-              backgroundColor: "#8B5CF6"
+          feeds: {
+            button: {
+              unreadCountIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
             }
           },
           tabs: {
@@ -60,21 +62,64 @@
     // This will force light, dark or system theme mode
     inbox.setMode('light');
 
-    // Set some feeds
+    // Set custom feeds with the specified structure
     inbox.setFeeds([
       {
-        id: 'notifications',
-        title: 'Notifications',
+        id: 'all',
+        title: 'All',
         tabs: [
           {
-            id: 'all-notifications',
+            id: 'all',
             title: 'All',
             filter: {}
+          }
+        ]
+      },
+      {
+        id: 'jobs',
+        title: 'Jobs',
+        tabs: [
+          {
+            id: 'jobs',
+            title: 'Jobs',
+            filter: { tags: ['job'] }
+          }
+        ]
+      },
+      {
+        id: 'my-posts',
+        title: 'My Posts',
+        tabs: [
+          {
+            id: 'all-my-posts',
+            title: 'All',
+            filter: { tags: ['my_post'] }
           },
           {
-            id: 'archived-notifications',
-            title: 'Archived',
-            filter: { archived: true }
+            id: 'comments',
+            title: 'Comments',
+            filter: { tags: ['comment'] }
+          },
+          {
+            id: 'reactions',
+            title: 'Reactions',
+            filter: { tags: ['reaction'] }
+          },
+          {
+            id: 'reposts',
+            title: 'Reposts',
+            filter: { tags: ['repost'] }
+          }
+        ]
+      },
+      {
+        id: 'mentions',
+        title: 'Mentions',
+        tabs: [
+          {
+            id: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
           }
         ]
       }

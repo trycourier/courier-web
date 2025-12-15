@@ -48,12 +48,12 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     const hasMultipleFeeds = this._feeds.length > 1;
     const hoverStyle = hasMultipleFeeds
       ? `${CourierInboxFeedButton.id}:hover {
-        background: ${theme.inbox?.header?.feedButton?.hoverBackgroundColor ?? 'red'};
+        background: ${theme.inbox?.header?.feeds?.button?.hoverBackgroundColor ?? 'red'};
       }`
       : '';
     const activeStyle = hasMultipleFeeds
       ? `${CourierInboxFeedButton.id}:active {
-        background: ${theme.inbox?.header?.feedButton?.activeBackgroundColor ?? 'red'};
+        background: ${theme.inbox?.header?.feeds?.button?.activeBackgroundColor ?? 'red'};
       }`
       : '';
 
@@ -63,7 +63,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
         align-items: center;
         gap: 8px;
         position: relative;
-        transition: ${theme.inbox?.header?.feedButton?.transition ?? 'all 0.2s ease'};
+        transition: ${theme.inbox?.header?.feeds?.button?.transition ?? 'all 0.2s ease'};
         border-radius: 6px;
         padding-top: 4px;
         padding-bottom: 4px;
@@ -89,10 +89,10 @@ export class CourierInboxFeedButton extends CourierBaseElement {
 
       ${CourierInboxFeedButton.id} .title-container h2 {
         margin: 0;
-        font-family: ${theme.inbox?.header?.feedButton?.font?.family ?? 'inherit'};
-        font-size: ${theme.inbox?.header?.feedButton?.font?.size ?? '16px'};
-        font-weight: ${theme.inbox?.header?.feedButton?.font?.weight ?? '500'};
-        color: ${theme.inbox?.header?.feedButton?.font?.color ?? 'red'};
+        font-family: ${theme.inbox?.header?.feeds?.button?.font?.family ?? 'inherit'};
+        font-size: ${theme.inbox?.header?.feeds?.button?.font?.size ?? '16px'};
+        font-weight: ${theme.inbox?.header?.feeds?.button?.font?.weight ?? '500'};
+        color: ${theme.inbox?.header?.feeds?.button?.font?.color ?? 'red'};
       }
 
     `;
@@ -121,7 +121,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
     titleContainer.appendChild(this._titleElement);
 
     // Switch icon
-    const switchIcon = this.theme.inbox?.header?.feedButton?.menuDropDownIcon;
+    const switchIcon = this.theme.inbox?.header?.feeds?.button?.changeFeedIcon;
     this._switchIconElement = new CourierIcon(switchIcon?.color ?? 'red', switchIcon?.svg ?? CourierIconSVGs.chevronDown);
     this._switchIconElement.style.display = this._feeds.length > 1 ? 'flex' : 'none';
     titleContainer.appendChild(this._switchIconElement);
@@ -169,7 +169,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
   private refreshSelectedFeed() {
     if (this._selectedFeed) {
       this._iconElement?.updateSVG(this._selectedFeed.iconSVG ?? CourierIconSVGs.inbox);
-      this._iconElement?.updateColor(this.theme.inbox?.header?.feedButton?.currentFeedIconColor ?? 'red');
+      this._iconElement?.updateColor(this.theme.inbox?.header?.feeds?.button?.selectedFeedIconColor ?? 'red');
       if (this._titleElement) {
         this._titleElement.textContent = this._selectedFeed.title;
       }
@@ -178,7 +178,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
 
   private refreshSwitchIcon() {
     if (this._switchIconElement) {
-      const switchIcon = this.theme.inbox?.header?.feedButton?.menuDropDownIcon;
+      const switchIcon = this.theme.inbox?.header?.feeds?.button?.changeFeedIcon;
       this._switchIconElement.updateSVG(switchIcon?.svg ?? CourierIconSVGs.chevronDown);
       this._switchIconElement.updateColor(switchIcon?.color ?? 'red');
     }

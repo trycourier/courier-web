@@ -26,71 +26,64 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
-    // Set custom feed - single feed with multiple tabs
+    // Set custom feeds with the specified structure
     inbox.setFeeds([
       {
-        id: 'notifications',
-        title: 'Notifications',
+        id: 'all',
+        title: 'All',
         tabs: [
           {
-            id: 'all-messages',
-            title: 'All Messages',
+            id: 'all',
+            title: 'All',
             filter: {}
+          }
+        ]
+      },
+      {
+        id: 'jobs',
+        title: 'Jobs',
+        tabs: [
+          {
+            id: 'jobs',
+            title: 'Jobs',
+            filter: { tags: ['job'] }
+          }
+        ]
+      },
+      {
+        id: 'my-posts',
+        title: 'My Posts',
+        tabs: [
+          {
+            id: 'all-my-posts',
+            title: 'All',
+            filter: { tags: ['my_post'] }
           },
           {
-            id: 'unread',
-            title: 'Unread',
-            filter: { status: 'unread' }
+            id: 'comments',
+            title: 'Comments',
+            filter: { tags: ['comment'] }
           },
           {
-            id: 'important',
-            title: 'Important',
-            filter: { tags: ['important'] }
+            id: 'reactions',
+            title: 'Reactions',
+            filter: { tags: ['reaction'] }
           },
           {
-            id: 'payments',
-            title: 'Payments',
-            filter: { tags: ['payment'] }
-          },
+            id: 'reposts',
+            title: 'Reposts',
+            filter: { tags: ['repost'] }
+          }
+        ]
+      },
+      {
+        id: 'mentions',
+        title: 'Mentions',
+        tabs: [
           {
-            id: 'security',
-            title: 'Security',
-            filter: { tags: ['security'] }
-          },
-          {
-            id: 'team',
-            title: 'Team',
-            filter: { tags: ['team'] }
-          },
-          {
-            id: 'marketing',
-            title: 'Marketing',
-            filter: { tags: ['marketing'] }
-          },
-          {
-            id: 'support',
-            title: 'Support',
-            filter: { tags: ['support'] }
-          },
-          {
-            id: 'system',
-            title: 'System',
-            filter: { tags: ['system'] }
-          },
-          {
-            id: 'social',
-            title: 'Social',
-            filter: { tags: ['social'] }
-          },
-          {
-            id: 'updates',
-            title: 'Updates',
-            filter: { tags: ['update'] }
-          },
-          {
-            id: 'alerts',
-            title: 'Alerts',
-            filter: { tags: ['alert'] }
+            id: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
           }
         ]
       }

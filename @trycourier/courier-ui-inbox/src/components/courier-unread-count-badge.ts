@@ -72,7 +72,7 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
         : tabsTheme?.default?.unreadIndicator;
     } else {
       // Default to "feed" location
-      return theme.inbox?.header?.feedButton?.unreadIndicator;
+      return theme.inbox?.header?.feeds?.button?.unreadCountIndicator;
     }
   }
 
@@ -81,7 +81,7 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
     const inactiveTheme = CourierUnreadCountBadge.getThemePath(theme, location, false);
 
     // Fallback to feed button theme if location-specific theme is not available
-    const fallbackTheme = theme.inbox?.header?.feedButton?.unreadIndicator;
+    const fallbackTheme = theme.inbox?.header?.feeds?.button?.unreadCountIndicator;
 
     return `
       :host {

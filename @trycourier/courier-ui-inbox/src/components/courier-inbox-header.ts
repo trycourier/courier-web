@@ -72,7 +72,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   private getActionOptions(): CourierInboxMenuOption[] {
     const theme = this._themeSubscription.manager.getTheme();
-    const actionMenu = theme.inbox?.header?.menus?.actions;
+    const actionMenu = theme.inbox?.header?.actions;
     return [
       {
         id: 'make_all_read',
@@ -125,7 +125,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
       id: feed.id,
       text: feed.title,
       icon: {
-        color: this.theme.inbox?.header?.feedButton?.currentFeedIconColor ?? 'red',
+        color: this.theme.inbox?.header?.feeds?.button?.selectedFeedIconColor ?? 'red',
         svg: feed.iconSVG ?? CourierIconSVGs.inbox
       },
       onClick: (_: CourierInboxMenuOption) => {
@@ -166,11 +166,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     );
 
     // Set the feed menu up
-    this._feedMenu = new CourierInboxOptionMenu(
-      this._themeSubscription.manager,
-      true, // selectable
-      this.getFeedMenuOptions()
-    );
+    this._feedMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, true, this.getFeedMenuOptions(), 'feed');
     this._feedMenu.setPosition({ left: '12px', top: '51px' });
 
     // Add click handler to feed button to toggle menu (only if multiple feeds)
@@ -182,7 +178,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this.updateFeedButtonInteraction();
 
     // Action menu
-    this._actionMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, false, this.getActionOptions());
+    this._actionMenu = new CourierInboxOptionMenu(this._themeSubscription.manager, false, this.getActionOptions(), 'action');
     this._actionMenu.setPosition({ right: '12px', top: '51px' }); // 51px just looks better
 
     // Action menu button
@@ -234,7 +230,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   private refreshActionMenuButton() {
-    const buttonConfig = this.theme?.inbox?.header?.menus?.actions?.button;
+    const buttonConfig = this.theme?.inbox?.header?.actions?.button;
     this._actionMenuButton?.updateIconSVG(buttonConfig?.icon?.svg ?? CourierIconSVGs.overflow);
     this._actionMenuButton?.updateIconColor(buttonConfig?.icon?.color ?? 'red');
     this._actionMenuButton?.updateBackgroundColor(buttonConfig?.backgroundColor ?? 'transparent');

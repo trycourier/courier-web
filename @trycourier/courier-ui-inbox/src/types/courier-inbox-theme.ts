@@ -38,7 +38,7 @@ export type CourierInboxPopupTheme = {
   animation?: CourierInboxAnimationTheme;
   list?: {
     font?: CourierInboxFontTheme;
-    selectionIcon?: CourierInboxIconTheme;
+    selectedIcon?: CourierInboxIconTheme;
     hoverBackgroundColor?: string;
     activeBackgroundColor?: string;
     divider?: string;
@@ -116,6 +116,8 @@ export type CourierActionMenuTheme = {
   markAllRead?: CourierMenuItemTheme;
   archiveAll?: CourierMenuItemTheme;
   archiveRead?: CourierMenuItemTheme;
+  animation?: CourierInboxAnimationTheme;
+  menu?: CourierInboxPopupTheme;
 }
 
 export type CourierInboxTabsBorderRadius =
@@ -175,20 +177,21 @@ export type CourierInboxTheme = {
       backgroundColor?: string;
       shadow?: string;
       border?: string;
+      feeds?: {
+        button?: {
+          selectedFeedIconColor?: string;
+          font?: CourierInboxFontTheme;
+          changeFeedIcon?: CourierIconTheme;
+          unreadCountIndicator?: CourierInboxUnreadCountIndicatorTheme;
+          hoverBackgroundColor?: string;
+          activeBackgroundColor?: string;
+          transition?: string;
+        }
+        menu?: CourierInboxPopupTheme;
+        tabs?: CourierInboxTabsTheme;
+      }
       tabs?: CourierInboxTabsTheme;
-      feedButton?: {
-        currentFeedIconColor?: string;
-        font?: CourierInboxFontTheme;
-        menuDropDownIcon?: CourierIconTheme;
-        unreadIndicator?: CourierInboxUnreadCountIndicatorTheme;
-        hoverBackgroundColor?: string;
-        activeBackgroundColor?: string;
-        transition?: string;
-      }
-      menus?: {
-        popup?: CourierInboxPopupTheme;
-        actions?: CourierActionMenuTheme;
-      }
+      actions?: CourierActionMenuTheme
     }
     list?: {
       backgroundColor?: string;
@@ -235,6 +238,109 @@ export const defaultLightTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.white[500],
       shadow: `none`,
       border: `1px solid ${CourierColors.gray[500]}`,
+      feeds: {
+        button: {
+          selectedFeedIconColor: CourierColors.black[500],
+          hoverBackgroundColor: CourierColors.gray[200],
+          activeBackgroundColor: CourierColors.gray[500],
+          transition: 'all 0.2s ease',
+          font: {
+            color: CourierColors.black[500],
+            family: undefined,
+            size: '16px'
+          },
+          changeFeedIcon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSVGs.chevronDown
+          },
+          unreadCountIndicator: {
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.blue[500],
+            borderRadius: '4px',
+            padding: '2px 6px',
+          }
+        },
+        menu: {
+          backgroundColor: CourierColors.white[500],
+          border: `1px solid ${CourierColors.gray[500]}`,
+          borderRadius: '6px',
+          shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
+          list: {
+            hoverBackgroundColor: CourierColors.gray[200],
+            activeBackgroundColor: CourierColors.gray[500],
+            divider: `none`,
+            font: {
+              color: CourierColors.black[500],
+              family: undefined,
+              size: '14px'
+            },
+            selectedIcon: {
+              color: CourierColors.black[500],
+              svg: CourierIconSVGs.check
+            }
+          }
+        },
+        tabs: {
+          borderRadius: {
+            topLeft: '4px',
+            topRight: '4px'
+          },
+          transition: 'all 0.2s ease',
+          default: {
+            indicatorHeight: '1px',
+            indicatorColor: 'transparent',
+            backgroundColor: 'transparent',
+            hoverBackgroundColor: CourierColors.gray[200],
+            activeBackgroundColor: CourierColors.gray[500],
+            font: {
+              color: CourierColors.gray[600],
+              family: undefined,
+              size: '14px'
+            },
+            unreadIndicator: {
+              font: {
+                color: CourierColors.gray[600],
+                family: undefined,
+                size: '12px'
+              },
+              backgroundColor: CourierColors.black[500_10],
+              borderRadius: '4px',
+              padding: '2px 6px',
+            }
+          },
+          selected: {
+            indicatorHeight: '1px',
+            indicatorColor: CourierColors.blue[500],
+            backgroundColor: 'transparent',
+            hoverBackgroundColor: CourierColors.gray[200],
+            activeBackgroundColor: CourierColors.gray[500],
+            font: {
+              color: CourierColors.blue[500],
+              family: undefined,
+              size: '14px'
+            },
+            unreadIndicator: {
+              font: {
+                color: CourierColors.white[500],
+                family: undefined,
+                size: '12px'
+              },
+              backgroundColor: CourierColors.blue[500],
+              borderRadius: '4px',
+              padding: '2px 6px',
+            }
+          }
+        }
+      },
       tabs: {
         borderRadius: {
           topLeft: '4px',
@@ -286,89 +392,42 @@ export const defaultLightTheme: CourierInboxTheme = {
           }
         }
       },
-      feedButton: {
-        currentFeedIconColor: CourierColors.black[500],
-        hoverBackgroundColor: CourierColors.gray[200],
-        activeBackgroundColor: CourierColors.gray[500],
-        transition: 'all 0.2s ease',
-        font: {
-          color: CourierColors.black[500],
-          family: undefined,
-          size: '16px'
-        },
-        menuDropDownIcon: {
-          color: CourierColors.black[500],
-          svg: CourierIconSVGs.chevronDown
-        },
-        unreadIndicator: {
-          font: {
-            color: CourierColors.white[500],
-            family: undefined,
-            size: '12px'
+      actions: {
+        button: {
+          icon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSVGs.overflow
           },
-          backgroundColor: CourierColors.blue[500],
-          borderRadius: '4px',
-          padding: '2px 6px',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.gray[200],
+          activeBackgroundColor: CourierColors.gray[500],
         },
-      },
-      menus: {
-        popup: {
-          backgroundColor: CourierColors.white[500],
-          border: `1px solid ${CourierColors.gray[500]}`,
-          borderRadius: '6px',
-          shadow: `0px 4px 8px -2px ${CourierColors.gray[500]}`,
-          animation: {
-            transition: 'none',
-            initialTransform: 'translate3d(0, 0, 0)',
-            visibleTransform: 'translate3d(0, 0, 0)'
+        markAllRead: {
+          icon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSVGs.read
           },
-          list: {
-            hoverBackgroundColor: CourierColors.gray[200],
-            activeBackgroundColor: CourierColors.gray[500],
-            divider: `none`,
-            font: {
-              color: CourierColors.black[500],
-              family: undefined,
-              size: '14px'
-            },
-            selectionIcon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.check
-            }
-          }
+          text: 'Read All'
         },
-        actions: {
-          button: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.overflow
-            },
-            backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.gray[200],
-            activeBackgroundColor: CourierColors.gray[500],
+        archiveAll: {
+          icon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSVGs.archive
           },
-          markAllRead: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.read
-            },
-            text: 'Read All'
-          },
-          archiveAll: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.archive
-            },
-            text: 'Archive All'
-          },
-          archiveRead: {
-            icon: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.archiveRead
-            },
-            text: 'Archive Read'
-          }
+          text: 'Archive All'
         },
+        archiveRead: {
+          icon: {
+            color: CourierColors.black[500],
+            svg: CourierIconSVGs.archiveRead
+          },
+          text: 'Archive Read'
+        },
+        animation: {
+          transition: 'none',
+          initialTransform: 'translate3d(0, 0, 0)',
+          visibleTransform: 'translate3d(0, 0, 0)'
+        }
       }
     },
     list: {
@@ -525,6 +584,109 @@ export const defaultDarkTheme: CourierInboxTheme = {
       backgroundColor: CourierColors.black[500],
       shadow: `none`,
       border: `1px solid ${CourierColors.gray[400]}`,
+      feeds: {
+        button: {
+          selectedFeedIconColor: CourierColors.white[500],
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20],
+          transition: 'all 0.2s ease',
+          font: {
+            color: CourierColors.white[500],
+            family: undefined,
+            size: '16px'
+          },
+          changeFeedIcon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSVGs.chevronDown
+          },
+          unreadCountIndicator: {
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '12px'
+            },
+            backgroundColor: CourierColors.blue[500],
+            borderRadius: '4px',
+            padding: '3px 8px',
+          }
+        },
+        menu: {
+          backgroundColor: CourierColors.black[500],
+          border: `1px solid ${CourierColors.gray[400]}`,
+          borderRadius: '6px',
+          shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
+          animation: {
+            transition: 'none',
+            initialTransform: 'translate3d(0, 0, 0)',
+            visibleTransform: 'translate3d(0, 0, 0)'
+          },
+          list: {
+            hoverBackgroundColor: CourierColors.white[500_10],
+            activeBackgroundColor: CourierColors.white[500_20],
+            divider: `none`,
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '14px'
+            },
+            selectedIcon: {
+              color: CourierColors.white[500],
+              svg: CourierIconSVGs.check
+            }
+          }
+        },
+        tabs: {
+          borderRadius: {
+            topLeft: '4px',
+            topRight: '4px'
+          },
+          transition: 'all 0.2s ease',
+          default: {
+            indicatorHeight: '1px',
+            indicatorColor: 'transparent',
+            backgroundColor: 'transparent',
+            hoverBackgroundColor: CourierColors.white[500_10],
+            activeBackgroundColor: CourierColors.white[500_20],
+            font: {
+              color: CourierColors.white[500],
+              family: undefined,
+              size: '14px'
+            },
+            unreadIndicator: {
+              font: {
+                color: CourierColors.white[500],
+                family: undefined,
+                size: '12px'
+              },
+              backgroundColor: CourierColors.white[500_10],
+              borderRadius: '4px',
+              padding: '3px 8px',
+            }
+          },
+          selected: {
+            indicatorHeight: '1px',
+            indicatorColor: CourierColors.blue[500],
+            backgroundColor: 'transparent',
+            hoverBackgroundColor: CourierColors.white[500_10],
+            activeBackgroundColor: CourierColors.white[500_20],
+            font: {
+              color: CourierColors.blue[500],
+              family: undefined,
+              size: '14px'
+            },
+            unreadIndicator: {
+              font: {
+                color: CourierColors.white[500],
+                family: undefined,
+                size: '12px'
+              },
+              backgroundColor: CourierColors.blue[500],
+              borderRadius: '4px',
+              padding: '3px 8px',
+            }
+          }
+        }
+      },
       tabs: {
         borderRadius: {
           topLeft: '4px',
@@ -576,89 +738,42 @@ export const defaultDarkTheme: CourierInboxTheme = {
           }
         }
       },
-      feedButton: {
-        currentFeedIconColor: CourierColors.white[500],
-        hoverBackgroundColor: CourierColors.white[500_10],
-        activeBackgroundColor: CourierColors.white[500_20],
-        transition: 'all 0.2s ease',
-        font: {
-          color: CourierColors.white[500],
-          family: undefined,
-          size: '16px'
-        },
-        menuDropDownIcon: {
-          color: CourierColors.white[500],
-          svg: CourierIconSVGs.chevronDown
-        },
-        unreadIndicator: {
-          font: {
+      actions: {
+        button: {
+          icon: {
             color: CourierColors.white[500],
-            family: undefined,
-            size: '12px'
+            svg: CourierIconSVGs.overflow
           },
-          backgroundColor: CourierColors.blue[500],
-          borderRadius: '4px',
-          padding: '3px 8px',
+          backgroundColor: 'transparent',
+          hoverBackgroundColor: CourierColors.white[500_10],
+          activeBackgroundColor: CourierColors.white[500_20],
         },
-      },
-      menus: {
-        popup: {
-          backgroundColor: CourierColors.black[500],
-          border: `1px solid ${CourierColors.gray[400]}`,
-          borderRadius: '6px',
-          shadow: `0px 4px 8px -2px ${CourierColors.white[500_20]}`,
-          animation: {
-            transition: 'none',
-            initialTransform: 'translate3d(0, 0, 0)',
-            visibleTransform: 'translate3d(0, 0, 0)'
+        markAllRead: {
+          icon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSVGs.read
           },
-          list: {
-            hoverBackgroundColor: CourierColors.white[500_10],
-            activeBackgroundColor: CourierColors.white[500_20],
-            divider: `none`,
-            font: {
-              color: CourierColors.white[500],
-              family: undefined,
-              size: '14px'
-            },
-            selectionIcon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.check
-            }
-          }
+          text: 'Read All'
         },
-        actions: {
-          button: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.overflow
-            },
-            backgroundColor: 'transparent',
-            hoverBackgroundColor: CourierColors.white[500_10],
-            activeBackgroundColor: CourierColors.white[500_20],
+        archiveAll: {
+          icon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSVGs.archive
           },
-          markAllRead: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.read
-            },
-            text: 'Read All'
-          },
-          archiveAll: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.archive
-            },
-            text: 'Archive All'
-          },
-          archiveRead: {
-            icon: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.archiveRead
-            },
-            text: 'Archive Read'
-          }
+          text: 'Archive All'
         },
+        archiveRead: {
+          icon: {
+            color: CourierColors.white[500],
+            svg: CourierIconSVGs.archiveRead
+          },
+          text: 'Archive Read'
+        },
+        animation: {
+          transition: 'none',
+          initialTransform: 'translate3d(0, 0, 0)',
+          visibleTransform: 'translate3d(0, 0, 0)'
+        }
       }
     },
     list: {
@@ -811,6 +926,86 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       header: {
         ...defaultTheme.inbox?.header,
         ...theme.inbox?.header,
+        feeds: {
+          ...defaultTheme.inbox?.header?.feeds,
+          ...theme.inbox?.header?.feeds,
+          button: {
+            ...defaultTheme.inbox?.header?.feeds?.button,
+            ...theme.inbox?.header?.feeds?.button,
+            font: {
+              ...defaultTheme.inbox?.header?.feeds?.button?.font,
+              ...theme.inbox?.header?.feeds?.button?.font
+            },
+            changeFeedIcon: {
+              ...defaultTheme.inbox?.header?.feeds?.button?.changeFeedIcon,
+              ...theme.inbox?.header?.feeds?.button?.changeFeedIcon
+            },
+            unreadCountIndicator: {
+              ...defaultTheme.inbox?.header?.feeds?.button?.unreadCountIndicator,
+              ...theme.inbox?.header?.feeds?.button?.unreadCountIndicator,
+              font: {
+                ...defaultTheme.inbox?.header?.feeds?.button?.unreadCountIndicator?.font,
+                ...theme.inbox?.header?.feeds?.button?.unreadCountIndicator?.font
+              }
+            }
+          },
+          menu: {
+            ...defaultTheme.inbox?.header?.feeds?.menu,
+            ...theme.inbox?.header?.feeds?.menu,
+            animation: {
+              ...defaultTheme.inbox?.header?.feeds?.menu?.animation,
+              ...theme.inbox?.header?.feeds?.menu?.animation
+            },
+            list: {
+              ...defaultTheme.inbox?.header?.feeds?.menu?.list,
+              ...theme.inbox?.header?.feeds?.menu?.list,
+              font: {
+                ...defaultTheme.inbox?.header?.feeds?.menu?.list?.font,
+                ...theme.inbox?.header?.feeds?.menu?.list?.font
+              },
+              selectedIcon: {
+                ...defaultTheme.inbox?.header?.feeds?.menu?.list?.selectedIcon,
+                ...theme.inbox?.header?.feeds?.menu?.list?.selectedIcon
+              }
+            }
+          },
+          tabs: {
+            ...defaultTheme.inbox?.header?.feeds?.tabs,
+            ...theme.inbox?.header?.feeds?.tabs,
+            default: {
+              ...defaultTheme.inbox?.header?.feeds?.tabs?.default,
+              ...theme.inbox?.header?.feeds?.tabs?.default,
+              font: {
+                ...defaultTheme.inbox?.header?.feeds?.tabs?.default?.font,
+                ...theme.inbox?.header?.feeds?.tabs?.default?.font
+              },
+              unreadIndicator: {
+                ...defaultTheme.inbox?.header?.feeds?.tabs?.default?.unreadIndicator,
+                ...theme.inbox?.header?.feeds?.tabs?.default?.unreadIndicator,
+                font: {
+                  ...defaultTheme.inbox?.header?.feeds?.tabs?.default?.unreadIndicator?.font,
+                  ...theme.inbox?.header?.feeds?.tabs?.default?.unreadIndicator?.font
+                }
+              }
+            },
+            selected: {
+              ...defaultTheme.inbox?.header?.feeds?.tabs?.selected,
+              ...theme.inbox?.header?.feeds?.tabs?.selected,
+              font: {
+                ...defaultTheme.inbox?.header?.feeds?.tabs?.selected?.font,
+                ...theme.inbox?.header?.feeds?.tabs?.selected?.font
+              },
+              unreadIndicator: {
+                ...defaultTheme.inbox?.header?.feeds?.tabs?.selected?.unreadIndicator,
+                ...theme.inbox?.header?.feeds?.tabs?.selected?.unreadIndicator,
+                font: {
+                  ...defaultTheme.inbox?.header?.feeds?.tabs?.selected?.unreadIndicator?.font,
+                  ...theme.inbox?.header?.feeds?.tabs?.selected?.unreadIndicator?.font
+                }
+              }
+            }
+          }
+        },
         tabs: {
           ...defaultTheme.inbox?.header?.tabs,
           ...theme.inbox?.header?.tabs,
@@ -847,68 +1042,44 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             }
           }
         },
-        feedButton: {
-          ...defaultTheme.inbox?.header?.feedButton,
-          ...theme.inbox?.header?.feedButton,
-          unreadIndicator: {
-            ...defaultTheme.inbox?.header?.feedButton?.unreadIndicator,
-            ...theme.inbox?.header?.feedButton?.unreadIndicator,
-            font: {
-              ...defaultTheme.inbox?.header?.feedButton?.unreadIndicator?.font,
-              ...theme.inbox?.header?.feedButton?.unreadIndicator?.font
+        actions: {
+          ...defaultTheme.inbox?.header?.actions,
+          ...theme.inbox?.header?.actions,
+          button: {
+            ...defaultTheme.inbox?.header?.actions?.button,
+            ...theme.inbox?.header?.actions?.button,
+            icon: {
+              ...defaultTheme.inbox?.header?.actions?.button?.icon,
+              ...theme.inbox?.header?.actions?.button?.icon
             }
           },
-        },
-        menus: {
-          ...defaultTheme.inbox?.header?.menus,
-          ...theme.inbox?.header?.menus,
-          popup: {
-            ...defaultTheme.inbox?.header?.menus?.popup,
-            ...theme.inbox?.header?.menus?.popup,
-            animation: {
-              ...defaultTheme.inbox?.header?.menus?.popup?.animation,
-              ...theme.inbox?.header?.menus?.popup?.animation
-            },
-            list: {
-              ...defaultTheme.inbox?.header?.menus?.popup?.list,
-              ...theme.inbox?.header?.menus?.popup?.list,
-              font: {
-                ...defaultTheme.inbox?.header?.menus?.popup?.list?.font,
-                ...theme.inbox?.header?.menus?.popup?.list?.font
-              },
-              selectionIcon: {
-                ...defaultTheme.inbox?.header?.menus?.popup?.list?.selectionIcon,
-                ...theme.inbox?.header?.menus?.popup?.list?.selectionIcon
-              }
+          markAllRead: {
+            ...defaultTheme.inbox?.header?.actions?.markAllRead,
+            ...theme.inbox?.header?.actions?.markAllRead,
+            icon: {
+              ...defaultTheme.inbox?.header?.actions?.markAllRead?.icon,
+              ...theme.inbox?.header?.actions?.markAllRead?.icon
             }
           },
-          actions: {
-            ...defaultTheme.inbox?.header?.menus?.actions,
-            ...theme.inbox?.header?.menus?.actions,
-            markAllRead: {
-              ...defaultTheme.inbox?.header?.menus?.actions?.markAllRead,
-              ...theme.inbox?.header?.menus?.actions?.markAllRead,
-              icon: {
-                ...defaultTheme.inbox?.header?.menus?.actions?.markAllRead?.icon,
-                ...theme.inbox?.header?.menus?.actions?.markAllRead?.icon
-              }
-            },
-            archiveAll: {
-              ...defaultTheme.inbox?.header?.menus?.actions?.archiveAll,
-              ...theme.inbox?.header?.menus?.actions?.archiveAll,
-              icon: {
-                ...defaultTheme.inbox?.header?.menus?.actions?.archiveAll?.icon,
-                ...theme.inbox?.header?.menus?.actions?.archiveAll?.icon
-              }
-            },
-            archiveRead: {
-              ...defaultTheme.inbox?.header?.menus?.actions?.archiveRead,
-              ...theme.inbox?.header?.menus?.actions?.archiveRead,
-              icon: {
-                ...defaultTheme.inbox?.header?.menus?.actions?.archiveRead?.icon,
-                ...theme.inbox?.header?.menus?.actions?.archiveRead?.icon
-              }
+          archiveAll: {
+            ...defaultTheme.inbox?.header?.actions?.archiveAll,
+            ...theme.inbox?.header?.actions?.archiveAll,
+            icon: {
+              ...defaultTheme.inbox?.header?.actions?.archiveAll?.icon,
+              ...theme.inbox?.header?.actions?.archiveAll?.icon
             }
+          },
+          archiveRead: {
+            ...defaultTheme.inbox?.header?.actions?.archiveRead,
+            ...theme.inbox?.header?.actions?.archiveRead,
+            icon: {
+              ...defaultTheme.inbox?.header?.actions?.archiveRead?.icon,
+              ...theme.inbox?.header?.actions?.archiveRead?.icon
+            }
+          },
+          animation: {
+            ...defaultTheme.inbox?.header?.actions?.animation,
+            ...theme.inbox?.header?.actions?.animation
           }
         }
       },

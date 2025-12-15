@@ -24,83 +24,38 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
-    // Set custom feeds - 4 feeds with different numbers of tabs
+    // Set custom feeds with the specified structure
     inbox.setFeeds([
       {
-        id: 'notifications',
-        title: 'Notifications',
+        id: 'all',
+        title: 'All',
         tabs: [
           {
-            id: 'all-notifications',
+            id: 'all',
             title: 'All',
             filter: {}
-          },
-          {
-            id: 'unread-notifications',
-            title: 'Unread',
-            filter: { status: 'unread' }
           }
         ]
       },
       {
-        id: 'orders',
-        title: 'Orders',
+        id: 'jobs',
+        title: 'Jobs',
         tabs: [
           {
-            id: 'all-orders',
-            title: 'All Orders',
-            filter: { tags: ['order'] }
-          },
-          {
-            id: 'pending-orders',
-            title: 'Pending',
-            filter: { tags: ['order', 'pending'] }
-          },
-          {
-            id: 'processing-orders',
-            title: 'Processing',
-            filter: { tags: ['order', 'processing'] }
-          },
-          {
-            id: 'shipped-orders',
-            title: 'Shipped',
-            filter: { tags: ['order', 'shipped'] }
-          },
-          {
-            id: 'delivered-orders',
-            title: 'Delivered',
-            filter: { tags: ['order', 'delivered'] }
+            id: 'jobs',
+            title: 'Jobs',
+            filter: { tags: ['job'] }
           }
         ]
       },
       {
-        id: 'activity',
-        title: 'Activity',
+        id: 'my-posts',
+        title: 'My Posts',
         tabs: [
           {
-            id: 'all-activity',
-            title: 'All Activity',
-            filter: {}
-          },
-          {
-            id: 'today',
-            title: 'Today',
-            filter: {}
-          },
-          {
-            id: 'this-week',
-            title: 'This Week',
-            filter: {}
-          },
-          {
-            id: 'this-month',
-            title: 'This Month',
-            filter: {}
-          },
-          {
-            id: 'mentions',
-            title: 'Mentions',
-            filter: { tags: ['mention'] }
+            id: 'all-my-posts',
+            title: 'All',
+            filter: { tags: ['my_post'] }
           },
           {
             id: 'comments',
@@ -108,75 +63,25 @@
             filter: { tags: ['comment'] }
           },
           {
-            id: 'likes',
-            title: 'Likes',
-            filter: { tags: ['like'] }
+            id: 'reactions',
+            title: 'Reactions',
+            filter: { tags: ['reaction'] }
+          },
+          {
+            id: 'reposts',
+            title: 'Reposts',
+            filter: { tags: ['repost'] }
           }
         ]
       },
       {
-        id: 'comprehensive',
-        title: 'Comprehensive',
+        id: 'mentions',
+        title: 'Mentions',
         tabs: [
           {
-            id: 'all-messages',
-            title: 'All Messages',
-            filter: {}
-          },
-          {
-            id: 'unread',
-            title: 'Unread',
-            filter: { status: 'unread' }
-          },
-          {
-            id: 'important',
-            title: 'Important',
-            filter: { tags: ['important'] }
-          },
-          {
-            id: 'payments',
-            title: 'Payments',
-            filter: { tags: ['payment'] }
-          },
-          {
-            id: 'security',
-            title: 'Security',
-            filter: { tags: ['security'] }
-          },
-          {
-            id: 'team',
-            title: 'Team',
-            filter: { tags: ['team'] }
-          },
-          {
-            id: 'marketing',
-            title: 'Marketing',
-            filter: { tags: ['marketing'] }
-          },
-          {
-            id: 'support',
-            title: 'Support',
-            filter: { tags: ['support'] }
-          },
-          {
-            id: 'system',
-            title: 'System',
-            filter: { tags: ['system'] }
-          },
-          {
-            id: 'social',
-            title: 'Social',
-            filter: { tags: ['social'] }
-          },
-          {
-            id: 'updates',
-            title: 'Updates',
-            filter: { tags: ['update'] }
-          },
-          {
-            id: 'alerts',
-            title: 'Alerts',
-            filter: { tags: ['alert'] }
+            id: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
           }
         ]
       }
