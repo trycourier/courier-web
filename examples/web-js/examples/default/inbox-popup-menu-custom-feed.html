@@ -86,8 +86,35 @@
             filter: { tags: ['mention'] }
           }
         ]
+      },
+      {
+        id: 'other',
+        title: 'Other',
+        tabs: [
+          {
+            id: 'read',
+            title: 'Read',
+            filter: { status: 'read' }
+          },
+          {
+            id: 'unread',
+            title: 'Unread',
+            filter: { status: 'unread' }
+          },
+          {
+            id: 'archived',
+            title: 'Archived',
+            filter: { archived: true }
+          }
+        ]
       }
     ]);
+
+    // Set actions - only enable readAll
+    inbox.setActions(['archiveRead', 'archiveAll', 'readAll']);
+
+    // Set list item actions - only enable read_unread
+    inbox.setListItemActions(['archive_unarchive', 'read_unread']);
 
     // Handle message clicks
     inbox.onMessageClick(({ message, index }) => {

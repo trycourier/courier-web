@@ -5,6 +5,7 @@ import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
+import { CourierInboxListItemAction, defaultListItemActions } from "../types/inbox-defaults";
 
 export class CourierInboxListItem extends CourierBaseElement {
 
@@ -18,6 +19,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _message: InboxMessage | null = null;
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
+  private _listItemActions: CourierInboxListItemAction[] = defaultListItemActions();
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
 
   // Elements
@@ -41,13 +43,16 @@ export class CourierInboxListItem extends CourierBaseElement {
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
   private onItemVisible: ((message: InboxMessage) => void) | null = null;
 
-  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, _canLongPress: boolean) {
+  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, _canLongPress: boolean, listItemActions?: CourierInboxListItemAction[]) {
     super();
     this._canClick = canClick;
     // this._canLongPress = canLongPress;
     this._themeManager = themeManager;
     this._theme = themeManager.getTheme();
     this._isMobile = 'ontouchstart' in window;
+    if (listItemActions) {
+      this._listItemActions = listItemActions;
+    }
     this.render();
     this._setupIntersectionObserver();
   }
@@ -334,40 +339,47 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     const isArchived = !!this._message?.archived;
 
-    // Always add read/unread option
-    options.push({
-      id: this._message?.read ? 'unread' : 'read',
-      icon: {
-        svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
-        color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
-      },
-      onClick: () => {
-        if (this._message) {
-          if (this._message.read) {
-            CourierInboxDatastore.shared.unreadMessage({ message: this._message });
-          } else {
-            CourierInboxDatastore.shared.readMessage({ message: this._message });
-          }
-        }
-      },
-    });
-
-    options.push({
-      id: isArchived ? 'unarchive' : 'archive',
-      icon: {
-        svg: isArchived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
-        color: isArchived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
-      },
-      onClick: () => {
-        if (this._message) {
-          if (isArchived) {
-            CourierInboxDatastore.shared.unarchiveMessage({ message: this._message });
-          } else {
-            CourierInboxDatastore.shared.archiveMessage({ message: this._message });
-          }
-        }
-      },
-    });
+    // Iterate through list item actions in the order they were specified
+    for (const action of this._listItemActions) {
+      switch (action) {
+        case 'read_unread':
+          options.push({
+            id: this._message?.read ? 'unread' : 'read',
+            icon: {
+              svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
+              color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
+            },
+            onClick: () => {
+              if (this._message) {
+                if (this._message.read) {
+                  CourierInboxDatastore.shared.unreadMessage({ message: this._message });
+                } else {
+                  CourierInboxDatastore.shared.readMessage({ message: this._message });
+                }
+              }
+            },
+          });
+          break;
+        case 'archive_unarchive':
+          options.push({
+            id: isArchived ? 'unarchive' : 'archive',
+            icon: {
+              svg: isArchived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
+              color: isArchived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+            },
+            onClick: () => {
+              if (this._message) {
+                if (isArchived) {
+                  CourierInboxDatastore.shared.unarchiveMessage({ message: this._message });
+                } else {
+                  CourierInboxDatastore.shared.archiveMessage({ message: this._message });
+                }
+              }
+            },
+          });
+          break;
+      }
+    }
 
     return options;
   }
@@ -375,9 +387,15 @@ export class CourierInboxListItem extends CourierBaseElement {
   // Menu visibility helpers
   private _showMenu(): void {
     const menu = this._theme.inbox?.list?.item?.menu;
+    const menuOptions = this._getMenuOptions();
+
+    // Don't show menu if there are no actions enabled
+    if (menuOptions.length === 0) {
+      return;
+    }
 
     if (menu && menu.enabled && this._menu && this._timeElement) {
-      this._menu.setOptions(this._getMenuOptions());
+      this._menu.setOptions(menuOptions);
       this._menu.show();
       this._timeElement.style.opacity = '0';
     }

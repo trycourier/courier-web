@@ -42,9 +42,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     this._onMenuOpen = onMenuOpen;
     this._menuType = menuType;
 
-    // Initial state: hidden
-    this.style.display = 'none';
-
     // Handle the theme change
     this._themeSubscription = themeManager.subscribe((_) => {
       this.refreshTheme();
@@ -105,9 +102,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         transition: ${transition?.transition ?? 'all 0.2s ease'};
         transform: ${initialTransform};
         will-change: transform, opacity;
+        display: none;
       }
 
       :host(.visible) {
+        display: block;
         opacity: 1;
         pointer-events: auto;
         transform: ${visibleTransform};
@@ -233,7 +232,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
   private showMenu() {
     // Set display first
-    this.style.display = 'block';
     this.classList.remove('visible');
 
     // Trigger transition on next frame

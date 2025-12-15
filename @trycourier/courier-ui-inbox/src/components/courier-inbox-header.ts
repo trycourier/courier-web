@@ -7,6 +7,7 @@ import { CourierInboxFeed, CourierInboxTab } from "../types/inbox-data-set";
 import { CourierInboxTabs } from "./courier-inbox-tabs";
 import { CourierInboxMenuOption, CourierInboxOptionMenu } from "./courier-inbox-option-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
+import { CourierInboxHeaderAction, defaultActions } from "../types/inbox-defaults";
 
 export class CourierInboxHeader extends CourierFactoryElement {
 
@@ -20,6 +21,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   // State
   private _feeds: CourierInboxFeed[] = [];
   private _currentFeedId?: string;
+  private _actions: CourierInboxHeaderAction[] = defaultActions();
 
   // Components
   private _feedButton?: CourierInboxFeedButton;
@@ -42,6 +44,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
+    actions?: CourierInboxHeaderAction[],
     onFeedChange: (feed: CourierInboxFeed) => void,
     onFeedReselected: (feed: CourierInboxFeed) => void,
     onTabChange: (tab: CourierInboxTab) => void,
@@ -53,6 +56,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this._themeSubscription = props.themeManager.subscribe((_) => {
       this.refreshTheme();
     });
+
+    // Set actions
+    if (props.actions) {
+      this._actions = props.actions;
+    }
 
     // Set the callbacks
     this._onFeedChange = props.onFeedChange;
@@ -73,41 +81,54 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private getActionOptions(): CourierInboxMenuOption[] {
     const theme = this._themeSubscription.manager.getTheme();
     const actionMenu = theme.inbox?.header?.actions;
-    return [
-      {
-        id: 'make_all_read',
-        text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
-        icon: {
-          color: actionMenu?.markAllRead?.icon?.color ?? 'red',
-          svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
-        },
-        onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.readAllMessages();
-        }
-      },
-      {
-        id: 'archive_all',
-        text: actionMenu?.archiveAll?.text ?? 'Archive All',
-        icon: {
-          color: actionMenu?.archiveAll?.icon?.color ?? 'red',
-          svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
-        },
-        onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveAllMessages();
-        }
-      },
-      {
-        id: 'archive_read',
-        text: actionMenu?.archiveRead?.text ?? 'Archive Read',
-        icon: {
-          color: actionMenu?.archiveRead?.icon?.color ?? 'red',
-          svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
-        },
-        onClick: (_: CourierInboxMenuOption) => {
-          CourierInboxDatastore.shared.archiveReadMessages();
-        }
+    const options: CourierInboxMenuOption[] = [];
+
+    // Iterate through actions in the order they were specified
+    for (const action of this._actions) {
+      switch (action) {
+        case 'readAll':
+          options.push({
+            id: 'make_all_read',
+            text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
+            icon: {
+              color: actionMenu?.markAllRead?.icon?.color ?? 'red',
+              svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
+            },
+            onClick: (_: CourierInboxMenuOption) => {
+              CourierInboxDatastore.shared.readAllMessages();
+            }
+          });
+          break;
+        case 'archiveAll':
+          options.push({
+            id: 'archive_all',
+            text: actionMenu?.archiveAll?.text ?? 'Archive All',
+            icon: {
+              color: actionMenu?.archiveAll?.icon?.color ?? 'red',
+              svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
+            },
+            onClick: (_: CourierInboxMenuOption) => {
+              CourierInboxDatastore.shared.archiveAllMessages();
+            }
+          });
+          break;
+        case 'archiveRead':
+          options.push({
+            id: 'archive_read',
+            text: actionMenu?.archiveRead?.text ?? 'Archive Read',
+            icon: {
+              color: actionMenu?.archiveRead?.icon?.color ?? 'red',
+              svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
+            },
+            onClick: (_: CourierInboxMenuOption) => {
+              CourierInboxDatastore.shared.archiveReadMessages();
+            }
+          });
+          break;
       }
-    ];
+    }
+
+    return options;
   }
 
   private refreshTheme() {
@@ -118,6 +139,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
     this.refreshActionMenuButton();
     this._actionMenu?.setOptions(this.getActionOptions());
     this._feedMenu?.setOptions(this.getFeedMenuOptions());
+
+    // Update action menu button visibility
+    if (this._actionMenuButton) {
+      this._actionMenuButton.style.display = this._actions.length > 0 ? '' : 'none';
+    }
+    if (this._actionMenu) {
+      this._actionMenu.style.display = this._actions.length > 0 ? '' : 'none';
+    }
   }
 
   private getFeedMenuOptions(): CourierInboxMenuOption[] {
@@ -204,9 +233,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
     headerContent.appendChild(titleSection);
     headerContent.appendChild(spacer);
 
-    // Add action menu button and menu
-    headerContent.appendChild(this._actionMenuButton);
-    headerContent.appendChild(this._actionMenu);
+    // Add action menu button and menu only if there are actions
+    if (this._actions.length > 0) {
+      headerContent.appendChild(this._actionMenuButton);
+      headerContent.appendChild(this._actionMenu);
+    }
 
     // Add feed menu if it exists (for multiple feeds)
     headerContent.appendChild(this._feedMenu);
@@ -278,6 +309,19 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Update feed button interaction based on number of feeds
     this.updateFeedButtonInteraction();
+  }
+
+  public setActions(actions: CourierInboxHeaderAction[]) {
+    this._actions = actions;
+    this._actionMenu?.setOptions(this.getActionOptions());
+
+    // Show/hide action menu button based on whether there are actions
+    if (this._actionMenuButton) {
+      this._actionMenuButton.style.display = this._actions.length > 0 ? '' : 'none';
+    }
+    if (this._actionMenu) {
+      this._actionMenu.style.display = this._actions.length > 0 ? '' : 'none';
+    }
   }
 
   public selectFeed(feedId: string, tabId: string) {

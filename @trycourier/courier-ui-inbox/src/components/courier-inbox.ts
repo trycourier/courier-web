@@ -1,13 +1,14 @@
 import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
-import { CourierBaseElement, CourierComponentThemeMode, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxFeed, CourierInboxTab, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
 import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
+import { CourierInboxHeaderAction, CourierInboxListItemAction, defaultFeeds, defaultActions, defaultListItemActions } from "../types/inbox-defaults";
 
 export class CourierInbox extends CourierBaseElement {
 
@@ -16,7 +17,7 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   // State
-  private _currentFeedId: string = CourierInbox.defaultFeeds()[0].id;
+  private _currentFeedId: string = defaultFeeds()[0].id;
   private _feedTabMap: Map<string, string> = new Map();
 
   /** Returns the current feed type. */
@@ -34,37 +35,6 @@ export class CourierInbox extends CourierBaseElement {
     return this._feedTabMap.get(feedId) ?? 'unknown_tab';
   }
 
-  /** Returns the default feeds for the inbox. */
-  public static defaultFeeds(): CourierInboxFeed[] {
-    return [
-      {
-        id: 'inbox_feed',
-        title: 'Inbox',
-        iconSVG: CourierIconSVGs.inbox,
-        tabs: [
-          {
-            id: 'all_messages',
-            title: 'All Messages',
-            filter: {}
-          }
-        ]
-      },
-      {
-        id: 'archive_feed',
-        title: 'Archive',
-        iconSVG: CourierIconSVGs.archive,
-        tabs: [
-          {
-            id: 'archived_messages',
-            title: 'Archived Messages',
-            filter: {
-              archived: true
-            }
-          }
-        ]
-      }
-    ];
-  }
 
   /** Returns whether the tabs are currently visible based on the current feed having more than 1 tab. */
   get showTabs(): boolean {
@@ -112,16 +82,18 @@ export class CourierInbox extends CourierBaseElement {
   private _list?: CourierInboxList;
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
-  private _feeds: CourierInboxFeed[] = CourierInbox.defaultFeeds();
+  private _feeds: CourierInboxFeed[] = defaultFeeds();
 
   // Header
   private _header?: CourierInboxHeader;
   private _headerFactory: ((props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) | undefined | null = undefined;
+  private _actions: CourierInboxHeaderAction[] = defaultActions();
 
   // List
   private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
+  private _listItemActions: CourierInboxListItemAction[] = defaultListItemActions();
 
   // Default props
   private _defaultProps = {
@@ -279,6 +251,7 @@ export class CourierInbox extends CourierBaseElement {
     // Header
     this._header = new CourierInboxHeader({
       themeManager: this._themeManager,
+      actions: this._actions,
       onFeedChange: (feed: CourierInboxFeed) => {
         this.selectFeed(feed.id);
       },
@@ -303,6 +276,7 @@ export class CourierInbox extends CourierBaseElement {
     // Create list and ensure it's properly initialized
     this._list = new CourierInboxList({
       themeManager: this._themeManager,
+      listItemActions: this._listItemActions,
       canClickListItems: false,
       canLongPressListItems: false,
       onRefresh: () => {
@@ -534,6 +508,26 @@ export class CourierInbox extends CourierBaseElement {
         this._header?.tabs?.updateTabUnreadCount(tab.id, dataset.unreadCount);
       }
     }
+  }
+
+  /**
+   * Sets the enabled header actions for the inbox.
+   * Pass an empty array to remove all actions.
+   * @param actions - The header actions to enable (e.g., ['readAll', 'archiveRead', 'archiveAll']).
+   */
+  public setActions(actions: CourierInboxHeaderAction[]) {
+    this._actions = actions;
+    this._header?.setActions(this._actions);
+  }
+
+  /**
+   * Sets the enabled list item actions for the inbox.
+   * Pass an empty array to remove all actions.
+   * @param actions - The list item actions to enable (e.g., ['read_unread', 'archive_unarchive']).
+   */
+  public setListItemActions(actions: CourierInboxListItemAction[]) {
+    this._listItemActions = actions;
+    this._list?.setListItemActions(this._listItemActions);
   }
 
   /**

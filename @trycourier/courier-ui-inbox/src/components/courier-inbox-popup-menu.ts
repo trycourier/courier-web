@@ -11,6 +11,7 @@ import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode, injectGlobalStyle } from "@trycourier/courier-ui-core";
 import { Courier } from "@trycourier/courier-js";
 import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierInboxHeaderAction, CourierInboxListItemAction } from "../types/inbox-defaults";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
@@ -196,6 +197,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
       }
 
       ${CourierInboxPopupMenu.id} .popup.visible {
+        display: block;
         opacity: 1;
         transform: ${visibleTransform};
       }
@@ -396,7 +398,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     if (!this._popup) return;
 
     // Set display first
-    this._popup.style.display = 'block';
     this._popup.classList.remove('visible');
 
     // Trigger transition on next frame
@@ -598,6 +599,22 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
    */
   public getFeeds() {
     return this._inbox?.getFeeds() ?? [];
+  }
+
+  /**
+   * Sets the enabled header actions for the inbox.
+   * @param actions - The header actions to enable (e.g., ['readAll', 'archiveRead', 'archiveAll']).
+   */
+  public setActions(actions: CourierInboxHeaderAction[]) {
+    this._inbox?.setActions(actions);
+  }
+
+  /**
+   * Sets the enabled list item actions for the inbox.
+   * @param actions - The list item actions to enable (e.g., ['read_unread', 'archive_unarchive']).
+   */
+  public setListItemActions(actions: CourierInboxListItemAction[]) {
+    this._inbox?.setListItemActions(actions);
   }
 
   /**

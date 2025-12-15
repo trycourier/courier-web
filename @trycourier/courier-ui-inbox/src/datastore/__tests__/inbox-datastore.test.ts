@@ -144,7 +144,7 @@ describe("CourierInboxDatastore", () => {
       expect(mockArchiveAll).toHaveBeenCalled();
     });
 
-    it('should archive all messages and not call the API if canCallApi is false', async () => {
+    it('should archive all messages and not call the API', async () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
@@ -159,7 +159,7 @@ describe("CourierInboxDatastore", () => {
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
 
-      await datastore.archiveAllMessages({ canCallApi: false });
+      await datastore.archiveAllMessages();
 
       expect(datastore.inboxDataSet.messages.length).toBe(0);
       expect(datastore.archiveDataSet.messages.length).toBe(2);
@@ -304,7 +304,7 @@ describe("CourierInboxDatastore", () => {
       expect(datastore.inboxDataSet.messages[0].opened).toBe("2021-01-01T00:00:00Z");
     });
 
-    it("should open a message without calling API when canCallApi is false", async () => {
+    it("should open a message without calling API", async () => {
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -318,7 +318,7 @@ describe("CourierInboxDatastore", () => {
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
 
-      await datastore.openMessage({ message: UNREAD_MESSAGE, canCallApi: false });
+      await datastore.openMessage({ message: UNREAD_MESSAGE });
 
       expect(datastore.inboxDataSet.messages).toHaveLength(1);
       expect(datastore.inboxDataSet.messages[0].opened).toBeDefined();
