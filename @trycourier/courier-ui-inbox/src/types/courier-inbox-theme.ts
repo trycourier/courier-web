@@ -404,22 +404,19 @@ export const defaultLightTheme: CourierInboxTheme = {
         },
         markAllRead: {
           icon: {
-            color: CourierColors.black[500],
-            svg: CourierIconSVGs.read
+            color: CourierColors.black[500]
           },
           text: 'Read All'
         },
         archiveAll: {
           icon: {
-            color: CourierColors.black[500],
-            svg: CourierIconSVGs.archive
+            color: CourierColors.black[500]
           },
           text: 'Archive All'
         },
         archiveRead: {
           icon: {
-            color: CourierColors.black[500],
-            svg: CourierIconSVGs.archiveRead
+            color: CourierColors.black[500]
           },
           text: 'Archive Read'
         },
@@ -495,20 +492,16 @@ export const defaultLightTheme: CourierInboxTheme = {
             activeBackgroundColor: CourierColors.gray[500],
             borderRadius: '0px',
             read: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.read
+              color: CourierColors.black[500]
             },
             unread: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.unread
+              color: CourierColors.black[500]
             },
             archive: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.archive
+              color: CourierColors.black[500]
             },
             unarchive: {
-              color: CourierColors.black[500],
-              svg: CourierIconSVGs.unarchive
+              color: CourierColors.black[500]
             }
           }
         }
@@ -750,22 +743,19 @@ export const defaultDarkTheme: CourierInboxTheme = {
         },
         markAllRead: {
           icon: {
-            color: CourierColors.white[500],
-            svg: CourierIconSVGs.read
+            color: CourierColors.white[500]
           },
           text: 'Read All'
         },
         archiveAll: {
           icon: {
-            color: CourierColors.white[500],
-            svg: CourierIconSVGs.archive
+            color: CourierColors.white[500]
           },
           text: 'Archive All'
         },
         archiveRead: {
           icon: {
-            color: CourierColors.white[500],
-            svg: CourierIconSVGs.archiveRead
+            color: CourierColors.white[500]
           },
           text: 'Archive Read'
         },
@@ -841,20 +831,16 @@ export const defaultDarkTheme: CourierInboxTheme = {
             activeBackgroundColor: CourierColors.white[500_20],
             borderRadius: '0px',
             read: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.read
+              color: CourierColors.white[500]
             },
             unread: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.unread
+              color: CourierColors.white[500]
             },
             archive: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.archive
+              color: CourierColors.white[500]
             },
             unarchive: {
-              color: CourierColors.white[500],
-              svg: CourierIconSVGs.unarchive
+              color: CourierColors.white[500]
             }
           }
         }

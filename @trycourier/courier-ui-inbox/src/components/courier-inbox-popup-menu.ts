@@ -196,8 +196,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         opacity: 0;
       }
 
-      ${CourierInboxPopupMenu.id} .popup.visible {
+      ${CourierInboxPopupMenu.id} .popup.displayed {
         display: block;
+      }
+
+      ${CourierInboxPopupMenu.id} .popup.visible {
         opacity: 1;
         transform: ${visibleTransform};
       }
@@ -397,8 +400,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   private showPopup() {
     if (!this._popup) return;
 
-    // Set display first
+    // Remove visible class first to reset state
     this._popup.classList.remove('visible');
+    
+    // Add displayed class to set display: block (but keep opacity 0 and initial transform)
+    this._popup.classList.add('displayed');
 
     // Trigger transition on next frame
     requestAnimationFrame(() => {
@@ -419,12 +425,12 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Remove visible class to trigger transition
     this._popup.classList.remove('visible');
 
-    // Wait for transition to complete, then set display none
+    // Wait for transition to complete, then remove displayed class
     const handleTransitionEnd = (e: TransitionEvent) => {
       if (e.target !== this._popup) return;
       if (e.propertyName !== 'opacity') return;
       if (this._popup && !this._popup.classList.contains('visible')) {
-        this._popup.style.display = 'none';
+        this._popup.classList.remove('displayed');
         this._popup.removeEventListener('transitionend', handleTransitionEnd);
       }
     };
@@ -603,7 +609,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   /**
    * Sets the enabled header actions for the inbox.
-   * @param actions - The header actions to enable (e.g., ['readAll', 'archiveRead', 'archiveAll']).
+   * @param actions - The header actions to enable (e.g., [{ id: 'readAll', iconSVG: '...', text: '...' }]).
    */
   public setActions(actions: CourierInboxHeaderAction[]) {
     this._inbox?.setActions(actions);
@@ -611,7 +617,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   /**
    * Sets the enabled list item actions for the inbox.
-   * @param actions - The list item actions to enable (e.g., ['read_unread', 'archive_unarchive']).
+   * @param actions - The list item actions to enable (e.g., [{ id: 'read_unread', readIconSVG: '...', unreadIconSVG: '...' }]).
    */
   public setListItemActions(actions: CourierInboxListItemAction[]) {
     this._inbox?.setListItemActions(actions);

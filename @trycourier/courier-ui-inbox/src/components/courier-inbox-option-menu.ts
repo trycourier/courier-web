@@ -105,8 +105,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
         display: none;
       }
 
-      :host(.visible) {
+      :host(.displayed) {
         display: block;
+      }
+
+      :host(.visible) {
         opacity: 1;
         pointer-events: auto;
         transform: ${visibleTransform};
@@ -231,8 +234,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   private showMenu() {
-    // Set display first
+    // Remove visible class first to reset state
     this.classList.remove('visible');
+    
+    // Add displayed class to set display: block (but keep opacity 0 and initial transform)
+    this.classList.add('displayed');
 
     // Trigger transition on next frame
     requestAnimationFrame(() => {
@@ -246,11 +252,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     // Remove visible class to trigger transition
     this.classList.remove('visible');
 
-    // Wait for transition to complete, then set display none
+    // Wait for transition to complete, then remove displayed class
     const handleTransitionEnd = (e: TransitionEvent) => {
       if (e.target !== this) return;
       if (!this.classList.contains('visible')) {
-        this.style.display = 'none';
+        this.classList.remove('displayed');
         this.removeEventListener('transitionend', handleTransitionEnd);
       }
     };

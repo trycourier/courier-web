@@ -2,14 +2,34 @@ import { CourierIconSVGs } from "@trycourier/courier-ui-core";
 import { CourierInboxFeed } from "./inbox-data-set";
 
 /**
- * Header action types that can be enabled/disabled in the inbox header.
+ * Header action ID types.
  */
-export type CourierInboxHeaderAction = 'readAll' | 'archiveRead' | 'archiveAll';
+export type CourierInboxHeaderActionId = 'readAll' | 'archiveRead' | 'archiveAll';
 
 /**
- * List item action types that can be enabled/disabled in the inbox list items.
+ * List item action ID types.
  */
-export type CourierInboxListItemAction = 'read_unread' | 'archive_unarchive';
+export type CourierInboxListItemActionId = 'read_unread' | 'archive_unarchive';
+
+/**
+ * Configuration for a header action.
+ */
+export type CourierInboxHeaderAction = {
+  id: CourierInboxHeaderActionId;
+  iconSVG?: string;
+  text?: string;
+};
+
+/**
+ * Configuration for a list item action.
+ */
+export type CourierInboxListItemAction = {
+  id: CourierInboxListItemActionId;
+  readIconSVG?: string;
+  unreadIconSVG?: string;
+  archiveIconSVG?: string;
+  unarchiveIconSVG?: string;
+};
 
 /**
  * Returns the default feeds for the inbox.
@@ -49,13 +69,20 @@ export function defaultFeeds(): CourierInboxFeed[] {
  * Returns the default header actions.
  */
 export function defaultActions(): CourierInboxHeaderAction[] {
-  return ['readAll', 'archiveRead', 'archiveAll'];
+  return [
+    { id: 'readAll' },
+    { id: 'archiveRead' },
+    { id: 'archiveAll' }
+  ];
 }
 
 /**
  * Returns the default list item actions.
  */
 export function defaultListItemActions(): CourierInboxListItemAction[] {
-  return ['read_unread', 'archive_unarchive'];
+  return [
+    { id: 'read_unread' },
+    { id: 'archive_unarchive' }
+  ];
 }
 

@@ -85,14 +85,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Iterate through actions in the order they were specified
     for (const action of this._actions) {
-      switch (action) {
+      switch (action.id) {
         case 'readAll':
           options.push({
             id: 'make_all_read',
-            text: actionMenu?.markAllRead?.text ?? 'Mark All as Read',
+            text: action.text ?? actionMenu?.markAllRead?.text ?? 'Mark All as Read',
             icon: {
               color: actionMenu?.markAllRead?.icon?.color ?? 'red',
-              svg: actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.inbox
+              svg: action.iconSVG ?? actionMenu?.markAllRead?.icon?.svg ?? CourierIconSVGs.read
             },
             onClick: (_: CourierInboxMenuOption) => {
               CourierInboxDatastore.shared.readAllMessages();
@@ -102,10 +102,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
         case 'archiveAll':
           options.push({
             id: 'archive_all',
-            text: actionMenu?.archiveAll?.text ?? 'Archive All',
+            text: action.text ?? actionMenu?.archiveAll?.text ?? 'Archive All',
             icon: {
               color: actionMenu?.archiveAll?.icon?.color ?? 'red',
-              svg: actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
+              svg: action.iconSVG ?? actionMenu?.archiveAll?.icon?.svg ?? CourierIconSVGs.archive
             },
             onClick: (_: CourierInboxMenuOption) => {
               CourierInboxDatastore.shared.archiveAllMessages();
@@ -115,10 +115,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
         case 'archiveRead':
           options.push({
             id: 'archive_read',
-            text: actionMenu?.archiveRead?.text ?? 'Archive Read',
+            text: action.text ?? actionMenu?.archiveRead?.text ?? 'Archive Read',
             icon: {
               color: actionMenu?.archiveRead?.icon?.color ?? 'red',
-              svg: actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archive
+              svg: action.iconSVG ?? actionMenu?.archiveRead?.icon?.svg ?? CourierIconSVGs.archiveRead
             },
             onClick: (_: CourierInboxMenuOption) => {
               CourierInboxDatastore.shared.archiveReadMessages();

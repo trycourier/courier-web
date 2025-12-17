@@ -513,7 +513,7 @@ export class CourierInbox extends CourierBaseElement {
   /**
    * Sets the enabled header actions for the inbox.
    * Pass an empty array to remove all actions.
-   * @param actions - The header actions to enable (e.g., ['readAll', 'archiveRead', 'archiveAll']).
+   * @param actions - The header actions to enable (e.g., [{ id: 'readAll', iconSVG: '...', text: '...' }]).
    */
   public setActions(actions: CourierInboxHeaderAction[]) {
     this._actions = actions;
@@ -523,7 +523,7 @@ export class CourierInbox extends CourierBaseElement {
   /**
    * Sets the enabled list item actions for the inbox.
    * Pass an empty array to remove all actions.
-   * @param actions - The list item actions to enable (e.g., ['read_unread', 'archive_unarchive']).
+   * @param actions - The list item actions to enable (e.g., [{ id: 'read_unread', readIconSVG: '...', unreadIconSVG: '...' }]).
    */
   public setListItemActions(actions: CourierInboxListItemAction[]) {
     this._listItemActions = actions;

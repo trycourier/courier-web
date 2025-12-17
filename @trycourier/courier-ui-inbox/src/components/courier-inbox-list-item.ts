@@ -1,5 +1,5 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
@@ -341,12 +341,14 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     // Iterate through list item actions in the order they were specified
     for (const action of this._listItemActions) {
-      switch (action) {
+      switch (action.id) {
         case 'read_unread':
           options.push({
             id: this._message?.read ? 'unread' : 'read',
             icon: {
-              svg: this._message?.read ? menuTheme?.unread?.svg : menuTheme?.read?.svg,
+              svg: this._message?.read
+                ? (action.unreadIconSVG ?? menuTheme?.unread?.svg ?? CourierIconSVGs.unread)
+                : (action.readIconSVG ?? menuTheme?.read?.svg ?? CourierIconSVGs.read),
               color: this._message?.read ? menuTheme?.unread?.color : menuTheme?.read?.color ?? 'red',
             },
             onClick: () => {
@@ -364,7 +366,9 @@ export class CourierInboxListItem extends CourierBaseElement {
           options.push({
             id: isArchived ? 'unarchive' : 'archive',
             icon: {
-              svg: isArchived ? menuTheme?.unarchive?.svg : menuTheme?.archive?.svg,
+              svg: isArchived
+                ? (action.unarchiveIconSVG ?? menuTheme?.unarchive?.svg ?? CourierIconSVGs.unarchive)
+                : (action.archiveIconSVG ?? menuTheme?.archive?.svg ?? CourierIconSVGs.archive),
               color: isArchived ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
             },
             onClick: () => {

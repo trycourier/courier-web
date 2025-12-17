@@ -111,10 +111,14 @@
     ]);
 
     // Set actions - only enable readAll
-    inbox.setActions(['archiveRead', 'archiveAll', 'readAll']);
+    inbox.setActions([
+      { id: 'readAll' },
+    ]);
 
     // Set list item actions - only enable read_unread
-    inbox.setListItemActions(['archive_unarchive', 'read_unread']);
+    inbox.setListItemActions([
+      { id: 'read_unread' }
+    ]);
 
     // Handle message clicks
     inbox.onMessageClick(({ message, index }) => {
