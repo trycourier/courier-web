@@ -533,16 +533,6 @@ export class CourierInboxDatastore {
     return this.fetchNextPageForDataset({ dataset: datasetToFetch });
   }
 
-  /** Get the total unread count across all datasets. */
-  public get totalUnreadCount(): number {
-    let unreadCount = 0;
-    for (let dataset of this._datasets.values()) {
-      unreadCount += dataset.unreadCount;
-    }
-
-    return unreadCount;
-  }
-
   /**
    * Get the {@link InboxDataSet} representation of the dataset ID specified.
    * @param datasetId - The dataset ID to get
@@ -594,12 +584,15 @@ export class CourierInboxDatastore {
   }
 
   /**
-   * Get sum of unread counts across all datasets.
-   *
-   * @deprecated - Update callers to use {@link CourierInboxDatastore.totalUnreadCount} or for a specific dataset {@link CourierInboxDatastore.getDatasetById} which exposes a specific dataset's unread count.
+   * Get the total unread count across all datasets.
    */
   public get unreadCount(): number {
-    return this.totalUnreadCount;
+    let unreadCount = 0;
+    for (let dataset of this._datasets.values()) {
+      unreadCount += dataset.unreadCount;
+    }
+
+    return unreadCount;
   }
 
   private async fetchNextPageForDataset(props: { dataset: CourierInboxDataset }): Promise<InboxDataSet | null> {

@@ -97,7 +97,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     // Create trigger button
     this._triggerButton = new CourierInboxMenuButton(this._themeManager);
-    this._triggerButton.build(undefined);
 
     // Create popup container
     this._popup = document.createElement('div');
@@ -124,6 +123,8 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
+    // Initial render so any pre-configured factories (like setMenuButton) are applied
+    this.render();
   }
 
   onComponentUnmounted() {
@@ -174,11 +175,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         position: relative;
       }
 
-      ${CourierInboxPopupMenu.id} .menu-button-container {
-        position: relative;
-        display: inline-block;
-      }
-
       ${CourierInboxPopupMenu.id} .popup {
         display: none;
         position: absolute;
@@ -203,13 +199,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
       ${CourierInboxPopupMenu.id} .popup.visible {
         opacity: 1;
         transform: ${visibleTransform};
-      }
-        
-      ${CourierInboxPopupMenu.id} #unread-badge {
-        position: absolute;
-        top: -8px;
-        left: 50%;
-        pointer-events: none;
       }
 
       ${CourierInboxPopupMenu.id} courier-inbox {
@@ -424,6 +413,15 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     // Remove visible class to trigger transition
     this._popup.classList.remove('visible');
+
+    // If there is no transition, remove the displayed class immediately
+    const style = window.getComputedStyle(this._popup);
+    const durations = style.transitionDuration.split(',').map(d => parseFloat(d) || 0);
+    const hasTransition = durations.some(d => d > 0);
+    if (!hasTransition) {
+      this._popup.classList.remove('displayed');
+      return;
+    }
 
     // Wait for transition to complete, then remove displayed class
     const handleTransitionEnd = (e: TransitionEvent) => {

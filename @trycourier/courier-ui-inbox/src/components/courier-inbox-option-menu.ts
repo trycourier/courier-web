@@ -252,6 +252,15 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     // Remove visible class to trigger transition
     this.classList.remove('visible');
 
+    // If there is no transition, remove the displayed class immediately
+    const style = window.getComputedStyle(this);
+    const durations = style.transitionDuration.split(',').map(d => parseFloat(d) || 0);
+    const hasTransition = durations.some(d => d > 0);
+    if (!hasTransition) {
+      this.classList.remove('displayed');
+      return;
+    }
+
     // Wait for transition to complete, then remove displayed class
     const handleTransitionEnd = (e: TransitionEvent) => {
       if (e.target !== this) return;
