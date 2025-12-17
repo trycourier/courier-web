@@ -1,14 +1,25 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxFeed } from "./inbox-data-set";
+import { CourierInboxDatasetFilter } from "./inbox-data-set";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
-  feeds: CourierInboxFeed[];
-  activeFeedId: string;
-  activeTabId: string;
-  showTabs: boolean;
+  feeds: CourierInboxHeaderFeed[];
+}
+
+export type CourierInboxHeaderFeed = {
+  id: string;
+  title: string;
+  iconSVG?: string;
+  tabs: CourierInboxHeaderFeedTab[];
+  isSelected: boolean;
+}
+
+export type CourierInboxHeaderFeedTab = {
+  id: string;
+  title: string;
   unreadCount: number;
-  messageCount: number;
+  isSelected: boolean;
+  filter: CourierInboxDatasetFilter;
 }
 
 // States

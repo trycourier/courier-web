@@ -570,13 +570,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   /**
-   * Returns whether the tabs are currently visible.
-   */
-  get showTabs(): boolean {
-    return this._inbox?.showTabs ?? false;
-  }
-
-  /**
    * Sets the active feed for the inbox.
    * @param feedId The feed ID to display.
    */

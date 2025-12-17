@@ -42,6 +42,12 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return this._themeSubscription.manager.getTheme();
   }
 
+  /** Returns whether the tabs are currently visible based on the current feed having more than 1 tab. */
+  get showTabs(): boolean {
+    const currentFeed = this._feeds.find(feed => feed.id === this._currentFeedId);
+    return (currentFeed?.tabs?.length ?? 0) > 1;
+  }
+
   constructor(props: {
     themeManager: CourierInboxThemeManager,
     actions?: CourierInboxHeaderAction[],
@@ -168,17 +174,21 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   public render(props: CourierInboxHeaderFactoryProps): void {
+    const selectedFeed = props.feeds.find(feed => feed.isSelected);
+    const selectedTab = selectedFeed?.tabs.find(tab => tab.isSelected);
+    const showTabs = (selectedFeed?.tabs.length ?? 0) > 1;
+
     if (this._feedButton) {
-      this._feeds = props.feeds;
       this._feedButton.setFeeds(props.feeds);
-      this._feedButton.setSelectedFeed(props.activeFeedId);
-      this._feedButton.setUnreadCount(props.showTabs ? 0 : props.unreadCount);
+      this._feedButton.setSelectedFeed(selectedFeed?.id ?? '');
+      this._feedButton.setUnreadCount(showTabs ? 0 : (selectedTab?.unreadCount ?? 0));
       this.updateFeedButtonInteraction();
     }
+
     if (this.tabs) {
-      this.tabs.style.display = props.showTabs ? 'flex' : 'none';
-      this.tabs.setSelectedTab(props.activeTabId);
-      this.tabs.updateTabUnreadCount(props.activeTabId, props.unreadCount);
+      this.tabs.style.display = showTabs ? 'flex' : 'none';
+      this.tabs.setSelectedTab(selectedTab?.id ?? '');
+      this.tabs.updateTabUnreadCount(selectedTab?.id ?? '', selectedTab?.unreadCount ?? 0);
     }
   }
 

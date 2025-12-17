@@ -28,19 +28,40 @@
     inbox.removeHeader();
 
     // Set a custom header
-    inbox.setHeader(({ feedType, unreadCount, messageCount }) => {
+    inbox.setHeader((props) => {
+      console.log('props', props);
       const headerDiv = document.createElement('div');
       headerDiv.style.background = 'red';
       headerDiv.style.fontSize = '24px';
       headerDiv.style.padding = '24px';
       headerDiv.style.width = '100%';
-      headerDiv.textContent = feedType;
+      const selectedFeed = props.feeds.find(feed => feed.isSelected);
+      const selectedTab = selectedFeed?.tabs.find(tab => tab.isSelected);
+      headerDiv.textContent = `${selectedFeed?.id ?? ''} - ${selectedTab?.id ?? ''} - ${selectedTab?.unreadCount ?? 0}`;
       return headerDiv;
     });
 
-    // Change the feed type
-    // "inbox" and "archive" are available
-    inbox.setFeedType('archive');
+    // Set the feeds
+    inbox.setFeeds([
+      {
+        id: 'inbox',
+        title: 'Inbox',
+        tabs: [
+          { id: 'inbox', title: 'Inbox', filter: {} }
+        ]
+      },
+      {
+        id: 'archive',
+        title: 'Archive',
+        tabs: [
+          { id: 'archive', title: 'Archive', filter: {} }
+        ]
+      }
+    ]);
+
+    // Select the feed and tab
+    inbox.selectFeed('archive');
+    inbox.selectTab('archive');
 
   </script>
 
