@@ -1,5 +1,10 @@
 import { useEffect } from 'react'
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps, type CourierInboxListItemActionFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxListItemFactoryProps,
+  type CourierInboxListItemActionFactoryProps,
+} from '@trycourier/courier-react';
 
 export default function App() {
 

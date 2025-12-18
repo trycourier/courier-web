@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { CourierInbox, useCourier } from '@trycourier/courier-react'
-import { CourierInbox as CourierInboxElement } from '@trycourier/courier-ui-inbox'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxElement,
+} from '@trycourier/courier-react'
 
 export default function App() {
 

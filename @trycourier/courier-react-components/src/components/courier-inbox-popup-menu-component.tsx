@@ -11,6 +11,7 @@ import {
   CourierInboxStateErrorFactoryProps,
   CourierInboxStateLoadingFactoryProps,
   CourierInboxTheme,
+  CourierInboxFeed,
 } from '@trycourier/courier-ui-inbox';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierClientComponent } from './courier-client-component';
@@ -46,6 +47,9 @@ export interface CourierInboxPopupMenuProps {
 
   /** Theme mode: 'light', 'dark', or 'system'. */
   mode?: CourierComponentThemeMode;
+
+  /** Array of feeds to display in the inbox. Each feed contains tabs with different filters. */
+  feeds?: CourierInboxFeed[];
 
   /** Callback fired when a message is clicked. */
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -88,6 +92,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
     // Element ref for use in effects, updated by handleRef.
     const inboxRef = useRef<CourierInboxPopupMenuElement | null>(null);
     const [elementReady, setElementReady] = useState(false);
+    const feedsSetRef = useRef(false);
 
     // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
     // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -219,6 +224,16 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
         });
       });
     }, [props.renderMenuButton, elementReady]);
+
+    // Set feeds (only once when element is ready)
+    useEffect(() => {
+      const menu = getEl();
+      if (!menu || !props.feeds || feedsSetRef.current) return;
+      feedsSetRef.current = true;
+      queueMicrotask(() => {
+        menu.setFeeds(props.feeds!);
+      });
+    }, [props.feeds, elementReady]);
 
     const children = (
       /* @ts-ignore */

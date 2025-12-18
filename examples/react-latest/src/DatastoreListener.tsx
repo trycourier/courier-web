@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Courier, CourierInboxDatastore, CourierInboxDataStoreListener, type CourierInboxFeedType, type InboxDataSet, type InboxMessage } from "@trycourier/courier-ui-inbox";
+import { Courier, CourierInboxDatastore, CourierInboxDataStoreListener, type InboxDataSet, type InboxMessage } from "@trycourier/courier-ui-inbox";
+
+type DatastoreFeedId = string;
 
 export default function App() {
 
@@ -13,19 +15,19 @@ export default function App() {
       onError: (error: Error): void => {
         console.error(error);
       },
-      onDataSetChange: (dataSet: InboxDataSet, feedType: CourierInboxFeedType): void => {
+      onDataSetChange: (dataSet: InboxDataSet, feedType: DatastoreFeedId): void => {
         console.log("DataSet changed", dataSet, feedType);
       },
-      onPageAdded: (dataSet: InboxDataSet, feedType: CourierInboxFeedType): void => {
+      onPageAdded: (dataSet: InboxDataSet, feedType: DatastoreFeedId): void => {
         console.log("Page added", dataSet, feedType);
       },
-      onMessageAdd: (message: InboxMessage, index: number, feedType: CourierInboxFeedType): void => {
+      onMessageAdd: (message: InboxMessage, index: number, feedType: DatastoreFeedId): void => {
         console.log("Message added", message, index, feedType);
       },
-      onMessageRemove: (message: InboxMessage, index: number, feedType: CourierInboxFeedType): void => {
+      onMessageRemove: (message: InboxMessage, index: number, feedType: DatastoreFeedId): void => {
         console.log("Message removed", message, index, feedType);
       },
-      onMessageUpdate: (message: InboxMessage, index: number, feedType: CourierInboxFeedType): void => {
+      onMessageUpdate: (message: InboxMessage, index: number, feedType: DatastoreFeedId): void => {
         console.log("Message updated", message, index, feedType);
       },
       onUnreadCountChange: (unreadCount: number): void => {

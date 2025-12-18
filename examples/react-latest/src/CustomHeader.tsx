@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
-import { CourierInbox, useCourier, type CourierInboxHeaderFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxHeaderFactoryProps,
+} from '@trycourier/courier-react';
 
 const CustomHeader = (props: CourierInboxHeaderFactoryProps) => (
   <div style={{

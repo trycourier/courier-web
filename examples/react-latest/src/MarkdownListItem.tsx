@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxListItemFactoryProps,
+} from '@trycourier/courier-react';
 import Markdown from 'markdown-to-jsx';
 
 export default function MarkdownListItemInbox() {

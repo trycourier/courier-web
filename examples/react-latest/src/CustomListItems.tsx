@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxListItemFactoryProps,
+} from '@trycourier/courier-react';
 
 const CustomListItem = ({ message, index }: CourierInboxListItemFactoryProps) => (
   <pre style={{

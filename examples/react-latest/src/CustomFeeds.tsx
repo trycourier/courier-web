@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
-import { CourierInbox, type CourierInboxFeed, useCourier } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxFeed,
+} from '@trycourier/courier-react'
 
 export default function CustomFeeds() {
 
@@ -15,32 +19,32 @@ export default function CustomFeeds() {
   const feeds: CourierInboxFeed[] = [
     {
       id: 'notifications',
-      label: 'Notifications',
+      title: 'Notifications',
       tabs: [
         {
           id: 'all-notifications',
-          label: 'All',
+          title: 'All',
           filter: {}
         },
         {
           id: 'unread-notifications',
-          label: 'Unread',
+          title: 'Unread',
           filter: { status: 'unread' }
         },
         {
           id: 'important',
-          label: 'Important',
+          title: 'Important',
           filter: { tags: ['important'] }
         }
       ]
     },
     {
       id: 'archived',
-      label: 'Archived',
+      title: 'Archived',
       tabs: [
         {
           id: 'archived-messages',
-          label: 'Archived',
+          title: 'Archived',
           filter: { archived: true }
         }
       ]

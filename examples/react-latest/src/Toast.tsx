@@ -1,5 +1,10 @@
 import { useEffect } from 'react'
-import { CourierInboxPopupMenu, CourierToast, useCourier, type CourierToastItemFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInboxPopupMenu,
+  CourierToast,
+  useCourier,
+  type CourierToastItemFactoryProps,
+} from '@trycourier/courier-react';
 
 // Render a custom component
 const CustomToastItem = ({ message, autoDismiss, autoDismissTimeoutMs }: CourierToastItemFactoryProps) => (

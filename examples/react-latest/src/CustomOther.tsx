@@ -5,8 +5,8 @@ import {
   type CourierInboxStateEmptyFactoryProps,
   type CourierInboxStateLoadingFactoryProps,
   type CourierInboxStateErrorFactoryProps,
-  type CourierInboxPaginationItemFactoryProps
-} from '@trycourier/courier-react'
+  type CourierInboxPaginationItemFactoryProps,
+} from '@trycourier/courier-react';
 
 const CustomLoadingState = ({ feedType }: CourierInboxStateLoadingFactoryProps) => (
   <div style={{

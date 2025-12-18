@@ -1,5 +1,9 @@
 import { useEffect } from 'react';
-import { CourierInbox, useCourier, type CourierInboxTheme } from '@trycourier/courier-react';
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxTheme,
+} from '@trycourier/courier-react';
 
 export default function App() {
   const courier = useCourier();
@@ -14,9 +18,11 @@ export default function App() {
   const theme: CourierInboxTheme = {
     inbox: {
       header: {
-        filters: {
-          unreadIndicator: {
-            backgroundColor: '#8B5CF6',
+        tabs: {
+          default: {
+            unreadIndicator: {
+              backgroundColor: '#8B5CF6',
+            },
           },
         },
       },
@@ -28,5 +34,5 @@ export default function App() {
     },
   };
 
-  return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />; // Or user CourierInboxPopupMenu
+  return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />; // Or use CourierInboxPopupMenu
 }

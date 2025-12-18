@@ -4,14 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courier Inbox</title>
-  <link rel="stylesheet" href="./../../styles.css">
+  <title>Courier Popup - Custom Menu Button</title>
+  <link rel="stylesheet" href="../styles.css">
 </head>
 
 <body>
 
-  <courier-inbox id="inbox"></courier-inbox>
-
+  <div style="padding: 24px;">
+    <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
+  </div>
+  
   <script type="module">
     import { Courier } from '@trycourier/courier-ui-inbox';
 
@@ -24,12 +26,17 @@
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
-    // Handle message clicks
-    inbox.onMessageClick(({ message, index }) => {
-      alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
+    // Set a custom menu button
+    inbox.setMenuButton(({ unreadCount }) => {
+      const button = document.createElement('button');
+      button.textContent = `Open the Inbox Popup. Unread message count: ${unreadCount}`;
+      return button;
     });
+
   </script>
 
 </body>
 
 </html>
+
+

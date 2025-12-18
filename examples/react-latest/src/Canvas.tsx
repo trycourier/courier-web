@@ -1,11 +1,21 @@
 import { useEffect, useState } from 'react'
-import { CourierInbox, CourierInboxPopupMenu, useCourier } from '@trycourier/courier-react'
-import type { CourierInboxFeedType, CourierInboxHeaderFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxTheme } from '@trycourier/courier-ui-inbox';
-import type { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
+import {
+  CourierInbox,
+  CourierInboxPopupMenu,
+  useCourier,
+  type CourierInboxHeaderFactoryProps,
+  type CourierInboxListItemFactoryProps,
+  type CourierInboxMenuButtonFactoryProps,
+  type CourierInboxPaginationItemFactoryProps,
+  type CourierInboxStateEmptyFactoryProps,
+  type CourierInboxStateErrorFactoryProps,
+  type CourierInboxStateLoadingFactoryProps,
+  type CourierInboxTheme,
+  type CourierComponentThemeMode,
+} from '@trycourier/courier-react';
 
 function App() {
   const courier = useCourier();
-  const [feedType, setFeedType] = useState<CourierInboxFeedType>('inbox');
   const [mode] = useState<CourierComponentThemeMode>('light');
 
   useEffect(() => {
@@ -34,11 +44,13 @@ function App() {
     },
     inbox: {
       header: {
-        filters: {
-          unreadIndicator: {
-            backgroundColor: '#9b4dca',
-          }
-        }
+        tabs: {
+          default: {
+            unreadIndicator: {
+              backgroundColor: '#9b4dca',
+            },
+          },
+        },
       },
       list: {
         item: {
@@ -49,6 +61,11 @@ function App() {
   };
 
   const renderHeader = (props: CourierInboxHeaderFactoryProps | undefined | null) => {
+    const selectedFeed = props?.feeds.find(feed => feed.isSelected);
+    const selectedFeedTitle = selectedFeed?.title ?? 'Inbox';
+    const unreadCount =
+      selectedFeed?.tabs.reduce((sum, tab) => sum + tab.unreadCount, 0) ?? 0;
+
     return (
       <div style={{
         padding: '16px',
@@ -59,26 +76,9 @@ function App() {
         alignItems: 'center',
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
       }}>
-        <span style={{ fontSize: '1.2em', fontWeight: '600' }}>This is the {props?.feedType === 'inbox' ? 'Inbox' : 'Archive'}</span>
+        <span style={{ fontSize: '1.2em', fontWeight: '600' }}>This is the {selectedFeedTitle}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={() => setFeedType(feedType === 'inbox' ? 'archive' : 'inbox')}
-            style={{
-              backgroundColor: '#f0f0f0',
-              padding: '4px 8px',
-              borderRadius: '12px',
-              fontSize: '0.9em',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            {props?.feedType}
-            <span style={{ fontSize: '0.8em' }}>↔</span>
-          </button>
-          {props?.unreadCount && props?.unreadCount > 0 && (
+          {unreadCount > 0 && (
             <span style={{
               backgroundColor: '#ff4444',
               color: 'white',
@@ -86,7 +86,7 @@ function App() {
               borderRadius: '12px',
               fontSize: '0.9em'
             }}>
-              {props?.unreadCount} unread
+              {unreadCount} unread
             </span>
           )}
         </div>
@@ -288,7 +288,6 @@ function App() {
           mode={mode}
           lightTheme={theme}
           darkTheme={theme}
-          feedType={feedType}
           renderHeader={renderHeader}
           renderListItem={renderListItem}
           renderEmptyState={renderEmptyState}
@@ -313,7 +312,6 @@ function App() {
         mode={mode}
         lightTheme={theme}
         darkTheme={theme}
-        feedType={feedType}
         renderHeader={renderHeader}
         renderListItem={renderListItem}
         renderEmptyState={renderEmptyState}

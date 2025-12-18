@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courier Inbox - Custom Feed</title>
-  <link rel="stylesheet" href="./../../styles.css">
+  <title>Courier Inbox - JS Theme</title>
+  <link rel="stylesheet" href="../styles.css">
 </head>
 
 <body>
@@ -21,8 +21,46 @@
       jwt: import.meta.env.VITE_JWT
     });
 
-    // Reference the courier-inbox element
+    // Reference the element
     const inbox = document.getElementById('inbox');
+
+    const theme = {
+      inbox: {
+        header: {
+          feeds: {
+            button: {
+              unreadCountIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
+            }
+          },
+          tabs: {
+            selected: {
+              indicatorColor: "#8B5CF6",
+              font: {
+                color: "#8B5CF6"
+              },
+              unreadIndicator: {
+                backgroundColor: "#8B5CF6"
+              }
+            }
+          }
+        },
+        list: {
+          item: {
+            unreadIndicatorColor: "#8B5CF6"
+          }
+        }
+      }
+    }
+
+    // Set the theme
+    inbox.setLightTheme(theme);
+    inbox.setDarkTheme(theme);
+
+    // Set the mode
+    // This will force light, dark or system theme mode
+    inbox.setMode('light');
 
     // Set custom feeds with the specified structure
     inbox.setFeeds([
@@ -87,12 +125,10 @@
       }
     ]);
 
-    // Handle message clicks
-    inbox.onMessageClick(({ message, index }) => {
-      alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
-    });
   </script>
 
 </body>
 
 </html>
+
+

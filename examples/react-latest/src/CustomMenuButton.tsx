@@ -1,5 +1,9 @@
 import { useEffect } from 'react'
-import { CourierInboxPopupMenu, useCourier, type CourierInboxMenuButtonFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInboxPopupMenu,
+  useCourier,
+  type CourierInboxMenuButtonFactoryProps,
+} from '@trycourier/courier-react';
 
 const CustomMenuButton = ({ unreadCount }: CourierInboxMenuButtonFactoryProps) => (
   <button>

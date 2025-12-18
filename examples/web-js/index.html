@@ -4,38 +4,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Courier Inbox Web Examples</title>
+  <title>Courier Web Examples</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-  <h2>Examples</h2>
-  <ul>
-    <li><a href="/examples/default/inbox">Inbox Default</a></li>
-    <li><a href="/examples/default/inbox-popup-menu">Inbox Popup Menu Default</a></li>
-    <li><a href="/examples/default/inbox-custom-feed">Inbox Custom Feed</a></li>
-    <li><a href="/examples/default/inbox-popup-menu-custom-feed">Inbox Popup Menu Custom Feed</a></li>
-  </ul>
+  <main class="page">
+    <header class="page-header">
+      <h1>Courier Web Examples</h1>
+      <p>Explore live inbox, popup, and toast examples built with Courier Web Components.</p>
+    </header>
 
-  <h2>Themed Examples</h2>
-  <ul>
-    <li><a href="/examples/themed/inbox-custom-height">Inbox Custom Height</a></li>
-    <li><a href="/examples/themed/inbox-inline">Inbox with inline theme</a></li>
-    <li><a href="/examples/themed/inbox-js">Inbox with JS theme</a></li>
-    <li><a href="/examples/themed/inbox-popup-menu-inline">Inbox Popup Menu with inline theme</a></li>
-    <li><a href="/examples/themed/inbox-popup-menu-js">Inbox Popup Menu with JS theme</a></li>
-    <li><a href="/examples/themed/inbox-popup-menu-attributes">Inbox Popup Menu with Attributes</a></li>
-  </ul>
+    <section class="examples-columns">
+      <div class="examples-column">
+        <a class="example-card" href="/examples/inbox-basic">
+          <strong>Inbox — Basic</strong>
+          <span>Minimal inbox with default styling and message click handling.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-custom-feed">
+          <strong>Inbox — Custom Feed</strong>
+          <span>Inbox configured with multiple custom feeds and tabs.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-custom-height">
+          <strong>Inbox — Custom Height</strong>
+          <span>Inbox constrained to a custom height with a tailored theme.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-inline">
+          <strong>Inbox — Inline Theme</strong>
+          <span>Inbox themed via inline JSON attributes for light and dark modes.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-js">
+          <strong>Inbox — JS Theme</strong>
+          <span>Inbox themed via JavaScript with custom feeds and styling.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-header">
+          <strong>Inbox — Custom Header</strong>
+          <span>Inbox with a fully custom header driven by feed and tab state.</span>
+        </a>
+        <a class="example-card" href="/examples/inbox-list-item">
+          <strong>Inbox — Custom List Item</strong>
+          <span>Inbox rendering each message as a custom list item component.</span>
+        </a>
+      </div>
 
-  <h2>Custom Examples</h2>
-  <ul>
-    <li><a href="/examples/custom/inbox-header">Custom Inbox Header</a></li>
-    <li><a href="/examples/custom/inbox-list-item">Custom Inbox List Item</a></li>
-    <li><a href="/examples/custom/inbox-popup-menu-button">Custom Inbox Popup Menu Button</a></li>
-    <li><a href="/examples/custom/inbox-popup-list-item">Custom Inbox Popup List Item</a></li>
-    <li><a href="/examples/custom/inbox-popup-everything-else">Custom Inbox Everything Else</a></li>
-  </ul>
+      <div class="examples-column">
+        <a class="example-card" href="/examples/popup-basic">
+          <strong>Popup — Basic</strong>
+          <span>Popup inbox menu with default appearance and interactions.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-custom-feed">
+          <strong>Popup — Custom Feed</strong>
+          <span>Popup inbox menu wired up with custom feeds and actions.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-menu-button">
+          <strong>Popup — Custom Menu Button</strong>
+          <span>Popup inbox menu using a fully custom trigger button.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-menu-attributes">
+          <strong>Popup — Attributes</strong>
+          <span>Popup configured via attributes for alignment, size, and theming.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-menu-inline">
+          <strong>Popup — Inline Theme</strong>
+          <span>Popup themed inline with JSON attributes and light mode.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-menu-js">
+          <strong>Popup — JS Theme</strong>
+          <span>Popup fully themed in JavaScript with animations and custom feeds.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-list-item">
+          <strong>Popup — Custom List Item</strong>
+          <span>Popup rendering messages with a custom list item component.</span>
+        </a>
+        <a class="example-card" href="/examples/popup-everything-else">
+          <strong>Popup — Custom States</strong>
+          <span>Popup with custom loading, empty, error, and pagination states.</span>
+        </a>
+      </div>
+
+      <div class="examples-column">
+        <a class="example-card" href="/examples/toast-basic">
+          <strong>Toast — Basic</strong>
+          <span>Custom-themed toast notifications using Courier Toast.</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #222222;
+    }
+
+    .page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+      box-sizing: border-box;
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid #dddddd;
+      padding-bottom: 12px;
+    }
+
+    .page-header h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 13px;
+      color: #555555;
+    }
+
+    .examples-columns {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .examples-column {
+      flex: 1;
+    }
+
+    .example-card {
+      display: block;
+      padding: 10px 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #dddddd;
+      text-decoration: none;
+      color: inherit;
+      background: #fafafa;
+    }
+
+    .example-card strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .example-card span {
+      display: block;
+      font-size: 13px;
+      color: #666666;
+    }
+
+    .example-card:hover {
+      background: #f0f0f0;
+    }
+
+    @media (max-width: 800px) {
+      .examples-columns {
+        flex-direction: column;
+      }
+    }
+  </style>
 
 </body>
 
