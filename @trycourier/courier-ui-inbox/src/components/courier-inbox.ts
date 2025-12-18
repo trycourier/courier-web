@@ -455,14 +455,19 @@ export class CourierInbox extends CourierBaseElement {
    * @param feedId - The feed ID to display.
    */
   public selectFeed(feedId: string) {
+    const feed = this._feeds.find(f => f.id === feedId);
+    if (!feed) {
+      throw new Error(`Feed "${feedId}" does not exist.`);
+    }
+
     // If reselecting the current feed, reset to first tab and reload
     if (this._currentFeedId === feedId) {
-      const feed = this._feeds.find(f => f.id === feedId);
-      if (feed && feed.tabs && feed.tabs.length > 0) {
-        const firstTabId = feed.tabs[0].id;
-        this._header?.selectFeed(feedId, firstTabId);
-        this.selectTab(firstTabId);
+      if (!feed.tabs || feed.tabs.length === 0) {
+        throw new Error(`Feed "${feedId}" does not contain any tabs. You must have at least one tab in each feed.`);
       }
+      const firstTabId = feed.tabs[0].id;
+      this._header?.selectFeed(feedId, firstTabId);
+      this.selectTab(firstTabId);
       return;
     }
 
@@ -478,6 +483,15 @@ export class CourierInbox extends CourierBaseElement {
    * @param animate - Whether to animate the scroll to top.
    */
   public selectTab(tabId: string) {
+    const currentFeed = this._feeds.find(feed => feed.id === this._currentFeedId);
+    if (!currentFeed) {
+      throw new Error(`Feed "${this._currentFeedId}" does not exist.`);
+    }
+
+    const tabExistsInCurrentFeed = currentFeed.tabs?.some(tab => tab.id === tabId);
+    if (!tabExistsInCurrentFeed) {
+      throw new Error(`Tab "${tabId}" does not exist in feed "${currentFeed.id}".`);
+    }
 
     // Save the selected tab for the current feed
     this._feedTabMap.set(this._currentFeedId, tabId);

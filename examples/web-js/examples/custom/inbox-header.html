@@ -54,14 +54,15 @@
         id: 'archive',
         title: 'Archive',
         tabs: [
-          { id: 'archive', title: 'Archive', filter: {} }
+          { id: 'archive_1', title: 'Archive 1', filter: { archived: true } },
+          { id: 'archive_2', title: 'Archive 2', filter: { archived: true } }
         ]
       }
     ]);
 
     // Select the feed and tab
     inbox.selectFeed('archive');
-    inbox.selectTab('archive');
+    inbox.selectTab('archive_2');
 
   </script>
 
