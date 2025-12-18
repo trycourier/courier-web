@@ -1079,6 +1079,26 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
         item: {
           ...defaultTheme.inbox?.list?.item,
           ...theme.inbox?.list?.item,
+          actions: {
+            ...defaultTheme.inbox?.list?.item?.actions,
+            ...theme.inbox?.list?.item?.actions,
+            font: {
+              ...defaultTheme.inbox?.list?.item?.actions?.font,
+              ...theme.inbox?.list?.item?.actions?.font
+            }
+          },
+          title: {
+            ...defaultTheme.inbox?.list?.item?.title,
+            ...theme.inbox?.list?.item?.title
+          },
+          subtitle: {
+            ...defaultTheme.inbox?.list?.item?.subtitle,
+            ...theme.inbox?.list?.item?.subtitle
+          },
+          time: {
+            ...defaultTheme.inbox?.list?.item?.time,
+            ...theme.inbox?.list?.item?.time
+          },
           menu: {
             ...defaultTheme.inbox?.list?.item?.menu,
             ...theme.inbox?.list?.item?.menu,
@@ -1112,14 +1132,50 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
       loading: {
         ...defaultTheme.inbox?.loading,
         ...theme.inbox?.loading,
+        animation: {
+          ...defaultTheme.inbox?.loading?.animation,
+          ...theme.inbox?.loading?.animation
+        }
       },
       empty: {
         ...defaultTheme.inbox?.empty,
-        ...theme.inbox?.empty
+        ...theme.inbox?.empty,
+        title: {
+          ...defaultTheme.inbox?.empty?.title,
+          ...theme.inbox?.empty?.title,
+          font: {
+            ...defaultTheme.inbox?.empty?.title?.font,
+            ...theme.inbox?.empty?.title?.font
+          }
+        },
+        button: {
+          ...defaultTheme.inbox?.empty?.button,
+          ...theme.inbox?.empty?.button,
+          font: {
+            ...defaultTheme.inbox?.empty?.button?.font,
+            ...theme.inbox?.empty?.button?.font
+          }
+        }
       },
       error: {
         ...defaultTheme.inbox?.error,
-        ...theme.inbox?.error
+        ...theme.inbox?.error,
+        title: {
+          ...defaultTheme.inbox?.error?.title,
+          ...theme.inbox?.error?.title,
+          font: {
+            ...defaultTheme.inbox?.error?.title?.font,
+            ...theme.inbox?.error?.title?.font
+          }
+        },
+        button: {
+          ...defaultTheme.inbox?.error?.button,
+          ...theme.inbox?.error?.button,
+          font: {
+            ...defaultTheme.inbox?.error?.button?.font,
+            ...theme.inbox?.error?.button?.font
+          }
+        }
       }
     }
   };

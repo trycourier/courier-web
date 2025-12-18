@@ -9,6 +9,15 @@
 </head>
 
 <body>
+  <style>
+    @font-face {
+      font-family: 'Poppins';
+      src: url('../Poppins-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
 
   <div style="padding: 24px;">
     <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
@@ -109,9 +118,15 @@
         header: {
           feeds: {
             button: {
+              font: {
+                family: "Poppins",
+              },
               unreadCountIndicator: {
-                backgroundColor: "#8B5CF6"
-              }
+                backgroundColor: "#8B5CF6",
+                font: {
+                  family: "Poppins",
+                },
+              },
             },
             menu: {
               animation: {
@@ -120,20 +135,62 @@
                 visibleTransform: 'translate3d(0, 0, 0) scale(1)'
               },
               list: {
+                font: {
+                  family: "Poppins",
+                },
                 selectedIcon: {
                   color: "#8B5CF6"
+                }
+              }
+            },
+            tabs: {
+              default: {
+                font: {
+                  family: "Poppins",
+                },
+                unreadIndicator: {
+                  font: {
+                    family: "Poppins",
+                  },
+                },
+              },
+              selected: {
+                indicatorColor: "#8B5CF6",
+                font: {
+                  color: "#8B5CF6",
+                  family: "Poppins"
+                },
+                unreadIndicator: {
+                  backgroundColor: "#8B5CF6",
+                  font: {
+                    family: "Poppins"
+                  }
                 }
               }
             }
           },
           tabs: {
+            default: {
+              font: {
+                family: "Poppins",
+              },
+              unreadIndicator: {
+                font: {
+                  family: "Poppins",
+                },
+              },
+            },
             selected: {
               indicatorColor: "#8B5CF6",
               font: {
-                color: "#8B5CF6"
+                color: "#8B5CF6",
+                family: "Poppins"
               },
               unreadIndicator: {
-                backgroundColor: "#8B5CF6"
+                backgroundColor: "#8B5CF6",
+                font: {
+                  family: "Poppins"
+                }
               }
             }
           },
@@ -147,9 +204,47 @@
         },
         list: {
           item: {
-            unreadIndicatorColor: "#8B5CF6"
+            unreadIndicatorColor: "#8B5CF6",
+            title: {
+              family: "Poppins",
+            },
+            subtitle: {
+              family: "Poppins",
+            },
+            time: {
+              family: "Poppins",
+            },
+            actions: {
+              font: {
+                family: "Poppins",
+              },
+            },
           }
-        }
+        },
+        empty: {
+          title: {
+            font: {
+              family: "Poppins",
+            },
+          },
+          button: {
+            font: {
+              family: "Poppins",
+            },
+          },
+        },
+        error: {
+          title: {
+            font: {
+              family: "Poppins",
+            },
+          },
+          button: {
+            font: {
+              family: "Poppins",
+            },
+          },
+        },
       }
     }
 
@@ -166,5 +261,3 @@
 </body>
 
 </html>
-
-

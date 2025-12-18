@@ -9,6 +9,15 @@
 </head>
 
 <body>
+  <style>
+    @font-face {
+      font-family: 'Poppins';
+      src: url('../Poppins-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
 
   <courier-inbox height="50vh"></courier-inbox>
 
@@ -20,51 +29,8 @@
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
     });
-
-    // Reference the element
-    const inbox = document.querySelector('courier-inbox');
-
-    const theme = {
-      inbox: {
-        header: {
-          feeds: {
-            button: {
-              unreadCountIndicator: {
-                backgroundColor: "#8B5CF6"
-              }
-            }
-          },
-          tabs: {
-            selected: {
-              indicatorColor: "#8B5CF6",
-              font: {
-                color: "#8B5CF6"
-              },
-              unreadIndicator: {
-                backgroundColor: "#8B5CF6"
-              }
-            }
-          }
-        },
-        list: {
-          item: {
-            unreadIndicatorColor: "#8B5CF6"
-          }
-        }
-      }
-    }
-
-    // Set the theme
-    inbox.setLightTheme(theme);
-    inbox.setDarkTheme(theme);
-
-    // Set the mode
-    // This will force light, dark or system theme mode
-    inbox.setMode('light');
   </script>
 
 </body>
 
 </html>
-
-

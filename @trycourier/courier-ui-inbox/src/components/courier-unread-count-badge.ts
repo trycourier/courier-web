@@ -99,6 +99,8 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
         color: ${activeTheme?.font?.color ?? fallbackTheme?.font?.color};
         border-radius: ${activeTheme?.borderRadius ?? fallbackTheme?.borderRadius};
         font-size: ${activeTheme?.font?.size ?? fallbackTheme?.font?.size};
+        font-family: ${activeTheme?.font?.family ?? fallbackTheme?.font?.family ?? 'inherit'};
+        font-weight: ${activeTheme?.font?.weight ?? fallbackTheme?.font?.weight ?? 'inherit'};
         padding: ${activeTheme?.padding ?? fallbackTheme?.padding};
       }
 
@@ -108,6 +110,8 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
         color: ${inactiveTheme?.font?.color ?? fallbackTheme?.font?.color};
         border-radius: ${inactiveTheme?.borderRadius ?? fallbackTheme?.borderRadius};
         font-size: ${inactiveTheme?.font?.size ?? fallbackTheme?.font?.size};
+        font-family: ${inactiveTheme?.font?.family ?? fallbackTheme?.font?.family ?? 'inherit'};
+        font-weight: ${inactiveTheme?.font?.weight ?? fallbackTheme?.font?.weight ?? 'inherit'};
         padding: ${inactiveTheme?.padding ?? fallbackTheme?.padding};
       }
     `
