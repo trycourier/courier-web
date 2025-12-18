@@ -24,12 +24,12 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   constructor(themeBus: CourierInboxThemeManager) {
     super();
     this._themeSubscription = themeBus.subscribe((_: CourierInboxTheme) => {
-      this.render();
+      this.refreshTheme();
     });
   }
 
   onComponentMounted() {
-    this.render();
+    this.refreshTheme();
   }
 
   onComponentUnmounted() {
@@ -58,10 +58,6 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   }
 
   static getStyles(theme: CourierInboxTheme): string {
-
-    const unreadDotIndicator = theme.popup?.button?.unreadDotIndicator;
-    console.log('unreadDotIndicator', unreadDotIndicator);
-
     return `
       ${CourierInboxMenuButton.id} {
         display: inline-block;
@@ -91,10 +87,10 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     if (this._unreadBadge) {
       this._unreadBadge.style.display = unreadCount > 0 ? 'block' : 'none';
     }
-    this.render();
+    this.refreshTheme();
   }
 
-  private render() {
+  private refreshTheme() {
     this._style?.remove();
     this._style = injectGlobalStyle(CourierInboxMenuButton.id, CourierInboxMenuButton.getStyles(this.theme));
     this._triggerButton?.updateIconColor(this.theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);

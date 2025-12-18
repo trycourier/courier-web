@@ -87,7 +87,7 @@ export class CourierInboxList extends CourierBaseElement {
 
     // Initialize the theme subscription
     this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
-      this.render();
+      this.refreshTheme();
     });
 
   }
@@ -232,6 +232,27 @@ export class CourierInboxList extends CourierBaseElement {
     this._onRefresh();
   }
 
+  private refreshTheme(): void {
+
+    // Update list styles
+    if (this._listStyles) {
+      this._listStyles.textContent = CourierInboxList.getStyles(this.theme);
+    }
+
+    // Update list item styles
+    if (this._listItemStyles) {
+      this._listItemStyles.textContent = CourierInboxListItem.getStyles(this.theme);
+    }
+
+    // Update list item menu styles
+    if (this._listItemMenuStyles) {
+      this._listItemMenuStyles.textContent = CourierInboxListItemMenu.getStyles(this.theme);
+    }
+
+    // Update info state themes if they are rendered
+    this.refreshInfoStateThemes();
+  }
+
   public refreshInfoStateThemes() {
     this._emptyContainer?.updateStyles(this.errorProps);
     this._emptyContainer?.updateStyles(this.emptyProps);
@@ -304,20 +325,8 @@ export class CourierInboxList extends CourierBaseElement {
       this._emptyContainer = undefined;
     }
 
-    // Update list styles
-    if (this._listStyles) {
-      this._listStyles.textContent = CourierInboxList.getStyles(this.theme);
-    }
-
-    // Update list item styles
-    if (this._listItemStyles) {
-      this._listItemStyles.textContent = CourierInboxListItem.getStyles(this.theme);
-    }
-
-    // Update list item menu styles
-    if (this._listItemMenuStyles) {
-      this._listItemMenuStyles.textContent = CourierInboxListItemMenu.getStyles(this.theme);
-    }
+    // Refresh theme-related styles and info states
+    this.refreshTheme();
 
     // Error state
     if (this._error) {
