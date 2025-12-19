@@ -3,9 +3,9 @@ import { getCourierClient } from '../lib/courier';
 
 export async function POST(request: Request) {
   try {
-    // Read user_id, title, and body from request body
+    // Read user_id, title, body, and optional tags from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody } = body;
+    const { user_id, title, body: messageBody, tags } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -39,6 +39,9 @@ export async function POST(request: Request) {
         content: {
           title: title,
           body: messageBody,
+        },
+        metadata: {
+          tags: tags,
         },
         routing: {
           method: 'single',
