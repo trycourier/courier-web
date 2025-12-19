@@ -11,7 +11,9 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "@trycourier/courier-react-17": "file:../../@trycourier/courier-react-17"
+    "@trycourier/courier-react-17": "file:../../@trycourier/courier-react-17",
+    "react-router-dom": "^6.26.0",
+    "markdown-to-jsx": "^7.7.13"
   },
   "devDependencies": {
     "@types/react": "^17.0.2",

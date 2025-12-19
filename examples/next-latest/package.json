@@ -11,7 +11,8 @@
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@trycourier/courier-react": "file:../../@trycourier/courier-react"
+    "@trycourier/courier-react": "file:../../@trycourier/courier-react",
+    "markdown-to-jsx": "^7.7.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
