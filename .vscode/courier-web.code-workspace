@@ -46,6 +46,18 @@
     {
       "name": "web-js",
       "path": "../examples/web-js"
+    },
+    {
+      "name": "next-12",
+      "path": "../examples/next-12"
+    },
+    {
+      "name": "react-17",
+      "path": "../examples/react-17"
+    },
+    {
+      "name": "designer",
+      "path": "../designer"
     }
   ],
   "settings": {

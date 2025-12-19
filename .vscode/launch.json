@@ -79,6 +79,21 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Designer",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "designer",
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "CourierJS Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
