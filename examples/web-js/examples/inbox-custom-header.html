@@ -15,12 +15,6 @@
   <script type="module">
     import { Courier } from '@trycourier/courier-ui-inbox';
 
-    // Authenticate the user with the inbox
-    Courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT
-    });
-
     // Reference the courier-inbox element
     const inbox = document.getElementById('inbox');
 
@@ -29,15 +23,25 @@
 
     // Set a custom header
     inbox.setHeader((props) => {
-      console.log('props', props);
       const headerDiv = document.createElement('div');
       headerDiv.style.background = 'red';
-      headerDiv.style.fontSize = '24px';
-      headerDiv.style.padding = '24px';
+      headerDiv.style.fontSize = '20px';
+      headerDiv.style.color = 'white';
+      headerDiv.style.padding = '20px';
       headerDiv.style.width = '100%';
+      headerDiv.style.fontFamily = 'monospace';
+
+      // Find selected feed and tab
       const selectedFeed = props.feeds.find(feed => feed.isSelected);
       const selectedTab = selectedFeed?.tabs.find(tab => tab.isSelected);
-      headerDiv.textContent = `${selectedFeed?.id ?? ''} - ${selectedTab?.id ?? ''} - ${selectedTab?.unreadCount ?? 0}`;
+
+      // Prepare summary for header
+      let feedPart = selectedFeed ? `${selectedFeed.feedId}` : 'No Feed Selected';
+      let tabPart = selectedTab ? `${selectedTab.datasetId}` : 'No Tab Selected';
+      let unreadPart = typeof selectedTab?.unreadCount === 'number' ? `Unread: ${selectedTab.unreadCount}` : '';
+
+      headerDiv.textContent = `${feedPart} / ${tabPart} ${unreadPart && '- ' + unreadPart}`;
+
       return headerDiv;
     });
 
@@ -60,6 +64,12 @@
       }
     ]);
 
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
     // Select the feed and tab
     inbox.selectFeed('archive');
     inbox.selectTab('archive_2');
@@ -69,5 +79,3 @@
 </body>
 
 </html>
-
-

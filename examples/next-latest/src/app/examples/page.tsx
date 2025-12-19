@@ -50,7 +50,7 @@ export default function Examples() {
           <ExampleCard to="/examples/inbox-custom-height" title="Inbox — Custom Height">
             Inbox constrained to a custom height with a tailored layout.
           </ExampleCard>
-          <ExampleCard to="/examples/inbox-theme" title="Inbox — Themed (React)">
+          <ExampleCard to="/examples/inbox-theme" title="Inbox — Themed">
             Inbox themed via React with Poppins typography and accent colors.
           </ExampleCard>
           <ExampleCard to="/examples/inbox-header" title="Inbox — Custom Header">
@@ -92,7 +92,7 @@ export default function Examples() {
           </ExampleCard>
           <ExampleCard
             to="/examples/inbox-popup-menu-theme"
-            title="Popup — Themed (React)"
+            title="Popup — Themed"
           >
             Popup inbox menu themed via React with Poppins typography and accent colors.
           </ExampleCard>

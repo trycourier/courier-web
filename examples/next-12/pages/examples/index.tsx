@@ -49,7 +49,7 @@ const Examples: NextPage = () => {
           <ExampleCard to="/examples/inbox-custom-height" title="Inbox — Custom Height">
             Inbox constrained to a custom height with a tailored layout.
           </ExampleCard>
-          <ExampleCard to="/examples/inbox-theme" title="Inbox — Themed (React)">
+          <ExampleCard to="/examples/inbox-theme" title="Inbox — Themed">
             Inbox themed via React with Poppins typography and accent colors.
           </ExampleCard>
           <ExampleCard to="/examples/inbox-header" title="Inbox — Custom Header">
@@ -91,7 +91,7 @@ const Examples: NextPage = () => {
           </ExampleCard>
           <ExampleCard
             to="/examples/inbox-popup-menu-theme"
-            title="Popup — Themed (React)"
+            title="Popup — Themed"
           >
             Popup inbox menu themed via React with Poppins typography and accent colors.
           </ExampleCard>
@@ -147,21 +147,27 @@ function ExampleCard({ to, title, children }: ExampleCardProps) {
     <Link
       href={to}
       style={{
-        display: 'block',
-        padding: '10px 12px',
-        margin: '10px 0',
-        borderRadius: '4px',
-        border: '1px solid #dddddd',
         textDecoration: 'none',
         color: 'inherit',
-        background: '#fafafa',
-        fontSize: '13px',
+        display: 'block',
       }}
     >
-      <strong style={{ display: 'block', fontSize: '14px', marginBottom: 6 }}>
-        {title}
-      </strong>
-      <span style={{ display: 'block', color: '#666666' }}>{children}</span>
+      <div
+        style={{
+          padding: '10px 12px',
+          margin: '10px 0',
+          borderRadius: '4px',
+          border: '1px solid #dddddd',
+          background: '#fafafa',
+          fontSize: '13px',
+          cursor: 'pointer',
+        }}
+      >
+        <strong style={{ display: 'block', fontSize: '14px', marginBottom: 6 }}>
+          {title}
+        </strong>
+        <span style={{ display: 'block', color: '#666666' }}>{children}</span>
+      </div>
     </Link>
   );
 }
