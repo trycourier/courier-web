@@ -20,7 +20,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Next Latest",
+  title: "next-latest",
   description: "The latest version of Next.js",
 };
 

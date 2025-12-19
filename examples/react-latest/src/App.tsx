@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './Home';
 import InboxDefault from './InboxDefault';
 import InboxPopupMenuDefault from './InboxPopupMenuDefault';
 import InboxActions from './InboxActions';
@@ -26,8 +27,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root index of examples (matches Web JS index layout) */}
-        <Route path="/" element={<Examples />} />
+        {/* Root index (matches next-latest pattern) */}
+        <Route path="/" element={<Home />} />
         <Route path="/examples" element={<Examples />} />
 
         {/* Inbox default */}

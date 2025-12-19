@@ -18,34 +18,61 @@ export default function CustomFeeds() {
 
   const feeds: CourierInboxFeed[] = [
     {
-      feedId: 'notifications',
-      title: 'Notifications',
+      feedId: 'all',
+      title: 'All',
       tabs: [
         {
-          datasetId: 'all-notifications',
+          datasetId: 'all',
           title: 'All',
           filter: {}
-        },
-        {
-          datasetId: 'unread-notifications',
-          title: 'Unread',
-          filter: { status: 'unread' }
-        },
-        {
-          datasetId: 'important',
-          title: 'Important',
-          filter: { tags: ['important'] }
         }
       ]
     },
     {
-      feedId: 'archived',
-      title: 'Archived',
+      feedId: 'jobs',
+      title: 'Jobs',
       tabs: [
         {
-          datasetId: 'archived-messages',
-          title: 'Archived',
-          filter: { archived: true }
+          datasetId: 'jobs',
+          title: 'Jobs',
+          filter: { tags: ['job'] }
+        }
+      ]
+    },
+    {
+      feedId: 'my-posts',
+      title: 'My Posts',
+      tabs: [
+        {
+          datasetId: 'all-my-posts',
+          title: 'All',
+          filter: { tags: ['my_post'] }
+        },
+        {
+          datasetId: 'comments',
+          title: 'Comments',
+          filter: { tags: ['comment'] }
+        },
+        {
+          datasetId: 'reactions',
+          title: 'Reactions',
+          filter: { tags: ['reaction'] }
+        },
+        {
+          datasetId: 'reposts',
+          title: 'Reposts',
+          filter: { tags: ['repost'] }
+        }
+      ]
+    },
+    {
+      feedId: 'mentions',
+      title: 'Mentions',
+      tabs: [
+        {
+          datasetId: 'mentions',
+          title: 'Mentions',
+          filter: { tags: ['mention'] }
         }
       ]
     }

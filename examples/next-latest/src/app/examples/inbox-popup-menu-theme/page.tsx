@@ -169,53 +169,64 @@ export default function PopupMenuTheme() {
 
   const feeds: CourierInboxFeed[] = [
     {
-      feedId: 'inbox',
-      title: 'Inbox',
-      tabs: [
-        {
-          datasetId: 'inbox',
-          title: 'Inbox',
-          filter: {},
-        },
-      ],
-    },
-    {
-      feedId: 'categories',
-      title: 'Categories',
+      feedId: 'all',
+      title: 'All',
       tabs: [
         {
           datasetId: 'all',
           title: 'All',
-          filter: {},
-        },
-        {
-          datasetId: 'unread',
-          title: 'Unread',
-          filter: { status: 'unread' },
-        },
-        {
-          datasetId: 'read',
-          title: 'Read',
-          filter: { status: 'read' },
-        },
-        {
-          datasetId: 'important',
-          title: 'Important',
-          filter: { tags: ['important'] },
-        },
-      ],
+          filter: {}
+        }
+      ]
     },
     {
-      feedId: 'archive',
-      title: 'Archive',
+      feedId: 'jobs',
+      title: 'Jobs',
       tabs: [
         {
-          datasetId: 'archive',
-          title: 'Archive',
-          filter: { archived: true },
-        },
-      ],
+          datasetId: 'jobs',
+          title: 'Jobs',
+          filter: { tags: ['job'] }
+        }
+      ]
     },
+    {
+      feedId: 'my-posts',
+      title: 'My Posts',
+      tabs: [
+        {
+          datasetId: 'all-my-posts',
+          title: 'All',
+          filter: { tags: ['my_post'] }
+        },
+        {
+          datasetId: 'comments',
+          title: 'Comments',
+          filter: { tags: ['comment'] }
+        },
+        {
+          datasetId: 'reactions',
+          title: 'Reactions',
+          filter: { tags: ['reaction'] }
+        },
+        {
+          datasetId: 'reposts',
+          title: 'Reposts',
+          filter: { tags: ['repost'] }
+        }
+      ]
+    },
+    {
+      feedId: 'mentions',
+      title: 'Mentions',
+      tabs: [
+        {
+          datasetId: 'mentions',
+          title: 'Mentions',
+          filter: { tags: ['mention'] }
+        }
+      ]
+    }
   ];
 
   return (

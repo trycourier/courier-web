@@ -77,27 +77,6 @@ const PopupCustomFeed: NextPage = () => {
           filter: { tags: ['mention'] }
         }
       ]
-    },
-    {
-      feedId: 'other',
-      title: 'Other',
-      tabs: [
-        {
-          datasetId: 'read',
-          title: 'Read',
-          filter: { status: 'read' }
-        },
-        {
-          datasetId: 'unread',
-          title: 'Unread',
-          filter: { status: 'unread' }
-        },
-        {
-          datasetId: 'archived',
-          title: 'Archived',
-          filter: { archived: true }
-        }
-      ]
     }
   ];
 
