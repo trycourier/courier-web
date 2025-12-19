@@ -16,8 +16,79 @@ export class CourierInbox extends CourierBaseElement {
     return 'courier-inbox';
   }
 
+  /**
+   * Returns the default set of feeds used by CourierInbox.
+   * Exposed as a convenience for constructing matching datasets in
+   * custom integrations (for example, when using CourierInboxDatastore directly).
+   * 
+   * @example
+   * Returns:
+   * [
+   *   {
+   *     feedId: 'inbox_feed',
+   *     title: 'Inbox',
+   *     iconSVG: CourierIconSVGs.inbox,
+   *     tabs: [
+   *       {
+   *         datasetId: 'all_messages',
+   *         title: 'All Messages',
+   *         filter: {}
+   *       }
+   *     ]
+   *   },
+   *   {
+   *     feedId: 'archive_feed',
+   *     title: 'Archive',
+   *     iconSVG: CourierIconSVGs.archive,
+   *     tabs: [
+   *       {
+   *         datasetId: 'archived_messages',
+   *         title: 'Archived Messages',
+   *         filter: {
+   *           archived: true
+   *         }
+   *       }
+   *     ]
+   *   }
+   * ]
+   */
+  public static defaultFeeds(): CourierInboxFeed[] {
+    return defaultFeeds();
+  }
+
+  /**
+   * Returns the default header actions used by CourierInbox.
+   * Exposed as a convenience for building matching headers in custom UIs.
+   * 
+   * @example
+   * Returns:
+   * [
+   *   { id: 'readAll' },
+   *   { id: 'archiveRead' },
+   *   { id: 'archiveAll' }
+   * ]
+   */
+  public static defaultActions(): CourierInboxHeaderAction[] {
+    return defaultActions();
+  }
+
+  /**
+   * Returns the default list item actions used by CourierInbox.
+   * Exposed as a convenience for building matching message menus in custom UIs.
+   * 
+   * @example
+   * Returns:
+   * [
+   *   { id: 'read_unread' },
+   *   { id: 'archive_unarchive' }
+   * ]
+   */
+  public static defaultListItemActions(): CourierInboxListItemAction[] {
+    return defaultListItemActions();
+  }
+
   // State
-  private _currentFeedId: string = defaultFeeds()[0].id;
+  private _currentFeedId: string = defaultFeeds()[0].feedId;
   private _feedTabMap: Map<string, string> = new Map();
 
   /** Returns the current feed type. */
@@ -80,13 +151,13 @@ export class CourierInbox extends CourierBaseElement {
   // Header
   private _header?: CourierInboxHeader;
   private _headerFactory: ((props: CourierInboxHeaderFactoryProps | undefined | null) => HTMLElement) | undefined | null = undefined;
-  private _actions: CourierInboxHeaderAction[] = defaultActions();
+  private _actions: CourierInboxHeaderAction[] = CourierInbox.defaultActions();
 
   // List
   private _onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
   private _onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
   private _onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
-  private _listItemActions: CourierInboxListItemAction[] = defaultListItemActions();
+  private _listItemActions: CourierInboxListItemAction[] = CourierInbox.defaultListItemActions();
 
   // Default props
   private _defaultProps = {
@@ -113,14 +184,14 @@ export class CourierInbox extends CourierBaseElement {
     // Set the default (first) tab for each feed in the map
     for (const feed of this._feeds) {
       if (!feed.tabs || !feed.tabs.length) {
-        throw new Error(`Feed "${feed.id}" does not contain any tabs. You must have at least one tab in each feed.`);
+        throw new Error(`Feed "${feed.feedId}" does not contain any tabs. You must have at least one tab in each feed.`);
       }
       // Set the default (first) tab for each feed in the map
-      this._feedTabMap.set(feed.id, feed.tabs[0].id);
+      this._feedTabMap.set(feed.feedId, feed.tabs[0].datasetId);
     }
 
     // Optionally set current feed and tab if not already set
-    this._currentFeedId = this._feeds[0].id;
+    this._currentFeedId = this._feeds[0].feedId;
   }
 
   onComponentMounted() {
@@ -181,22 +252,22 @@ export class CourierInbox extends CourierBaseElement {
     this.resetInitialFeedAndTab();
 
     // Create the datasets from the feeds
-    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
+    CourierInboxDatastore.shared.registerFeeds(this._feeds);
 
     // Create the data store listener
     this._datastoreListener = new CourierInboxDataStoreListener({
       onError: (error: Error) => {
         this._list?.setError(error);
       },
-      onDataSetChange: (dataSet: InboxDataSet, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.setDataSet(dataSet);
+      onDataSetChange: (dataset: InboxDataSet) => {
+        if (this._currentTabId === dataset.id) {
+          this._list?.setDataSet(dataset);
           this.updateHeader();
         }
       },
-      onPageAdded: (dataSet: InboxDataSet, datasetId: string) => {
-        if (this._currentTabId === datasetId) {
-          this._list?.addPage(dataSet);
+      onPageAdded: (dataset: InboxDataSet) => {
+        if (this._currentTabId === dataset.id) {
+          this._list?.addPage(dataset);
           this.updateHeader();
         }
       },
@@ -226,6 +297,10 @@ export class CourierInbox extends CourierBaseElement {
         if (this._currentTabId === datasetId) {
           this.updateHeader();
         }
+      },
+      onTotalUnreadCountChange: (_totalUnreadCount: number) => {
+        // Re-render the header so custom headers that depend on total unread count can update
+        this.updateHeader();
       }
     });
 
@@ -246,15 +321,15 @@ export class CourierInbox extends CourierBaseElement {
       themeManager: this._themeManager,
       actions: this._actions,
       onFeedChange: (feed: CourierInboxFeed) => {
-        this.selectFeed(feed.id);
+        this.selectFeed(feed.feedId);
       },
       onFeedReselected: (feed: CourierInboxFeed) => {
-        this.selectTab(feed.tabs[0].id);
+        this.selectTab(feed.tabs[0].datasetId);
         this._list?.scrollToTop();
         this._header?.tabs?.scrollToStart();
       },
       onTabChange: (tab: CourierInboxTab) => {
-        this.selectTab(tab.id);
+        this.selectTab(tab.datasetId);
       },
       onTabReselected: (_tab: CourierInboxTab) => {
         this._list?.scrollToTop();
@@ -275,10 +350,10 @@ export class CourierInbox extends CourierBaseElement {
       onRefresh: () => {
         this.refresh();
       },
-      onPaginationTrigger: async (feedType: string) => {
+      onPaginationTrigger: async (datasetId: string) => {
         try {
           await CourierInboxDatastore.shared.fetchNextPageOfMessages({
-            datasetId: feedType
+            datasetId: datasetId
           });
         } catch (error) {
           Courier.shared.client?.options.logger?.error('Failed to fetch next page of messages:', error);
@@ -455,7 +530,7 @@ export class CourierInbox extends CourierBaseElement {
    * @param feedId - The feed ID to display.
    */
   public selectFeed(feedId: string) {
-    const feed = this._feeds.find(f => f.id === feedId);
+    const feed = this._feeds.find(f => f.feedId === feedId);
     if (!feed) {
       throw new Error(`Feed "${feedId}" does not exist.`);
     }
@@ -465,7 +540,7 @@ export class CourierInbox extends CourierBaseElement {
       if (!feed.tabs || feed.tabs.length === 0) {
         throw new Error(`Feed "${feedId}" does not contain any tabs. You must have at least one tab in each feed.`);
       }
-      const firstTabId = feed.tabs[0].id;
+      const firstTabId = feed.tabs[0].datasetId;
       this._header?.selectFeed(feedId, firstTabId);
       this.selectTab(firstTabId);
       return;
@@ -483,14 +558,14 @@ export class CourierInbox extends CourierBaseElement {
    * @param animate - Whether to animate the scroll to top.
    */
   public selectTab(tabId: string) {
-    const currentFeed = this._feeds.find(feed => feed.id === this._currentFeedId);
+    const currentFeed = this._feeds.find(feed => feed.feedId === this._currentFeedId);
     if (!currentFeed) {
       throw new Error(`Feed "${this._currentFeedId}" does not exist.`);
     }
 
-    const tabExistsInCurrentFeed = currentFeed.tabs?.some(tab => tab.id === tabId);
+    const tabExistsInCurrentFeed = currentFeed.tabs?.some(tab => tab.datasetId === tabId);
     if (!tabExistsInCurrentFeed) {
-      throw new Error(`Tab "${tabId}" does not exist in feed "${currentFeed.id}".`);
+      throw new Error(`Tab "${tabId}" does not exist in feed "${currentFeed.feedId}".`);
     }
 
     // Save the selected tab for the current feed
@@ -507,9 +582,9 @@ export class CourierInbox extends CourierBaseElement {
    */
   private updateTabUnreadCounts(tabs: CourierInboxTab[]) {
     for (const tab of tabs) {
-      const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
+      const dataset = CourierInboxDatastore.shared.getDatasetById(tab.datasetId);
       if (dataset) {
-        this._header?.tabs?.updateTabUnreadCount(tab.id, dataset.unreadCount);
+        this._header?.tabs?.updateTabUnreadCount(tab.datasetId, dataset.unreadCount);
       }
     }
   }
@@ -545,7 +620,7 @@ export class CourierInbox extends CourierBaseElement {
     this.resetInitialFeedAndTab();
 
     // Create datasets from the feeds
-    CourierInboxDatastore.shared.createDatasetsFromFeeds(this._feeds);
+    CourierInboxDatastore.shared.registerFeeds(this._feeds);
 
     // Update the header with new feeds
     this._header?.setFeeds(this._feeds);
@@ -569,19 +644,23 @@ export class CourierInbox extends CourierBaseElement {
     return this._feeds;
   }
 
-  private getHeaderFeeds(): CourierInboxHeaderFeed[] {
+  /**
+   * Returns the header feeds in the format expected by header factories.
+   * @public
+   */
+  public getHeaderFeeds(): CourierInboxHeaderFeed[] {
     return this._feeds.map(feed => ({
-      id: feed.id,
+      feedId: feed.feedId,
       title: feed.title,
       iconSVG: feed.iconSVG,
       tabs: feed.tabs.map(tab => ({
-        id: tab.id,
+        datasetId: tab.datasetId,
         title: tab.title,
-        unreadCount: CourierInboxDatastore.shared.getDatasetById(tab.id)?.unreadCount ?? 0,
-        isSelected: tab.id === this._currentTabId,
+        unreadCount: CourierInboxDatastore.shared.getDatasetById(tab.datasetId)?.unreadCount ?? 0,
+        isSelected: tab.datasetId === this._currentTabId,
         filter: tab.filter
       })),
-      isSelected: feed.id === this._currentFeedId
+      isSelected: feed.feedId === this._currentFeedId
     }));
   }
 

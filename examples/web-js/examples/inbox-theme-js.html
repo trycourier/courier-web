@@ -164,59 +164,59 @@
     // Set custom feeds with the specified structure
     inbox.setFeeds([
       {
-        id: 'all',
+        feedId: 'all',
         title: 'All',
         tabs: [
           {
-            id: 'all',
+            datasetId: 'all',
             title: 'All',
             filter: {}
           }
         ]
       },
       {
-        id: 'jobs',
+        feedId: 'jobs',
         title: 'Jobs',
         tabs: [
           {
-            id: 'jobs',
+            datasetId: 'jobs',
             title: 'Jobs',
             filter: { tags: ['job'] }
           }
         ]
       },
       {
-        id: 'my-posts',
+        feedId: 'my-posts',
         title: 'My Posts',
         tabs: [
           {
-            id: 'all-my-posts',
+            datasetId: 'all-my-posts',
             title: 'All',
             filter: { tags: ['my_post'] }
           },
           {
-            id: 'comments',
+            datasetId: 'comments',
             title: 'Comments',
             filter: { tags: ['comment'] }
           },
           {
-            id: 'reactions',
+            datasetId: 'reactions',
             title: 'Reactions',
             filter: { tags: ['reaction'] }
           },
           {
-            id: 'reposts',
+            datasetId: 'reposts',
             title: 'Reposts',
             filter: { tags: ['repost'] }
           }
         ]
       },
       {
-        id: 'mentions',
+        feedId: 'mentions',
         title: 'Mentions',
         tabs: [
           {
-            id: 'mentions',
+            datasetId: 'mentions',
             title: 'Mentions',
             filter: { tags: ['mention'] }
           }

@@ -80,6 +80,7 @@ export class CourierInfoState extends CourierFactoryElement {
         text-align: center;
         padding: 24px;
         box-sizing: border-box;
+        width: 100%;
         height: 100%;
       }
 

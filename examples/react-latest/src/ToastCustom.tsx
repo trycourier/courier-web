@@ -1,13 +1,12 @@
 import { useEffect } from 'react'
 import {
-  CourierInboxPopupMenu,
   CourierToast,
   useCourier,
   type CourierToastItemFactoryProps,
 } from '@trycourier/courier-react';
 
 // Render a custom component
-const CustomToastItem = ({ message, autoDismiss, autoDismissTimeoutMs }: CourierToastItemFactoryProps) => (
+const CustomToastItem = ({ message }: CourierToastItemFactoryProps) => (
   <div style={{
     display: 'flex',
     alignItems: 'center',
@@ -64,30 +63,40 @@ export default function App() {
     });
   }, []);
 
-  useEffect(() => {
-    // Add a toast manually
-    setTimeout(() => {
-      courier.toast.addMessage({
-        messageId: "1",
-        title: "📸 New photos from Fred L.",
-        body: "Fred shared 4 photos.",
-        actions: [
-          {
-            content: "See more"
-          },
-          {
-            content: "Mark read"
-          }
-        ]
-      });
-    }, 1000);
-  }, []);
+  const showToast = () => {
+    courier.toast.addMessage({
+      messageId: "custom-1",
+      title: "📸 New photos from Fred L.",
+      body: "Fred shared 4 photos.",
+      actions: [
+        {
+          content: "See more"
+        },
+        {
+          content: "Mark read"
+        }
+      ]
+    });
+  };
 
   return (
-    <div>
-      <CourierInboxPopupMenu />
+    <div
+      style={{
+        margin: 0,
+        minHeight: '100vh',
+        padding: 40,
+        boxSizing: 'border-box',
+        background: 'white',
+        fontFamily:
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
+      }}
+    >
+      <button type="button" onClick={showToast}>
+        Show custom toast
+      </button>
       <CourierToast
-        renderToastItem={(props) => <CustomToastItem {...props} />}/>
+        renderToastItem={(props) => <CustomToastItem {...props} />}
+      />
     </div>
   );
 }

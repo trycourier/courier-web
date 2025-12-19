@@ -2,12 +2,6 @@ import { ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 
-/**
- * Converts a React node to an HTMLElement.
- * This function uses flushSync to ensure the DOM is updated synchronously.
- * @param node - The React node to convert.
- * @returns The converted HTMLElement.
- */
 export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
   const container = document.createElement('div');
 
@@ -17,7 +11,20 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
     root.render(node);
   });
 
-  // Return the container to preserve React's event handling
-  // The container maintains the React root and event delegation
+  /**
+   * If React rendered a single root element, return that element directly so we
+   * don't introduce an extra wrapper <div> into the caller's DOM structure.
+   *
+   * The React root stays attached to `container`, but since these rendered
+   * nodes are treated as static content by our web components (we don't call
+   * `render` again), it's safe to move the child into its final parent.
+   */
+  const onlyChild = container.firstElementChild as HTMLElement | null;
+  if (onlyChild && container.childElementCount === 1) {
+    return onlyChild;
+  }
+
+  // Fallback: if there are multiple children, preserve the container wrapper
+  // to maintain React's event handling and DOM structure.
   return container;
 }

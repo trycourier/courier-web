@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courier Inbox - Datastore Listener</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+
+  <div style="padding: 24px;" id="total-unread-count">Total Unread Count: 0</div>
+
+  <script type="module">
+    import { Courier, CourierInbox, CourierInboxDatastore, CourierInboxDataStoreListener } from '@trycourier/courier-ui-inbox';
+
+    const totalUnreadEl = document.getElementById('total-unread-count');
+
+    // Create the listener – only update the single unread count element
+    const listener = new CourierInboxDataStoreListener({
+      onDataSetChange(dataset) {
+        console.log("DataSet changed", dataset);
+      },
+      onPageAdded(dataset) {
+        console.log("Page added", dataset);
+      },
+      onUnreadCountChange(unreadCount, datasetId) {
+        console.log("Unread count changed", unreadCount, datasetId);
+      },
+      onTotalUnreadCountChange(totalUnreadCount) {
+        console.log("Total unread count changed", totalUnreadCount);
+        if (totalUnreadEl) {
+          totalUnreadEl.textContent = `Total Unread Count: ${totalUnreadCount}`;
+        }
+      },
+      onMessageAdd(message, index, datasetId) {
+        console.log("Message added", message, index, datasetId);
+      },
+      onMessageRemove(message, index, datasetId) {
+        console.log("Message removed", message, index, datasetId);
+      },
+      onMessageUpdate(message, index, datasetId) {
+        console.log("Message updated", message, index, datasetId);
+      },
+      onError(error) {
+        console.error(error);
+      }
+    });
+
+    // Register the listener
+    CourierInboxDatastore.shared.addDataStoreListener(listener);
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    // Load the inbox and start listening for updates
+    const loadInbox = async () => {
+      CourierInboxDatastore.shared.registerFeeds(CourierInbox.defaultFeeds());
+      await CourierInboxDatastore.shared.listenForUpdates();
+      await CourierInboxDatastore.shared.load();
+    };
+
+    loadInbox();
+
+    // Clean up listener if the page is unloaded
+    window.addEventListener('beforeunload', () => {
+      CourierInboxDatastore.shared.removeDataStoreListener(listener);
+    });
+  </script>
+
+</body>
+
+</html>

@@ -44,18 +44,18 @@
     // Set the feeds
     inbox.setFeeds([
       {
-        id: 'inbox',
+        feedId: 'inbox',
         title: 'Inbox',
         tabs: [
-          { id: 'inbox', title: 'Inbox', filter: {} }
+          { datasetId: 'inbox', title: 'Inbox', filter: {} }
         ]
       },
       {
-        id: 'archive',
+        feedId: 'archive',
         title: 'Archive',
         tabs: [
-          { id: 'archive_1', title: 'Archive 1', filter: { archived: true } },
-          { id: 'archive_2', title: 'Archive 2', filter: { archived: true } }
+          { datasetId: 'archive_1', title: 'Archive 1', filter: { archived: true } },
+          { datasetId: 'archive_2', title: 'Archive 2', filter: { archived: true } }
         ]
       }
     ]);

@@ -7,7 +7,8 @@ import { CourierInboxFeed, CourierInboxTab } from "../types/inbox-data-set";
 import { CourierInboxTabs } from "./courier-inbox-tabs";
 import { CourierInboxMenuOption, CourierInboxOptionMenu } from "./courier-inbox-option-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
-import { CourierInboxHeaderAction, defaultActions } from "../types/inbox-defaults";
+import { CourierInboxHeaderAction } from "../types/inbox-defaults";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxHeader extends CourierFactoryElement {
 
@@ -21,7 +22,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   // State
   private _feeds: CourierInboxFeed[] = [];
   private _currentFeedId?: string;
-  private _actions: CourierInboxHeaderAction[] = defaultActions();
+  private _actions: CourierInboxHeaderAction[] = CourierInbox.defaultActions();
 
   // Components
   private _feedButton?: CourierInboxFeedButton;
@@ -44,7 +45,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   /** Returns whether the tabs are currently visible based on the current feed having more than 1 tab. */
   get showTabs(): boolean {
-    const currentFeed = this._feeds.find(feed => feed.id === this._currentFeedId);
+    const currentFeed = this._feeds.find(feed => feed.feedId === this._currentFeedId);
     return (currentFeed?.tabs?.length ?? 0) > 1;
   }
 
@@ -157,14 +158,14 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
   private getFeedMenuOptions(): CourierInboxMenuOption[] {
     return this._feeds.map((feed, _index) => ({
-      id: feed.id,
+      id: feed.feedId,
       text: feed.title,
       icon: {
         color: this.theme.inbox?.header?.feeds?.button?.selectedFeedIconColor ?? 'red',
         svg: feed.iconSVG ?? CourierIconSVGs.inbox
       },
       onClick: (_: CourierInboxMenuOption) => {
-        if (feed.id === this._currentFeedId) {
+        if (feed.feedId === this._currentFeedId) {
           this._onFeedReselected(feed);
         } else {
           this._onFeedChange(feed);
@@ -179,16 +180,16 @@ export class CourierInboxHeader extends CourierFactoryElement {
     const showTabs = (selectedFeed?.tabs.length ?? 0) > 1;
 
     if (this._feedButton) {
-      this._feedButton.setFeeds(props.feeds);
-      this._feedButton.setSelectedFeed(selectedFeed?.id ?? '');
+      // Use the original feed's feedId (which maps to the header feed's id)
+      this._feedButton.setSelectedFeed(selectedFeed?.feedId ?? '');
       this._feedButton.setUnreadCount(showTabs ? 0 : (selectedTab?.unreadCount ?? 0));
       this.updateFeedButtonInteraction();
     }
 
     if (this.tabs) {
       this.tabs.style.display = showTabs ? 'flex' : 'none';
-      this.tabs.setSelectedTab(selectedTab?.id ?? '');
-      this.tabs.updateTabUnreadCount(selectedTab?.id ?? '', selectedTab?.unreadCount ?? 0);
+      this.tabs.setSelectedTab(selectedTab?.datasetId ?? '');
+      this.tabs.updateTabUnreadCount(selectedTab?.datasetId ?? '', selectedTab?.unreadCount ?? 0);
     }
   }
 
@@ -312,7 +313,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
     // Set the feeds and select the first feed
     this._feedButton?.setFeeds(feeds);
-    this.selectFeed(feeds[0].id, feeds[0].tabs[0].id);
+    this.selectFeed(feeds[0].feedId, feeds[0].tabs[0].datasetId);
 
     // Set the feed menu options
     this._feedMenu?.setOptions(this.getFeedMenuOptions());
@@ -338,11 +339,11 @@ export class CourierInboxHeader extends CourierFactoryElement {
     // Set the selected feed
     this._currentFeedId = feedId;
     this._feedButton?.setSelectedFeed(feedId);
-    const feedIndex = this._feeds.findIndex(feed => feed.id === feedId);
+    const feedIndex = this._feeds.findIndex(feed => feed.feedId === feedId);
     this._feedMenu?.selectionItemAtIndex(feedIndex);
 
     // Set the selected tabs
-    const tabs = this._feeds.find(feed => feed.id === feedId)?.tabs ?? [];
+    const tabs = this._feeds.find(feed => feed.feedId === feedId)?.tabs ?? [];
     if (tabs.length > 0 && this.tabs) {
       this.tabs.style.display = tabs.length > 1 ? 'flex' : 'none';
       this.tabs.setTabs(tabs);
@@ -350,9 +351,9 @@ export class CourierInboxHeader extends CourierFactoryElement {
 
       // Immediately update unread counts for all tabs from the datastore
       for (const tab of tabs) {
-        const dataset = CourierInboxDatastore.shared.getDatasetById(tab.id);
+        const dataset = CourierInboxDatastore.shared.getDatasetById(tab.datasetId);
         if (dataset) {
-          this.tabs.updateTabUnreadCount(tab.id, dataset.unreadCount);
+          this.tabs.updateTabUnreadCount(tab.datasetId, dataset.unreadCount);
         }
       }
     }

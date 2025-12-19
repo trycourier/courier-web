@@ -37,24 +37,24 @@ export type CourierInboxListItemAction = {
 export function defaultFeeds(): CourierInboxFeed[] {
   return [
     {
-      id: 'inbox_feed',
+      feedId: 'inbox_feed',
       title: 'Inbox',
       iconSVG: CourierIconSVGs.inbox,
       tabs: [
         {
-          id: 'all_messages',
+          datasetId: 'all_messages',
           title: 'All Messages',
           filter: {}
         }
       ]
     },
     {
-      id: 'archive_feed',
+      feedId: 'archive_feed',
       title: 'Archive',
       iconSVG: CourierIconSVGs.archive,
       tabs: [
         {
-          id: 'archived_messages',
+          datasetId: 'archived_messages',
           title: 'Archived Messages',
           filter: {
             archived: true

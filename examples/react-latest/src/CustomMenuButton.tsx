@@ -5,9 +5,9 @@ import {
   type CourierInboxMenuButtonFactoryProps,
 } from '@trycourier/courier-react';
 
-const CustomMenuButton = ({ unreadCount }: CourierInboxMenuButtonFactoryProps) => (
+const CustomMenuButton = ({ totalUnreadCount, feeds }: CourierInboxMenuButtonFactoryProps) => (
   <button>
-    Open the Inbox Popup. Unread message count: {unreadCount}
+    Open the Inbox Popup. Total unread count: {totalUnreadCount}
   </button>
 );
 
@@ -27,7 +27,7 @@ export default function App() {
     <div style={{ padding: '24px' }}>
       <CourierInboxPopupMenu
         renderMenuButton={(props: CourierInboxMenuButtonFactoryProps | null | undefined) => {
-          return <CustomMenuButton unreadCount={props?.unreadCount || 0} />
+          return <CustomMenuButton totalUnreadCount={props?.totalUnreadCount || 0} feeds={props?.feeds || []} />
         }}
       />
     </div>

@@ -239,11 +239,11 @@ export class CourierInboxTabs extends CourierBaseElement {
   private createTab(tab: CourierInboxTab): HTMLDivElement {
     const container = document.createElement('div');
     container.className = 'tab-item';
-    container.setAttribute('data-tab-id', tab.id);
+    container.setAttribute('data-tab-id', tab.datasetId);
 
     const el = document.createElement('div');
     el.className = 'tab';
-    if (tab.id === this._selectedTabId) {
+    if (tab.datasetId === this._selectedTabId) {
       el.classList.add('selected');
     }
 
@@ -255,14 +255,14 @@ export class CourierInboxTabs extends CourierBaseElement {
       themeBus: this._themeManager,
       location: "tab"
     });
-    this._tabBadges.set(tab.id, unreadBadge);
+    this._tabBadges.set(tab.datasetId, unreadBadge);
 
     el.appendChild(label);
     el.appendChild(unreadBadge);
     container.appendChild(el);
 
     container.addEventListener('click', () => {
-      if (tab.id === this._selectedTabId) {
+      if (tab.datasetId === this._selectedTabId) {
         this._onTabReselected(tab);
       } else {
         this._onTabClick(tab);

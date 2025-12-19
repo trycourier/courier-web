@@ -1,15 +1,23 @@
 import { ReactNode } from "react";
 import { render } from "react-dom";
 
-/**
- * Converts a React node to an HTMLElement.
- * @param node - The React node to convert.
- * @returns The converted HTMLElement.
- */
 export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
   const container = document.createElement('div');
 
-  render(node, container);
+  // React 17's `render` typings expect a ReactElement or an array, while our
+  // helper intentionally accepts the broader `ReactNode` (matching how we use
+  // it throughout the SDK). Cast here to satisfy the overload without changing
+  // runtime behavior.
+  render(node as any, container);
+
+  /**
+   * If React rendered a single root element, return that element directly so we
+   * don't introduce an extra wrapper <div> into the caller's DOM structure.
+   */
+  const onlyChild = container.firstElementChild as HTMLElement | null;
+  if (onlyChild && container.childElementCount === 1) {
+    return onlyChild;
+  }
 
   return container;
 }

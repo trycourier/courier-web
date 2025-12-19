@@ -71,6 +71,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
+  // State
+  private _totalUnreadCount: number = 0;
+
   // Factories
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
@@ -256,10 +259,20 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   /**
-   * Called when the unread count changes.
-   * @param _ The new unread count (unused).
+   * Called when the per-dataset unread count changes.
+   * Triggers a render to update the factory with latest feeds data
+   * (which includes per-tab unread counts).
    */
   public onUnreadCountChange(_: number): void {
+    this.render();
+  }
+
+  /**
+   * Called when the total unread count across all datasets changes.
+   * Updates the popup trigger button badge.
+   */
+  public onTotalUnreadCountChange(totalUnreadCount: number): void {
+    this._totalUnreadCount = totalUnreadCount;
     this.render();
   }
 
@@ -391,7 +404,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
     // Remove visible class first to reset state
     this._popup.classList.remove('visible');
-    
+
     // Add displayed class to set display: block (but keep opacity 0 and initial transform)
     this._popup.classList.add('displayed');
 
@@ -629,8 +642,11 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   private render() {
-    const unreadCount = CourierInboxDatastore.shared.unreadCount;
+    const unreadCount = this._totalUnreadCount;
     if (!this._triggerButton) return;
+
+    // Get feeds from the inbox component in the format expected by the factory
+    const feeds = this._inbox?.getHeaderFeeds() ?? [];
 
     switch (this._popupMenuButtonFactory) {
       case undefined:
@@ -639,7 +655,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         this._triggerButton.onUnreadCountChange(unreadCount);
         break;
       default:
-        const customButton = this._popupMenuButtonFactory({ unreadCount });
+        const customButton = this._popupMenuButtonFactory({
+          totalUnreadCount: unreadCount,
+          feeds: feeds
+        });
         this._triggerButton.build(customButton);
         break;
     }

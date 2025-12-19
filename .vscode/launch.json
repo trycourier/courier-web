@@ -79,36 +79,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Vanilla JS",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "client-ts",
-        "run",
-        "start:js"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run Vanilla TS",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "client-ts",
-        "run",
-        "start:ts"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "CourierJS Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [

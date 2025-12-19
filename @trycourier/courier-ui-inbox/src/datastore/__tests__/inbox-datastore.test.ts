@@ -77,14 +77,14 @@ const UNREAD_MESSAGE: InboxMessage = {
 
 const DEFAULT_FEEDS: CourierInboxFeed[] = [
   {
-    id: 'inbox-feed',
+    feedId: 'inbox-feed',
     title: 'Inbox',
-    tabs: [{ id: 'inbox', title: 'Inbox', filter: {} }]
+    tabs: [{ datasetId: 'inbox', title: 'Inbox', filter: {} }]
   },
   {
-    id: 'archive-feed',
+    feedId: 'archive-feed',
     title: 'Archive',
-    tabs: [{ id: 'archive', title: 'Archive', filter: { archived: true } }]
+    tabs: [{ datasetId: 'archive', title: 'Archive', filter: { archived: true } }]
   }
 ];
 
@@ -114,7 +114,7 @@ describe("CourierInboxDatastore", () => {
     });
     mockGetUnreadMessageCount.mockResolvedValue(0);
 
-    CourierInboxDatastore.shared.createDatasetsFromFeeds(DEFAULT_FEEDS);
+    CourierInboxDatastore.shared.registerFeeds(DEFAULT_FEEDS);
   });
 
   describe('archiveAllMessages', () => {
@@ -137,8 +137,8 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.archiveAllMessages();
 
-      expect(datastore.inboxDataSet.messages.length).toBe(0);
-      expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+      expect(datastore.getDatasetById('archive')?.messages.length).toBe(2);
       expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(0);
       expect(datastore.getDatasetById('archive')?.unreadCount).toBe(1);
       expect(mockArchiveAll).toHaveBeenCalled();
@@ -161,8 +161,8 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.archiveAllMessages();
 
-      expect(datastore.inboxDataSet.messages.length).toBe(0);
-      expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+      expect(datastore.getDatasetById('archive')?.messages.length).toBe(2);
       expect(mockArchiveAll).not.toHaveBeenCalled();
     });
   });
@@ -198,10 +198,10 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.archiveReadMessages();
 
-      expect(datastore.inboxDataSet.messages.length).toBe(1);
-      expect(datastore.archiveDataSet.messages.length).toBe(1);
-      expect(datastore.inboxDataSet.messages[0]).toEqual(UNREAD_MESSAGE);
-      expect(datastore.archiveDataSet.messages[0]).toMatchObject({ ...READ_MESSAGE, archived: expect.any(String) });
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(1);
+      expect(datastore.getDatasetById('archive')?.messages.length).toBe(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0]).toEqual(UNREAD_MESSAGE);
+      expect(datastore.getDatasetById('archive')?.messages[0]).toMatchObject({ ...READ_MESSAGE, archived: expect.any(String) });
     });
 
     it("should archive multiple read messages", async () => {
@@ -225,8 +225,8 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.archiveReadMessages();
 
-      expect(datastore.inboxDataSet.messages.length).toBe(0);
-      expect(datastore.archiveDataSet.messages.length).toBe(2);
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+      expect(datastore.getDatasetById('archive')?.messages.length).toBe(2);
     });
   });
 
@@ -248,9 +248,9 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.openMessage({ message: UNREAD_MESSAGE });
 
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0].opened).toBeDefined();
-      expect(datastore.unreadCount).toBe(1);
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].opened).toBeDefined();
+      expect(datastore.totalUnreadCount).toBe(1);
     });
 
     it("should rollback in the event of an error", async () => {
@@ -275,8 +275,8 @@ describe("CourierInboxDatastore", () => {
 
       // UNREAD_MESSAGE wasn't mutated and the dataset message is unchanged (rollback successful)
       expect(UNREAD_MESSAGE.opened).toBeUndefined();
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0]).toEqual(originalMessage);
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0]).toEqual(originalMessage);
     });
 
     it("should not change message when already opened", async () => {
@@ -300,8 +300,8 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.openMessage({ message: openedMessage });
 
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0].opened).toBe("2021-01-01T00:00:00Z");
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].opened).toBe("2021-01-01T00:00:00Z");
     });
 
     it("should open a message without calling API", async () => {
@@ -316,12 +316,13 @@ describe("CourierInboxDatastore", () => {
       });
 
       const datastore = CourierInboxDatastore.shared;
+      console.log(datastore.getDatasets());
       await datastore.load({ canUseCache: false });
 
       await datastore.openMessage({ message: UNREAD_MESSAGE });
 
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0].opened).toBeDefined();
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].opened).toBeDefined();
       expect(mockOpen).not.toHaveBeenCalled();
     });
   });
@@ -345,8 +346,8 @@ describe("CourierInboxDatastore", () => {
 
       await datastore.readMessage({ message: UNREAD_MESSAGE });
 
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0].read).toBeDefined();
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].read).toBeDefined();
       expect(datastore.getDatasetById('inbox')?.unreadCount).toBe(0);
     });
   });
@@ -366,13 +367,13 @@ describe("CourierInboxDatastore", () => {
 
       const datastore = CourierInboxDatastore.shared;
       await datastore.load({ canUseCache: false });
-      expect(datastore.unreadCount).toBe(0);
+      expect(datastore.totalUnreadCount).toBe(0);
 
       await datastore.unreadMessage({ message: READ_MESSAGE });
 
-      expect(datastore.inboxDataSet.messages).toHaveLength(1);
-      expect(datastore.inboxDataSet.messages[0].read).toBeUndefined();
-      expect(datastore.unreadCount).toBe(1);
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+      expect(datastore.getDatasetById('inbox')?.messages[0].read).toBeUndefined();
+      expect(datastore.totalUnreadCount).toBe(1);
     });
   });
 

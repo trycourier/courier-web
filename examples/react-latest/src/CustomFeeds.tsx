@@ -18,32 +18,32 @@ export default function CustomFeeds() {
 
   const feeds: CourierInboxFeed[] = [
     {
-      id: 'notifications',
+      feedId: 'notifications',
       title: 'Notifications',
       tabs: [
         {
-          id: 'all-notifications',
+          datasetId: 'all-notifications',
           title: 'All',
           filter: {}
         },
         {
-          id: 'unread-notifications',
+          datasetId: 'unread-notifications',
           title: 'Unread',
           filter: { status: 'unread' }
         },
         {
-          id: 'important',
+          datasetId: 'important',
           title: 'Important',
           filter: { tags: ['important'] }
         }
       ]
     },
     {
-      id: 'archived',
+      feedId: 'archived',
       title: 'Archived',
       tabs: [
         {
-          id: 'archived-messages',
+          datasetId: 'archived-messages',
           title: 'Archived',
           filter: { archived: true }
         }

@@ -56,7 +56,7 @@ describe("CourierInboxDataset", () => {
       expect(result).toBe(true);
       expect(dataset.toInboxDataset().messages.length).toBe(1);
       expect(dataset.toInboxDataset().messages[0].messageId).toBe("2");
-      expect(dataset.unreadCount).toBe(1);
+      expect(dataset.totalUnreadCount).toBe(1);
     });
 
     it("should add a read message without incrementing unread count", () => {
@@ -67,7 +67,7 @@ describe("CourierInboxDataset", () => {
       expect(result).toBe(true);
       expect(dataset.toInboxDataset().messages.length).toBe(1);
       expect(dataset.toInboxDataset().messages[0].messageId).toBe("1");
-      expect(dataset.unreadCount).toBe(0);
+      expect(dataset.totalUnreadCount).toBe(0);
     });
 
     it("should return false and not add message when it doesn't qualify for dataset", () => {
@@ -78,7 +78,7 @@ describe("CourierInboxDataset", () => {
 
       expect(result).toBe(false);
       expect(dataset.toInboxDataset().messages.length).toBe(0);
-      expect(dataset.unreadCount).toBe(0);
+      expect(dataset.totalUnreadCount).toBe(0);
     });
 
     it("should add message to archived dataset when message is archived", () => {
@@ -107,7 +107,7 @@ describe("CourierInboxDataset", () => {
 
       expect(result).toBe(true);
       expect(dataset.toInboxDataset().messages.length).toBe(1);
-      expect(dataset.unreadCount).toBe(1);
+      expect(dataset.totalUnreadCount).toBe(1);
     });
 
     it("should add message to tagged dataset when message has matching tag", () => {
@@ -118,7 +118,7 @@ describe("CourierInboxDataset", () => {
       expect(result).toBe(true);
       expect(dataset.toInboxDataset().messages.length).toBe(1);
       expect(dataset.toInboxDataset().messages[0].tags).toContain("important");
-      expect(dataset.unreadCount).toBe(1);
+      expect(dataset.totalUnreadCount).toBe(1);
     });
 
     it("should not add message to tagged dataset when message lacks required tag", () => {
@@ -215,13 +215,13 @@ describe("CourierInboxDataset", () => {
       const dataset = new CourierInboxDataset("test", {});
 
       dataset.addMessage(UNREAD_MESSAGE);
-      expect(dataset.unreadCount).toBe(1);
+      expect(dataset.totalUnreadCount).toBe(1);
 
       dataset.addMessage(READ_MESSAGE);
-      expect(dataset.unreadCount).toBe(1);
+      expect(dataset.totalUnreadCount).toBe(1);
 
       dataset.addMessage({ ...UNREAD_MESSAGE, messageId: "3" });
-      expect(dataset.unreadCount).toBe(2);
+      expect(dataset.totalUnreadCount).toBe(2);
     });
   });
 
@@ -233,14 +233,14 @@ describe("CourierInboxDataset", () => {
         // Add message to dataset
         dataset.addMessage(UNREAD_MESSAGE);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
 
         // Try to update with the same message
         const result = dataset.updateWithMessageChange(UNREAD_MESSAGE, UNREAD_MESSAGE);
 
         expect(result).toBe(true);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
       });
     });
 
@@ -250,7 +250,7 @@ describe("CourierInboxDataset", () => {
 
         // Add unread message
         dataset.addMessage(UNREAD_MESSAGE);
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
 
         // Mark as read
         const afterMessage = { ...UNREAD_MESSAGE, read: "2021-01-02T00:00:00Z" };
@@ -259,7 +259,7 @@ describe("CourierInboxDataset", () => {
         expect(result).toBe(true);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
         expect(dataset.toInboxDataset().messages[0].read).toBe("2021-01-02T00:00:00Z");
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
       });
 
       it("should update message in place when marking read message as unread", () => {
@@ -267,7 +267,7 @@ describe("CourierInboxDataset", () => {
 
         // Add read message
         dataset.addMessage(READ_MESSAGE);
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
 
         // Mark as unread
         const afterMessage = { ...READ_MESSAGE, read: undefined };
@@ -276,7 +276,7 @@ describe("CourierInboxDataset", () => {
         expect(result).toBe(true);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
         expect(dataset.toInboxDataset().messages[0].read).toBeUndefined();
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
       });
     });
 
@@ -286,7 +286,7 @@ describe("CourierInboxDataset", () => {
 
         dataset.addMessage(UNREAD_MESSAGE);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
 
         // Archive the message
         const afterMessage = { ...UNREAD_MESSAGE, archived: "2021-01-02T00:00:00Z" };
@@ -294,14 +294,14 @@ describe("CourierInboxDataset", () => {
 
         expect(result).toBe(false);
         expect(dataset.toInboxDataset().messages.length).toBe(0);
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
       });
 
       it("should remove message when marking as read in unread-only dataset", () => {
         const dataset = new CourierInboxDataset("unread", { status: "unread" });
 
         dataset.addMessage(UNREAD_MESSAGE);
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
 
         // Mark as read
         const afterMessage = { ...UNREAD_MESSAGE, read: "2021-01-02T00:00:00Z" };
@@ -309,7 +309,7 @@ describe("CourierInboxDataset", () => {
 
         expect(result).toBe(false);
         expect(dataset.toInboxDataset().messages.length).toBe(0);
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
       });
     });
 
@@ -329,7 +329,7 @@ describe("CourierInboxDataset", () => {
         expect(dataset.toInboxDataset().messages.length).toBe(0);
 
         // Unread count decrements because beforeMessage qualified and after does not
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
       });
 
       it("should add message and increment unread count if beforeMessage doesn't qualify, afterMessage qualifies", () => {
@@ -345,7 +345,7 @@ describe("CourierInboxDataset", () => {
         expect(result).toBe(true);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
         // Unread count increments because afterMessage is unread
-        expect(dataset.unreadCount).toBe(1);
+        expect(dataset.totalUnreadCount).toBe(1);
       });
 
       it("should add new read message without incrementing unread count if beforeMessage and afterMessage qualify", () => {
@@ -359,7 +359,7 @@ describe("CourierInboxDataset", () => {
 
         expect(result).toBe(true);
         expect(dataset.toInboxDataset().messages.length).toBe(1);
-        expect(dataset.unreadCount).toBe(0);
+        expect(dataset.totalUnreadCount).toBe(0);
       });
     });
 
@@ -465,7 +465,7 @@ describe("CourierInboxDataset", () => {
       dataset.updateWithMessageChange(beforeMessage, afterMessage);
 
       // Should not go negative
-      expect(dataset.unreadCount).toBe(0);
+      expect(dataset.totalUnreadCount).toBe(0);
     });
   });
 });

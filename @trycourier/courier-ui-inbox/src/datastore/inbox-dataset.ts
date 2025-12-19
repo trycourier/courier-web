@@ -3,6 +3,7 @@ import { copyMessage, mutableInboxMessageFieldsEqual } from "../utils/utils";
 import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
 import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
+import { CourierInboxDatastore } from "./inbox-datastore";
 
 export class CourierInboxDataset {
   /** The unique ID for this dataset, provided by the consumer to later identify this set of messages. */
@@ -34,17 +35,17 @@ export class CourierInboxDataset {
   private readonly _datastoreListeners: CourierInboxDataStoreListener[] = [];
 
   /**
-   * The unread count loaded before messages are fetched.
+   * The total unread count loaded before messages are fetched.
    * Used to show unread badge counts on tabs before the user clicks into them.
    *
-   * Unread count is maintained manually (rather than derived from _messages) because:
+   * Total unread count is maintained manually (rather than derived from _messages) because:
    *
    * 1. We load unread counts for all tabs in view before their messages are loaded.
    * 2. The set of loaded messages may not fully reflect the unread count for a tab.
    *    Messages are paginated, so unread messages may be present on the server but
    *    but not on the client.
    */
-  private _unreadCount: number = 0;
+  private _totalUnreadCount: number = 0;
 
   public constructor(
     id: string,
@@ -60,14 +61,14 @@ export class CourierInboxDataset {
     };
   }
 
-  /** Get the current unread count. */
-  get unreadCount(): number {
-    return this._unreadCount;
+  /** Get the current total unread count. */
+  get totalUnreadCount(): number {
+    return this._totalUnreadCount;
   }
 
   /** Private setter for unread count. */
-  private set unreadCount(count: number) {
-    this._unreadCount = count > 0 ? count : 0;
+  private set totalUnreadCount(count: number) {
+    this._totalUnreadCount = count > 0 ? count : 0;
   }
 
   /**
@@ -75,9 +76,10 @@ export class CourierInboxDataset {
    * Used for batch loading unread counts for all datasets before messages are fetched.
    */
   public setUnreadCount(count: number): void {
-    this.unreadCount = count;
+    this.totalUnreadCount = count;
     this._datastoreListeners.forEach(listener => {
       listener.events.onUnreadCountChange?.(count, this._id);
+      listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
     });
   }
 
@@ -105,12 +107,13 @@ export class CourierInboxDataset {
       this._messages.splice(insertIndex, 0, messageCopy);
 
       if (!messageCopy.read) {
-        this.unreadCount += 1;
+        this.totalUnreadCount += 1;
       }
 
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageAdd?.(messageCopy, insertIndex, this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+        listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+        listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
 
       return true;
@@ -155,11 +158,12 @@ export class CourierInboxDataset {
         const unreadChange = this.calculateUnreadChange(existingMessage, newMessage);
 
         this._messages.splice(index, 1, newMessage);
-        this.unreadCount += unreadChange;
+        this.totalUnreadCount += unreadChange;
 
         this._datastoreListeners.forEach(listener => {
           listener.events.onMessageUpdate?.(newMessage, index, this._id);
-          listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+          listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+          listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
         });
 
         return true;
@@ -192,11 +196,12 @@ export class CourierInboxDataset {
         // Update unread count based on afterMessage's read state
         : (!afterMessage.read ? 1 : 0);
 
-      this.unreadCount += unreadChange;
+      this.totalUnreadCount += unreadChange;
 
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageAdd?.(afterMessage, insertIndex, this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+        listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+        listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
 
       return true;
@@ -214,11 +219,12 @@ export class CourierInboxDataset {
     if (beforeQualifies) {
 
       // Update unreadCount based on the transition
-      this.unreadCount += this.calculateUnreadChange(beforeMessage, afterMessage);
+      this.totalUnreadCount += this.calculateUnreadChange(beforeMessage, afterMessage);
 
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageUpdate?.(newMessage, index, this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+        listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+        listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
     }
 
@@ -252,12 +258,13 @@ export class CourierInboxDataset {
       this._messages.splice(indexToRemove, 1);
 
       if (!message.read) {
-        this.unreadCount -= 1;
+        this.totalUnreadCount -= 1;
       }
 
       this._datastoreListeners.forEach(listener => {
         listener.events.onMessageRemove?.(message, indexToRemove, this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+        listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+        listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
 
       return true;
@@ -274,8 +281,9 @@ export class CourierInboxDataset {
     // Returned cached data if it's requested and available
     if (canUseCache && this._firstFetchComplete) {
       this._datastoreListeners.forEach(listener => {
-        listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
-        listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+        listener.events.onDataSetChange?.(this.toInboxDataset());
+        listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+        listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
       return;
     }
@@ -284,14 +292,15 @@ export class CourierInboxDataset {
 
     // Unpack response and call listeners
     this._messages = [...fetchedDataset.messages];
-    this.unreadCount = fetchedDataset.unreadCount;
+    this.totalUnreadCount = fetchedDataset.unreadCount;
     this._hasNextPage = fetchedDataset.canPaginate;
     this._lastPaginationCursor = fetchedDataset.paginationCursor ?? undefined;
     this._firstFetchComplete = true;
 
     this._datastoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
-      listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+      listener.events.onDataSetChange?.(this.toInboxDataset());
+      listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+      listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
     });
   }
 
@@ -309,9 +318,10 @@ export class CourierInboxDataset {
     this._firstFetchComplete = true;
 
     this._datastoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(this.toInboxDataset(), this._id);
-      listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
-      listener.events.onPageAdded?.(fetchedDataset, this._id);
+      listener.events.onDataSetChange?.(this.toInboxDataset());
+      listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+      listener.events.onPageAdded?.(fetchedDataset);
+      listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
     });
 
     return fetchedDataset;
@@ -331,9 +341,9 @@ export class CourierInboxDataset {
 
   toInboxDataset(): InboxDataSet {
     return {
-      feedType: this._id,
+      id: this._id,
       messages: [...this._messages],
-      unreadCount: this.unreadCount,
+      unreadCount: this.totalUnreadCount,
       canPaginate: this._hasNextPage,
       paginationCursor: this._lastPaginationCursor ?? null
     };
@@ -353,7 +363,7 @@ export class CourierInboxDataset {
     });
 
     return {
-      feedType: this._id,
+      id: this._id,
       messages: [...(response.data?.messages?.nodes ?? [])],
       unreadCount: response.data?.unreadCount ?? 0,
       canPaginate: response.data?.messages?.pageInfo?.hasNextPage ?? false,
@@ -431,13 +441,14 @@ export class CourierInboxDataset {
   public restoreFromSnapshot(snapshot: InboxDataSet): void {
     this._messages = snapshot.messages.map(m => copyMessage(m));
 
-    this.unreadCount = snapshot.unreadCount;
+    this.totalUnreadCount = snapshot.unreadCount;
     this._hasNextPage = snapshot.canPaginate;
     this._lastPaginationCursor = snapshot.paginationCursor ?? undefined;
 
     this._datastoreListeners.forEach(listener => {
-      listener.events.onDataSetChange?.(snapshot, this._id);
-      listener.events.onUnreadCountChange?.(this.unreadCount, this._id);
+      listener.events.onDataSetChange?.(snapshot);
+      listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
+      listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
     });
   }
 }

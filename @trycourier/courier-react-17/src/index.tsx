@@ -45,6 +45,13 @@ export {
   openMessage
 } from '@trycourier/courier-ui-inbox';
 
+// Re-export default configuration functions from courier-ui-inbox
+export {
+  defaultFeeds,
+  defaultActions,
+  defaultListItemActions
+} from '@trycourier/courier-ui-inbox';
+
 // Re-export factory prop types from courier-ui-inbox
 export type {
   CourierInboxHeaderFactoryProps,

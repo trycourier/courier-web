@@ -13,7 +13,7 @@
   <div style="padding: 24px;">
     <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
   </div>
-  
+
   <script type="module">
     import { Courier } from '@trycourier/courier-ui-inbox';
 
@@ -27,9 +27,9 @@
     const inbox = document.getElementById('inbox');
 
     // Set a custom menu button
-    inbox.setMenuButton(({ unreadCount }) => {
+    inbox.setMenuButton(({ totalUnreadCount, feeds }) => {
       const button = document.createElement('button');
-      button.textContent = `Open the Inbox Popup. Unread message count: ${unreadCount}`;
+      button.textContent = `Open the Inbox Popup. Total unread count: ${totalUnreadCount}`;
       return button;
     });
 
@@ -38,5 +38,3 @@
 </body>
 
 </html>
-
-

@@ -9,33 +9,65 @@ import { InboxMessage } from "@trycourier/courier-js";
  */
 export class CourierInboxDatastoreEvents {
   /**
+   * Called when the dataset changes.
    * @public
+   * @param _dataset - The updated inbox dataset
    */
-  public onDataSetChange?(_: InboxDataSet, __: string): void { }
+  public onDataSetChange?(_dataset: InboxDataSet): void { }
+
   /**
+   * Called when a new page is added to the dataset.
    * @public
+   * @param _dataset - The updated inbox dataset with the new page
    */
-  public onPageAdded?(_: InboxDataSet, __: string): void { }
+  public onPageAdded?(_dataset: InboxDataSet): void { }
+
   /**
+   * Called when the unread count changes.
    * @public
-   * @param _ - the new unread count
-   * @param __ - the dataset ID that was updated
+   * @param _unreadCount - The new unread count
+   * @param _datasetId - The dataset ID that was updated
    */
-  public onUnreadCountChange?(_: number, __: string): void { }
+  public onUnreadCountChange?(_unreadCount: number, _datasetId: string): void { }
+
   /**
+   * Called when the total unread count across all datasets changes.
    * @public
+   * @param _totalUnreadCount - The new total unread count
    */
-  public onMessageAdd?(_: InboxMessage, __: number, ___: string): void { }
+  public onTotalUnreadCountChange?(_totalUnreadCount: number): void { }
+
   /**
+   * Called when a new message is added.
    * @public
+   * @param _message - The added InboxMessage
+   * @param _index - The index where the message was added
+   * @param _datasetId - The dataset ID that was updated
    */
-  public onMessageRemove?(_: InboxMessage, __: number, ___: string): void { }
+  public onMessageAdd?(_message: InboxMessage, _index: number, _datasetId: string): void { }
+
   /**
+   * Called when a message is removed.
    * @public
+   * @param _message - The InboxMessage that was removed
+   * @param _index - The index from which the message was removed
+   * @param _datasetId - The dataset ID that was updated
    */
-  public onMessageUpdate?(_: InboxMessage, __: number, ___: string): void { }
+  public onMessageRemove?(_message: InboxMessage, _index: number, _datasetId: string): void { }
+
   /**
+   * Called when a message is updated.
    * @public
+   * @param _message - The updated InboxMessage
+   * @param _index - The index where the message was updated
+   * @param _datasetId - The dataset ID that was updated
    */
-  public onError?(_: Error): void { }
+  public onMessageUpdate?(_message: InboxMessage, _index: number, _datasetId: string): void { }
+
+  /**
+   * Called when an error occurs in the data store.
+   * @public
+   * @param _error - The error object
+   */
+  public onError?(_error: Error): void { }
 }

@@ -9,7 +9,8 @@ import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../type
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
 import { openMessage } from "../utils/extensions";
-import { CourierInboxListItemAction, defaultFeeds, defaultListItemActions } from "../types/inbox-defaults";
+import { CourierInboxListItemAction, defaultFeeds } from "../types/inbox-defaults";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxList extends CourierBaseElement {
 
@@ -22,13 +23,13 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _datasetId: string = defaultFeeds()[0].tabs[0].id;
+  private _datasetId: string = defaultFeeds()[0].tabs[0].datasetId;
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
   private _canClickListItems = false;
   private _canLongPressListItems = false;
-  private _listItemActions: CourierInboxListItemAction[] = defaultListItemActions();
+  private _listItemActions: CourierInboxListItemAction[] = CourierInbox.defaultListItemActions();
 
   // Callbacks
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
@@ -66,7 +67,7 @@ export class CourierInboxList extends CourierBaseElement {
     canClickListItems: boolean,
     canLongPressListItems: boolean,
     onRefresh: () => void,
-    onPaginationTrigger: (feedType: string) => void,
+    onPaginationTrigger: (datasetId: string) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onMessageActionClick: (message: InboxMessage, action: InboxAction, index: number) => void,
     onMessageLongPress: (message: InboxMessage, index: number) => void
@@ -331,7 +332,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Error state
     if (this._error) {
       this._errorContainer = new CourierInfoState(this.errorProps);
-      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._datasetId, error: this._error }));
+      this._errorContainer.build(this._errorStateFactory?.({ datasetId: this._datasetId, error: this._error }));
       this.appendChild(this._errorContainer);
       return;
     }
@@ -339,7 +340,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Loading state
     if (this._isLoading) {
       const loadingElement = new CourierInboxSkeletonList(this.theme);
-      loadingElement.build(this._loadingStateFactory?.({ feedType: this._datasetId }));
+      loadingElement.build(this._loadingStateFactory?.({ datasetId: this._datasetId }));
       this.appendChild(loadingElement);
       return;
     }
@@ -347,7 +348,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Empty state
     if (this._messages.length === 0) {
       this._emptyContainer = new CourierInfoState(this.emptyProps);
-      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._datasetId }));
+      this._emptyContainer.build(this._emptyStateFactory?.({ datasetId: this._datasetId }));
       this.appendChild(this._emptyContainer);
       return;
     }
@@ -375,7 +376,7 @@ export class CourierInboxList extends CourierBaseElement {
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
         theme: this.theme,
-        customItem: this._paginationItemFactory?.({ feedType: this._datasetId }),
+        customItem: this._paginationItemFactory?.({ datasetId: this._datasetId }),
         onPaginationTrigger: () => this._onPaginationTrigger?.(this._datasetId),
       });
       list.appendChild(paginationItem);

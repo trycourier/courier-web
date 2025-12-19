@@ -8,8 +8,9 @@ import {
   type CourierInboxPaginationItemFactoryProps,
 } from '@trycourier/courier-react';
 
-const CustomLoadingState = ({ feedType }: CourierInboxStateLoadingFactoryProps) => (
+const CustomLoadingState = ({ datasetId }: CourierInboxStateLoadingFactoryProps) => (
   <div style={{
+    width: '100%',
     padding: '24px',
     background: 'red',
     textAlign: 'center'
@@ -18,8 +19,9 @@ const CustomLoadingState = ({ feedType }: CourierInboxStateLoadingFactoryProps) 
   </div>
 );
 
-const CustomEmptyState = ({ feedType }: CourierInboxStateEmptyFactoryProps) => (
+const CustomEmptyState = ({ datasetId }: CourierInboxStateEmptyFactoryProps) => (
   <div style={{
+    width: '100%',
     padding: '24px',
     background: 'green',
     textAlign: 'center'
@@ -28,8 +30,9 @@ const CustomEmptyState = ({ feedType }: CourierInboxStateEmptyFactoryProps) => (
   </div>
 );
 
-const CustomErrorState = ({ feedType, error }: CourierInboxStateErrorFactoryProps) => (
+const CustomErrorState = ({ datasetId, error }: CourierInboxStateErrorFactoryProps) => (
   <div style={{
+    width: '100%',
     padding: '24px',
     background: 'blue',
     textAlign: 'center'
@@ -38,7 +41,7 @@ const CustomErrorState = ({ feedType, error }: CourierInboxStateErrorFactoryProp
   </div>
 );
 
-const CustomPaginationItem = ({ feedType }: CourierInboxPaginationItemFactoryProps) => (
+const CustomPaginationItem = ({ datasetId }: CourierInboxPaginationItemFactoryProps) => (
   <div style={{
     padding: '24px',
     background: 'yellow',

@@ -58,9 +58,9 @@ export class CourierInboxDatastore {
    *
    * @param feeds - The feeds with which to instantiate the datastore
    */
-  public createDatasetsFromFeeds(feeds: CourierInboxFeed[]): void {
+  public registerFeeds(feeds: CourierInboxFeed[]): void {
     const datasets = new Map<string, CourierInboxDatasetFilter>(
-      feeds.flatMap(feed => feed.tabs).map(tab => [tab.id, tab.filter])
+      feeds.flatMap(feed => feed.tabs).map(tab => [tab.datasetId, tab.filter])
     );
 
     this.createDatasetsFromFilters(datasets);
@@ -542,54 +542,24 @@ export class CourierInboxDatastore {
   }
 
   /**
-   * Get the 'inbox' dataset, or an default instance of {@link InboxDataSet} if it doesn't exist.
-   *
-   * @deprecated - Update callers to use `getDatasetById('inbox')`
+   * Get datasets currently in the datastore.
+   * @returns A record mapping dataset IDs to their InboxDataSet representations
    */
-  public get inboxDataSet(): InboxDataSet {
-    const dataset = this.getDatasetById('inbox');
-
-    if (dataset) {
-      return dataset;
+  public getDatasets(): Record<string, InboxDataSet> {
+    const datasets: Record<string, InboxDataSet> = {};
+    for (const [id, dataset] of this._datasets.entries()) {
+      datasets[id] = dataset.toInboxDataset();
     }
-
-    return {
-      feedType: 'inbox',
-      messages: [],
-      unreadCount: 0,
-      canPaginate: false,
-      paginationCursor: null
-    };
-  }
-
-  /**
-   * Get the 'archive' dataset, or an default instance of {@link InboxDataSet} if it doesn't exist.
-   *
-   * @deprecated - Update callers to use `getDataSetById('archive')`
-   */
-  public get archiveDataSet(): InboxDataSet {
-    const dataset = this.getDatasetById('archive');
-
-    if (dataset) {
-      return dataset;
-    }
-
-    return {
-      feedType: 'archive',
-      messages: [],
-      unreadCount: 0,
-      canPaginate: false,
-      paginationCursor: null
-    };
+    return datasets;
   }
 
   /**
    * Get the total unread count across all datasets.
    */
-  public get unreadCount(): number {
+  public get totalUnreadCount(): number {
     let unreadCount = 0;
     for (let dataset of this._datasets.values()) {
-      unreadCount += dataset.unreadCount;
+      unreadCount += dataset.totalUnreadCount;
     }
 
     return unreadCount;

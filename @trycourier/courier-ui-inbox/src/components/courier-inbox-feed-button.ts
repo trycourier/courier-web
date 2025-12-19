@@ -153,7 +153,7 @@ export class CourierInboxFeedButton extends CourierBaseElement {
   }
 
   public setSelectedFeed(feedId: string) {
-    this._selectedFeed = this._feeds.find(feed => feed.id === feedId);
+    this._selectedFeed = this._feeds.find(feed => feed.feedId === feedId);
     this.refreshSelectedFeed();
   }
 

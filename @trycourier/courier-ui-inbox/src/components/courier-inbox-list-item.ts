@@ -5,7 +5,8 @@ import { getMessageTime } from "../utils/utils";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
-import { CourierInboxListItemAction, defaultListItemActions } from "../types/inbox-defaults";
+import { CourierInboxListItemAction } from "../types/inbox-defaults";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxListItem extends CourierBaseElement {
 
@@ -19,7 +20,7 @@ export class CourierInboxListItem extends CourierBaseElement {
   private _message: InboxMessage | null = null;
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
-  private _listItemActions: CourierInboxListItemAction[] = defaultListItemActions();
+  private _listItemActions: CourierInboxListItemAction[] = CourierInbox.defaultListItemActions();
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
 
   // Elements
@@ -119,6 +120,7 @@ export class CourierInboxListItem extends CourierBaseElement {
     if (this._canClick) {
       this.classList.add('clickable');
     }
+
   }
 
   private _setupIntersectionObserver(): void {
@@ -264,6 +266,26 @@ export class CourierInboxListItem extends CourierBaseElement {
         top: 8px;
         right: 8px;
         display: none;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      ${CourierInboxListItem.id} courier-inbox-list-item-menu.visible {
+        opacity: 1;
+      }
+
+      /* Show menu on hover for non-mobile devices - CSS handles this reliably */
+      @media (hover: hover) {
+        ${CourierInboxListItem.id}.clickable:hover courier-inbox-list-item-menu {
+          display: block;
+        }
+        ${CourierInboxListItem.id}.clickable:hover courier-inbox-list-item-menu.visible {
+          display: block;
+        }
+        ${CourierInboxListItem.id}.clickable:hover .time {
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
       }
 
       ${CourierInboxListItem.id} .actions-container {
@@ -280,13 +302,30 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   private _setupHoverBehavior(): void {
-    // Only show menu on hover for non-mobile devices and if canClick
+    // CSS handles hover display for non-mobile devices - just update menu options
     if (!this._isMobile) {
       this.addEventListener('mouseenter', () => {
         this._isLongPress = false;
-        this._showMenu();
+        // Update menu options when hovering
+        const menuOptions = this._getMenuOptions();
+        if (menuOptions.length > 0 && this._menu) {
+          this._menu.setOptions(menuOptions);
+          // Trigger show() to add visible class for transitions
+          this._menu.show();
+          if (this._timeElement) {
+            this._timeElement.style.opacity = '0';
+          }
+        }
       });
-      this.addEventListener('mouseleave', () => this._hideMenu());
+      this.addEventListener('mouseleave', () => {
+        // Hide menu and restore time opacity
+        if (this._menu) {
+          this._menu.hide();
+        }
+        if (this._timeElement) {
+          this._timeElement.style.opacity = '1';
+        }
+      });
     }
   }
 

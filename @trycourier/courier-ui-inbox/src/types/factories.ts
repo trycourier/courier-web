@@ -7,7 +7,7 @@ export type CourierInboxHeaderFactoryProps = {
 }
 
 export type CourierInboxHeaderFeed = {
-  id: string;
+  feedId: string;
   title: string;
   iconSVG?: string;
   tabs: CourierInboxHeaderFeedTab[];
@@ -15,7 +15,7 @@ export type CourierInboxHeaderFeed = {
 }
 
 export type CourierInboxHeaderFeedTab = {
-  id: string;
+  datasetId: string;
   title: string;
   unreadCount: number;
   isSelected: boolean;
@@ -24,15 +24,15 @@ export type CourierInboxHeaderFeedTab = {
 
 // States
 export type CourierInboxStateLoadingFactoryProps = {
-  feedType: string;
+  datasetId: string;
 }
 
 export type CourierInboxStateEmptyFactoryProps = {
-  feedType: string;
+  datasetId: string;
 }
 
 export type CourierInboxStateErrorFactoryProps = {
-  feedType: string;
+  datasetId: string;
   error: Error;
 }
 
@@ -51,10 +51,11 @@ export type CourierInboxListItemActionFactoryProps = {
 
 // Pagination Item
 export type CourierInboxPaginationItemFactoryProps = {
-  feedType: string;
+  datasetId: string;
 }
 
 // Menu Button
 export type CourierInboxMenuButtonFactoryProps = {
-  unreadCount: number;
+  totalUnreadCount: number;
+  feeds: CourierInboxHeaderFeed[];
 }

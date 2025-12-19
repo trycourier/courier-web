@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Default from './Default';
-import PopupMenu from './PopupMenu';
-import Canvas from './Canvas';
+import InboxDefault from './InboxDefault';
+import InboxPopupMenuDefault from './InboxPopupMenuDefault';
 import InboxActions from './InboxActions';
 import CustomHeight from './CustomHeight';
-import Themes from './Themes';
+import InboxTheme from './InboxTheme';
+import PopupMenuTheme from './PopupMenuTheme';
 import Alignment from './Alignment';
 import CustomListItems from './CustomListItems';
 import CustomHeader from './CustomHeader';
@@ -12,70 +12,64 @@ import ElementRef from './ElementRef';
 import CustomMenuButton from './CustomMenuButton';
 import CustomOther from './CustomOther';
 import MarkdownListItemInbox from './MarkdownListItem';
-import DatastoreListener from './DatastoreListener';
-import Toast from './Toast';
+import ToastBasic from './ToastBasic';
+import ToastThemed from './ToastThemed';
+import ToastCustom from './ToastCustom';
 import Hooks from './Hooks';
-import CustomFeeds from './CustomFeeds';
+import InboxCustomFeed from './InboxCustomFeed';
+import InboxCustomTabs from './InboxCustomTabs';
+import PopupCustomFeed from './PopupCustomFeed';
 import Examples from './Examples';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Inbox default */}
-        <Route path="/" element={<Default />} />
-        <Route path="/inbox" element={<Default />} />
-
-        {/* Index of examples */}
+        {/* Root index of examples (matches Web JS index layout) */}
+        <Route path="/" element={<Examples />} />
         <Route path="/examples" element={<Examples />} />
 
+        {/* Inbox default */}
+        <Route path="/examples/inbox" element={<InboxDefault />} />
+
         {/* Default / popup menu examples */}
-        <Route path="/inbox-popup-menu" element={<PopupMenu />} />
-        <Route path="/popup-menu" element={<PopupMenu />} />
+        <Route path="/examples/inbox-popup-menu" element={<InboxPopupMenuDefault />} />
 
         {/* Custom feeds & combinations */}
-        <Route path="/inbox-custom-feed" element={<CustomFeeds />} />
-        <Route path="/inbox-popup-menu-custom-feed" element={<CustomFeeds />} />
-        <Route path="/custom-feeds" element={<CustomFeeds />} />
+        <Route path="/examples/inbox-custom-feed" element={<InboxCustomFeed />} />
+        <Route path="/examples/inbox-custom-tabs" element={<InboxCustomTabs />} />
+        <Route path="/examples/inbox-popup-menu-custom-feed" element={<PopupCustomFeed />} />
 
         {/* Themed / layout examples */}
-        <Route path="/inbox-custom-height" element={<CustomHeight />} />
-        <Route path="/custom-height" element={<CustomHeight />} />
-        <Route path="/inbox-theme" element={<Themes />} />
-        <Route path="/themes" element={<Themes />} />
+        <Route path="/examples/inbox-custom-height" element={<CustomHeight />} />
+        <Route path="/examples/inbox-theme" element={<InboxTheme />} />
+        <Route path="/examples/inbox-popup-menu-theme" element={<PopupMenuTheme />} />
 
         {/* Alignment & positioning */}
-        <Route path="/actions" element={<InboxActions />} />
-        <Route path="/alignment" element={<Alignment />} />
+        <Route path="/examples/inbox-actions" element={<InboxActions />} />
+        <Route path="/examples/alignment" element={<Alignment />} />
 
         {/* Custom renderers */}
-        <Route path="/inbox-list-item" element={<CustomListItems />} />
-        <Route path="/custom-list-items" element={<CustomListItems />} />
-        <Route path="/inbox-header" element={<CustomHeader />} />
-        <Route path="/custom-header" element={<CustomHeader />} />
+        <Route path="/examples/inbox-list-item" element={<CustomListItems />} />
+        <Route path="/examples/inbox-header" element={<CustomHeader />} />
 
         {/* Element ref / advanced */}
-        <Route path="/element-ref" element={<ElementRef />} />
+        <Route path="/examples/element-ref" element={<ElementRef />} />
 
         {/* Popup menu customization */}
-        <Route path="/inbox-popup-menu-button" element={<CustomMenuButton />} />
-        <Route path="/custom-menu-button" element={<CustomMenuButton />} />
-        <Route path="/inbox-popup-list-item" element={<CustomOther />} />
-        <Route path="/inbox-popup-everything-else" element={<CustomOther />} />
-        <Route path="/custom-other" element={<CustomOther />} />
-
-        {/* Advanced canvas demo */}
-        <Route path="/canvas" element={<Canvas />} />
+        <Route path="/examples/inbox-popup-menu-button" element={<CustomMenuButton />} />
+        <Route path="/examples/inbox-popup-list-item" element={<CustomOther />} />
+        <Route path="/examples/inbox-popup-everything-else" element={<CustomOther />} />
 
         {/* Content / markdown examples */}
-        <Route path="/markdown" element={<MarkdownListItemInbox />} />
-
-        {/* Data / datastore examples */}
-        <Route path="/datastore-listener" element={<DatastoreListener />} />
+        <Route path="/examples/markdown" element={<MarkdownListItemInbox />} />
 
         {/* Toast & hooks */}
-        <Route path="/toast" element={<Toast />} />
-        <Route path="/hooks" element={<Hooks />} />
+        <Route path="/examples/toast-basic" element={<ToastBasic />} />
+        <Route path="/examples/toast-themed" element={<ToastThemed />} />
+        <Route path="/examples/toast-custom" element={<ToastCustom />} />
+        <Route path="/examples/toast" element={<ToastCustom />} />
+        <Route path="/examples/hooks" element={<Hooks />} />
       </Routes>
     </BrowserRouter>
   )
