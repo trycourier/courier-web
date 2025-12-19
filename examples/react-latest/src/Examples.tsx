@@ -89,6 +89,12 @@ export default function Examples() {
             Popup rendering messages with a custom list item component.
           </ExampleCard>
           <ExampleCard
+            to="/examples/inbox-popup-menu-theme"
+            title="Popup — Themed (React)"
+          >
+            Popup inbox menu themed via React with Poppins typography and accent colors.
+          </ExampleCard>
+          <ExampleCard
             to="/examples/inbox-popup-everything-else"
             title="Popup — Custom States"
           >
@@ -104,17 +110,8 @@ export default function Examples() {
           <ExampleCard to="/examples/element-ref" title="Element Ref">
             Access the underlying inbox element via React refs.
           </ExampleCard>
-          <ExampleCard to="/examples/canvas" title="Canvas (Advanced)">
-            Advanced demo rendering the inbox into a custom canvas layout.
-          </ExampleCard>
           <ExampleCard to="/examples/markdown" title="Markdown List Item">
             Render inbox messages using a custom markdown list item component.
-          </ExampleCard>
-          <ExampleCard
-            to="/examples/datastore-listener"
-            title="Datastore Listener (React)"
-          >
-            Listen to datastore updates using Courier React hooks.
           </ExampleCard>
           <ExampleCard to="/examples/hooks" title="Hooks-only Usage">
             Use Courier React hooks directly without JSX components.

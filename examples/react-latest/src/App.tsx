@@ -11,6 +11,7 @@ import CustomHeader from './CustomHeader';
 import ElementRef from './ElementRef';
 import CustomMenuButton from './CustomMenuButton';
 import CustomOther from './CustomOther';
+import PopupCustomListItem from './PopupCustomListItem';
 import MarkdownListItemInbox from './MarkdownListItem';
 import ToastBasic from './ToastBasic';
 import ToastThemed from './ToastThemed';
@@ -58,7 +59,7 @@ function App() {
 
         {/* Popup menu customization */}
         <Route path="/examples/inbox-popup-menu-button" element={<CustomMenuButton />} />
-        <Route path="/examples/inbox-popup-list-item" element={<CustomOther />} />
+        <Route path="/examples/inbox-popup-list-item" element={<PopupCustomListItem />} />
         <Route path="/examples/inbox-popup-everything-else" element={<CustomOther />} />
 
         {/* Content / markdown examples */}
