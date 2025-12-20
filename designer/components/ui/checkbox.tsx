@@ -9,8 +9,7 @@ import { cn } from "@/lib/utils"
 function Checkbox({
   className,
   ...props
-  // @ts-expect-error - React 19 compatibility: ForwardRefExoticComponent type issue with ComponentProps
-}: React.ComponentProps<typeof CheckboxPrimitive.Root> & {
+}: Parameters<typeof CheckboxPrimitive.Root>[0] & {
   className?: string;
 }) {
   const Root = CheckboxPrimitive.Root as any;

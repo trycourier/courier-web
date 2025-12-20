@@ -399,7 +399,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   /**
    * Show the popup menu with transition.
    */
-  private showPopup() {
+  public showPopup() {
     if (!this._popup) return;
 
     // Remove visible class first to reset state
@@ -421,7 +421,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   /**
    * Hide the popup menu with transition.
    */
-  private hidePopup() {
+  public hidePopup() {
     if (!this._popup) return;
 
     // Remove visible class to trigger transition

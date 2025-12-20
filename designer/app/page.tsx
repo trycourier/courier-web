@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { CourierAuth } from "@/components/CourierAuth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { SendTestTab } from "@/components/SendTestTab";
 import { ThemeTab } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
@@ -64,9 +66,26 @@ export default function Home() {
     <div className="flex h-screen w-screen flex-col bg-white dark:bg-black">
       {/* Header */}
       <header className="p-4 border-b border-border flex items-center justify-between px-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Courier Designer
-        </h1>
+        <Image
+          src="/vercel.svg"
+          alt="Vercel Logo"
+          width={40}
+          height={40}
+          className="dark:invert"
+        />
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+        >
+          <a
+            href="https://www.courier.com/docs/platform/inbox/inbox-overview"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Courier Inbox Docs
+          </a>
+        </Button>
       </header>
 
       {/* Main Content: Left and Right Panels */}

@@ -120,7 +120,6 @@ export class CourierInbox extends CourierBaseElement {
    * @param theme The light theme object to set.
    */
   public setLightTheme(theme: CourierInboxTheme) {
-    console.log('setLightTheme', theme);
     this._themeManager.setLightTheme(theme);
   }
 

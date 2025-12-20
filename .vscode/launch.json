@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Web",
+      "name": "🌐 Run Web",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -19,7 +19,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Next Latest",
+      "name": "⚡ Run Next Latest",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -34,7 +34,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Next 12",
+      "name": "⚡ Run Next 12",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -49,7 +49,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run React Latest",
+      "name": "⚛️ Run React Latest",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -64,7 +64,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run React 17",
+      "name": "⚛️ Run React 17",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -79,7 +79,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Designer",
+      "name": "🎨 Run Designer",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -94,7 +94,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "CourierJS Tests",
+      "name": "🧪 CourierJS Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -109,7 +109,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "CourierUIInbox Tests",
+      "name": "🧪 CourierUIInbox Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -124,7 +124,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Localhost QR",
+      "name": "📱 Localhost QR",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "run",
@@ -136,7 +136,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Sync Packages",
+      "name": "🔄 Sync Packages",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "sync"
@@ -148,7 +148,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Build Packages",
+      "name": "🔨 Build Packages",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "build-packages"
@@ -160,7 +160,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run Example on Phone",
+      "name": "📱 Run Example on Phone",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "./scripts/ipqr.sh"
@@ -172,7 +172,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Setup Page for Screenshot",
+      "name": "📸 Setup Page for Screenshot",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
         "./scripts/screenshot_launch.sh"
@@ -184,7 +184,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Generate Production API Doc (courier-js)",
+      "name": "📚 Generate Production API Doc (courier-js)",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "build-packages:ci",

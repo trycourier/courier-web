@@ -1,6 +1,7 @@
 'use client';
 
-import { CourierInboxPopupMenu, type CourierInboxFeed, type CourierInboxTheme } from '@trycourier/courier-react';
+import { useRef, useCallback } from 'react';
+import { CourierInboxPopupMenu, type CourierInboxFeed, type CourierInboxTheme, type CourierInboxPopupMenuElement } from '@trycourier/courier-react';
 import { useInboxComponentKey } from './useInboxComponentKey';
 import { createMessageClickHandler } from './inboxHandlers';
 
