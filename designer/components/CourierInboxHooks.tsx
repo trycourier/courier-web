@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { useCourier, type InboxMessage, type CourierInboxFeed } from '@trycourier/courier-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CourierInboxHooksProps {
   feeds: CourierInboxFeed[];
@@ -49,33 +52,32 @@ export function CourierInboxHooks({ feeds }: CourierInboxHooksProps) {
 
   return (
     <div className="p-4">
-      <div className="mb-4">
-        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-          Total Unread Count: {inbox.totalUnreadCount ?? 0}
+      <div className="mb-4 space-y-2">
+        <div className="text-sm font-medium">
+          Total Unread Count: <Badge variant="secondary">{inbox.totalUnreadCount ?? 0}</Badge>
         </div>
         {inbox.error && (
-          <div className="text-sm text-red-600 dark:text-red-400 mb-2">
-            Error: {inbox.error.message}
-          </div>
+          <Alert variant="destructive">
+            <AlertDescription>Error: {inbox.error.message}</AlertDescription>
+          </Alert>
         )}
       </div>
       <ul className="space-y-2">
         {messages.map((message: InboxMessage) => (
-          <li
+          <Card
             key={message.messageId}
-            className={`p-3 rounded-md border ${message.read
-              ? 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800'
-              : 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-800'
-              }`}
+            className={message.read ? '' : 'border-primary'}
           >
-            <pre className="text-xs font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto whitespace-pre-wrap break-words text-gray-800 dark:text-gray-200">
-              {JSON.stringify(message, null, 2)}
-            </pre>
-          </li>
+            <CardContent className="p-3">
+              <pre className="text-xs font-mono bg-muted p-2 rounded overflow-x-auto whitespace-pre-wrap break-words">
+                {JSON.stringify(message, null, 2)}
+              </pre>
+            </CardContent>
+          </Card>
         ))}
       </ul>
       {messages.length === 0 && (
-        <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+        <div className="text-center text-muted-foreground py-8">
           No messages found
         </div>
       )}

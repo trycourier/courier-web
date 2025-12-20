@@ -2,8 +2,9 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { useCourier } from "@trycourier/courier-react";
-import { CourierRepo } from "../lib/courier-repo";
+import { CourierRepo } from "@/app/lib/courier-repo";
 import { v4 as uuidv4 } from "uuid";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const USER_ID_STORAGE_KEY = 'courier_user_id';
 
@@ -83,14 +84,18 @@ export function CourierAuth({ children }: CourierAuthProps) {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-foreground"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center text-red-600 dark:text-red-400">{error}</div>
+      <div className="flex h-full items-center justify-center p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
     );
   }
 

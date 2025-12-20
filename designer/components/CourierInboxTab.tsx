@@ -6,11 +6,12 @@ import { createMessageClickHandler } from './inboxHandlers';
 
 interface CourierInboxTabProps {
   feeds: CourierInboxFeed[];
-  theme?: CourierInboxTheme;
+  lightTheme?: CourierInboxTheme;
+  darkTheme?: CourierInboxTheme;
 }
 
-export function CourierInboxTab({ feeds, theme }: CourierInboxTabProps) {
-  const componentKey = useInboxComponentKey(feeds, theme);
+export function CourierInboxTab({ feeds, lightTheme, darkTheme }: CourierInboxTabProps) {
+  const componentKey = useInboxComponentKey(feeds, lightTheme, darkTheme);
   const handleMessageClick = createMessageClickHandler();
 
   return (
@@ -19,9 +20,9 @@ export function CourierInboxTab({ feeds, theme }: CourierInboxTabProps) {
         key={componentKey} 
         feeds={feeds} 
         onMessageClick={handleMessageClick}
-        lightTheme={theme}
-        darkTheme={theme}
-        mode="light"
+        lightTheme={lightTheme}
+        darkTheme={darkTheme}
+        mode="system"
       />
     </div>
   );

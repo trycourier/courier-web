@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
-import { CourierAuth } from "./components/CourierAuth";
-import { Tabs } from "./components/Tabs";
-import { SendTestTab } from "./components/SendTestTab";
-import { ThemeTab } from "./components/ThemeTab";
-import { CurrentUserTab } from "./components/CurrentUserTab";
-import { FeedsTab } from "./components/FeedsTab";
-import { CourierInboxTab } from "./components/CourierInboxTab";
-import { CourierInboxPopupMenuTab } from "./components/CourierInboxPopupMenuTab";
-import { CourierInboxHooks } from "./components/CourierInboxHooks";
+import { CourierAuth } from "@/components/CourierAuth";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SendTestTab } from "@/components/SendTestTab";
+import { ThemeTab } from "@/components/ThemeTab";
+import { CurrentUserTab } from "@/components/CurrentUserTab";
+import { FeedsTab } from "@/components/FeedsTab";
+import { CourierInboxTab } from "@/components/CourierInboxTab";
+import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
+import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
-import { themePresets, type ThemePreset } from './components/theme-presets';
+import { themePresets, type ThemePreset } from '@/components/theme-presets';
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds';
 type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';
@@ -63,7 +63,7 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen flex-col bg-white dark:bg-black">
       {/* Header */}
-      <header className="p-4 border-b border-gray-300 dark:border-gray-700 flex items-center justify-between px-4">
+      <header className="p-4 border-b border-border flex items-center justify-between px-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           Courier Designer
         </h1>
@@ -75,31 +75,36 @@ export default function Home() {
           <div className="flex flex-1 overflow-hidden">
             {/* Left Panel */}
             <div
-              className="border-r border-gray-300 dark:border-gray-700 flex-shrink-0"
+              className="border-r border-border flex-shrink-0"
               style={{ width: `${leftPanelWidth}px`, minWidth: `${initialWidth}px` }}
             >
               <Tabs
-                tabs={[
-                  { id: 'send-test', label: 'Send Test' },
-                  { id: 'theme', label: 'Theme' },
-                  { id: 'feeds', label: 'Feeds' },
-                  { id: 'current-user', label: 'User' },
-                ]}
-                activeTab={activeLeftTab}
-                onTabChange={(tabId) => setActiveLeftTab(tabId as LeftTab)}
+                value={activeLeftTab}
+                onValueChange={(tabId: string) => setActiveLeftTab(tabId as LeftTab)}
+                className="flex flex-col h-full"
               >
-                {activeLeftTab === 'send-test' && (
-                  <SendTestTab userId={userId} />
-                )}
-                {activeLeftTab === 'theme' && (
-                  <ThemeTab selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
-                )}
-                {activeLeftTab === 'current-user' && (
-                  <CurrentUserTab userId={userId} onClearUser={onClearUser} />
-                )}
-                {activeLeftTab === 'feeds' && (
-                  <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
-                )}
+                <div className="flex justify-center p-4 border-b border-border">
+                  <TabsList>
+                    <TabsTrigger value="send-test">Test</TabsTrigger>
+                    <TabsTrigger value="theme">Theme</TabsTrigger>
+                    <TabsTrigger value="feeds">Feeds</TabsTrigger>
+                    <TabsTrigger value="current-user">User</TabsTrigger>
+                  </TabsList>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  <TabsContent value="send-test" className="h-full mt-0">
+                    <SendTestTab userId={userId} />
+                  </TabsContent>
+                  <TabsContent value="theme" className="h-full mt-0">
+                    <ThemeTab selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
+                  </TabsContent>
+                  <TabsContent value="feeds" className="h-full mt-0">
+                    <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
+                  </TabsContent>
+                  <TabsContent value="current-user" className="h-full mt-0">
+                    <CurrentUserTab userId={userId} onClearUser={onClearUser} />
+                  </TabsContent>
+                </div>
               </Tabs>
             </div>
 
@@ -114,23 +119,36 @@ export default function Home() {
             {/* Right Panel */}
             <div className="flex-1 overflow-hidden">
               <Tabs
-                tabs={[
-                  { id: 'courier-inbox', label: 'Inbox' },
-                  { id: 'courier-inbox-popup-menu', label: 'Popup' },
-                  { id: 'courier-inbox-hooks', label: 'Hooks' },
-                ]}
-                activeTab={activeRightTab}
-                onTabChange={(tabId) => setActiveRightTab(tabId as RightTab)}
+                value={activeRightTab}
+                onValueChange={(tabId: string) => setActiveRightTab(tabId as RightTab)}
+                className="flex flex-col h-full"
               >
-                {activeRightTab === 'courier-inbox' && (
-                  <CourierInboxTab feeds={feeds} theme={themePresets[selectedTheme]} />
-                )}
-                {activeRightTab === 'courier-inbox-popup-menu' && (
-                  <CourierInboxPopupMenuTab feeds={feeds} theme={themePresets[selectedTheme]} />
-                )}
-                {activeRightTab === 'courier-inbox-hooks' && (
-                  <CourierInboxHooks feeds={feeds} />
-                )}
+                <div className="flex justify-center p-4 border-b border-border">
+                  <TabsList>
+                    <TabsTrigger value="courier-inbox">Inbox</TabsTrigger>
+                    <TabsTrigger value="courier-inbox-popup-menu">Popup</TabsTrigger>
+                    <TabsTrigger value="courier-inbox-hooks">Hooks</TabsTrigger>
+                  </TabsList>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                  <TabsContent value="courier-inbox" className="h-full mt-0">
+                    <CourierInboxTab
+                      feeds={feeds}
+                      lightTheme={themePresets[selectedTheme].light}
+                      darkTheme={themePresets[selectedTheme].dark}
+                    />
+                  </TabsContent>
+                  <TabsContent value="courier-inbox-popup-menu" className="h-full mt-0">
+                    <CourierInboxPopupMenuTab
+                      feeds={feeds}
+                      lightTheme={themePresets[selectedTheme].light}
+                      darkTheme={themePresets[selectedTheme].dark}
+                    />
+                  </TabsContent>
+                  <TabsContent value="courier-inbox-hooks" className="h-full mt-0">
+                    <CourierInboxHooks feeds={feeds} />
+                  </TabsContent>
+                </div>
               </Tabs>
             </div>
           </div>

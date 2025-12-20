@@ -1,7 +1,12 @@
 'use client';
 
 import { useState } from "react";
-import { CourierRepo } from "../lib/courier-repo";
+import { CourierRepo } from "@/app/lib/courier-repo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SendMessageFormProps {
   userId: string;
@@ -42,58 +47,52 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
   return (
     <div className="p-4">
       <form onSubmit={handleSendMessage} className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-1">
-            Title
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Textarea
             id="title"
-            type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTitle(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            rows={2}
             placeholder="Enter message title"
           />
         </div>
-        <div>
-          <label htmlFor="body" className="block text-sm font-medium mb-1">
-            Body
-          </label>
-          <textarea
+        <div className="space-y-2">
+          <Label htmlFor="body">Body</Label>
+          <Textarea
             id="body"
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)}
             required
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
             placeholder="Enter message body"
           />
         </div>
-        <div>
-          <label htmlFor="tags" className="block text-sm font-medium mb-1">
-            Tags <span className="text-gray-500 dark:text-gray-400 text-xs font-normal">(optional, comma-separated)</span>
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="tags">
+            Tags <span className="text-muted-foreground text-xs font-normal">(optional, comma-separated)</span>
+          </Label>
+          <Input
             id="tags"
             type="text"
             value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTags(e.target.value)}
             placeholder="e.g., important, notification, marketing"
           />
         </div>
         <div>
-          <button
+          <Button
             type="submit"
-            disabled={isSendingMessage}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSendingMessage || !title.trim() || !body.trim()}
           >
-            {isSendingMessage ? 'Sending...' : 'Send Message to Current User'}
-          </button>
+            {isSendingMessage ? 'Sending...' : 'Send'}
+          </Button>
         </div>
         {sendMessageError && (
-          <div className="mt-2 text-red-600 dark:text-red-400 text-sm">{sendMessageError}</div>
+          <Alert variant="destructive">
+            <AlertDescription>{sendMessageError}</AlertDescription>
+          </Alert>
         )}
       </form>
     </div>
