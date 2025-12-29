@@ -236,7 +236,7 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private showMenu() {
     // Remove visible class first to reset state
     this.classList.remove('visible');
-    
+
     // Add displayed class to set display: block (but keep opacity 0 and initial transform)
     this.classList.add('displayed');
 

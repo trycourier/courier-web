@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins, Montserrat, Playfair_Display, Raleway } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,11 +48,53 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function getThemePreference() {
+                  if (typeof window !== 'undefined' && window.localStorage) {
+                    const stored = localStorage.getItem('theme');
+                    if (stored) return stored;
+                  }
+                  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                
+                function applyTheme(theme) {
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                }
+                
+                // Apply initial theme
+                const theme = getThemePreference();
+                applyTheme(theme);
+                
+                // Listen for system theme changes
+                if (typeof window !== 'undefined' && window.matchMedia) {
+                  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                  mediaQuery.addEventListener('change', (e) => {
+                    // Only update if user hasn't manually set a preference
+                    if (!localStorage.getItem('theme')) {
+                      applyTheme(e.matches ? 'dark' : 'light');
+                    }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${montserrat.variable} ${playfairDisplay.variable} ${raleway.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
