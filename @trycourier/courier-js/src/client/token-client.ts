@@ -9,7 +9,7 @@ export class TokenClient extends Client {
    * @param token - The push notification token
    * @param provider - The provider of the token
    * @param device - The device information
-   * @see https://www.courier.com/docs/reference/token-management/put-token
+   * @see https://www.courier.com/docs/api-reference/device-tokens/add-single-token-to-user
    */
   public async putUserToken(props: {
     token: string;

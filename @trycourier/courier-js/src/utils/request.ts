@@ -46,6 +46,7 @@ Response JSON: ${JSON.stringify(data.response, null, 2)}
 
 export async function http(props: {
   url: string,
+  clientKey?: string,
   options: CourierClientOptions,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
   headers?: Record<string, string>,
