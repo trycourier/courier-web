@@ -11,13 +11,15 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
   render(node as any, container);
 
   /**
-   * If React rendered a single root element, return that element directly so we
-   * don't introduce an extra wrapper <div> into the caller's DOM structure.
+   * Always return the container to preserve React's event delegation system.
+   * React uses event delegation at the root level, so the React root container
+   * must stay in the DOM for event handlers to work.
+   * 
+   * We use `display: contents` to make the container transparent to CSS layout,
+   * so it doesn't introduce a visual wrapper while still preserving React's
+   * event system.
    */
-  const onlyChild = container.firstElementChild as HTMLElement | null;
-  if (onlyChild && container.childElementCount === 1) {
-    return onlyChild;
-  }
-
+  container.style.display = 'contents';
+  container.setAttribute('data-react-root', 'true');
   return container;
 }

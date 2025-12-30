@@ -12,19 +12,15 @@ export function reactNodeToHTMLElement(node: ReactNode): HTMLElement {
   });
 
   /**
-   * If React rendered a single root element, return that element directly so we
-   * don't introduce an extra wrapper <div> into the caller's DOM structure.
-   *
-   * The React root stays attached to `container`, but since these rendered
-   * nodes are treated as static content by our web components (we don't call
-   * `render` again), it's safe to move the child into its final parent.
+   * Always return the container to preserve React's event delegation system.
+   * React uses event delegation at the root level, so the React root container
+   * must stay in the DOM for event handlers to work.
+   * 
+   * We use `display: contents` to make the container transparent to CSS layout,
+   * so it doesn't introduce a visual wrapper while still preserving React's
+   * event system.
    */
-  const onlyChild = container.firstElementChild as HTMLElement | null;
-  if (onlyChild && container.childElementCount === 1) {
-    return onlyChild;
-  }
-
-  // Fallback: if there are multiple children, preserve the container wrapper
-  // to maintain React's event handling and DOM structure.
+  container.style.display = 'contents';
+  container.setAttribute('data-react-root', 'true');
   return container;
 }

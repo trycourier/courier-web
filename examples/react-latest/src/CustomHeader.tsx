@@ -12,12 +12,14 @@ const CustomHeader = (props: CourierInboxHeaderFactoryProps) => {
   const selectedTab = selectedFeed?.tabs.find(tab => tab.isSelected);
 
   return (
-    <div style={{
-      background: 'red',
-      fontSize: '24px',
-      padding: '24px',
-      width: '100%'
-    }}>
+    <div 
+      onClick={() => alert(JSON.stringify(props, null, 2))}
+      style={{
+        background: 'red',
+        fontSize: '24px',
+        padding: '24px',
+        width: '100%'
+      }}>
       {selectedFeed?.feedId ?? ''} - {selectedTab?.datasetId ?? ''} - {selectedTab?.unreadCount ?? 0}
     </div>
   );

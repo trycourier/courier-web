@@ -13,6 +13,12 @@ export class CourierFactoryElement extends CourierSystemThemeElement {
       return;
     }
     const element = newElement ?? this.defaultElement();
+    
+    // If element is a React root container, ensure it's transparent
+    if (element.hasAttribute('data-react-root')) {
+      element.style.display = 'contents';
+    }
+    
     this.replaceChildren(element);
   }
 
