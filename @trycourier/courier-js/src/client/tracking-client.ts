@@ -10,12 +10,13 @@ export class TrackingClient extends Client {
    * Post an inbound courier event. This is typically used for tracking custom events
    * related to a specific message in Courier.
    * 
-   * @param props.clientKey - The client key associated with your Courier project. 
-   *   You can get your client key here: https://app.courier.com/settings/api-keys
-   * @param props.event - The name of the event (e.g., "New Order Placed").
-   * @param props.messageId - The unique ID of the message this event relates to.
-   * @param props.type - The type of event. Only supported value: "track".
-   * @param props.properties - (Optional) Additional custom properties for the event.
+   * @param props - The event properties object containing:
+   *   - `clientKey`: The client key associated with your Courier project. 
+   *     You can get your client key here: https://app.courier.com/settings/api-keys
+   *   - `event`: The name of the event (e.g., "New Order Placed").
+   *   - `messageId`: The unique ID of the message this event relates to.
+   *   - `type`: The type of event. Only supported value: "track".
+   *   - `properties`: (Optional) Additional custom properties for the event.
    * @returns Promise resolving to an object containing the messageId.
    * @see https://www.courier.com/docs/api-reference/inbound/courier-track-event
    */
