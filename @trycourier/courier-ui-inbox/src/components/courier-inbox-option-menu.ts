@@ -88,14 +88,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       :host {
         position: absolute;
         top: 42px;
-        border-radius: ${menuTheme?.borderRadius ?? '6px'};
-        border: ${menuTheme?.border ?? '1px solid red'};
-        background: ${menuTheme?.backgroundColor ?? 'red'};
-        box-shadow: ${menuTheme?.shadow ?? '0 4px 12px 0 red'};
         z-index: 1000;
         min-width: 200px;
-        overflow: hidden;
-        padding: 4px 0;
         user-select: none;
         opacity: 0;
         pointer-events: none;
@@ -118,6 +112,12 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       .menu-container {
         display: flex;
         flex-direction: column;
+        border-radius: ${menuTheme?.borderRadius ?? '6px'};
+        border: ${menuTheme?.border ?? '1px solid red'};
+        background: ${menuTheme?.backgroundColor ?? 'red'};
+        box-shadow: ${menuTheme?.shadow ?? '0 4px 12px 0 red'};
+        overflow: hidden;
+        padding: 4px 0;
       }
 
       courier-inbox-option-menu-item {

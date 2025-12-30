@@ -45,7 +45,7 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 h-full overflow-y-auto">
       <form onSubmit={handleSendMessage} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>

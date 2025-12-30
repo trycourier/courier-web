@@ -9,7 +9,7 @@ interface CurrentUserTabProps {
 
 export function CurrentUserTab({ userId, onClearUser }: CurrentUserTabProps) {
   return (
-    <div className="p-4 h-full flex flex-col">
+    <div className="p-4 h-full overflow-y-auto">
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">User ID</h2>
         <div className="font-mono text-sm text-muted-foreground break-all">

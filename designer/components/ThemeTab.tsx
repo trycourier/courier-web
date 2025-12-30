@@ -40,8 +40,8 @@ function getThemeInfo(themeKey: ThemePreset): { color: string; fontFamily: strin
 
 export function ThemeTab({ selectedTheme, onThemeChange }: ThemeTabProps) {
   return (
-    <div className="p-4 h-full flex flex-col">
-      <div className="space-y-6 flex-1">
+    <div className="p-4 h-full overflow-y-auto">
+      <div className="space-y-6">
         <RadioGroup 
           value={selectedTheme} 
           onValueChange={(value: string) => onThemeChange(value as ThemePreset)} 
@@ -74,43 +74,6 @@ export function ThemeTab({ selectedTheme, onThemeChange }: ThemeTabProps) {
             );
           })}
         </RadioGroup>
-      </div>
-
-      <div className="pt-4 mt-auto border-t border-border space-y-4">
-        <div className="text-sm text-muted-foreground">
-          <p className="mb-3">
-            You can fully customize the Courier Inbox and Popup Menu components to match your app's design. 
-            Customize fonts, colors, spacing, animations, and more through the theme system.
-          </p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
-            <a
-              href="https://www.courier.com/docs/sdk-libraries/courier-react-web#styles-and-theming"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              React SDK Docs
-            </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
-            <a
-              href="https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#styles-and-theming"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Web Components Docs
-            </a>
-          </Button>
-        </div>
       </div>
     </div>
   );

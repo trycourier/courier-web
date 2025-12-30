@@ -47,7 +47,7 @@ function AccordionTrigger({
   const Trigger = AccordionPrimitive.Trigger as any;
   const Icon = ChevronDownIcon as any;
   return (
-    <Header className="flex">
+    <Header className="flex w-full">
       <Trigger
         data-slot="accordion-trigger"
         className={cn(

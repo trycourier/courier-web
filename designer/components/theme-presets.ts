@@ -79,6 +79,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   family: 'Poppins',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#8B5CF6',
                   font: {
                     family: 'Poppins',
                   },
@@ -104,6 +105,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 family: 'Poppins',
               },
               unreadIndicator: {
+                backgroundColor: '#8B5CF6',
                 font: {
                   family: 'Poppins',
                 },
@@ -235,6 +237,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   family: 'Poppins',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#A78BFA',
                   font: {
                     family: 'Poppins',
                     color: '#FFFFFF',
@@ -263,6 +266,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 family: 'Poppins',
               },
               unreadIndicator: {
+                backgroundColor: '#A78BFA',
                 font: {
                   family: 'Poppins',
                   color: '#FFFFFF',
@@ -420,6 +424,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '600',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#10B981',
                   font: {
                     family: 'Montserrat',
                     size: '11px',
@@ -458,6 +463,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '600',
               },
               unreadIndicator: {
+                backgroundColor: '#10B981',
                 font: {
                   family: 'Montserrat',
                   size: '11px',
@@ -627,6 +633,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '600',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#34D399',
                   font: {
                     family: 'Montserrat',
                     size: '11px',
@@ -668,6 +675,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '600',
               },
               unreadIndicator: {
+                backgroundColor: '#34D399',
                 font: {
                   family: 'Montserrat',
                   size: '11px',
@@ -840,6 +848,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '700',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#EF4444',
                   font: {
                     family: 'Playfair Display',
                     size: '11px',
@@ -878,6 +887,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '700',
               },
               unreadIndicator: {
+                backgroundColor: '#EF4444',
                 font: {
                   family: 'Playfair Display',
                   size: '11px',
@@ -1048,6 +1058,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '700',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#F87171',
                   font: {
                     family: 'Playfair Display',
                     size: '11px',
@@ -1089,6 +1100,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '700',
               },
               unreadIndicator: {
+                backgroundColor: '#F87171',
                 font: {
                   family: 'Playfair Display',
                   size: '11px',
@@ -1261,6 +1273,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '700',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#F97316',
                   font: {
                     family: 'Raleway',
                     size: '11px',
@@ -1299,6 +1312,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '700',
               },
               unreadIndicator: {
+                backgroundColor: '#F97316',
                 font: {
                   family: 'Raleway',
                   size: '11px',
@@ -1468,6 +1482,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   weight: '700',
                 },
                 unreadIndicator: {
+                  backgroundColor: '#FB923C',
                   font: {
                     family: 'Raleway',
                     size: '11px',
@@ -1509,6 +1524,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 weight: '700',
               },
               unreadIndicator: {
+                backgroundColor: '#FB923C',
                 font: {
                   family: 'Raleway',
                   size: '11px',
