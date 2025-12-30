@@ -184,16 +184,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "📚 Generate Production API Doc (courier-js)",
+      "name": "📚 Generate API Docs (All Packages)",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
-        "build-packages:ci",
-        "&&",
-        "yarn",
-        "workspace",
-        "@trycourier/courier-js",
-        "run",
-        "generate-api-doc"
+        "generate-api-docs"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

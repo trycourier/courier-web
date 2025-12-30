@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Building all packages..."
+yarn build-packages
+
+echo "Generating API docs for all packages..."
+yarn workspace @trycourier/courier-js run generate-api-doc --local
+yarn workspace @trycourier/courier-react run generate-api-doc --local
+yarn workspace @trycourier/courier-react-17 run generate-api-doc --local
+yarn workspace @trycourier/courier-react-components run generate-api-doc --local
+yarn workspace @trycourier/courier-ui-core run generate-api-doc --local
+yarn workspace @trycourier/courier-ui-inbox run generate-api-doc --local
+yarn workspace @trycourier/courier-ui-toast run generate-api-doc --local
+
+echo "API docs generation complete!"
+

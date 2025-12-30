@@ -511,7 +511,9 @@ export class TokenClient extends Client {
 //
 // @public (undocumented)
 export class TrackingClient extends Client {
+    // @deprecated (undocumented)
     postInboundCourier(props: {
+        clientKey: string;
         event: string;
         messageId: string;
         type: 'track';

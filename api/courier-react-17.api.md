@@ -12,15 +12,12 @@ import { CourierBrand } from '@trycourier/courier-js';
 import { CourierClientOptions } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierDevice } from '@trycourier/courier-js';
-import { CourierFilterMenuTheme } from '@trycourier/courier-ui-inbox';
 import { CourierGetInboxMessageResponse } from '@trycourier/courier-js';
 import { CourierGetInboxMessagesResponse } from '@trycourier/courier-js';
 import { CourierInboxButtonTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxDatasetFilter } from '@trycourier/courier-ui-inbox';
 import { CourierInbox as CourierInboxElement } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFeed } from '@trycourier/courier-ui-inbox';
-import { CourierInboxFeedType } from '@trycourier/courier-ui-inbox';
-import { CourierInboxFilterItemTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFontTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxHeaderFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxIconButtonTheme } from '@trycourier/courier-ui-inbox';
@@ -62,8 +59,11 @@ import { CourierUserPreferencesPaging } from '@trycourier/courier-js';
 import { CourierUserPreferencesStatus } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopicResponse } from '@trycourier/courier-js';
+import { defaultActions } from '@trycourier/courier-ui-inbox';
 import { defaultDarkTheme } from '@trycourier/courier-ui-inbox';
+import { defaultFeeds } from '@trycourier/courier-ui-inbox';
 import { defaultLightTheme } from '@trycourier/courier-ui-inbox';
+import { defaultListItemActions } from '@trycourier/courier-ui-inbox';
 import { defaultDarkTheme as defaultToastDarkTheme } from '@trycourier/courier-ui-toast';
 import { defaultLightTheme as defaultToastLightTheme } from '@trycourier/courier-ui-toast';
 import { ForwardRefExoticComponent } from 'react';
@@ -94,8 +94,6 @@ export { CourierComponentThemeMode }
 
 export { CourierDevice }
 
-export { CourierFilterMenuTheme }
-
 export { CourierGetInboxMessageResponse }
 
 export { CourierGetInboxMessagesResponse }
@@ -112,10 +110,6 @@ export { CourierInboxDatasetFilter }
 export { CourierInboxElement }
 
 export { CourierInboxFeed }
-
-export { CourierInboxFeedType }
-
-export { CourierInboxFilterItemTheme }
 
 export { CourierInboxFontTheme }
 
@@ -209,9 +203,15 @@ export { CourierUserPreferencesTopic }
 
 export { CourierUserPreferencesTopicResponse }
 
+export { defaultActions }
+
 export { defaultDarkTheme }
 
+export { defaultFeeds }
+
 export { defaultLightTheme }
+
+export { defaultListItemActions }
 
 export { defaultToastDarkTheme }
 
