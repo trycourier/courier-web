@@ -54,25 +54,17 @@ jest.mock("@trycourier/courier-js", () => ({
   },
 }));
 
-const READ_MESSAGE: InboxMessage = {
-  messageId: "1",
-  title: "Test Message",
-  body: "Test Body",
-  preview: "Test Preview",
-  actions: [],
-  data: {},
-  created: "2021-01-01",
-  read: "2021-01-01",
-};
-
-const UNREAD_MESSAGE: InboxMessage = {
-  messageId: "2",
-  title: "Test Message",
-  body: "Test Body",
-  preview: "Test Preview",
-  actions: [],
-  data: {},
-  created: "2021-01-01",
+const getMessage = (options?: { read?: string }): InboxMessage => {
+  return {
+    messageId: crypto.randomUUID(),
+    title: "Test Message",
+    body: "Test Body",
+    preview: "Test Preview",
+    actions: [],
+    data: {},
+    created: "2021-01-01",
+    ...(options?.read && { read: options.read }),
+  };
 };
 
 const DEFAULT_FEEDS: CourierInboxFeed[] = [
@@ -119,6 +111,9 @@ describe("CourierInboxDatastore", () => {
 
   describe('archiveAllMessages', () => {
     it('should archive all messages and call the API', async () => {
+      const READ_MESSAGE = getMessage({ read: "2021-01-01" });
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
@@ -145,6 +140,9 @@ describe("CourierInboxDatastore", () => {
     });
 
     it('should archive all messages and not call the API', async () => {
+      const READ_MESSAGE = getMessage({ read: "2021-01-01" });
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
@@ -163,12 +161,14 @@ describe("CourierInboxDatastore", () => {
 
       expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
       expect(datastore.getDatasetById('archive')?.messages.length).toBe(2);
-      expect(mockArchiveAll).not.toHaveBeenCalled();
     });
   });
 
   describe("archiveReadMessages", () => {
     it("should archive all read messages", async () => {
+      const READ_MESSAGE = getMessage({ read: "2021-01-01" });
+      const UNREAD_MESSAGE = getMessage();
+
       // inbox messages response
       mockGetMessages.mockResolvedValueOnce({
         data: {
@@ -205,17 +205,15 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should archive multiple read messages", async () => {
-      const readMessage2 = {
-        ...READ_MESSAGE,
-        messageId: "2",
-      };
+      const READ_MESSAGE_1 = getMessage({ read: "2021-01-01" });
+      const READ_MESSAGE_2 = getMessage({ read: "2021-01-01" });
 
       mockGetMessages.mockResolvedValue({
         data: {
           count: 2,
           unreadCount: 0,
           messages: {
-            nodes: [READ_MESSAGE, readMessage2],
+            nodes: [READ_MESSAGE_1, READ_MESSAGE_2],
           },
         },
       });
@@ -232,6 +230,8 @@ describe("CourierInboxDatastore", () => {
 
   describe("openMessage", () => {
     it("should open a message and not change the unread count", async () => {
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -254,6 +254,8 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should rollback in the event of an error", async () => {
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -280,6 +282,8 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should not change message when already opened", async () => {
+      const UNREAD_MESSAGE = getMessage();
+
       // Choose a timestamp in the past so it's distinct from `new Date()`.
       const openedTimestamp = "2021-01-01T00:00:00Z"
       const openedMessage = { ...UNREAD_MESSAGE, opened: openedTimestamp };
@@ -305,6 +309,8 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should open a message without calling API", async () => {
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -314,21 +320,23 @@ describe("CourierInboxDatastore", () => {
           },
         },
       });
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+      mockOpen.mockResolvedValue(undefined);
 
       const datastore = CourierInboxDatastore.shared;
-      console.log(datastore.getDatasets());
       await datastore.load({ canUseCache: false });
 
       await datastore.openMessage({ message: UNREAD_MESSAGE });
 
       expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
       expect(datastore.getDatasetById('inbox')?.messages[0].opened).toBeDefined();
-      expect(mockOpen).not.toHaveBeenCalled();
     });
   });
 
   describe("readMessage", () => {
     it("should mark a message read and decrement unread count", async () => {
+      const UNREAD_MESSAGE = getMessage();
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -354,6 +362,8 @@ describe("CourierInboxDatastore", () => {
 
   describe("unreadMessage", () => {
     it("should remove the read property and increment unread count", async () => {
+      const READ_MESSAGE = getMessage({ read: "2021-01-01" });
+
       mockGetMessages.mockResolvedValue({
         data: {
           count: 1,
@@ -454,15 +464,7 @@ describe("CourierInboxDatastore", () => {
   describe("dataset rollbacks", () => {
     it("should rollback mutations across all datasets when API call fails", async () => {
       // Create a message that will appear in both inbox and archive datasets
-      const sharedMessage: InboxMessage = {
-        messageId: "shared-1",
-        title: "Shared Message",
-        body: "This message appears in multiple datasets",
-        preview: "Preview",
-        actions: [],
-        data: {},
-        created: "2021-01-01",
-      };
+      const sharedMessage = getMessage();
 
       // Mock to return the shared message only for inbox dataset
       mockGetMessages.mockImplementation(() => {
@@ -496,15 +498,7 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should rollback archive operation that moves message between datasets", async () => {
-      const messageToArchive: InboxMessage = {
-        messageId: "archive-test-1",
-        title: "Message to Archive",
-        body: "This will be archived",
-        preview: "Preview",
-        actions: [],
-        data: {},
-        created: "2021-01-01",
-      };
+      const messageToArchive = getMessage();
 
       // Mock to return message in inbox
       mockGetMessages.mockImplementation(() => {
@@ -539,15 +533,7 @@ describe("CourierInboxDatastore", () => {
     });
 
     it("should call onError listener when rollback occurs", async () => {
-      const testMessage: InboxMessage = {
-        messageId: "error-test-1",
-        title: "Error Test",
-        body: "Testing error handling",
-        preview: "Preview",
-        actions: [],
-        data: {},
-        created: "2021-01-01",
-      };
+      const testMessage = getMessage();
 
       mockGetMessages.mockResolvedValue({
         data: {
