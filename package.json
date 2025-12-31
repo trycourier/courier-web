@@ -21,7 +21,8 @@
     "sync": "yarn exec ./scripts/sync",
     "release": "yarn build-packages:ci && yarn changeset publish",
     "ipqr": "sh ./scripts/ipqr.sh",
-    "generate-api-docs": "yarn exec ./scripts/generate-api-docs"
+    "generate-api-docs": "yarn exec ./scripts/generate-api-docs",
+    "test:all": "concurrently -n \"js,inbox,react,react17,toast\" -c \"blue,green,yellow,cyan,magenta\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-ui-toast run test\""
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",

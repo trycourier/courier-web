@@ -94,7 +94,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "🧪 CourierJS Tests",
+      "name": "🧪 Courier-JS Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
@@ -109,13 +109,71 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "🧪 CourierUIInbox Tests",
+      "name": "🧪 Courier-UI-Inbox Tests",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
         "@trycourier/courier-ui-inbox",
         "run",
         "test"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "🧪 Courier-React Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "@trycourier/courier-react",
+        "run",
+        "test"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "🧪 Courier-React-17 Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "@trycourier/courier-react-17",
+        "run",
+        "test"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "🧪 Courier-UI-Toast Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "@trycourier/courier-ui-toast",
+        "run",
+        "test"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "🧪 Run All Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "run",
+        "test:all"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
