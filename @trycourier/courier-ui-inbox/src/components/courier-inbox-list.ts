@@ -3,13 +3,14 @@ import { CourierBaseElement, CourierInfoState, injectGlobalStyle, registerElemen
 import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
-import { CourierInboxFeedType } from "../types/feed-type";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
 import { openMessage } from "../utils/extensions";
+import { CourierInboxListItemAction, defaultFeeds } from "../types/inbox-defaults";
+import { CourierInbox } from "./courier-inbox";
 
 export class CourierInboxList extends CourierBaseElement {
 
@@ -22,12 +23,13 @@ export class CourierInboxList extends CourierBaseElement {
 
   // State
   private _messages: InboxMessage[] = [];
-  private _feedType: CourierInboxFeedType = 'inbox';
+  private _datasetId: string = defaultFeeds()[0].tabs[0].datasetId;
   private _isLoading = true;
   private _error: Error | null = null;
   private _canPaginate = false;
   private _canClickListItems = false;
   private _canLongPressListItems = false;
+  private _listItemActions: CourierInboxListItemAction[] = CourierInbox.defaultListItemActions();
 
   // Callbacks
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
@@ -36,7 +38,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onRefresh: () => void;
 
   // Factories
-  private _onPaginationTrigger?: (feedType: CourierInboxFeedType) => void;
+  private _onPaginationTrigger?: (feedId: string) => void;
   private _listItemFactory?: (props: CourierInboxListItemFactoryProps | undefined | null) => HTMLElement;
   private _paginationItemFactory?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement;
   private _loadingStateFactory?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => HTMLElement;
@@ -61,10 +63,11 @@ export class CourierInboxList extends CourierBaseElement {
 
   constructor(props: {
     themeManager: CourierInboxThemeManager,
+    listItemActions?: CourierInboxListItemAction[],
     canClickListItems: boolean,
     canLongPressListItems: boolean,
     onRefresh: () => void,
-    onPaginationTrigger: (feedType: CourierInboxFeedType) => void,
+    onPaginationTrigger: (datasetId: string) => void,
     onMessageClick: (message: InboxMessage, index: number) => void,
     onMessageActionClick: (message: InboxMessage, action: InboxAction, index: number) => void,
     onMessageLongPress: (message: InboxMessage, index: number) => void
@@ -78,9 +81,14 @@ export class CourierInboxList extends CourierBaseElement {
     this._onMessageActionClick = props.onMessageActionClick;
     this._onMessageLongPress = props.onMessageLongPress;
 
+    // Set list item actions
+    if (props.listItemActions) {
+      this._listItemActions = props.listItemActions;
+    }
+
     // Initialize the theme subscription
     this._themeSubscription = props.themeManager.subscribe((_: CourierInboxTheme) => {
-      this.render();
+      this.refreshTheme();
     });
 
   }
@@ -114,15 +122,23 @@ export class CourierInboxList extends CourierBaseElement {
     this._canLongPressListItems = canLongPress;
   }
 
+  public setListItemActions(actions: CourierInboxListItemAction[]) {
+    this._listItemActions = actions;
+    this.render();
+  }
+
   static getStyles(theme: CourierInboxTheme): string {
 
     const list = theme.inbox?.list;
+    const scrollbar = list?.scrollbar;
 
     return `
       ${CourierInboxList.id} {
         flex: 1;
         width: 100%;
         background-color: ${list?.backgroundColor ?? 'red'};
+        scrollbar-width: ${scrollbar?.width ?? 'thin'};
+        scrollbar-color: ${scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.2)'} ${scrollbar?.trackBackgroundColor ?? 'transparent'};
       }
 
       ${CourierInboxList.id} ul {
@@ -130,6 +146,25 @@ export class CourierInboxList extends CourierBaseElement {
         padding: 0;
         margin: 0;
         height: 100%;
+      }
+
+      /* Webkit scrollbar styling - show thumb, hide track background, overlay above content */
+      ${CourierInboxList.id}::-webkit-scrollbar {
+        width: ${scrollbar?.width ?? '8px'};
+        height: ${scrollbar?.height ?? '8px'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-track {
+        background: ${scrollbar?.trackBackgroundColor ?? 'transparent'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-thumb {
+        background: ${scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.2)'};
+        border-radius: ${scrollbar?.borderRadius ?? '4px'};
+      }
+
+      ${CourierInboxList.id}::-webkit-scrollbar-thumb:hover {
+        background: ${scrollbar?.thumbHoverColor ?? scrollbar?.thumbColor ?? 'rgba(0, 0, 0, 0.3)'};
       }
     `;
 
@@ -166,8 +201,8 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public setFeedType(feedType: CourierInboxFeedType): void {
-    this._feedType = feedType;
+  public selectDataset(datasetId: string): void {
+    this._datasetId = datasetId;
     this._error = null;
     this._isLoading = true;
     this.render();
@@ -196,6 +231,27 @@ export class CourierInboxList extends CourierBaseElement {
 
   private handleRefresh(): void {
     this._onRefresh();
+  }
+
+  private refreshTheme(): void {
+
+    // Update list styles
+    if (this._listStyles) {
+      this._listStyles.textContent = CourierInboxList.getStyles(this.theme);
+    }
+
+    // Update list item styles
+    if (this._listItemStyles) {
+      this._listItemStyles.textContent = CourierInboxListItem.getStyles(this.theme);
+    }
+
+    // Update list item menu styles
+    if (this._listItemMenuStyles) {
+      this._listItemMenuStyles.textContent = CourierInboxListItemMenu.getStyles(this.theme);
+    }
+
+    // Update info state themes if they are rendered
+    this.refreshInfoStateThemes();
   }
 
   public refreshInfoStateThemes() {
@@ -237,7 +293,7 @@ export class CourierInboxList extends CourierBaseElement {
     const themeMode = this._themeSubscription.manager.mode;
     return {
       title: {
-        text: empty?.title?.text ?? `No ${this._feedType} messages yet`,
+        text: empty?.title?.text ?? `No Messages`,
         textColor: empty?.title?.font?.color,
         fontFamily: empty?.title?.font?.family,
         fontSize: empty?.title?.font?.size,
@@ -270,25 +326,13 @@ export class CourierInboxList extends CourierBaseElement {
       this._emptyContainer = undefined;
     }
 
-    // Update list styles
-    if (this._listStyles) {
-      this._listStyles.textContent = CourierInboxList.getStyles(this.theme);
-    }
-
-    // Update list item styles
-    if (this._listItemStyles) {
-      this._listItemStyles.textContent = CourierInboxListItem.getStyles(this.theme);
-    }
-
-    // Update list item menu styles
-    if (this._listItemMenuStyles) {
-      this._listItemMenuStyles.textContent = CourierInboxListItemMenu.getStyles(this.theme);
-    }
+    // Refresh theme-related styles and info states
+    this.refreshTheme();
 
     // Error state
     if (this._error) {
       this._errorContainer = new CourierInfoState(this.errorProps);
-      this._errorContainer.build(this._errorStateFactory?.({ feedType: this._feedType, error: this._error }));
+      this._errorContainer.build(this._errorStateFactory?.({ datasetId: this._datasetId, error: this._error }));
       this.appendChild(this._errorContainer);
       return;
     }
@@ -296,7 +340,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Loading state
     if (this._isLoading) {
       const loadingElement = new CourierInboxSkeletonList(this.theme);
-      loadingElement.build(this._loadingStateFactory?.({ feedType: this._feedType }));
+      loadingElement.build(this._loadingStateFactory?.({ datasetId: this._datasetId }));
       this.appendChild(loadingElement);
       return;
     }
@@ -304,7 +348,7 @@ export class CourierInboxList extends CourierBaseElement {
     // Empty state
     if (this._messages.length === 0) {
       this._emptyContainer = new CourierInfoState(this.emptyProps);
-      this._emptyContainer.build(this._emptyStateFactory?.({ feedType: this._feedType }));
+      this._emptyContainer.build(this._emptyStateFactory?.({ datasetId: this._datasetId }));
       this.appendChild(this._emptyContainer);
       return;
     }
@@ -319,8 +363,8 @@ export class CourierInboxList extends CourierBaseElement {
         list.appendChild(this._listItemFactory({ message, index }));
         return;
       }
-      const listItem = new CourierInboxListItem(this._themeSubscription.manager, this._canClickListItems, this._canLongPressListItems);
-      listItem.setMessage(message, this._feedType);
+      const listItem = new CourierInboxListItem(this._themeSubscription.manager, this._canClickListItems, this._canLongPressListItems, this._listItemActions);
+      listItem.setMessage(message);
       listItem.setOnItemClick((message) => this._onMessageClick?.(message, index));
       listItem.setOnItemActionClick((message, action) => this._onMessageActionClick?.(message, action, index));
       listItem.setOnItemLongPress((message) => this._onMessageLongPress?.(message, index));
@@ -332,8 +376,8 @@ export class CourierInboxList extends CourierBaseElement {
     if (this._canPaginate) {
       const paginationItem = new CourierInboxPaginationListItem({
         theme: this.theme,
-        customItem: this._paginationItemFactory?.({ feedType: this._feedType }),
-        onPaginationTrigger: () => this._onPaginationTrigger?.(this._feedType),
+        customItem: this._paginationItemFactory?.({ datasetId: this._datasetId }),
+        onPaginationTrigger: () => this._onPaginationTrigger?.(this._datasetId),
       });
       list.appendChild(paginationItem);
     }
@@ -371,6 +415,10 @@ export class CourierInboxList extends CourierBaseElement {
   public setPaginationItemFactory(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void {
     this._paginationItemFactory = factory;
     this.render();
+  }
+
+  public scrollToTop(animate: boolean = true): void {
+    this.scrollTo({ top: 0, behavior: animate ? 'smooth' : 'instant' });
   }
 
 }

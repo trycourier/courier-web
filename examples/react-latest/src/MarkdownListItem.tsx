@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+} from '@trycourier/courier-react';
 import Markdown from 'markdown-to-jsx';
 
 export default function MarkdownListItemInbox() {
@@ -24,10 +27,10 @@ export default function MarkdownListItemInbox() {
 
   return (
     <CourierInbox
-      renderListItem={(props: CourierInboxListItemFactoryProps) => {
+      renderListItem={props => {
         return (
           <div>
-            <Markdown>{props.message.preview || ""}</Markdown>
+            <Markdown>{props?.message?.preview || ""}</Markdown>
           </div>
         );
       }}

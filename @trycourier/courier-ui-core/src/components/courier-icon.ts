@@ -34,6 +34,9 @@ export const CourierIconSVGs = {
 </svg>`,
   unarchive: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.5 11C5.0625 11 4.75 10.6875 4.75 10.25V5.75C4.75 5.34375 5.0625 5 5.5 5C5.90625 5 6.25 5.34375 6.25 5.75V8.28125L6.875 7.53125C8.15625 6 10.0625 5 12.25 5C16.0938 5 19.25 8.15625 19.25 12C19.25 15.875 16.0938 19 12.25 19C10.6562 19 9.21875 18.5 8.03125 17.625C7.71875 17.375 7.625 16.9062 7.875 16.5625C8.125 16.2188 8.59375 16.1562 8.9375 16.4062C9.84375 17.0938 11 17.5 12.25 17.5C15.2812 17.5 17.75 15.0625 17.75 12C17.75 8.96875 15.2812 6.5 12.25 6.5C10.5312 6.5 9.03125 7.28125 8 8.5L7.15625 9.5H10C10.4062 9.5 10.75 9.84375 10.75 10.25C10.75 10.6875 10.4062 11 10 11H5.5Z" fill="currentColor"/>
+</svg>`,
+  chevronDown: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15.5C11.8125 15.5 11.6562 15.4375 11.5312 15.3125L6.28125 10.0625C5.96875 9.78125 5.96875 9.3125 6.28125 9.03125C6.5625 8.71875 7.03125 8.71875 7.3125 9.03125L12 13.6875L16.6562 9.03125C16.9375 8.71875 17.4062 8.71875 17.6875 9.03125C18 9.3125 18 9.78125 17.6875 10.0625L12.4375 15.3125C12.3125 15.4375 12.1562 15.5 12 15.5Z" fill="currentColor"/>
 </svg>`
 };
 
@@ -46,17 +49,19 @@ export class CourierIcon extends CourierBaseElement {
   // State
   private _color?: string;
   private _svg?: string;
+  private _size?: string;
 
   // Components
   private _iconContainer: HTMLElement;
   private _style: HTMLStyleElement;
 
-  constructor(color?: string, svg?: string) {
+  constructor(color?: string, svg?: string, size?: string) {
     super();
 
     // Set initial values from constructor
     this._color = color ?? CourierColors.black[500];
     this._svg = svg;
+    this._size = size ?? '24px';
 
     // Create components
     const shadow = this.attachShadow({ mode: 'open' });
@@ -65,14 +70,14 @@ export class CourierIcon extends CourierBaseElement {
 
     // Add styles
     this._style = document.createElement('style');
-    this._style.textContent = this.getStyles(this._color);
+    this._style.textContent = this.getStyles();
     shadow.appendChild(this._style);
 
     // Refresh
     this.refresh();
   }
 
-  private getStyles(color: string): string {
+  private getStyles(): string {
     return `
       :host {
         display: inline-block;
@@ -83,9 +88,9 @@ export class CourierIcon extends CourierBaseElement {
       }
 
       svg {
-        width: 24px;
-        height: 24px;
-        color: ${color};
+        width: ${this._size};
+        height: ${this._size};
+        color: ${this._color};
       }
     `;
   }
@@ -94,9 +99,7 @@ export class CourierIcon extends CourierBaseElement {
     if (this._svg) {
       this._iconContainer.innerHTML = this._svg;
     }
-    if (this._color) {
-      this._style.textContent = this.getStyles(this._color);
-    }
+    this._style.textContent = this.getStyles();
   }
 
   public updateColor(color: string) {
@@ -106,6 +109,11 @@ export class CourierIcon extends CourierBaseElement {
 
   public updateSVG(svg: string) {
     this._svg = svg;
+    this.refresh();
+  }
+
+  public updateSize(size: string) {
+    this._size = size;
     this.refresh();
   }
 }

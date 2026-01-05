@@ -28,7 +28,7 @@ describe('CourierInbox', () => {
       expect((ref as React.RefObject<CourierInboxElement | null>).current).not.toBeNull();
 
       // We can access the CourierInbox Web Component's properties
-      expect((ref as React.RefObject<CourierInboxElement | null>).current?.currentFeed).toBe('inbox');
+      expect((ref as React.RefObject<CourierInboxElement | null>).current?.currentFeedId).toBe('inbox_feed');
     });
   });
 

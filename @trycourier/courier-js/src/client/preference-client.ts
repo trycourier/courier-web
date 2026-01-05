@@ -10,7 +10,7 @@ export class PreferenceClient extends Client {
    * Get all preferences for a user
    * @param paginationCursor - Optional cursor for pagination
    * @returns Promise resolving to user preferences
-   * @see https://www.courier.com/docs/reference/user-preferences/list-all-user-preferences
+   * @see https://www.courier.com/docs/api-reference/user-preferences/get-user-preferences
    */
   public async getUserPreferences(props?: { paginationCursor?: string; }): Promise<CourierUserPreferences> {
     let url = `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/preferences`;
@@ -40,7 +40,7 @@ export class PreferenceClient extends Client {
    * Get preferences for a specific topic
    * @param topicId - The ID of the topic to get preferences for
    * @returns Promise resolving to topic preferences
-   * @see https://www.courier.com/docs/reference/user-preferences/get-subscription-topic-preferences
+   * @see https://www.courier.com/docs/api-reference/user-preferences/get-user-subscription-topic
    */
   public async getUserPreferenceTopic(props: { topicId: string; }): Promise<CourierUserPreferencesTopic> {
 
@@ -64,7 +64,7 @@ export class PreferenceClient extends Client {
    * @param hasCustomRouting - Whether the topic has custom routing
    * @param customRouting - The custom routing channels for the topic
    * @returns Promise resolving when update is complete
-   * @see https://www.courier.com/docs/reference/user-preferences/update-subscription-topic-preferences
+   * @see https://www.courier.com/docs/api-reference/user-preferences/update-or-create-user-preferences-for-subscription-topic
    */
   public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
 

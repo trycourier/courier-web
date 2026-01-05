@@ -1,24 +1,38 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierInboxFeedType } from "./feed-type";
+import { CourierInboxDatasetFilter } from "./inbox-data-set";
 
 // Header
 export type CourierInboxHeaderFactoryProps = {
-  feedType: CourierInboxFeedType;
+  feeds: CourierInboxHeaderFeed[];
+}
+
+export type CourierInboxHeaderFeed = {
+  feedId: string;
+  title: string;
+  iconSVG?: string;
+  tabs: CourierInboxHeaderFeedTab[];
+  isSelected: boolean;
+}
+
+export type CourierInboxHeaderFeedTab = {
+  datasetId: string;
+  title: string;
   unreadCount: number;
-  messageCount: number;
+  isSelected: boolean;
+  filter: CourierInboxDatasetFilter;
 }
 
 // States
 export type CourierInboxStateLoadingFactoryProps = {
-  feedType: CourierInboxFeedType;
+  datasetId: string;
 }
 
 export type CourierInboxStateEmptyFactoryProps = {
-  feedType: CourierInboxFeedType;
+  datasetId: string;
 }
 
 export type CourierInboxStateErrorFactoryProps = {
-  feedType: CourierInboxFeedType;
+  datasetId: string;
   error: Error;
 }
 
@@ -37,10 +51,11 @@ export type CourierInboxListItemActionFactoryProps = {
 
 // Pagination Item
 export type CourierInboxPaginationItemFactoryProps = {
-  feedType: CourierInboxFeedType;
+  datasetId: string;
 }
 
 // Menu Button
 export type CourierInboxMenuButtonFactoryProps = {
-  unreadCount: number;
+  totalUnreadCount: number;
+  feeds: CourierInboxHeaderFeed[];
 }

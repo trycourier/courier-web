@@ -70,7 +70,21 @@ If you make changes to the public API surface, re-run API Extractor locally to u
 the spec in the same PR. API Extractor generates the spec from the _built_ package, rather
 than the source files.
 
-For example, to update the spec for **@trycourier/courier-js**, build the package:
+#### Updating all packages
+
+To update the API spec for all packages, run:
+
+```sh
+yarn generate-api-docs
+```
+
+This will:
+1. Build all packages locally
+2. Generate API docs for all packages with the `--local` flag
+
+#### Updating a single package
+
+To update the spec for a single package, first build the package:
 
 ```sh
 yarn workspace @trycourier/courier-js run build

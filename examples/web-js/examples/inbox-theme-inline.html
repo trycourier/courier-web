@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <style>
+    @font-face {
+      font-family: 'Poppins';
+      src: url('../Poppins-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+
+  <courier-inbox light-theme='{
+      "inbox": {
+        "header": {
+          "feeds": {
+            "button": {
+              "font": {
+                "family": "Poppins"
+              },
+              "unreadCountIndicator": {
+                "backgroundColor": "#8B5CF6",
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "menu": {
+              "list": {
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "tabs": {
+              "default": {
+                "font": {
+                  "family": "Poppins"
+                },
+                "unreadIndicator": {
+                  "font": {
+                    "family": "Poppins"
+                  }
+                }
+              },
+              "selected": {
+                "indicatorColor": "#8B5CF6",
+                "font": {
+                  "color": "#8B5CF6",
+                  "family": "Poppins"
+                },
+                "unreadIndicator": {
+                  "backgroundColor": "#8B5CF6",
+                  "font": {
+                    "family": "Poppins"
+                  }
+                }
+              }
+            }
+          },
+          "tabs": {
+            "default": {
+              "font": {
+                "family": "Poppins"
+              },
+              "unreadIndicator": {
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "selected": {
+              "indicatorColor": "#8B5CF6",
+              "font": {
+                "color": "#8B5CF6",
+                "family": "Poppins"
+              },
+              "unreadIndicator": {
+                "backgroundColor": "#8B5CF6",
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            }
+          }
+        },
+        "list": {
+          "item": {
+            "unreadIndicatorColor": "#8B5CF6",
+            "title": {
+              "family": "Poppins"
+            },
+            "subtitle": {
+              "family": "Poppins"
+            },
+            "time": {
+              "family": "Poppins"
+            },
+            "actions": {
+              "font": {
+                "family": "Poppins"
+              }
+            }
+          }
+        },
+        "empty": {
+          "title": {
+            "font": {
+              "family": "Poppins"
+            }
+          },
+          "button": {
+            "font": {
+              "family": "Poppins"
+            }
+          }
+        },
+        "error": {
+          "title": {
+            "font": {
+              "family": "Poppins"
+            }
+          },
+          "button": {
+            "font": {
+              "family": "Poppins"
+            }
+          }
+        }
+      }
+    }' dark-theme='{
+      "inbox": {
+        "header": {
+          "feeds": {
+            "button": {
+              "font": {
+                "family": "Poppins"
+              },
+              "unreadCountIndicator": {
+                "backgroundColor": "#8B5CF6",
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "menu": {
+              "list": {
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "tabs": {
+              "default": {
+                "font": {
+                  "family": "Poppins"
+                },
+                "unreadIndicator": {
+                  "font": {
+                    "family": "Poppins"
+                  }
+                }
+              },
+              "selected": {
+                "indicatorColor": "#8B5CF6",
+                "font": {
+                  "color": "#8B5CF6",
+                  "family": "Poppins"
+                },
+                "unreadIndicator": {
+                  "backgroundColor": "#8B5CF6",
+                  "font": {
+                    "family": "Poppins"
+                  }
+                }
+              }
+            }
+          },
+          "tabs": {
+            "default": {
+              "font": {
+                "family": "Poppins"
+              },
+              "unreadIndicator": {
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            },
+            "selected": {
+              "indicatorColor": "#8B5CF6",
+              "font": {
+                "color": "#8B5CF6",
+                "family": "Poppins"
+              },
+              "unreadIndicator": {
+                "backgroundColor": "#8B5CF6",
+                "font": {
+                  "family": "Poppins"
+                }
+              }
+            }
+          }
+        },
+        "list": {
+          "item": {
+            "unreadIndicatorColor": "#8B5CF6",
+            "title": {
+              "family": "Poppins"
+            },
+            "subtitle": {
+              "family": "Poppins"
+            },
+            "time": {
+              "family": "Poppins"
+            },
+            "actions": {
+              "font": {
+                "family": "Poppins"
+              }
+            }
+          }
+        },
+        "empty": {
+          "title": {
+            "font": {
+              "family": "Poppins"
+            }
+          },
+          "button": {
+            "font": {
+              "family": "Poppins"
+            }
+          }
+        },
+        "error": {
+          "title": {
+            "font": {
+              "family": "Poppins"
+            }
+          },
+          "button": {
+            "font": {
+              "family": "Poppins"
+            }
+          }
+        }
+      }
+    }'>
+  </courier-inbox>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+  </script>
+
+</body>
+
+</html>

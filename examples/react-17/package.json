@@ -6,25 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "@trycourier/courier-react-17": "file:../../@trycourier/courier-react-17"
+    "@trycourier/courier-react-17": "file:../../@trycourier/courier-react-17",
+    "react-router-dom": "^6.26.0",
+    "markdown-to-jsx": "^7.7.13"
   },
   "devDependencies": {
-    "@eslint/js": "^9.25.0",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@vitejs/plugin-react": "^4.4.1",
-    "eslint": "^9.25.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.30.1",
     "vite": "6.2.6"
   }
 }

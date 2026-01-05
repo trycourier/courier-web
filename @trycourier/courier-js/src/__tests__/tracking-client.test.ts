@@ -5,6 +5,7 @@ describe('TrackingClient', () => {
 
   it('should post inbound courier successfully', async () => {
     const result = await courierClient.tracking.postInboundCourier({
+      clientKey: process.env.CLIENT_KEY!,
       event: 'test_event',
       messageId: crypto.randomUUID(),
       type: 'track',

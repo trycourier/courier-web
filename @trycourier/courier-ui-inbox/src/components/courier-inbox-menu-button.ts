@@ -29,7 +29,7 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxMenuButton.id, CourierInboxMenuButton.getStyles(this.theme));
+    this.refreshTheme();
   }
 
   onComponentUnmounted() {
@@ -48,33 +48,33 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
 
     // Create unread badge (red 4x4 circle)
     this._unreadBadge = document.createElement('div');
-    this._unreadBadge.className = 'unread-badge';
+    this._unreadBadge.id = 'unread-badge';
     this._unreadBadge.style.display = 'none'; // Hidden by default
 
     this._container.appendChild(this._triggerButton);
     this._container.appendChild(this._unreadBadge);
-    this.appendChild(this._container);
-
-    // Set the theme of the button
-    this.refreshTheme();
 
     return this._container;
   }
 
   static getStyles(theme: CourierInboxTheme): string {
     return `
+      ${CourierInboxMenuButton.id} {
+        display: inline-block;
+      }
+
       ${CourierInboxMenuButton.id} .menu-button-container {
         position: relative;
         display: inline-block;
       }
         
-      ${CourierInboxMenuButton.id} .unread-badge {
+      ${CourierInboxMenuButton.id} .menu-button-container #unread-badge {
         position: absolute;
         top: 2px;
         right: 2px;
         pointer-events: none;
-        width: ${theme.popup?.button?.unreadDotIndicator?.height ?? '8px'};
-        height: ${theme.popup?.button?.unreadDotIndicator?.width ?? '8px'};
+        width: ${theme.popup?.button?.unreadDotIndicator?.width ?? '8px'};
+        height: ${theme.popup?.button?.unreadDotIndicator?.height ?? '8px'};
         background: ${theme.popup?.button?.unreadDotIndicator?.backgroundColor ?? 'red'};
         border-radius: ${theme.popup?.button?.unreadDotIndicator?.borderRadius ?? '50%'};
         display: none;
@@ -87,11 +87,12 @@ export class CourierInboxMenuButton extends CourierFactoryElement {
     if (this._unreadBadge) {
       this._unreadBadge.style.display = unreadCount > 0 ? 'block' : 'none';
     }
-    // Optionally, update theme if needed
     this.refreshTheme();
   }
 
   private refreshTheme() {
+    this._style?.remove();
+    this._style = injectGlobalStyle(CourierInboxMenuButton.id, CourierInboxMenuButton.getStyles(this.theme));
     this._triggerButton?.updateIconColor(this.theme?.popup?.button?.icon?.color ?? CourierColors.black[500]);
     this._triggerButton?.updateIconSVG(this.theme?.popup?.button?.icon?.svg ?? CourierIconSVGs.inbox);
     this._triggerButton?.updateBackgroundColor(this.theme?.popup?.button?.backgroundColor ?? 'transparent');

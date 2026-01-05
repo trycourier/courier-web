@@ -1,9 +1,9 @@
 import { CourierInbox } from "./courier-inbox";
 import { CourierInboxDatastoreEvents } from "../datastore/datatore-events";
 import { CourierInboxDataStoreListener } from "../datastore/datastore-listener";
-import { CourierInboxDatastore } from "../datastore/datastore";
+import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxHeaderFactoryProps, CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxMenuButtonFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxStateLoadingFactoryProps } from "../types/factories";
-import { CourierInboxFeedType } from "../types/feed-type";
+import { CourierInboxFeed } from "../types/inbox-data-set";
 import { CourierInboxMenuButton } from "./courier-inbox-menu-button";
 import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
@@ -11,6 +11,7 @@ import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode, injectGlobalStyle } from "@trycourier/courier-ui-core";
 import { Courier } from "@trycourier/courier-js";
 import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
+import { CourierInboxHeaderAction, CourierInboxListItemAction } from "../types/inbox-defaults";
 
 export type CourierInboxPopupAlignment = 'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center' | 'center-right' | 'center-left' | 'center-center';
 
@@ -35,11 +36,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   /** Returns the current theme object. */
   get theme() {
     return this._themeManager.getTheme();
-  }
-
-  /** Returns the current feed type. */
-  get currentFeed(): CourierInboxFeedType {
-    return this._inbox?.currentFeed ?? 'inbox';
   }
 
   /**
@@ -75,6 +71,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   // Listeners
   private _datastoreListener?: CourierInboxDataStoreListener;
 
+  // State
+  private _totalUnreadCount: number = 0;
+
   // Factories
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
@@ -93,13 +92,14 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   onComponentMounted() {
+    // Read initial theme attributes
+    this.readInitialThemeAttributes();
 
     // Inject the styles to the head
     this._style = injectGlobalStyle(CourierInboxPopupMenu.id, CourierInboxPopupMenu.getStyles(this.theme, this._width, this._height));
 
     // Create trigger button
     this._triggerButton = new CourierInboxMenuButton(this._themeManager);
-    this._triggerButton.build(undefined);
 
     // Create popup container
     this._popup = document.createElement('div');
@@ -126,12 +126,39 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this._datastoreListener = new CourierInboxDataStoreListener(this);
     CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
 
+    // Initial render so any pre-configured factories (like setMenuButton) are applied
+    this.render();
   }
 
   onComponentUnmounted() {
     this._style?.remove();
     this._datastoreListener?.remove();
     this._themeManager.cleanup();
+  }
+
+  private readInitialThemeAttributes() {
+    const lightTheme = this.getAttribute('light-theme');
+    if (lightTheme) {
+      try {
+        this.setLightTheme(JSON.parse(lightTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse light-theme attribute:', error);
+      }
+    }
+
+    const darkTheme = this.getAttribute('dark-theme');
+    if (darkTheme) {
+      try {
+        this.setDarkTheme(JSON.parse(darkTheme));
+      } catch (error) {
+        Courier.shared.client?.options.logger?.error('Failed to parse dark-theme attribute:', error);
+      }
+    }
+
+    const mode = this.getAttribute('mode');
+    if (mode) {
+      this._themeManager.setMode(mode as CourierComponentThemeMode);
+    }
   }
 
   private refreshTheme() {
@@ -141,15 +168,14 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   static getStyles(theme: CourierInboxTheme, width: string, height: string): string {
+    const transition = theme.popup?.window?.animation;
+    const initialTransform = transition?.initialTransform ?? 'translate3d(-10px, -10px, 0) scale(0.9)';
+    const visibleTransform = transition?.visibleTransform ?? 'translate3d(0, 0, 0) scale(1)';
+
     return `
       ${CourierInboxPopupMenu.id} {
         display: inline-block;
         position: relative;
-      }
-
-      ${CourierInboxPopupMenu.id} .menu-button-container {
-        position: relative;
-        display: inline-block;
       }
 
       ${CourierInboxPopupMenu.id} .popup {
@@ -163,15 +189,19 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         width: ${width};
         height: ${height};
         overflow: hidden;
-        transform: translateZ(0);
-        will-change: transform;
+        transform: ${initialTransform};
+        will-change: transform, opacity;
+        transition: ${transition?.transition ?? 'all 0.2s ease'};
+        opacity: 0;
       }
-        
-      ${CourierInboxPopupMenu.id} #unread-badge {
-        position: absolute;
-        top: -8px;
-        left: 50%;
-        pointer-events: none;
+
+      ${CourierInboxPopupMenu.id} .popup.displayed {
+        display: block;
+      }
+
+      ${CourierInboxPopupMenu.id} .popup.visible {
+        opacity: 1;
+        transform: ${visibleTransform};
       }
 
       ${CourierInboxPopupMenu.id} courier-inbox {
@@ -229,10 +259,20 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   /**
-   * Called when the unread count changes.
-   * @param _ The new unread count (unused).
+   * Called when the per-dataset unread count changes.
+   * Triggers a render to update the factory with latest feeds data
+   * (which includes per-tab unread counts).
    */
   public onUnreadCountChange(_: number): void {
+    this.render();
+  }
+
+  /**
+   * Called when the total unread count across all datasets changes.
+   * Updates the popup trigger button badge.
+   */
+  public onTotalUnreadCountChange(totalUnreadCount: number): void {
+    this._totalUnreadCount = totalUnreadCount;
     this.render();
   }
 
@@ -348,16 +388,72 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     event.stopPropagation();
     if (!this._popup) return;
 
-    const isVisible = this._popup.style.display === 'block';
-    this._popup.style.display = isVisible ? 'none' : 'block';
+    const isVisible = this._popup.classList.contains('visible');
+    if (isVisible) {
+      this.hidePopup();
+    } else {
+      this.showPopup();
+    }
+  }
+
+  /**
+   * Show the popup menu with transition.
+   */
+  public showPopup() {
+    if (!this._popup) return;
+
+    // Remove visible class first to reset state
+    this._popup.classList.remove('visible');
+
+    // Add displayed class to set display: block (but keep opacity 0 and initial transform)
+    this._popup.classList.add('displayed');
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (this._popup) {
+          this._popup.classList.add('visible');
+        }
+      });
+    });
+  }
+
+  /**
+   * Hide the popup menu with transition.
+   */
+  public hidePopup() {
+    if (!this._popup) return;
+
+    // Remove visible class to trigger transition
+    this._popup.classList.remove('visible');
+
+    // If there is no transition, remove the displayed class immediately
+    const style = window.getComputedStyle(this._popup);
+    const durations = style.transitionDuration.split(',').map(d => parseFloat(d) || 0);
+    const hasTransition = durations.some(d => d > 0);
+    if (!hasTransition) {
+      this._popup.classList.remove('displayed');
+      return;
+    }
+
+    // Wait for transition to complete, then remove displayed class
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.target !== this._popup) return;
+      if (e.propertyName !== 'opacity') return;
+      if (this._popup && !this._popup.classList.contains('visible')) {
+        this._popup.classList.remove('displayed');
+        this._popup.removeEventListener('transitionend', handleTransitionEnd);
+      }
+    };
+
+    this._popup.addEventListener('transitionend', handleTransitionEnd);
   }
 
   /**
    * Close the popup menu.
    */
   public closePopup() {
-    if (!this._popup) return;
-    this._popup.style.display = 'none';
+    this.hidePopup();
   }
 
   private handleOutsideClick = (event: MouseEvent) => {
@@ -380,7 +476,7 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     if (clickIsInsideAllowedArea) return;
 
     // Otherwise, it really was an outside click – hide the popup
-    this._popup.style.display = 'none';
+    this.hidePopup();
   };
 
   /**
@@ -417,14 +513,6 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     } else {
       Courier.shared.client?.options.logger?.error(`Invalid position: ${position}`);
     }
-  }
-
-  /**
-   * Set the feed type for the inbox.
-   * @param feedType The feed type to set.
-   */
-  public setFeedType(feedType: CourierInboxFeedType) {
-    this._inbox?.setFeedType(feedType);
   }
 
   // Factory methods
@@ -492,9 +580,73 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     this.render();
   }
 
+  /**
+   * Sets the active feed for the inbox.
+   * @param feedId The feed ID to display.
+   */
+  public selectFeed(feedId: string) {
+    this._inbox?.selectFeed(feedId);
+  }
+
+  /**
+   * Switches to a tab by updating components and loading data.
+   * @param tabId The tab ID to switch to.
+   */
+  public selectTab(tabId: string) {
+    this._inbox?.selectTab(tabId);
+  }
+
+  /**
+   * Set the feeds for this Inbox, replacing any existing feeds.
+   * @param feeds The list of feeds to set for the Inbox.
+   */
+  public setFeeds(feeds: CourierInboxFeed[]) {
+    this._inbox?.setFeeds(feeds);
+  }
+
+  /**
+   * Get the current set of feeds.
+   */
+  public getFeeds() {
+    return this._inbox?.getFeeds() ?? [];
+  }
+
+  /**
+   * Sets the enabled header actions for the inbox.
+   * @param actions - The header actions to enable (e.g., [{ id: 'readAll', iconSVG: '...', text: '...' }]).
+   */
+  public setActions(actions: CourierInboxHeaderAction[]) {
+    this._inbox?.setActions(actions);
+  }
+
+  /**
+   * Sets the enabled list item actions for the inbox.
+   * @param actions - The list item actions to enable (e.g., [{ id: 'read_unread', readIconSVG: '...', unreadIconSVG: '...' }]).
+   */
+  public setListItemActions(actions: CourierInboxListItemAction[]) {
+    this._inbox?.setListItemActions(actions);
+  }
+
+  /**
+   * Returns the current feed type.
+   */
+  get currentFeedId(): string {
+    return this._inbox?.currentFeedId ?? '';
+  }
+
+  /**
+   * Forces a reload of the inbox data, bypassing the cache.
+   */
+  public async refresh() {
+    return this._inbox?.refresh();
+  }
+
   private render() {
-    const unreadCount = CourierInboxDatastore.shared.unreadCount;
+    const unreadCount = this._totalUnreadCount;
     if (!this._triggerButton) return;
+
+    // Get feeds from the inbox component in the format expected by the factory
+    const feeds = this._inbox?.getHeaderFeeds() ?? [];
 
     switch (this._popupMenuButtonFactory) {
       case undefined:
@@ -503,7 +655,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
         this._triggerButton.onUnreadCountChange(unreadCount);
         break;
       default:
-        const customButton = this._popupMenuButtonFactory({ unreadCount });
+        const customButton = this._popupMenuButtonFactory({
+          totalUnreadCount: unreadCount,
+          feeds: feeds
+        });
         this._triggerButton.build(customButton);
         break;
     }

@@ -4,11 +4,11 @@ export * from './components/courier-inbox-list-item';
 export * from './components/courier-inbox-popup-menu';
 export * from './utils/extensions';
 export * from './types/factories';
-export * from './types/feed-type';
 export * from './types/courier-inbox-theme';
 export * from './types/courier-inbox-theme-manager';
 export * from './types/inbox-data-set';
-export * from './datastore/datastore';
+export * from './types/inbox-defaults';
+export * from './datastore/inbox-datastore';
 export * from './datastore/datastore-listener';
 export * from './datastore/datatore-events';
 

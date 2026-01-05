@@ -15,7 +15,7 @@ export interface CourierProps {
   /** User ID for the client. Normally matches the UID in your system */
   userId: string;
 
-  /** JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token */
+  /** JWT token for authentication: More info at https://www.courier.com/docs/api-reference/authentication/create-jwt */
   jwt?: string;
 
   /** Public API key for testing (use JWTs in prod) */
@@ -50,7 +50,7 @@ export interface CourierProps {
 }
 
 export interface CourierClientOptions {
-  /** JWT token for authentication: More info at https://www.courier.com/docs/reference/auth/issue-token */
+  /** JWT token for authentication: More info at https://www.courier.com/docs/api-reference/authentication/create-jwt */
   readonly jwt?: string;
 
   /** Public API key for testing (use JWTs in prod) */
@@ -143,7 +143,7 @@ export class CourierClient extends Client {
     if (this.options.publicApiKey) {
       this.options.logger?.warn(
         'Courier Warning: Public API Keys are for testing only. Please use JWTs for production.\n' +
-        'You can generate a JWT with this endpoint: https://www.courier.com/docs/reference/auth/issue-token\n' +
+        'You can generate a JWT with this endpoint: https://www.courier.com/docs/api-reference/authentication/create-jwt\n' +
         'This endpoint should be called from your backend server, not the SDK.'
       );
     }

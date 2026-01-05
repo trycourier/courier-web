@@ -1,15 +1,32 @@
+import { CourierGetInboxMessagesQueryFilter } from '../types/inbox';
 import { InboxMessageEvent } from '../types/socket/protocol/messages';
 import { getClient } from './utils';
 
 describe('InboxClient', () => {
   const courierClient = getClient();
 
-  it('should fetch messages', async () => {
-    const result = await courierClient.inbox.getMessages({
-      paginationLimit: 10,
+  describe('getMessages', () => {
+    it('should fetch messages and unread count', async () => {
+      const result = await courierClient.inbox.getMessages({
+        paginationLimit: 10,
+      });
+      expect(result.data?.messages?.nodes).toBeDefined();
+      expect(result.data?.messages?.pageInfo).toBeDefined();
+      expect(result.data?.unreadCount).toBeDefined();
     });
-    expect(result.data?.messages?.nodes).toBeDefined();
-    expect(result.data?.messages?.pageInfo).toBeDefined();
+
+    it('should fetch messages with filters', async () => {
+      const result = await courierClient.inbox.getMessages({
+        filter: {
+          status: 'unread',
+          tags: ['my-tag'],
+        }
+      });
+
+      expect(result.data?.messages?.nodes).toBeDefined();
+      expect(result.data?.messages?.pageInfo).toBeDefined();
+      expect(result.data?.unreadCount).toBeDefined();
+    });
   });
 
   it('should fetch archived messages', async () => {
@@ -18,12 +35,35 @@ describe('InboxClient', () => {
     });
     expect(result.data?.messages?.nodes).toBeDefined();
     expect(result.data?.messages?.pageInfo).toBeDefined();
+    expect(result.data?.unreadCount).toBeDefined();
   });
 
   it('should return unread message count', async () => {
     const result = await courierClient.inbox.getUnreadMessageCount();
     expect(typeof result).toBe('number');
     expect(result).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should get unread counts for multiple filters', async () => {
+    const filtersMap: Record<string, CourierGetInboxMessagesQueryFilter> = {
+      'all-messages': {},
+      'unread-messages': { status: 'unread' },
+      'read-messages': { status: 'read' },
+      'tagged-messages': { tags: ['my-tag'] },
+      'unread-tagged': { status: 'unread', tags: ['my-tag'] }
+    };
+
+    const result = await courierClient.inbox.getUnreadCounts(filtersMap);
+
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('object');
+
+    // Verify all dataset IDs from input are present in output
+    for (const datasetId of Object.keys(filtersMap)) {
+      expect(result).toHaveProperty(datasetId);
+      expect(typeof result[datasetId]).toBe('number');
+      expect(result[datasetId]).toBeGreaterThanOrEqual(0);
+    }
   });
 
   it('should track click events', async () => {

@@ -1,6 +1,7 @@
 export interface CourierGetInboxMessagesResponse {
   data?: {
     count?: number;
+    unreadCount?: number;
     messages?: {
       pageInfo?: {
         startCursor?: string;
@@ -9,6 +10,12 @@ export interface CourierGetInboxMessagesResponse {
       nodes?: InboxMessage[];
     };
   };
+}
+
+export interface CourierGetInboxMessagesQueryFilter {
+  tags?: string[];
+  archived?: boolean;
+  status?: 'read' | 'unread';
 }
 
 export interface InboxAction {

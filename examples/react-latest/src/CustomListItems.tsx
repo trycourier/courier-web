@@ -1,12 +1,18 @@
 import { useEffect } from 'react'
-import { CourierInbox, useCourier, type CourierInboxListItemFactoryProps } from '@trycourier/courier-react'
+import {
+  CourierInbox,
+  useCourier,
+  type CourierInboxListItemFactoryProps,
+} from '@trycourier/courier-react';
 
 const CustomListItem = ({ message, index }: CourierInboxListItemFactoryProps) => (
-  <pre style={{
-    padding: '24px',
-    borderBottom: '1px solid #e0e0e0',
-    margin: '0'
-  }}>
+  <pre 
+    onClick={() => alert(JSON.stringify({ message, index }, null, 2))}
+    style={{
+      padding: '24px',
+      borderBottom: '1px solid #e0e0e0',
+      margin: '0'
+    }}>
     {JSON.stringify({ message, index }, null, 2)}
   </pre>
 );

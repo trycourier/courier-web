@@ -1,6 +1,6 @@
 import React from 'react';
 import { Courier, CourierProps, InboxMessage } from '@trycourier/courier-js';
-import { CourierInboxDatastore, CourierInboxDataStoreListener, CourierInboxFeedType, InboxDataSet } from '@trycourier/courier-ui-inbox';
+import { CourierInboxDatastore, CourierInboxDataStoreListener, InboxDataSet, CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierToastDatastore, CourierToastDatastoreListener } from '@trycourier/courier-ui-toast';
 
 type AuthenticationHooks = {
@@ -11,7 +11,7 @@ type AuthenticationHooks = {
 
 type InboxHooks = {
   load: (props?: { canUseCache: boolean }) => Promise<void>,
-  fetchNextPageOfMessages: (props: { feedType: CourierInboxFeedType }) => Promise<InboxDataSet | null>,
+  fetchNextPageOfMessages: (props: { datasetId: string }) => Promise<InboxDataSet | null>,
   setPaginationLimit: (limit: number) => void,
   readMessage: (message: InboxMessage) => Promise<void>,
   unreadMessage: (message: InboxMessage) => Promise<void>,
@@ -20,9 +20,10 @@ type InboxHooks = {
   openMessage: (message: InboxMessage) => Promise<void>,
   unarchiveMessage: (message: InboxMessage) => Promise<void>,
   readAllMessages: () => Promise<void>,
-  inbox?: InboxDataSet,
-  archive?: InboxDataSet,
-  unreadCount?: number,
+  registerFeeds: (feeds: CourierInboxFeed[]) => void,
+  listenForUpdates: () => Promise<void>,
+  feeds: Record<string, InboxDataSet>,
+  totalUnreadCount?: number,
   error?: Error
 }
 
@@ -43,7 +44,7 @@ export const useCourier = () => {
 
   // Inbox Functions
   const loadInbox = (props?: { canUseCache: boolean }) => CourierInboxDatastore.shared.load(props);
-  const fetchNextPageOfMessages = (props: { feedType: CourierInboxFeedType }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
+  const fetchNextPageOfMessages = (props: { datasetId: string }) => CourierInboxDatastore.shared.fetchNextPageOfMessages(props);
   const setPaginationLimit = (limit: number) => Courier.shared.paginationLimit = limit;
   const readMessage = (message: InboxMessage) => CourierInboxDatastore.shared.readMessage({ message });
   const unreadMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unreadMessage({ message });
@@ -52,6 +53,8 @@ export const useCourier = () => {
   const openMessage = (message: InboxMessage) => CourierInboxDatastore.shared.openMessage({ message });
   const unarchiveMessage = (message: InboxMessage) => CourierInboxDatastore.shared.unarchiveMessage({ message });
   const readAllMessages = () => CourierInboxDatastore.shared.readAllMessages();
+  const registerFeeds = (feeds: CourierInboxFeed[]) => CourierInboxDatastore.shared.registerFeeds(feeds);
+  const listenForUpdates = () => CourierInboxDatastore.shared.listenForUpdates();
 
   // State
   const [auth, setAuth] = React.useState<AuthenticationHooks>({
@@ -70,7 +73,10 @@ export const useCourier = () => {
     archiveMessage,
     openMessage,
     unarchiveMessage,
-    readAllMessages
+    readAllMessages,
+    registerFeeds,
+    listenForUpdates,
+    feeds: {}
   });
 
   const addToastMessage = (message: InboxMessage) => CourierToastDatastore.shared.addMessage(message);
@@ -94,7 +100,8 @@ export const useCourier = () => {
       onMessageAdd: () => refreshInbox(),
       onMessageRemove: () => refreshInbox(),
       onMessageUpdate: () => refreshInbox(),
-      onUnreadCountChange: () => refreshInbox()
+      onUnreadCountChange: () => refreshInbox(),
+      onTotalUnreadCountChange: () => refreshInbox()
     });
     CourierInboxDatastore.shared.addDataStoreListener(inboxListener);
 
@@ -129,6 +136,7 @@ export const useCourier = () => {
 
   const refreshInbox = (error?: Error) => {
     const datastore = CourierInboxDatastore.shared;
+    const allDatasets = datastore.getDatasets();
     setInbox({
       load: loadInbox,
       fetchNextPageOfMessages,
@@ -140,9 +148,10 @@ export const useCourier = () => {
       openMessage,
       unarchiveMessage,
       readAllMessages,
-      inbox: datastore.inboxDataSet,
-      archive: datastore.archiveDataSet,
-      unreadCount: datastore.unreadCount,
+      registerFeeds,
+      listenForUpdates,
+      feeds: allDatasets,
+      totalUnreadCount: datastore.totalUnreadCount,
       error: error,
     });
   }

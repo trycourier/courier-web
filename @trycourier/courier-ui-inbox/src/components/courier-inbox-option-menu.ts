@@ -1,18 +1,16 @@
-import { CourierBaseElement, CourierIconButton, CourierIconSVGs, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxOptionMenuItem } from "./courier-inbox-option-menu-item";
-import { CourierInboxHeaderMenuItemId } from "./courier-inbox-header";
 import { CourierInboxIconTheme } from "../types/courier-inbox-theme";
 
-export type CourierInboxMenuOptionType = 'filters' | 'actions';
-
 export type CourierInboxMenuOption = {
-  id: CourierInboxHeaderMenuItemId;
+  id: string;
   text: string;
   icon: CourierInboxIconTheme;
-  selectionIcon?: CourierInboxIconTheme | null;
   onClick: (option: CourierInboxMenuOption) => void;
 };
+
+export type CourierInboxOptionMenuType = 'feed' | 'action';
 
 export class CourierInboxOptionMenu extends CourierBaseElement {
 
@@ -24,85 +22,109 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   private _themeSubscription: CourierInboxThemeSubscription;
 
   // State
-  private _type: CourierInboxMenuOptionType;
   private _selectedIndex: number = 0;
   private _options: CourierInboxMenuOption[];
   private _selectable: boolean;
-  private _onMenuOpen: () => void;
+  private _onMenuOpen?: () => void;
+  private _isOpen: boolean = false;
+  private _menuType: CourierInboxOptionMenuType;
 
   // Components
-  private _menuButton?: CourierIconButton;
-  private _menu?: HTMLDivElement;
   private _style?: HTMLStyleElement;
+  private _shadowRoot?: ShadowRoot;
+  private _container?: HTMLElement;
 
-  constructor(themeManager: CourierInboxThemeManager, type: CourierInboxMenuOptionType, selectable: boolean, options: CourierInboxMenuOption[], onMenuOpen: () => void) {
+  constructor(themeManager: CourierInboxThemeManager, selectable: boolean, options: CourierInboxMenuOption[], menuType: CourierInboxOptionMenuType, onMenuOpen?: () => void) {
     super();
 
-    this._type = type;
     this._selectable = selectable;
     this._options = options;
-    this._selectedIndex = 0;
     this._onMenuOpen = onMenuOpen;
+    this._menuType = menuType;
 
     // Handle the theme change
     this._themeSubscription = themeManager.subscribe((_) => {
       this.refreshTheme();
     });
-
   }
 
   onComponentMounted() {
-
-    this._style = injectGlobalStyle(CourierInboxOptionMenu.id, this.getStyles());
-
-    this._menuButton = new CourierIconButton(this._type === 'filters' ? CourierIconSVGs.filter : CourierIconSVGs.overflow);
-    this._menu = document.createElement('div');
-    this._menu.className = `menu ${this._type}`;
-
-    this.appendChild(this._menuButton);
-    this.appendChild(this._menu);
-
-    this._menuButton.addEventListener('click', this.toggleMenu.bind(this));
+    this.attachElements();
     document.addEventListener('click', this.handleOutsideClick.bind(this));
-
     this.refreshTheme();
-
   }
 
   onComponentUnmounted() {
     this._themeSubscription.unsubscribe();
-    this._style?.remove();
+  }
+
+  private attachElements() {
+    // Attach shadow DOM
+    this._shadowRoot = this.attachShadow({ mode: 'closed' });
+
+    // Create container element
+    this._container = document.createElement('div');
+    this._container.className = 'menu-container';
+
+    // Create and add style
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles();
+    this._shadowRoot.appendChild(this._style);
+    this._shadowRoot.appendChild(this._container);
   }
 
   private getStyles(): string {
     const theme = this._themeSubscription.manager.getTheme();
+    const transition = this._menuType === 'feed'
+      ? theme.inbox?.header?.feeds?.menu?.animation
+      : theme.inbox?.header?.actions?.animation;
+    const menuTheme = this._menuType === 'feed'
+      ? theme.inbox?.header?.feeds?.menu
+      : theme.inbox?.header?.actions?.menu ?? theme.inbox?.header?.feeds?.menu;
+    const initialTransform = transition?.initialTransform ?? 'translate3d(0, 0, 0)';
+    const visibleTransform = transition?.visibleTransform ?? 'translate3d(0, 0, 0)';
 
     return `
-      ${CourierInboxOptionMenu.id} {
-        position: relative;
-        display: inline-block;
-      }
-
-      ${CourierInboxOptionMenu.id} .menu {
-        display: none;
+      :host {
         position: absolute;
         top: 42px;
-        right: -6px;
-        border-radius: ${theme.inbox?.header?.menus?.popup?.borderRadius ?? '6px'};
-        border: ${theme.inbox?.header?.menus?.popup?.border ?? '1px solid red'};
-        background: ${theme.inbox?.header?.menus?.popup?.backgroundColor ?? 'red'};
-        box-shadow: ${theme.inbox?.header?.menus?.popup?.shadow ?? '0 4px 12px 0 red'};
         z-index: 1000;
         min-width: 200px;
+        user-select: none;
+        opacity: 0;
+        pointer-events: none;
+        transition: ${transition?.transition ?? 'all 0.2s ease'};
+        transform: ${initialTransform};
+        will-change: transform, opacity;
+        display: none;
+      }
+
+      :host(.displayed) {
+        display: block;
+      }
+
+      :host(.visible) {
+        opacity: 1;
+        pointer-events: auto;
+        transform: ${visibleTransform};
+      }
+
+      .menu-container {
+        display: flex;
+        flex-direction: column;
+        border-radius: ${menuTheme?.borderRadius ?? '6px'};
+        border: ${menuTheme?.border ?? '1px solid red'};
+        background: ${menuTheme?.backgroundColor ?? 'red'};
+        box-shadow: ${menuTheme?.shadow ?? '0 4px 12px 0 red'};
         overflow: hidden;
         padding: 4px 0;
       }
 
-      ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item {
-        border-bottom: ${theme.inbox?.header?.menus?.popup?.list?.divider ?? 'none'};
+      courier-inbox-option-menu-item {
+        border-bottom: ${menuTheme?.list?.divider ?? 'none'};
       }
 
-      ${CourierInboxOptionMenu.id} courier-inbox-filter-menu-item:last-child {
+      courier-inbox-option-menu-item:last-child {
         border-bottom: none;
       }
 
@@ -114,11 +136,11 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       }
 
       ${CourierInboxOptionMenuItem.id}:hover {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.hoverBackgroundColor ?? 'red'};
+        background-color: ${menuTheme?.list?.hoverBackgroundColor ?? 'red'};
       }
 
       ${CourierInboxOptionMenuItem.id}:active {
-        background-color: ${theme.inbox?.header?.menus?.popup?.list?.activeBackgroundColor ?? 'red'};
+        background-color: ${menuTheme?.list?.activeBackgroundColor ?? 'red'};
       }
 
       ${CourierInboxOptionMenuItem.id} .menu-item {
@@ -134,17 +156,23 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
 
       ${CourierInboxOptionMenuItem.id} p {
         margin: 0;
-        font-family: ${theme.inbox?.header?.menus?.popup?.list?.font?.family ?? 'inherit'};
-        font-weight: ${theme.inbox?.header?.menus?.popup?.list?.font?.weight ?? 'inherit'};
-        font-size: ${theme.inbox?.header?.menus?.popup?.list?.font?.size ?? '14px'};
-        color: ${theme.inbox?.header?.menus?.popup?.list?.font?.color ?? 'red'};
+        font-family: ${menuTheme?.list?.font?.family ?? 'inherit'};
+        font-weight: ${menuTheme?.list?.font?.weight ?? 'inherit'};
+        font-size: ${menuTheme?.list?.font?.size ?? '14px'};
+        color: ${menuTheme?.list?.font?.color ?? 'red'};
         white-space: nowrap;
       }
 
       ${CourierInboxOptionMenuItem.id} .check-icon {
-        display: none;
+        display: block;
       }
     `;
+  }
+
+  public setPosition(position: { right?: string, left?: string, top?: string }) {
+    this.style.left = position.left ?? 'auto';
+    this.style.right = position.right ?? 'auto';
+    this.style.top = position.top ?? 'auto';
   }
 
   private refreshTheme() {
@@ -152,21 +180,6 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
     if (this._style) {
       this._style.textContent = this.getStyles();
     }
-
-    // Get theme
-    const theme = this._themeSubscription.manager.getTheme();
-
-    // Get menu
-    const menu = theme.inbox?.header?.menus;
-    const isFilter = this._type === 'filters';
-    const buttonConfig = isFilter ? menu?.filters?.button : menu?.actions?.button;
-    const defaultIcon = isFilter ? CourierIconSVGs.filter : CourierIconSVGs.overflow;
-
-    this._menuButton?.updateIconSVG(buttonConfig?.icon?.svg ?? defaultIcon);
-    this._menuButton?.updateIconColor(buttonConfig?.icon?.color ?? 'red');
-    this._menuButton?.updateBackgroundColor(buttonConfig?.backgroundColor ?? 'transparent');
-    this._menuButton?.updateHoverBackgroundColor(buttonConfig?.hoverBackgroundColor ?? 'red');
-    this._menuButton?.updateActiveBackgroundColor(buttonConfig?.activeBackgroundColor ?? 'red');
 
     // Reload menu items
     this.refreshMenuItems();
@@ -178,9 +191,12 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   private refreshMenuItems() {
-    if (this._menu) {
-      this._menu.innerHTML = '';
-    }
+    if (!this._container) return;
+
+    const container = this._container;
+
+    // Clear existing items
+    container.innerHTML = '';
 
     this._options.forEach((option, index) => {
       const menuItem = new CourierInboxOptionMenuItem({
@@ -191,43 +207,99 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
       });
 
       menuItem.addEventListener('click', () => {
-        this._selectedIndex = index;
+
+        // Select if possible
+        if (this._selectable) {
+          this.selectionItemAtIndex(index);
+        }
+
+        // Handle the click
         option.onClick(option);
-        this.refreshMenuItems();
         this.closeMenu();
+
       });
 
-      this._menu?.appendChild(menuItem);
+      container.appendChild(menuItem);
     });
   }
 
-  private toggleMenu(event: Event) {
-    event.stopPropagation();
-    const isOpening = this._menu?.style.display !== 'block';
-    if (this._menu) {
-      this._menu.style.display = isOpening ? 'block' : 'none';
-    }
-
-    if (isOpening) {
-      this._onMenuOpen();
+  public toggleMenu() {
+    this._isOpen = !this._isOpen;
+    if (this._isOpen) {
+      this.showMenu();
+      this._onMenuOpen?.();
+    } else {
+      this.hideMenu();
     }
   }
 
+  private showMenu() {
+    // Remove visible class first to reset state
+    this.classList.remove('visible');
+
+    // Add displayed class to set display: block (but keep opacity 0 and initial transform)
+    this.classList.add('displayed');
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.classList.add('visible');
+      });
+    });
+  }
+
+  private hideMenu() {
+    // Remove visible class to trigger transition
+    this.classList.remove('visible');
+
+    // If there is no transition, remove the displayed class immediately
+    const style = window.getComputedStyle(this);
+    const durations = style.transitionDuration.split(',').map(d => parseFloat(d) || 0);
+    const hasTransition = durations.some(d => d > 0);
+    if (!hasTransition) {
+      this.classList.remove('displayed');
+      return;
+    }
+
+    // Wait for transition to complete, then remove displayed class
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.target !== this) return;
+      if (!this.classList.contains('visible')) {
+        this.classList.remove('displayed');
+        this.removeEventListener('transitionend', handleTransitionEnd);
+      }
+    };
+
+    this.addEventListener('transitionend', handleTransitionEnd);
+  }
+
+  public closeMenu() {
+    this._isOpen = false;
+    this.hideMenu();
+  }
+
   private handleOutsideClick(event: MouseEvent) {
-    if (!this.contains(event.target as Node)) {
+    const target = event.target as Node;
+    // contains() checks the entire tree including shadow DOM
+    if (!this.contains(target)) {
       this.closeMenu();
     }
   }
 
-  public closeMenu() {
-    if (this._menu) {
-      this._menu.style.display = 'none';
+  public selectionItemAtIndex(index: number) {
+    if (!this._selectable || !this._container) {
+      return;
     }
-  }
 
-  public selectOption(option: CourierInboxMenuOption) {
-    this._selectedIndex = this._options.findIndex(o => o.id === option.id);
-    this.refreshMenuItems();
+    this._selectedIndex = index;
+
+    // Update all menu items to reflect the new selection
+    this._options.forEach((_, idx) => {
+      const item = this._container?.children[idx] as CourierInboxOptionMenuItem;
+      if (item && item.setSelected) {
+        item.setSelected(idx === index);
+      }
+    });
   }
 
 }

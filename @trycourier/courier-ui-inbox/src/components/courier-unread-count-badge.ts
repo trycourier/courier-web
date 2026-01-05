@@ -1,8 +1,8 @@
 import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme, CourierInboxUnreadCountIndicatorTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 
-export type CourierUnreadCountLocation = 'button' | 'header';
+export type CourierUnreadCountBadgeLocation = "feed" | "tab";
 
 export class CourierUnreadCountBadge extends CourierBaseElement {
 
@@ -12,64 +12,113 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
 
   // Theme
   private _themeSubscription: CourierInboxThemeSubscription;
+  private _location: CourierUnreadCountBadgeLocation;
 
   // State
-  private _location: CourierUnreadCountLocation;
   private _count: number = 0;
 
   // Elements
-  private _badge?: HTMLElement;
   private _style?: HTMLStyleElement;
+  private _shadowRoot?: ShadowRoot;
+  private _container?: HTMLElement;
 
   get theme(): CourierInboxTheme {
     return this._themeSubscription.manager.getTheme();
   }
 
-  constructor(props: { themeBus: CourierInboxThemeManager, location: CourierUnreadCountLocation }) {
+  constructor(props: { themeBus: CourierInboxThemeManager, location: CourierUnreadCountBadgeLocation }) {
     super();
     this._location = props.location;
+
     this._themeSubscription = props.themeBus.subscribe((_: CourierInboxTheme) => {
-      this.refreshTheme(this._location);
+      this.refreshTheme();
     });
   }
 
   onComponentMounted() {
-
-    // Create badge element
-    this._badge = document.createElement('span');
-    this._badge.className = `unread-badge ${this._location}`;
-
-    this.appendChild(this._badge);
+    this.attachElements();
+    this.setActive(true);
     this.updateBadge();
+  }
+
+  private attachElements() {
+    // Attach shadow DOM
+    this._shadowRoot = this.attachShadow({ mode: 'closed' });
+
+    // Create container element
+    this._container = document.createElement('div');
+    this._container.className = 'badge-container';
+
+    // Create and add style
+    this._style = document.createElement('style');
+    this._style.textContent = this.getStyles();
+    this._shadowRoot.appendChild(this._style);
+    this._shadowRoot.appendChild(this._container);
   }
 
   onComponentUnmounted() {
     this._themeSubscription.unsubscribe();
-    this._style?.remove();
   }
 
-  static getStyles(theme: CourierInboxTheme): string {
+  private static getThemePath(
+    theme: CourierInboxTheme,
+    location: CourierUnreadCountBadgeLocation,
+    active: boolean
+  ): CourierInboxUnreadCountIndicatorTheme | undefined {
+    if (location === "tab") {
+      const tabsTheme = theme.inbox?.header?.tabs;
+      return active
+        ? tabsTheme?.selected?.unreadIndicator
+        : tabsTheme?.default?.unreadIndicator;
+    } else {
+      // Default to "feed" location
+      return theme.inbox?.header?.feeds?.button?.unreadCountIndicator;
+    }
+  }
+
+  static getStyles(theme: CourierInboxTheme, location: CourierUnreadCountBadgeLocation = "feed"): string {
+    const activeTheme = CourierUnreadCountBadge.getThemePath(theme, location, true);
+    const inactiveTheme = CourierUnreadCountBadge.getThemePath(theme, location, false);
+
+    // Fallback to feed button theme if location-specific theme is not available
+    const fallbackTheme = theme.inbox?.header?.feeds?.button?.unreadCountIndicator;
+
     return `
-      ${CourierUnreadCountBadge.id} {
+      :host {
         display: inline-block;
       }
 
-      ${CourierUnreadCountBadge.id} .unread-badge {
-        padding: 3px 8px;
-        font-size: 12px;
-        text-align: center;
+      .badge-container {
         display: none;
         pointer-events: none;
       }
 
-      ${CourierUnreadCountBadge.id} .header {
-        background-color: ${theme.inbox?.header?.filters?.unreadIndicator?.backgroundColor};
-        color: ${theme.inbox?.header?.filters?.unreadIndicator?.font?.color};
-        border-radius: ${theme.inbox?.header?.filters?.unreadIndicator?.borderRadius};
-        font-size: ${theme.inbox?.header?.filters?.unreadIndicator?.font?.size};
-        padding: ${theme.inbox?.header?.filters?.unreadIndicator?.padding};
+      :host(.active) .badge-container {
+        display: inline-block;
+        background-color: ${activeTheme?.backgroundColor ?? fallbackTheme?.backgroundColor};
+        color: ${activeTheme?.font?.color ?? fallbackTheme?.font?.color};
+        border-radius: ${activeTheme?.borderRadius ?? fallbackTheme?.borderRadius};
+        font-size: ${activeTheme?.font?.size ?? fallbackTheme?.font?.size};
+        font-family: ${activeTheme?.font?.family ?? fallbackTheme?.font?.family ?? 'inherit'};
+        font-weight: ${activeTheme?.font?.weight ?? fallbackTheme?.font?.weight ?? 'inherit'};
+        padding: ${activeTheme?.padding ?? fallbackTheme?.padding};
+      }
+
+      :host(.inactive) .badge-container {
+        display: inline-block;
+        background-color: ${inactiveTheme?.backgroundColor ?? fallbackTheme?.backgroundColor};
+        color: ${inactiveTheme?.font?.color ?? fallbackTheme?.font?.color};
+        border-radius: ${inactiveTheme?.borderRadius ?? fallbackTheme?.borderRadius};
+        font-size: ${inactiveTheme?.font?.size ?? fallbackTheme?.font?.size};
+        font-family: ${inactiveTheme?.font?.family ?? fallbackTheme?.font?.family ?? 'inherit'};
+        font-weight: ${inactiveTheme?.font?.weight ?? fallbackTheme?.font?.weight ?? 'inherit'};
+        padding: ${inactiveTheme?.padding ?? fallbackTheme?.padding};
       }
     `
+  }
+
+  private getStyles(): string {
+    return CourierUnreadCountBadge.getStyles(this.theme, this._location);
   }
 
   public setCount(count: number) {
@@ -77,19 +126,31 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
     this.updateBadge();
   }
 
-  public refreshTheme(location: CourierUnreadCountLocation) {
-    this._location = location;
+  public setActive(active: boolean) {
+    this.className = active ? 'active' : 'inactive';
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
+    this.updateBadge();
+  }
+
+  public refreshTheme() {
+    if (this._style) {
+      this._style.textContent = this.getStyles();
+    }
     this.updateBadge();
   }
 
   private updateBadge() {
-    if (this._badge) {
-      if (this._count > 0) {
-        this._badge.textContent = this._count > 99 ? '99+' : this._count.toString();
-        this._badge.style.display = 'block';
-      } else {
-        this._badge.style.display = 'none';
-      }
+    if (!this._container) return;
+
+    // Set display on the host element (this element)
+    if (this._count > 0) {
+      this.style.display = 'inline-block';
+      this._container.textContent = this._count > 99 ? '99+' : this._count.toString();
+    } else {
+      this.style.display = 'none';
+      this._container.textContent = '';
     }
   }
 }

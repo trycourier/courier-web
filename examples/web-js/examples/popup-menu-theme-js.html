@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <style>
+    @font-face {
+      font-family: 'Poppins';
+      src: url('../Poppins-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+
+  <div style="padding: 24px;">
+    <courier-inbox-popup-menu id="inbox"></courier-inbox-popup-menu>
+  </div>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+    import { CourierIconSVGs } from '@trycourier/courier-ui-core';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    // Reference the courier-inbox element
+    const inbox = document.getElementById('inbox');
+
+    // Set custom feeds with the specified structure
+    inbox.setFeeds([
+      {
+        feedId: 'all',
+        title: 'All',
+        tabs: [
+          {
+            datasetId: 'all',
+            title: 'All',
+            filter: {}
+          }
+        ]
+      },
+      {
+        feedId: 'jobs',
+        title: 'Jobs',
+        tabs: [
+          {
+            datasetId: 'jobs',
+            title: 'Jobs',
+            filter: { tags: ['job'] }
+          }
+        ]
+      },
+      {
+        feedId: 'my-posts',
+        title: 'My Posts',
+        tabs: [
+          {
+            datasetId: 'all-my-posts',
+            title: 'All',
+            filter: { tags: ['my_post'] }
+          },
+          {
+            datasetId: 'comments',
+            title: 'Comments',
+            filter: { tags: ['comment'] }
+          },
+          {
+            datasetId: 'reactions',
+            title: 'Reactions',
+            filter: { tags: ['reaction'] }
+          },
+          {
+            datasetId: 'reposts',
+            title: 'Reposts',
+            filter: { tags: ['repost'] }
+          }
+        ]
+      },
+      {
+        feedId: 'mentions',
+        title: 'Mentions',
+        tabs: [
+          {
+            datasetId: 'mentions',
+            title: 'Mentions',
+            filter: { tags: ['mention'] }
+          }
+        ]
+      }
+    ]);
+
+    const theme = {
+      popup: {
+        button: {
+          unreadDotIndicator: {
+            backgroundColor: "#8B5CF6"
+          }
+        },
+        window: {
+          animation: {
+            transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+            initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+            visibleTransform: 'translate3d(0, 0, 0) scale(1)'
+          }
+        }
+      },
+      inbox: {
+        header: {
+          feeds: {
+            button: {
+              font: {
+                family: "Poppins",
+              },
+              unreadCountIndicator: {
+                backgroundColor: "#8B5CF6",
+                font: {
+                  family: "Poppins",
+                },
+              },
+            },
+            menu: {
+              animation: {
+                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)'
+              },
+              list: {
+                font: {
+                  family: "Poppins",
+                },
+                selectedIcon: {
+                  color: "#8B5CF6"
+                }
+              }
+            },
+            tabs: {
+              default: {
+                font: {
+                  family: "Poppins",
+                },
+                unreadIndicator: {
+                  font: {
+                    family: "Poppins",
+                  },
+                },
+              },
+              selected: {
+                indicatorColor: "#8B5CF6",
+                font: {
+                  color: "#8B5CF6",
+                  family: "Poppins"
+                },
+                unreadIndicator: {
+                  backgroundColor: "#8B5CF6",
+                  font: {
+                    family: "Poppins"
+                  }
+                }
+              }
+            }
+          },
+          tabs: {
+            default: {
+              font: {
+                family: "Poppins",
+              },
+              unreadIndicator: {
+                font: {
+                  family: "Poppins",
+                },
+              },
+            },
+            selected: {
+              indicatorColor: "#8B5CF6",
+              font: {
+                color: "#8B5CF6",
+                family: "Poppins"
+              },
+              unreadIndicator: {
+                backgroundColor: "#8B5CF6",
+                font: {
+                  family: "Poppins"
+                }
+              }
+            }
+          },
+          actions: {
+            animation: {
+              transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+              initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
+              visibleTransform: 'translate3d(0, 0, 0) scale(1)'
+            }
+          }
+        },
+        list: {
+          item: {
+            unreadIndicatorColor: "#8B5CF6",
+            title: {
+              family: "Poppins",
+            },
+            subtitle: {
+              family: "Poppins",
+            },
+            time: {
+              family: "Poppins",
+            },
+            actions: {
+              font: {
+                family: "Poppins",
+              },
+            },
+          }
+        },
+        empty: {
+          title: {
+            font: {
+              family: "Poppins",
+            },
+          },
+          button: {
+            font: {
+              family: "Poppins",
+            },
+          },
+        },
+        error: {
+          title: {
+            font: {
+              family: "Poppins",
+            },
+          },
+          button: {
+            font: {
+              family: "Poppins",
+            },
+          },
+        },
+      }
+    }
+
+    // Set the themes
+    inbox.setLightTheme(theme);
+    inbox.setDarkTheme(theme);
+
+    // Set the mode
+    // This will force light, dark or system theme mode
+    inbox.setMode('light');
+
+  </script>
+
+</body>
+
+</html>

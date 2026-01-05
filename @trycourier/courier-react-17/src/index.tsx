@@ -45,6 +45,13 @@ export {
   openMessage
 } from '@trycourier/courier-ui-inbox';
 
+// Re-export default configuration functions from courier-ui-inbox
+export {
+  defaultFeeds,
+  defaultActions,
+  defaultListItemActions
+} from '@trycourier/courier-ui-inbox';
+
 // Re-export factory prop types from courier-ui-inbox
 export type {
   CourierInboxHeaderFactoryProps,
@@ -55,7 +62,9 @@ export type {
   CourierInboxListItemActionFactoryProps,
   CourierInboxPaginationItemFactoryProps,
   CourierInboxMenuButtonFactoryProps,
-  CourierInboxFeedType
+  CourierInboxFeed,
+  CourierInboxTab,
+  CourierInboxDatasetFilter
 } from '@trycourier/courier-ui-inbox';
 
 // Re-export theme types from courier-ui-inbox
@@ -63,7 +72,6 @@ export type {
   CourierInboxTheme,
   CourierInboxFontTheme,
   CourierInboxIconTheme,
-  CourierInboxFilterItemTheme,
   CourierInboxUnreadCountIndicatorTheme,
   CourierInboxUnreadDotIndicatorTheme,
   CourierInboxIconButtonTheme,
@@ -74,7 +82,6 @@ export type {
   CourierInboxSkeletonLoadingStateTheme,
   CourierInboxInfoStateTheme,
   CourierMenuItemTheme,
-  CourierFilterMenuTheme,
   CourierActionMenuTheme
 } from '@trycourier/courier-ui-inbox';
 

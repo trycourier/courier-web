@@ -31,6 +31,9 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   static getStyles(theme: CourierInboxTheme): string {
 
     const menu = theme.inbox?.list?.item?.menu;
+    const transition = menu?.animation;
+    const initialTransform = transition?.initialTransform ?? 'translate3d(0, 0, 0)';
+    const visibleTransform = transition?.visibleTransform ?? 'translate3d(0, 0, 0)';
 
     return `
       ${CourierInboxListItemMenu.id} {
@@ -43,14 +46,16 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         user-select: none;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.15s;
+        transition: ${transition?.transition ?? 'all 0.2s ease'};
         overflow: hidden;
+        transform: ${initialTransform};
+        will-change: transform, opacity;
       }
 
       ${CourierInboxListItemMenu.id}.visible {
-        display: block;
         opacity: 1;
         pointer-events: auto;
+        transform: ${visibleTransform};
       }
 
       ${CourierInboxListItemMenu.id} ul.menu {
@@ -68,6 +73,7 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
         cursor: pointer;
         border-bottom: none;
         background: transparent;
+        touch-action: none;
       }
     `;
   }
@@ -87,7 +93,11 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
     // Prevent click events from propagating outside of this menu
     const cancelEvent = (e: Event) => {
       e.stopPropagation();
-      e.preventDefault();
+      // Only preventDefault on touchstart to prevent context menu and other default behaviors
+      // touchmove doesn't need preventDefault since CSS touch-action handles scrolling
+      if (e.type === 'touchstart' || e.type === 'mousedown') {
+        e.preventDefault();
+      }
     };
 
     // Create new menu items
@@ -96,7 +106,7 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
 
       // Handle both click and touch events
       const handleInteraction = (e: Event) => {
-        cancelEvent(e);
+        e.stopPropagation();
         opt.onClick();
       };
 
@@ -104,11 +114,14 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
       icon.addEventListener('click', handleInteraction);
 
       // Add touch handlers for mobile
-      icon.addEventListener('touchstart', cancelEvent);
-      icon.addEventListener('touchend', handleInteraction);
+      // touchstart needs preventDefault for context menu prevention, so use passive: false
+      icon.addEventListener('touchstart', cancelEvent, { passive: false });
+      icon.addEventListener('touchend', handleInteraction, { passive: true });
 
-      // Prevent default touch behavior
-      icon.addEventListener('touchmove', cancelEvent);
+      // touchmove can be passive since CSS touch-action: none prevents scrolling
+      icon.addEventListener('touchmove', (e: Event) => {
+        e.stopPropagation();
+      }, { passive: true });
 
       // Prevent mouse events from interfering
       icon.addEventListener('mousedown', cancelEvent);
@@ -119,13 +132,32 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   show() {
+    // Set display first
     this.style.display = 'block';
-    this.classList.add('visible');
+    this.classList.remove('visible');
+
+    // Trigger transition on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.classList.add('visible');
+      });
+    });
   }
 
   hide() {
-    this.style.display = 'none';
+    // Remove visible class to trigger transition
     this.classList.remove('visible');
+
+    // Wait for transition to complete, then set display none
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.target !== this) return;
+      if (!this.classList.contains('visible')) {
+        this.style.display = 'none';
+        this.removeEventListener('transitionend', handleTransitionEnd);
+      }
+    };
+
+    this.addEventListener('transitionend', handleTransitionEnd);
   }
 }
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .toast-message {
+      flex: 1;
+      padding: 16px;
+      background: #f6f6fe;
+      border: 1px solid #c6c2ff;
+      border-radius: 8px;
+    }
+
+    .toast-title {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .toast-body {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .toast-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 100px;
+    }
+
+    .toast-action-button {
+      width: 100%;
+      padding: 8px 12px;
+      background: #f6f6fe;
+      border: 1px solid #c6c2ff;
+      border-radius: 6px;
+    }
+  </style>
+
+  <button id="show-toast-button">
+    Show basic toast
+  </button>
+  <courier-toast id="my-toast"></courier-toast>
+
+  <script type="module">
+    import { Courier, CourierToastDatastore } from '@trycourier/courier-ui-toast';
+
+    // Authenticate the user with Courier
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+    });
+
+    const toast = document.getElementById("my-toast");
+    const button = document.getElementById("show-toast-button");
+
+    button.addEventListener("click", () => {
+      CourierToastDatastore.shared.addMessage({
+        messageId: "1",
+        title: "📸 New photos from Fred L.",
+        body: "Fred shared 4 photos.",
+        actions: [
+          {
+            content: "See more"
+          },
+          {
+            content: "Mark read"
+          }
+        ]
+      });
+    });
+  </script>
+
+</body>
+
+</html>

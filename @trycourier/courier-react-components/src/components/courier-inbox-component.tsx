@@ -1,5 +1,5 @@
 import { useRef, useEffect, forwardRef, ReactNode, useContext, useState } from "react";
-import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeedType } from "@trycourier/courier-ui-inbox";
+import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
@@ -17,8 +17,11 @@ export interface CourierInboxProps {
   /** Theme mode: "light", "dark", or "system". Defaults to "system" */
   mode?: CourierComponentThemeMode;
 
-  /** Type of feed to display in the inbox ("inbox" or "archive"). Defaults to "inbox" */
-  feedType?: CourierInboxFeedType;
+  /** Type of feed to display in the inbox. Defaults to "inbox" */
+  feedType?: string;
+
+  /** Array of feeds to display in the inbox. Each feed contains tabs with different filters. */
+  feeds?: CourierInboxFeed[];
 
   /** Callback fired when a message is clicked. */
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
@@ -57,6 +60,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
   // Element ref for use in effects, updated by handleRef.
   const inboxRef = useRef<CourierInboxElement | null>(null);
   const [elementReady, setElementReady] = useState(false);
+  const feedsSetRef = useRef(false);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -180,14 +184,15 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     });
   }, [props.renderPaginationItem, elementReady]);
 
-  // Set feed type
+  // Set feeds (only once when element is ready)
   useEffect(() => {
     const inbox = getEl();
-    if (!inbox) return;
+    if (!inbox || !props.feeds || feedsSetRef.current) return;
+    feedsSetRef.current = true;
     queueMicrotask(() => {
-      inbox.setFeedType(props.feedType || 'inbox');
+      inbox.setFeeds(props.feeds!);
     });
-  }, [props.feedType, elementReady]);
+  }, [props.feeds, elementReady]);
 
   const children = (
     /* @ts-ignore */
