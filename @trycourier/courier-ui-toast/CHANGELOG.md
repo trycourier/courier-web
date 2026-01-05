@@ -1,5 +1,17 @@
 # @trycourier/courier-ui-toast
 
+## 2.0.0
+
+### Major Changes
+
+- [#135](https://github.com/trycourier/courier-web/pull/135) [`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7) Thanks [@mikemilla](https://github.com/mikemilla)! - Updated architecture for Feed and Tab support for Inbox
+
+### Patch Changes
+
+- Updated dependencies [[`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7), [`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7)]:
+  - @trycourier/courier-ui-core@2.0.0
+  - @trycourier/courier-js@3.0.0
+
 ## 1.0.4
 
 ### Patch Changes
