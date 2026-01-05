@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-core",
-  "version": "1.0.14",
+  "version": "2.0.0",
   "description": "The core UI kit for Courier Web Components",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

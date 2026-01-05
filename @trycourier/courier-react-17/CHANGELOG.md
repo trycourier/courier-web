@@ -1,5 +1,24 @@
 # @trycourier/courier-react-17
 
+## 9.0.0
+
+### Major Changes
+
+- [#135](https://github.com/trycourier/courier-web/pull/135) [`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7) Thanks [@mikemilla](https://github.com/mikemilla)! - Updated architecture for Feed and Tab support for Inbox
+
+### Minor Changes
+
+- [#135](https://github.com/trycourier/courier-web/pull/135) [`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7) Thanks [@mikemilla](https://github.com/mikemilla)! - Add support for a user-defined feeds and tabs in the Inbox. Tabs can be filtered by archived and read status, and a set of tags.
+
+### Patch Changes
+
+- Updated dependencies [[`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7), [`210a819`](https://github.com/trycourier/courier-web/commit/210a8191277212e97d26108b1434df48e70a8aa7)]:
+  - @trycourier/courier-react-components@2.0.0
+  - @trycourier/courier-ui-inbox@2.0.0
+  - @trycourier/courier-ui-core@2.0.0
+  - @trycourier/courier-js@3.0.0
+  - @trycourier/courier-ui-toast@2.0.0
+
 ## 8.2.4
 
 ### Patch Changes
