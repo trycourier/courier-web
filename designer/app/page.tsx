@@ -5,6 +5,7 @@ import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 import { SendTestTab } from "@/components/SendTestTab";
 import { ThemeTab } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
@@ -82,7 +83,7 @@ function HomeContent() {
             viewBox="0 0 90 20" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
-            className="text-foreground"
+            className="text-[#7B2668] dark:text-foreground"
           >
             <path 
               d="M18.9841 9.07718C19.0254 9.01314 19.0481 8.93888 19.0496 8.8627C18.269 4.39927 14.3255 1.00825 9.60004 1.00825C4.29109 1.00825 -0.0213001 5.30065 7.91505e-05 10.5792C0.0428376 15.7082 4.39868 19.9999 9.55659 19.9999C13.9559 20.0206 17.6614 17.1033 18.8103 13.133C18.8538 13.0041 18.7669 12.8537 18.6365 12.7896L18.2469 12.6392C17.4871 12.3731 16.6768 12.2832 15.8772 12.3761C15.0776 12.4691 14.3095 12.7425 13.6311 13.1758C13.0021 13.5834 12.5469 13.9054 12.5469 13.9054C11.7676 14.4206 10.8138 14.742 9.81659 14.742C7.10763 14.742 5.22212 12.5537 4.91868 9.89235L4.70351 8.43442C4.63868 7.98339 4.33523 7.61857 3.90144 7.44684L3.36006 7.23236C3.27317 7.1896 3.22972 7.08202 3.29524 6.9965C5.61385 3.92755 8.45245 4.59306 8.45245 4.59306C8.91209 4.63792 9.35243 4.80038 9.73107 5.06478C10.2304 5.41465 10.621 5.8982 10.858 6.45995C11.3018 7.46309 12.0277 8.31559 12.9472 8.91371C13.8667 9.51183 14.9403 9.82979 16.0372 9.8289C16.0372 9.8289 18.2476 9.91511 18.9841 9.07718Z" 
@@ -116,6 +117,23 @@ function HomeContent() {
               Web Components
             </button>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <a
+              href={frameworkType === 'react'
+                ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web'
+                : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              Docs
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
         </div>
       </header>
 
