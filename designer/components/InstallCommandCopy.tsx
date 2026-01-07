@@ -1,8 +1,13 @@
 'use client';
 
+import * as React from 'react';
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy as CopyBase, Check as CheckBase } from 'lucide-react';
 import { useFramework } from './FrameworkContext';
+
+// Cast to any to work around React 19 type incompatibility with lucide-react
+const Copy = CopyBase as React.ComponentType<any>;
+const Check = CheckBase as React.ComponentType<any>;
 
 export function InstallCommandCopy() {
   const { frameworkType } = useFramework();

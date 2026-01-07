@@ -1,11 +1,15 @@
 'use client';
 
+import * as React from 'react';
 import type { CourierInboxFeed } from '@trycourier/courier-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
-import { ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon as ChevronDownIconBase } from 'lucide-react';
+
+// Cast to any to work around React 19 type incompatibility with lucide-react
+const ChevronDownIcon = ChevronDownIconBase as React.ComponentType<any>;
 
 interface FeedItemProps {
   feed: CourierInboxFeed;

@@ -1,8 +1,12 @@
 'use client';
 
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { useFramework } from './FrameworkContext';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase } from 'lucide-react';
+
+// Cast to any to work around React 19 type incompatibility with lucide-react
+const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
 
 interface ThemeFooterProps {
   copy?: string;
@@ -16,7 +20,7 @@ interface ThemeFooterProps {
   };
 }
 
-export function ThemeFooter({ 
+export function ThemeFooter({
   copy = "Customize fonts, colors, spacing, animations, and more through the theme system.",
   primaryButton,
   secondaryButton
@@ -27,7 +31,7 @@ export function ThemeFooter({
   const defaultPrimaryUrl = frameworkType === 'react'
     ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#authentication'
     : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#authentication';
-  
+
   const defaultPrimaryLabel = frameworkType === 'react' ? 'React Docs' : 'Web Components Docs';
 
   return (
