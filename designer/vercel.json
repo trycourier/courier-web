@@ -1,6 +1,6 @@
 {
   "installCommand": "cd .. && yarn install",
-  "buildCommand": "cd .. && yarn build-packages && cd designer && next build",
+  "buildCommand": "yarn vercel-build",
   "outputDirectory": ".next",
   "framework": "nextjs"
 }
