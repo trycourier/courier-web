@@ -3,19 +3,22 @@
 import { useEffect, useState, ReactNode } from "react";
 import { useCourier } from "@trycourier/courier-react";
 import { CourierRepo } from "@/app/lib/courier-repo";
-import { v4 as uuidv4 } from "uuid";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const USER_ID_STORAGE_KEY = 'courier_user_id';
 
+function generateUUID(): string {
+  return crypto.randomUUID();
+}
+
 function getOrCreateUserId(): string {
   if (typeof window === 'undefined') {
-    return uuidv4();
+    return generateUUID();
   }
 
   let userId = localStorage.getItem(USER_ID_STORAGE_KEY);
   if (!userId) {
-    userId = uuidv4();
+    userId = generateUUID();
     localStorage.setItem(USER_ID_STORAGE_KEY, userId);
   }
   return userId;
@@ -25,7 +28,7 @@ function clearUserId(): string {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(USER_ID_STORAGE_KEY);
   }
-  return uuidv4();
+  return generateUUID();
 }
 
 interface CourierAuthProps {
