@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "yarn workspace @trycourier/courier-react build && next build",
+    "build": "cd ../.. && yarn build-packages && cd designer && next build",
     "start": "next start",
     "lint": "eslint"
   },
