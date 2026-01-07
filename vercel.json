@@ -1,7 +1,6 @@
 {
-  "buildCommand": "yarn build-packages && cd designer && next build",
+  "buildCommand": "yarn build-packages && yarn workspace designer build",
   "outputDirectory": "designer/.next",
   "framework": "nextjs",
   "installCommand": "yarn install"
 }
-

@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "vercel-build": "cd .. && yarn build-packages && cd designer && next build --no-turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
