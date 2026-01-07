@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "(cd .. && yarn build-packages) && next build",
+    "prebuild": "cd .. && yarn build-packages",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },

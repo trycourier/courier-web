@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { SendTestTab } from "@/components/SendTestTab";
 import { ThemeTab } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
