@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd .. && yarn install && cd designer",
-  "buildCommand": "cd .. && yarn build-packages && cd designer && next build",
+  "installCommand": "yarn --cwd .. install",
+  "buildCommand": "yarn --cwd .. run build-packages && next build",
   "outputDirectory": ".next"
 }
