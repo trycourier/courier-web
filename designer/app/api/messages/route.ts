@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getCourierClient } from '@/app/api/lib/courier';
 
+interface MessageAction {
+  content: string;
+  href: string;
+}
+
 export async function POST(request: Request) {
   try {
-    // Read user_id, title, body, optional tags, and optional api_key from request body
+    // Read user_id, title, body, optional tags, optional actions, and optional api_key from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody, tags, api_key } = body;
+    const { user_id, title, body: messageBody, tags, actions, api_key } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -31,16 +36,45 @@ export async function POST(request: Request) {
     // Use provided api_key or fall back to environment default
     const courier = getCourierClient(api_key);
 
+    // Build the content - use Elemental format if actions are provided
+    let content: any;
+    if (actions && Array.isArray(actions) && actions.length > 0) {
+      // Use Elemental content format to include actions
+      const elements: any[] = [
+        { type: 'meta', title: title },
+        { type: 'text', content: messageBody },
+      ];
+      
+      // Add action elements
+      actions.forEach((action: MessageAction) => {
+        if (action.content && action.href) {
+          elements.push({
+            type: 'action',
+            content: action.content,
+            href: action.href,
+          });
+        }
+      });
+      
+      content = {
+        version: '2022-01-01',
+        elements,
+      };
+    } else {
+      // Use simple title/body format when no actions
+      content = {
+        title: title,
+        body: messageBody,
+      };
+    }
+
     // Send inbox message to the user
     const { requestId } = await courier.send.message({
       message: {
         to: {
           user_id: user_id,
         },
-        content: {
-          title: title,
-          body: messageBody,
-        },
+        content,
         metadata: {
           tags: tags,
         },

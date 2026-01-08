@@ -5,8 +5,6 @@ import { useCourier, type InboxMessage, type CourierInboxFeed } from '@trycourie
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { TabFooter } from '@/components/TabFooter';
-import { useFramework } from '@/components/FrameworkContext';
 
 interface CourierInboxHooksProps {
   feeds: CourierInboxFeed[];
@@ -14,7 +12,6 @@ interface CourierInboxHooksProps {
 
 export function CourierInboxHooks({ feeds }: CourierInboxHooksProps) {
   const { inbox } = useCourier();
-  const { frameworkType } = useFramework();
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -86,15 +83,6 @@ export function CourierInboxHooks({ feeds }: CourierInboxHooksProps) {
           </div>
         )}
       </div>
-      <TabFooter 
-        copy="Use the Courier React hooks API to access inbox data and manage messages programmatically."
-        primaryButton={{
-          label: "Authentication",
-          url: frameworkType === 'react'
-            ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#authentication'
-            : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#authentication'
-        }}
-      />
     </div>
   );
 }

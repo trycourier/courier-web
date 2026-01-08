@@ -9,6 +9,11 @@ export interface SendMessageResponse {
   user_id: string;
 }
 
+export interface MessageAction {
+  content: string;
+  href: string;
+}
+
 export class CourierRepo {
   async generateJWT(userId: string, apiKey?: string): Promise<JWTResponse> {
     const response = await fetch("/api/jwt", {
@@ -35,6 +40,7 @@ export class CourierRepo {
     title: string,
     body: string,
     tags?: string[],
+    actions?: MessageAction[],
     apiKey?: string
   ): Promise<SendMessageResponse> {
     const response = await fetch("/api/messages", {
@@ -47,6 +53,7 @@ export class CourierRepo {
         title,
         body,
         tags,
+        actions,
         ...(apiKey && { api_key: apiKey }),
       }),
     });

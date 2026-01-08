@@ -2,7 +2,7 @@
 
 import { CourierInboxPopupMenu, type CourierInboxFeed, type CourierInboxTheme } from '@trycourier/courier-react';
 import { useInboxComponentKey } from './useInboxComponentKey';
-import { createMessageClickHandler } from './inboxHandlers';
+import { createMessageClickHandler, createMessageActionClickHandler } from './inboxHandlers';
 import type { ColorMode } from './ThemeTab';
 
 interface CourierInboxPopupMenuTabProps {
@@ -15,6 +15,7 @@ interface CourierInboxPopupMenuTabProps {
 export function CourierInboxPopupMenuTab({ feeds, lightTheme, darkTheme, colorMode }: CourierInboxPopupMenuTabProps) {
   const componentKey = useInboxComponentKey(feeds, lightTheme, darkTheme, colorMode);
   const handleMessageClick = createMessageClickHandler();
+  const handleMessageActionClick = createMessageActionClickHandler();
 
   return (
     <div className="h-full p-4">
@@ -22,6 +23,7 @@ export function CourierInboxPopupMenuTab({ feeds, lightTheme, darkTheme, colorMo
         key={componentKey}
         feeds={feeds}
         onMessageClick={handleMessageClick}
+        onMessageActionClick={handleMessageActionClick}
         lightTheme={lightTheme}
         darkTheme={darkTheme}
         mode={colorMode}
