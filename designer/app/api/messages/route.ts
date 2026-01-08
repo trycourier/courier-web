@@ -3,9 +3,9 @@ import { getCourierClient } from '@/app/api/lib/courier';
 
 export async function POST(request: Request) {
   try {
-    // Read user_id, title, body, and optional tags from request body
+    // Read user_id, title, body, optional tags, and optional api_key from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody, tags } = body;
+    const { user_id, title, body: messageBody, tags, api_key } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -28,7 +28,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const courier = getCourierClient();
+    // Use provided api_key or fall back to environment default
+    const courier = getCourierClient(api_key);
 
     // Send inbox message to the user
     const { requestId } = await courier.send.message({

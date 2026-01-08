@@ -3,9 +3,9 @@ import { getCourierClient } from '@/app/api/lib/courier';
 
 export async function POST(request: Request) {
   try {
-    // Read user_id from request body
+    // Read user_id and optional api_key from request body
     const body = await request.json();
-    const { user_id } = body;
+    const { user_id, api_key } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -14,8 +14,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate JWT
-    const response = await getCourierClient().auth.issueToken({
+    // Generate JWT using provided api_key or fall back to environment default
+    const response = await getCourierClient(api_key).auth.issueToken({
       scope: [
         `user_id:${user_id}`,
         'read:messages',

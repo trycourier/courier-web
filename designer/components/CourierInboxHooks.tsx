@@ -5,7 +5,7 @@ import { useCourier, type InboxMessage, type CourierInboxFeed } from '@trycourie
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ThemeFooter } from '@/components/ThemeFooter';
+import { TabFooter } from '@/components/TabFooter';
 import { useFramework } from '@/components/FrameworkContext';
 
 interface CourierInboxHooksProps {
@@ -86,7 +86,7 @@ export function CourierInboxHooks({ feeds }: CourierInboxHooksProps) {
           </div>
         )}
       </div>
-      <ThemeFooter 
+      <TabFooter 
         copy="Use the Courier React hooks API to access inbox data and manage messages programmatically."
         primaryButton={{
           label: "Authentication",

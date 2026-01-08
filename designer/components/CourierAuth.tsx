@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, ReactNode } from "react";
-import { useCourier } from "@trycourier/courier-react";
+import { useCourier, type CourierApiUrls } from "@trycourier/courier-react";
 import { CourierRepo } from "@/app/lib/courier-repo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -32,20 +32,32 @@ function clearUserId(): string {
 }
 
 interface CourierAuthProps {
-  children: (props: { userId: string; onClearUser: () => void }) => ReactNode;
+  children: (props: { userId: string; onClearUser: () => void; isUrlOverride: boolean }) => ReactNode;
+  apiUrls?: CourierApiUrls;
+  overrideUserId?: string;
+  apiKey?: string;
 }
 
-export function CourierAuth({ children }: CourierAuthProps) {
+export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: CourierAuthProps) {
   const courier = useCourier();
-  const [userId, setUserId] = useState<string>(() => getOrCreateUserId());
+  const [storedUserId, setStoredUserId] = useState<string>(() => getOrCreateUserId());
+
+  // Use override if provided, otherwise use stored
+  const userId = overrideUserId || storedUserId;
+  const isUrlOverride = !!overrideUserId;
   const [initializedUserId, setInitializedUserId] = useState<string | null>(null);
+  const [initializedApiUrls, setInitializedApiUrls] = useState<CourierApiUrls | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const repo = new CourierRepo();
 
+  // Serialize apiUrls for comparison
+  const apiUrlsKey = apiUrls ? JSON.stringify(apiUrls) : 'default';
+  const initializedApiUrlsKey = initializedApiUrls ? JSON.stringify(initializedApiUrls) : 'default';
+
   useEffect(() => {
-    // Only initialize if userId changed or hasn't been initialized yet
-    if (initializedUserId === userId) {
+    // Only initialize if userId changed, apiUrls changed, or hasn't been initialized yet
+    if (initializedUserId === userId && apiUrlsKey === initializedApiUrlsKey) {
       return;
     }
 
@@ -53,18 +65,20 @@ export function CourierAuth({ children }: CourierAuthProps) {
       try {
         setIsLoading(true);
         setError(null);
-        const res = await repo.generateJWT(userId);
+        const res = await repo.generateJWT(userId, apiKey);
         if (!res.token) {
           throw new Error('Failed to generate JWT');
         }
 
-        // Sign into Courier
+        // Sign into Courier with optional custom API URLs
         courier.shared.signIn({
           userId: userId,
-          jwt: res.token
+          jwt: res.token,
+          ...(apiUrls && { apiUrls })
         });
 
         setInitializedUserId(userId);
+        setInitializedApiUrls(apiUrls);
         setIsLoading(false);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to initialize Courier';
@@ -76,11 +90,15 @@ export function CourierAuth({ children }: CourierAuthProps) {
 
     initializeCourier();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, apiUrlsKey, apiKey]);
 
   const handleClearUser = async () => {
+    if (isUrlOverride) {
+      // Can't clear a URL-provided userId - would need to remove from URL
+      return;
+    }
     const newUserId = clearUserId();
-    setUserId(newUserId);
+    setStoredUserId(newUserId);
     // initializeCourier will be called automatically via useEffect when userId changes
   };
 
@@ -102,6 +120,6 @@ export function CourierAuth({ children }: CourierAuthProps) {
     );
   }
 
-  return <>{children({ userId, onClearUser: handleClearUser })}</>;
+  return <>{children({ userId, onClearUser: handleClearUser, isUrlOverride })}</>;
 }
 

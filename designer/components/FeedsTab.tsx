@@ -5,6 +5,8 @@ import { defaultFeeds } from '@trycourier/courier-react';
 import { Button } from './ui/button';
 import { Accordion } from './ui/accordion';
 import { FeedItem } from './FeedItem';
+import { TabFooter } from './TabFooter';
+import { useFramework } from './FrameworkContext';
 
 interface FeedsTabProps {
   feeds: CourierInboxFeed[];
@@ -73,40 +75,55 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
     }
   };
 
-  return (
-    <div className="p-4 h-full overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          type="button"
-          onClick={handleResetToDefaults}
-          variant="outline"
-          size="sm"
-        >
-          Reset
-        </Button>
-        <Button
-          type="button"
-          onClick={handleAddFeed}
-          size="sm"
-        >
-          + Add Feed
-        </Button>
-      </div>
+  const { frameworkType } = useFramework();
 
-      <Accordion type="single" collapsible>
-        {feeds.map((feed, feedIndex) => (
-          <FeedItem
-            key={feed.feedId}
-            feed={feed}
-            feedIndex={feedIndex}
-            onUpdateFeed={(updates) => handleUpdateFeed(feedIndex, updates)}
-            onRemoveFeed={() => handleRemoveFeed(feedIndex)}
-            onAddTab={() => handleAddTab(feedIndex)}
-            onUpdateTab={(tabIndex, updates) => handleUpdateTab(feedIndex, tabIndex, updates)}
-            onRemoveTab={(tabIndex) => handleRemoveTab(feedIndex, tabIndex)}
-          />
-        ))}
-      </Accordion>
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            type="button"
+            onClick={handleResetToDefaults}
+            variant="outline"
+            size="sm"
+          >
+            Reset
+          </Button>
+          <Button
+            type="button"
+            onClick={handleAddFeed}
+            size="sm"
+          >
+            + Add Feed
+          </Button>
+        </div>
+
+        <Accordion type="single" collapsible>
+          {feeds.map((feed, feedIndex) => (
+            <FeedItem
+              key={feed.feedId}
+              feed={feed}
+              feedIndex={feedIndex}
+              onUpdateFeed={(updates) => handleUpdateFeed(feedIndex, updates)}
+              onRemoveFeed={() => handleRemoveFeed(feedIndex)}
+              onAddTab={() => handleAddTab(feedIndex)}
+              onUpdateTab={(tabIndex, updates) => handleUpdateTab(feedIndex, tabIndex, updates)}
+              onRemoveTab={(tabIndex) => handleRemoveTab(feedIndex, tabIndex)}
+            />
+          ))}
+        </Accordion>
+      </div>
+      <div className="flex-shrink-0 border-t border-border p-4">
+        <TabFooter
+          copy="Configure feeds and tabs to organize your inbox messages."
+          primaryButton={{
+            label: "Tabs and Feeds",
+            url: frameworkType === 'react'
+              ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#tabs-and-feeds'
+              : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#tabs-and-feeds'
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -10,9 +10,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SendMessageFormProps {
   userId: string;
+  apiKey?: string;
 }
 
-export function SendMessageForm({ userId }: SendMessageFormProps) {
+export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -31,7 +32,7 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      await repo.sendMessage(userId, title, body, tagsArray.length > 0 ? tagsArray : undefined);
+      await repo.sendMessage(userId, title, body, tagsArray.length > 0 ? tagsArray : undefined, apiKey);
       setTitle('');
       setBody('');
       setTags('');
