@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import type { CourierInboxFeed, CourierInboxTheme } from '@trycourier/courier-react';
+import type { ColorMode } from './ThemeTab';
 
-export function useInboxComponentKey(feeds: CourierInboxFeed[], lightTheme?: CourierInboxTheme, darkTheme?: CourierInboxTheme): string {
+export function useInboxComponentKey(feeds: CourierInboxFeed[], lightTheme?: CourierInboxTheme, darkTheme?: CourierInboxTheme, colorMode?: ColorMode): string {
   return useMemo(() => {
     const feedsKey = JSON.stringify(feeds.map(f => ({
       feedId: f.feedId,
@@ -15,7 +16,8 @@ export function useInboxComponentKey(feeds: CourierInboxFeed[], lightTheme?: Cou
     })));
     const lightThemeKey = lightTheme ? JSON.stringify(lightTheme) : 'default-light';
     const darkThemeKey = darkTheme ? JSON.stringify(darkTheme) : 'default-dark';
-    return `${feedsKey}-${lightThemeKey}-${darkThemeKey}`;
-  }, [feeds, lightTheme, darkTheme]);
+    const modeKey = colorMode || 'system';
+    return `${feedsKey}-${lightThemeKey}-${darkThemeKey}-${modeKey}`;
+  }, [feeds, lightTheme, darkTheme, colorMode]);
 }
 

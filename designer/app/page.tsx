@@ -5,7 +5,7 @@ import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendTestTab } from "@/components/SendTestTab";
-import { ThemeTab } from "@/components/ThemeTab";
+import { ThemeTab, type ColorMode } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
 import { FeedsTab } from "@/components/FeedsTab";
 import { CourierInboxTab } from "@/components/CourierInboxTab";
@@ -29,7 +29,44 @@ function HomeContent() {
   const [activeRightTab, setActiveRightTab] = useState<RightTab>('courier-inbox');
   const [feeds, setFeeds] = useState<CourierInboxFeed[]>(defaultFeeds());
   const [selectedTheme, setSelectedTheme] = useState<ThemePreset>('default');
+  const [colorMode, setColorMode] = useState<ColorMode>('system');
   const { frameworkType, setFrameworkType } = useFramework();
+
+  // Apply color mode to the page
+  useEffect(() => {
+    function applyColorMode(mode: ColorMode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (mode === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        // system mode - check preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+
+    applyColorMode(colorMode);
+
+    // Listen for system theme changes when in system mode
+    if (colorMode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      };
+
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, [colorMode]);
   const [leftPanelWidth, setLeftPanelWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<HTMLDivElement>(null);
@@ -168,7 +205,12 @@ function HomeContent() {
                       <SendTestTab userId={userId} />
                     </TabsContent>
                     <TabsContent value="theme" className="mt-0">
-                      <ThemeTab selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
+                      <ThemeTab 
+                        selectedTheme={selectedTheme} 
+                        onThemeChange={setSelectedTheme}
+                        colorMode={colorMode}
+                        onColorModeChange={setColorMode}
+                      />
                     </TabsContent>
                     <TabsContent value="feeds" className="mt-0">
                       <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
@@ -252,6 +294,7 @@ function HomeContent() {
                       feeds={feeds}
                       lightTheme={themePresets[selectedTheme].light}
                       darkTheme={themePresets[selectedTheme].dark}
+                      colorMode={colorMode}
                     />
                   </TabsContent>
                   <TabsContent value="courier-inbox-popup-menu" className="h-full mt-0">
@@ -259,6 +302,7 @@ function HomeContent() {
                       feeds={feeds}
                       lightTheme={themePresets[selectedTheme].light}
                       darkTheme={themePresets[selectedTheme].dark}
+                      colorMode={colorMode}
                     />
                   </TabsContent>
                   <TabsContent value="courier-inbox-hooks" className="h-full mt-0">

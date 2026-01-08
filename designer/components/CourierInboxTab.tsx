@@ -3,15 +3,17 @@
 import { CourierInbox, type CourierInboxFeed, type CourierInboxTheme } from '@trycourier/courier-react';
 import { useInboxComponentKey } from './useInboxComponentKey';
 import { createMessageClickHandler } from './inboxHandlers';
+import type { ColorMode } from './ThemeTab';
 
 interface CourierInboxTabProps {
   feeds: CourierInboxFeed[];
   lightTheme?: CourierInboxTheme;
   darkTheme?: CourierInboxTheme;
+  colorMode: ColorMode;
 }
 
-export function CourierInboxTab({ feeds, lightTheme, darkTheme }: CourierInboxTabProps) {
-  const componentKey = useInboxComponentKey(feeds, lightTheme, darkTheme);
+export function CourierInboxTab({ feeds, lightTheme, darkTheme, colorMode }: CourierInboxTabProps) {
+  const componentKey = useInboxComponentKey(feeds, lightTheme, darkTheme, colorMode);
   const handleMessageClick = createMessageClickHandler();
 
   return (
@@ -22,7 +24,7 @@ export function CourierInboxTab({ feeds, lightTheme, darkTheme }: CourierInboxTa
         onMessageClick={handleMessageClick}
         lightTheme={lightTheme}
         darkTheme={darkTheme}
-        mode="system"
+        mode={colorMode}
       />
     </div>
   );
