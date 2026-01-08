@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from "react";
-import { CourierAuth } from "@/components/CourierAuth";
-import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { SendTestTab } from "@/components/SendTestTab";
-import { ThemeTab } from "@/components/ThemeTab";
-import { CurrentUserTab } from "@/components/CurrentUserTab";
-import { FeedsTab } from "@/components/FeedsTab";
-import { CourierInboxTab } from "@/components/CourierInboxTab";
-import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
-import { CourierInboxHooks } from "@/components/CourierInboxHooks";
-import { InstallCommandCopy } from "@/components/InstallCommandCopy";
-import { ThemeFooter } from "@/components/ThemeFooter";
+import { CourierAuth } from "../components/CourierAuth";
+import { FrameworkProvider, useFramework } from "../components/FrameworkContext";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/tabs";
+import { SendTestTab } from "../components/SendTestTab";
+import { ThemeTab } from "../components/ThemeTab";
+import { CurrentUserTab } from "../components/CurrentUserTab";
+import { FeedsTab } from "../components/FeedsTab";
+import { CourierInboxTab } from "../components/CourierInboxTab";
+import { CourierInboxPopupMenuTab } from "../components/CourierInboxPopupMenuTab";
+import { CourierInboxHooks } from "../components/CourierInboxHooks";
+import { InstallCommandCopy } from "../components/InstallCommandCopy";
+import { ThemeFooter } from "../components/ThemeFooter";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
-import { themePresets, type ThemePreset } from '@/components/theme-presets';
+import { themePresets, type ThemePreset } from '../components/theme-presets';
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds';
 type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';

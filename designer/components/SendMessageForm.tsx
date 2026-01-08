@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from "react";
-import { CourierRepo } from "@/app/lib/courier-repo";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CourierRepo } from "../app/lib/courier-repo";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
+import { Alert, AlertDescription } from "./ui/alert";
 
 interface SendMessageFormProps {
   userId: string;

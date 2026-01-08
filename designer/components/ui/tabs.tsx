@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 // Cast to any to work around React 19 type incompatibility with Radix UI
 const TabsRoot = TabsPrimitive.Root as React.ComponentType<any>

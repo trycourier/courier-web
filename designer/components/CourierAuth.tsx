@@ -2,8 +2,8 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { useCourier } from "@trycourier/courier-react";
-import { CourierRepo } from "@/app/lib/courier-repo";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CourierRepo } from "../app/lib/courier-repo";
+import { Alert, AlertDescription } from "./ui/alert";
 
 const USER_ID_STORAGE_KEY = 'courier_user_id';
 

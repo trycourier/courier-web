@@ -4,7 +4,7 @@ import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../../lib/utils"
 
 // Cast to any to work around React 19 type incompatibility with Radix UI
 const SelectRoot = SelectPrimitive.Root as React.ComponentType<any>
