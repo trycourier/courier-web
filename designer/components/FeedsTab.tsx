@@ -41,6 +41,10 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
   };
 
   const handleRemoveFeed = (index: number) => {
+    if (feeds.length <= 1) {
+      alert('You must have at least one feed.');
+      return;
+    }
     onFeedsChange(feeds.filter((_, i) => i !== index));
   };
 

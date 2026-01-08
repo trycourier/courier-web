@@ -242,10 +242,12 @@ function HomeContent() {
                       )}
                       {activeLeftTab === 'feeds' && (
                         <ThemeFooter
-                          copy="Configure feeds and tabs to organize your inbox messages. Feeds docs coming soon."
+                          copy="Configure feeds and tabs to organize your inbox messages."
                           primaryButton={{
-                            label: "Inbox Overview",
-                            url: "https://www.courier.com/docs/platform/inbox/inbox-overview"
+                            label: "Tabs and Feeds",
+                            url: frameworkType === 'react'
+                              ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#tabs-and-feeds'
+                              : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#tabs-and-feeds'
                           }}
                         />
                       )}
