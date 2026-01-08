@@ -1621,6 +1621,16 @@
     "@trycourier/courier-ui-inbox" "2.0.0"
     "@trycourier/courier-ui-toast" "2.0.0"
 
+"@trycourier/courier-react@^9.0.0", "@trycourier/courier-react@file:/Users/michaelmiller/Desktop/courier/web/courier-web/@trycourier/courier-react":
+  version "9.0.0"
+  resolved "file:@trycourier/courier-react"
+  dependencies:
+    "@trycourier/courier-js" "3.0.0"
+    "@trycourier/courier-react-components" "2.0.0"
+    "@trycourier/courier-ui-core" "2.0.0"
+    "@trycourier/courier-ui-inbox" "2.0.0"
+    "@trycourier/courier-ui-toast" "2.0.0"
+
 "@trycourier/courier-react@file:../../@trycourier/courier-react-17":
   version "9.0.0"
   resolved "@trycourier/courier-react-17"
@@ -1633,16 +1643,6 @@
 
 "@trycourier/courier-react@file:../../@trycourier/courier-react":
   version "9.0.0"
-  dependencies:
-    "@trycourier/courier-js" "3.0.0"
-    "@trycourier/courier-react-components" "2.0.0"
-    "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.0.0"
-    "@trycourier/courier-ui-toast" "2.0.0"
-
-"@trycourier/courier-react@file:../@trycourier/courier-react", "@trycourier/courier-react@file:/Users/michaelmiller/Desktop/courier/web/courier-web/@trycourier/courier-react":
-  version "9.0.0"
-  resolved "file:@trycourier/courier-react"
   dependencies:
     "@trycourier/courier-js" "3.0.0"
     "@trycourier/courier-react-components" "2.0.0"

@@ -9,6 +9,11 @@ dist/
 build/
 lib/
 coverage/
+
+# Exception: don't ignore designer's lib source files
+!designer/lib/
+!designer/app/lib/
+!designer/app/api/lib/
 *.tgz
 
 # IDE and Editor files
