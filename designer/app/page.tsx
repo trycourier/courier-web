@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -24,13 +25,62 @@ const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds';
 type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';
 
+const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks'];
+const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
+const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
+
 function HomeContent() {
-  const [activeLeftTab, setActiveLeftTab] = useState<LeftTab>('send-test');
-  const [activeRightTab, setActiveRightTab] = useState<RightTab>('courier-inbox');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Initialize tabs from URL or defaults
+  const getInitialLeftTab = useCallback((): LeftTab => {
+    const param = searchParams.get('tab');
+    if (param && VALID_LEFT_TABS.includes(param as LeftTab)) {
+      return param as LeftTab;
+    }
+    return DEFAULT_LEFT_TAB;
+  }, [searchParams]);
+
+  const getInitialRightTab = useCallback((): RightTab => {
+    const param = searchParams.get('layout');
+    if (param && VALID_RIGHT_TABS.includes(param as RightTab)) {
+      return param as RightTab;
+    }
+    return DEFAULT_RIGHT_TAB;
+  }, [searchParams]);
+
+  const [activeLeftTab, setActiveLeftTabState] = useState<LeftTab>(getInitialLeftTab);
+  const [activeRightTab, setActiveRightTabState] = useState<RightTab>(getInitialRightTab);
   const [feeds, setFeeds] = useState<CourierInboxFeed[]>(defaultFeeds());
   const [selectedTheme, setSelectedTheme] = useState<ThemePreset>('default');
   const [colorMode, setColorMode] = useState<ColorMode>('system');
   const { frameworkType, setFrameworkType } = useFramework();
+
+  // Helper to update URL params
+  const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === defaultValue) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+  // Wrapper functions that update both state and URL
+  const setActiveLeftTab = useCallback((tab: LeftTab) => {
+    setActiveLeftTabState(tab);
+    updateUrlParams('tab', tab, DEFAULT_LEFT_TAB);
+  }, [updateUrlParams]);
+
+  const setActiveRightTab = useCallback((tab: RightTab) => {
+    setActiveRightTabState(tab);
+    updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
+  }, [updateUrlParams]);
 
   // Apply color mode to the page
   useEffect(() => {
@@ -322,8 +372,10 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <FrameworkProvider>
-      <HomeContent />
-    </FrameworkProvider>
+    <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">Loading...</div>}>
+      <FrameworkProvider>
+        <HomeContent />
+      </FrameworkProvider>
+    </Suspense>
   );
 }
