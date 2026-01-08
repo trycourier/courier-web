@@ -100,23 +100,6 @@ function HomeContent() {
         </a>
         <div className="flex items-center gap-2 ml-auto">
           <InstallCommandCopy />
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
-            <a
-              href={frameworkType === 'react'
-                ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web'
-                : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              Docs
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </Button>
           <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
             <button
               onClick={() => setFrameworkType('react')}
@@ -137,6 +120,23 @@ function HomeContent() {
               Web Components
             </button>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <a
+              href={frameworkType === 'react'
+                ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web'
+                : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              Docs
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
         </div>
       </header>
 
