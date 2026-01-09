@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  basePath: '/inbox-demo',
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

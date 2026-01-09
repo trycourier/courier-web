@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCourierClient } from '@/app/api/lib/courier';
+import { getCourierClient } from '@/app/inbox-demo/api/lib/courier';
 
 export async function POST(request: Request) {
   try {
