@@ -77,7 +77,13 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   onComponentMounted() {
-    this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
+    // Initialize style element if not already set (may have been set by refreshTheme if called earlier)
+    if (!this._style) {
+      this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
+    } else {
+      // Ensure style is up to date with current theme
+      this._style.textContent = CourierInboxHeader.getStyles(this.theme);
+    }
   }
 
   onComponentUmounted() {
@@ -139,7 +145,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   private refreshTheme() {
-    if (this._style) {
+    // Ensure style element exists before updating
+    if (!this._style) {
+      this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
+    } else {
       this._style.textContent = CourierInboxHeader.getStyles(this.theme);
     }
 

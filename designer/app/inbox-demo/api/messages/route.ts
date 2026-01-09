@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCourierClient } from '@/app/api/lib/courier';
+import { getCourierClient } from '@/app/inbox-demo/api/lib/courier';
 
 interface MessageAction {
   content: string;
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         { type: 'meta', title: title },
         { type: 'text', content: messageBody },
       ];
-      
+
       // Add action elements
       actions.forEach((action: MessageAction) => {
         if (action.content && action.href) {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
           });
         }
       });
-      
+
       content = {
         version: '2022-01-01',
         elements,

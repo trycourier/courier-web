@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { CourierRepo, type MessageAction } from "@/app/lib/courier-repo";
+import { CourierRepo, type MessageAction } from "@/app/inbox-demo/lib/courier-repo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

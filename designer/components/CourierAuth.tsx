@@ -3,7 +3,7 @@
 import { useEffect, useState, ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useCourier, type CourierApiUrls } from "@trycourier/courier-react";
-import { CourierRepo } from "@/app/lib/courier-repo";
+import { CourierRepo } from "@/app/inbox-demo/lib/courier-repo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const USER_ID_STORAGE_KEY = 'courier_user_id';

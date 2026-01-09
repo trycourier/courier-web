@@ -81,7 +81,7 @@ export default function RootLayout({
           }}
         />
         {/* End Google Tag Manager */}
-        
+
         {/* Microsoft Tiles */}
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/inbox-demo/favicon/ms-icon-144x144.png" />
@@ -99,7 +99,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="70x70" href="/inbox-demo/favicon/ms-icon-70x70.png" />
         <link rel="icon" type="image/png" sizes="150x150" href="/inbox-demo/favicon/ms-icon-150x150.png" />
         <link rel="icon" type="image/png" sizes="310x310" href="/inbox-demo/favicon/ms-icon-310x310.png" />
-        
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
