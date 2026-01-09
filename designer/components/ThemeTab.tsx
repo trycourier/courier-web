@@ -88,7 +88,7 @@ export function ThemeTab({ selectedTheme, onThemeChange, colorMode, onColorModeC
             <RadioGroup
               value={selectedTheme}
               onValueChange={(value: string) => onThemeChange(value as ThemePreset)}
-              className="space-y-2 pb-5"
+              className="pb-5"
             >
               {(Object.keys(themePresetLabels) as ThemePreset[]).map((themeKey) => {
                 const themeInfo = getThemeInfo(themeKey);
@@ -103,7 +103,7 @@ export function ThemeTab({ selectedTheme, onThemeChange, colorMode, onColorModeC
                   >
                     <RadioGroupItem value={themeKey} id={themeKey} className="mr-3" />
                     <span
-                      className="flex-1 font-semibold"
+                      className="flex-1 font-semibold text-base"
                       style={{ fontFamily: themeInfo.fontFamily }}
                     >
                       {themePresetLabels[themeKey]}

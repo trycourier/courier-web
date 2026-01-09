@@ -43,6 +43,9 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 backgroundColor: '#8B5CF6',
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
+                  color: '#FFFFFF',
                 },
               },
             },
@@ -82,6 +85,9 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   backgroundColor: '#8B5CF6',
                   font: {
                     family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
+                    color: '#FFFFFF',
                   },
                 },
               },
@@ -95,6 +101,8 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
               unreadIndicator: {
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
                 },
               },
             },
@@ -108,6 +116,9 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 backgroundColor: '#8B5CF6',
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
+                  color: '#FFFFFF',
                 },
               },
             },
@@ -169,7 +180,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
       popup: {
         button: {
           unreadDotIndicator: {
-            backgroundColor: '#A78BFA',
+            backgroundColor: '#8B5CF6',
           },
         },
         window: {
@@ -192,9 +203,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 color: '#F9FAFB',
               },
               unreadCountIndicator: {
-                backgroundColor: '#A78BFA',
+                backgroundColor: '#8B5CF6',
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
                   color: '#FFFFFF',
                 },
               },
@@ -213,7 +226,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   color: '#F9FAFB',
                 },
                 selectedIcon: {
-                  color: '#A78BFA',
+                  color: '#8B5CF6',
                 },
               },
             },
@@ -226,20 +239,24 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 unreadIndicator: {
                   font: {
                     family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
                     color: '#F9FAFB',
                   },
                 },
               },
               selected: {
-                indicatorColor: '#A78BFA',
+                indicatorColor: '#8B5CF6',
                 font: {
-                  color: '#A78BFA',
+                  color: '#8B5CF6',
                   family: 'Poppins',
                 },
                 unreadIndicator: {
-                  backgroundColor: '#A78BFA',
+                  backgroundColor: '#8B5CF6',
                   font: {
                     family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
                     color: '#FFFFFF',
                   },
                 },
@@ -255,20 +272,24 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
               unreadIndicator: {
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
                   color: '#F9FAFB',
                 },
               },
             },
             selected: {
-              indicatorColor: '#A78BFA',
+              indicatorColor: '#8B5CF6',
               font: {
-                color: '#A78BFA',
+                color: '#8B5CF6',
                 family: 'Poppins',
               },
               unreadIndicator: {
-                backgroundColor: '#A78BFA',
+                backgroundColor: '#8B5CF6',
                 font: {
                   family: 'Poppins',
+                  size: '11px',
+                  weight: '600',
                   color: '#FFFFFF',
                 },
               },
@@ -284,7 +305,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         },
         list: {
           item: {
-            unreadIndicatorColor: '#A78BFA',
+            unreadIndicatorColor: '#8B5CF6',
             title: {
               family: 'Poppins',
               color: '#F9FAFB',
@@ -542,7 +563,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
       popup: {
         button: {
           unreadDotIndicator: {
-            backgroundColor: '#34D399',
+            backgroundColor: '#10B981',
             borderRadius: '50%',
             height: '10px',
             width: '10px',
@@ -571,7 +592,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 color: '#F9FAFB',
               },
               unreadCountIndicator: {
-                backgroundColor: '#34D399',
+                backgroundColor: '#10B981',
                 borderRadius: '6px',
                 padding: '3px 8px',
                 font: {
@@ -598,7 +619,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   color: '#F9FAFB',
                 },
                 selectedIcon: {
-                  color: '#34D399',
+                  color: '#10B981',
                 },
               },
             },
@@ -624,16 +645,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
               selected: {
-                indicatorColor: '#34D399',
+                indicatorColor: '#10B981',
                 indicatorHeight: '2px',
                 font: {
-                  color: '#34D399',
+                  color: '#10B981',
                   family: 'Montserrat',
                   size: '13px',
                   weight: '600',
                 },
                 unreadIndicator: {
-                  backgroundColor: '#34D399',
+                  backgroundColor: '#10B981',
                   font: {
                     family: 'Montserrat',
                     size: '11px',
@@ -666,16 +687,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
               },
             },
             selected: {
-              indicatorColor: '#34D399',
+              indicatorColor: '#10B981',
               indicatorHeight: '2px',
               font: {
-                color: '#34D399',
+                color: '#10B981',
                 family: 'Montserrat',
                 size: '13px',
                 weight: '600',
               },
               unreadIndicator: {
-                backgroundColor: '#34D399',
+                backgroundColor: '#10B981',
                 font: {
                   family: 'Montserrat',
                   size: '11px',
@@ -695,7 +716,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         },
         list: {
           item: {
-            unreadIndicatorColor: '#34D399',
+            unreadIndicatorColor: '#10B981',
             title: {
               family: 'Montserrat',
               size: '14px',
@@ -966,7 +987,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
       popup: {
         button: {
           unreadDotIndicator: {
-            backgroundColor: '#F87171',
+            backgroundColor: '#EF4444',
             borderRadius: '50%',
             height: '9px',
             width: '9px',
@@ -996,7 +1017,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 color: '#F9FAFB',
               },
               unreadCountIndicator: {
-                backgroundColor: '#F87171',
+                backgroundColor: '#EF4444',
                 borderRadius: '8px',
                 padding: '4px 10px',
                 font: {
@@ -1023,7 +1044,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   color: '#F9FAFB',
                 },
                 selectedIcon: {
-                  color: '#F87171',
+                  color: '#EF4444',
                 },
               },
             },
@@ -1049,16 +1070,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
               selected: {
-                indicatorColor: '#F87171',
+                indicatorColor: '#EF4444',
                 indicatorHeight: '3px',
                 font: {
-                  color: '#F87171',
+                  color: '#EF4444',
                   family: 'Playfair Display',
                   size: '14px',
                   weight: '700',
                 },
                 unreadIndicator: {
-                  backgroundColor: '#F87171',
+                  backgroundColor: '#EF4444',
                   font: {
                     family: 'Playfair Display',
                     size: '11px',
@@ -1091,16 +1112,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
               },
             },
             selected: {
-              indicatorColor: '#F87171',
+              indicatorColor: '#EF4444',
               indicatorHeight: '3px',
               font: {
-                color: '#F87171',
+                color: '#EF4444',
                 family: 'Playfair Display',
                 size: '14px',
                 weight: '700',
               },
               unreadIndicator: {
-                backgroundColor: '#F87171',
+                backgroundColor: '#EF4444',
                 font: {
                   family: 'Playfair Display',
                   size: '11px',
@@ -1120,7 +1141,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         },
         list: {
           item: {
-            unreadIndicatorColor: '#F87171',
+            unreadIndicatorColor: '#EF4444',
             title: {
               family: 'Playfair Display',
               size: '15px',
@@ -1391,7 +1412,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
       popup: {
         button: {
           unreadDotIndicator: {
-            backgroundColor: '#FB923C',
+            backgroundColor: '#F97316',
             borderRadius: '50%',
             height: '8px',
             width: '8px',
@@ -1420,7 +1441,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 color: '#F9FAFB',
               },
               unreadCountIndicator: {
-                backgroundColor: '#FB923C',
+                backgroundColor: '#F97316',
                 borderRadius: '5px',
                 padding: '2px 7px',
                 font: {
@@ -1447,7 +1468,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                   color: '#F9FAFB',
                 },
                 selectedIcon: {
-                  color: '#FB923C',
+                  color: '#F97316',
                 },
               },
             },
@@ -1473,16 +1494,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
               selected: {
-                indicatorColor: '#FB923C',
+                indicatorColor: '#F97316',
                 indicatorHeight: '2px',
                 font: {
-                  color: '#FB923C',
+                  color: '#F97316',
                   family: 'Raleway',
                   size: '13px',
                   weight: '700',
                 },
                 unreadIndicator: {
-                  backgroundColor: '#FB923C',
+                  backgroundColor: '#F97316',
                   font: {
                     family: 'Raleway',
                     size: '11px',
@@ -1515,16 +1536,16 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
               },
             },
             selected: {
-              indicatorColor: '#FB923C',
+              indicatorColor: '#F97316',
               indicatorHeight: '2px',
               font: {
-                color: '#FB923C',
+                color: '#F97316',
                 family: 'Raleway',
                 size: '13px',
                 weight: '700',
               },
               unreadIndicator: {
-                backgroundColor: '#FB923C',
+                backgroundColor: '#F97316',
                 font: {
                   family: 'Raleway',
                   size: '11px',
@@ -1544,7 +1565,7 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         },
         list: {
           item: {
-            unreadIndicatorColor: '#FB923C',
+            unreadIndicatorColor: '#F97316',
             title: {
               family: 'Raleway',
               size: '14px',
