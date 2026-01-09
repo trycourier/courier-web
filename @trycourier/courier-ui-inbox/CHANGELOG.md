@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-inbox
 
+## 2.2.0
+
+### Minor Changes
+
+- [#141](https://github.com/trycourier/courier-web/pull/141) [`ce31bd6`](https://github.com/trycourier/courier-web/commit/ce31bd6ca9c8bc8660f474e3b84d23b68709cf2f) Thanks [@mikemilla](https://github.com/mikemilla)! - Header theme change fix
+
 ## 2.1.0
 
 ### Minor Changes
