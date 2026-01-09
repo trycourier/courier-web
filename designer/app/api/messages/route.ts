@@ -1,22 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getCourierClient } from '@/app/api/lib/courier';
 
-// Add CORS headers helper
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-}
-
 interface MessageAction {
   content: string;
   href: string;
-}
-
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders() });
 }
 
 export async function POST(request: Request) {
@@ -28,30 +15,21 @@ export async function POST(request: Request) {
     if (!user_id) {
       return NextResponse.json(
         { error: 'user_id is required in request body' },
-        {
-          status: 400,
-          headers: corsHeaders()
-        }
+        { status: 400 }
       );
     }
 
     if (!title) {
       return NextResponse.json(
         { error: 'title is required in request body' },
-        {
-          status: 400,
-          headers: corsHeaders()
-        }
+        { status: 400 }
       );
     }
 
     if (!messageBody) {
       return NextResponse.json(
         { error: 'body is required in request body' },
-        {
-          status: 400,
-          headers: corsHeaders()
-        }
+        { status: 400 }
       );
     }
 
@@ -107,17 +85,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        requestId,
-        message: 'Inbox message sent successfully',
-        user_id,
-      },
-      {
-        headers: corsHeaders()
-      }
-    );
+    return NextResponse.json({
+      success: true,
+      requestId,
+      message: 'Inbox message sent successfully',
+      user_id,
+    });
   } catch (error) {
     console.error('Error sending inbox message:', error);
     return NextResponse.json(
@@ -125,10 +98,7 @@ export async function POST(request: Request) {
         error: 'Failed to send inbox message',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
-      {
-        status: 500,
-        headers: corsHeaders()
-      }
+      { status: 500 }
     );
   }
 }

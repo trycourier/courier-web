@@ -28,34 +28,11 @@ export class CourierRepo {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}: ${response.statusText}` }));
+      const error = await response.json();
       throw new Error(error.error || "Failed to generate JWT");
     }
 
-    // Check content type
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Unexpected content type:', contentType, 'Response:', text);
-      throw new Error(`Unexpected response format: ${contentType}`);
-    }
-
-    const data = await response.json();
-
-    // Log for debugging
-    console.log('JWT API Response:', {
-      hasToken: !!data.token,
-      tokenLength: data.token?.length,
-      keys: Object.keys(data),
-      status: response.status
-    });
-
-    if (!data.token) {
-      console.error('JWT response missing token:', data);
-      throw new Error('JWT response missing token');
-    }
-
-    return data;
+    return response.json();
   }
 
   async sendMessage(
