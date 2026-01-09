@@ -15,38 +15,28 @@ export interface MessageAction {
 }
 
 // Helper function to get the API base path
-// Tries to detect if basePath is configured by checking if we're at the root domain
+// When basePath is configured in Next.js, API routes are also prefixed with the basePath
 function getApiBasePath(): string {
   if (typeof window === 'undefined') {
     return '/api';
   }
-  // Get the current pathname and hostname
+  // Get the current pathname
   const pathname = window.location.pathname;
-  const hostname = window.location.hostname;
 
-  // If we're on a subdomain (like inbox-demo.courier.com), basePath is likely configured
-  // If we're on the root domain (www.courier.com), basePath might not be configured
-  // Check if hostname is the root domain (www.courier.com or courier.com)
-  const isRootDomain = hostname === 'www.courier.com' || hostname === 'courier.com';
-
-  // If we're on root domain and pathname starts with /inbox-demo, 
-  // the API routes are likely at /api (not /inbox-demo/api)
-  if (isRootDomain && pathname.startsWith('/inbox-demo')) {
-    return '/api';
-  }
-
-  // Otherwise, if pathname starts with /inbox-demo, use that as base
+  // If pathname starts with /inbox-demo, basePath is configured
+  // and API routes are also at /inbox-demo/api
   if (pathname.startsWith('/inbox-demo')) {
     return '/inbox-demo/api';
   }
 
+  // Otherwise, use root API path
   return '/api';
 }
 
 export class CourierRepo {
   async generateJWT(userId: string, apiKey?: string): Promise<JWTResponse> {
     const apiBase = getApiBasePath();
-    const response = await fetch(`${apiBase}/jwt`, {
+    let response = await fetch(`${apiBase}/jwt`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,9 +47,34 @@ export class CourierRepo {
       }),
     });
 
+    // If the response is not OK and we're using /inbox-demo/api, try /api as fallback
+    if (!response.ok && apiBase === '/inbox-demo/api') {
+      const contentType = response.headers.get('content-type');
+      // If we got HTML (404 page), try the root API path
+      if (contentType && contentType.includes('text/html')) {
+        response = await fetch('/api/jwt', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            ...(apiKey && { api_key: apiKey }),
+          }),
+        });
+      }
+    }
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to generate JWT");
+      try {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to generate JWT");
+      } catch (e) {
+        if (e instanceof Error && e.message.includes('JSON')) {
+          throw new Error(`Failed to generate JWT: ${response.status} ${response.statusText}`);
+        }
+        throw e;
+      }
     }
 
     return response.json();
@@ -74,7 +89,7 @@ export class CourierRepo {
     apiKey?: string
   ): Promise<SendMessageResponse> {
     const apiBase = getApiBasePath();
-    const response = await fetch(`${apiBase}/messages`, {
+    let response = await fetch(`${apiBase}/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,9 +104,38 @@ export class CourierRepo {
       }),
     });
 
+    // If the response is not OK and we're using /inbox-demo/api, try /api as fallback
+    if (!response.ok && apiBase === '/inbox-demo/api') {
+      const contentType = response.headers.get('content-type');
+      // If we got HTML (404 page), try the root API path
+      if (contentType && contentType.includes('text/html')) {
+        response = await fetch('/api/messages', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            title,
+            body,
+            tags,
+            actions,
+            ...(apiKey && { api_key: apiKey }),
+          }),
+        });
+      }
+    }
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to send message");
+      try {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to send message");
+      } catch (e) {
+        if (e instanceof Error && e.message.includes('JSON')) {
+          throw new Error(`Failed to send message: ${response.status} ${response.statusText}`);
+        }
+        throw e;
+      }
     }
 
     return response.json();
