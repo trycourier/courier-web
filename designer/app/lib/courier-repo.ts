@@ -16,12 +16,12 @@ export interface MessageAction {
 
 export class CourierRepo {
   async generateJWT(userId: string, apiKey?: string): Promise<JWTResponse> {
-    const response = await fetch("/api/jwt", {
+    const response = await fetch("/inbox-demo/api/jwt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         user_id: userId,
         ...(apiKey && { api_key: apiKey }),
       }),
@@ -43,7 +43,7 @@ export class CourierRepo {
     actions?: MessageAction[],
     apiKey?: string
   ): Promise<SendMessageResponse> {
-    const response = await fetch("/api/messages", {
+    const response = await fetch("/inbox-demo/api/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
