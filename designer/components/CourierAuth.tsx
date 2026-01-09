@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, ReactNode } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useCourier, type CourierApiUrls } from "@trycourier/courier-react";
 import { CourierRepo } from "@/app/lib/courier-repo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -32,7 +33,7 @@ function clearUserId(): string {
 }
 
 interface CourierAuthProps {
-  children: (props: { userId: string; onClearUser: () => void; isUrlOverride: boolean }) => ReactNode;
+  children: (props: { userId: string; onClearUser: () => void }) => ReactNode;
   apiUrls?: CourierApiUrls;
   overrideUserId?: string;
   apiKey?: string;
@@ -40,11 +41,13 @@ interface CourierAuthProps {
 
 export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: CourierAuthProps) {
   const courier = useCourier();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [storedUserId, setStoredUserId] = useState<string>(() => getOrCreateUserId());
 
   // Use override if provided, otherwise use stored
   const userId = overrideUserId || storedUserId;
-  const isUrlOverride = !!overrideUserId;
   const [initializedUserId, setInitializedUserId] = useState<string | null>(null);
   const [initializedApiUrls, setInitializedApiUrls] = useState<CourierApiUrls | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,10 +96,15 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
   }, [userId, apiUrlsKey, apiKey]);
 
   const handleClearUser = async () => {
-    if (isUrlOverride) {
-      // Can't clear a URL-provided userId - would need to remove from URL
+    // If using URL override, remove the userId param from URL
+    if (overrideUserId) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('userId');
+      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+      router.replace(newUrl, { scroll: false });
       return;
     }
+    // Otherwise, clear the stored user and generate a new one
     const newUserId = clearUserId();
     setStoredUserId(newUserId);
     // initializeCourier will be called automatically via useEffect when userId changes
@@ -120,6 +128,6 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
     );
   }
 
-  return <>{children({ userId, onClearUser: handleClearUser, isUrlOverride })}</>;
+  return <>{children({ userId, onClearUser: handleClearUser })}</>;
 }
 

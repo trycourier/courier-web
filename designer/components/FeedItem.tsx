@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ChevronDownIcon as ChevronDownIconBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
@@ -62,7 +63,7 @@ export function FeedItem({
               type="text"
               value={feed.feedId}
               onChange={(e) => onUpdateFeed({ feedId: e.target.value })}
-              className="text-sm"
+              className="text-sm font-mono"
             />
           </div>
           <div className="space-y-2">
@@ -71,7 +72,7 @@ export function FeedItem({
               type="text"
               value={feed.title}
               onChange={(e) => onUpdateFeed({ title: e.target.value })}
-              className="text-sm"
+              className="text-sm font-mono"
             />
           </div>
 
@@ -98,7 +99,7 @@ export function FeedItem({
                         type="text"
                         value={tab.datasetId}
                         onChange={(e) => onUpdateTab(tabIndex, { datasetId: e.target.value })}
-                        className="text-sm"
+                        className="text-sm font-mono"
                       />
                     </div>
                     <div className="space-y-1">
@@ -107,7 +108,7 @@ export function FeedItem({
                         type="text"
                         value={tab.title}
                         onChange={(e) => onUpdateTab(tabIndex, { title: e.target.value })}
-                        className="text-sm"
+                        className="text-sm font-mono"
                       />
                     </div>
                   </div>
@@ -125,9 +126,53 @@ export function FeedItem({
                           filter: { ...tab.filter, tags: tags.length > 0 ? tags : undefined }
                         });
                       }}
-                      className="text-sm"
+                      className="text-sm font-mono"
                       placeholder="tag1, tag2"
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Archived</Label>
+                      <Select
+                        value={tab.filter?.archived === true ? 'true' : tab.filter?.archived === false ? 'false' : 'any'}
+                        onValueChange={(value) => {
+                          const archived = value === 'true' ? true : value === 'false' ? false : undefined;
+                          onUpdateTab(tabIndex, {
+                            filter: { ...tab.filter, archived }
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="text-sm font-mono">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="true">Archived</SelectItem>
+                          <SelectItem value="false">Not Archived</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Status</Label>
+                      <Select
+                        value={tab.filter?.status || 'any'}
+                        onValueChange={(value) => {
+                          const status = value === 'any' ? undefined : value as 'read' | 'unread';
+                          onUpdateTab(tabIndex, {
+                            filter: { ...tab.filter, status }
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="text-sm font-mono">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="any">Any</SelectItem>
+                          <SelectItem value="read">Read</SelectItem>
+                          <SelectItem value="unread">Unread</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <Button
                     type="button"

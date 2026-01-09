@@ -37,7 +37,7 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
   };
 
   const updateAction = (id: string, field: 'content' | 'href', value: string) => {
-    setActions(actions.map(action => 
+    setActions(actions.map(action =>
       action.id === id ? { ...action, [field]: value } : action
     ));
   };
@@ -94,6 +94,7 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
             required
             rows={2}
             placeholder="Enter message title"
+            className="font-mono"
           />
         </div>
         <div className="space-y-2">
@@ -105,6 +106,7 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
             required
             rows={3}
             placeholder="Enter message body"
+            className="font-mono"
           />
         </div>
         <div className="space-y-2">
@@ -117,6 +119,7 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
             value={tags}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTags(e.target.value)}
             placeholder="e.g., important, notification, marketing"
+            className="font-mono"
           />
         </div>
         <div className="space-y-3">
@@ -139,18 +142,20 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
                 <Input
                   type="text"
                   value={action.content}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateAction(action.id, 'content', e.target.value)
                   }
                   placeholder="Button label (e.g., View Details)"
+                  className="font-mono"
                 />
                 <Input
                   type="url"
                   value={action.href}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateAction(action.id, 'href', e.target.value)
                   }
                   placeholder="URL (e.g., https://example.com)"
+                  className="font-mono"
                 />
               </div>
               <Button
@@ -164,11 +169,6 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
               </Button>
             </div>
           ))}
-          {actions.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              Add action buttons that appear in the notification.
-            </p>
-          )}
         </div>
         <div>
           <Button

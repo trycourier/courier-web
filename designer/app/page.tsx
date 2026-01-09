@@ -271,7 +271,7 @@ function HomeContent() {
 
       {/* Main Content: Left and Right Panels */}
       <CourierAuth apiUrls={hasCustomApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
-        {({ userId, onClearUser, isUrlOverride }) => (
+        {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
             {/* Left Panel */}
             <div
@@ -308,7 +308,17 @@ function HomeContent() {
                     <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
                   </TabsContent>
                   <TabsContent value="current-user" className="mt-0 flex-1 min-h-0">
-                    <CurrentUserTab userId={userId} onClearUser={onClearUser} isUrlOverride={isUrlOverride} />
+                    <CurrentUserTab
+                      userId={userId}
+                      onClearUser={onClearUser}
+                      isAdvancedMode={isAdvancedMode}
+                      onUserIdChange={(newUserId) => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.set('userId', newUserId);
+                        const newUrl = `${pathname}?${params.toString()}`;
+                        router.replace(newUrl, { scroll: false });
+                      }}
+                    />
                   </TabsContent>
                   {isAdvancedMode && (
                     <TabsContent value="advanced" className="mt-0 flex-1 min-h-0">

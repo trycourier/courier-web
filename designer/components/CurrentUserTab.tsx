@@ -1,44 +1,98 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { TabFooter } from './TabFooter';
 import { useFramework } from './FrameworkContext';
 
 interface CurrentUserTabProps {
   userId: string;
   onClearUser: () => void;
-  isUrlOverride?: boolean;
+  isAdvancedMode?: boolean;
+  onUserIdChange?: (userId: string) => void;
 }
 
-export function CurrentUserTab({ userId, onClearUser, isUrlOverride }: CurrentUserTabProps) {
+export function CurrentUserTab({ userId, onClearUser, isAdvancedMode, onUserIdChange }: CurrentUserTabProps) {
   const { frameworkType } = useFramework();
+  const [editedUserId, setEditedUserId] = useState(userId);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleSave = () => {
+    if (onUserIdChange && editedUserId.trim()) {
+      onUserIdChange(editedUserId.trim());
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedUserId(userId);
+    setIsEditing(false);
+  };
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">User ID</h2>
-            {isUrlOverride && (
-              <Badge variant="secondary" className="text-xs">from URL</Badge>
-            )}
-          </div>
-          <div className="font-mono text-sm text-muted-foreground break-all">
-            {userId}
-          </div>
-          {isUrlOverride ? (
-            <p className="text-xs text-muted-foreground">
-              Remove <code className="bg-muted px-1 rounded">userId</code> from the URL to use auto-generated IDs.
-            </p>
+          <h2 className="text-lg font-semibold">User ID</h2>
+          {isAdvancedMode && isEditing ? (
+            <div className="space-y-2">
+              <Input
+                type="text"
+                value={editedUserId}
+                onChange={(e) => setEditedUserId(e.target.value)}
+                placeholder="Enter user ID"
+                className="font-mono text-sm"
+              />
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  size="sm"
+                  disabled={!editedUserId.trim()}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
           ) : (
-            <Button
-              type="button"
-              onClick={onClearUser}
-              variant="outline"
-            >
-              Clear
-            </Button>
+            <>
+              <div className="font-mono text-sm text-muted-foreground break-all">
+                {userId}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to clear the user?')) {
+                      onClearUser();
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Clear
+                </Button>
+                {isAdvancedMode && (
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setEditedUserId(userId);
+                      setIsEditing(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>

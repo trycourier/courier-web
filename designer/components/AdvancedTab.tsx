@@ -5,7 +5,6 @@ import { useSearchParams, usePathname } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Default API URLs from courier-js
 export const DEFAULT_API_URLS = {
@@ -105,12 +104,6 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
   return (
     <div className="p-4 h-full overflow-y-auto">
       <div className="space-y-6">
-        <Alert>
-          <AlertDescription>
-            Configure custom API endpoints and credentials. Saving will reload the page with new settings.
-          </AlertDescription>
-        </Alert>
-
         {/* API Key Section */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-foreground">API Key</h3>
@@ -125,6 +118,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="pk_prod_..."
+              className="font-mono"
             />
           </div>
         </div>
@@ -143,6 +137,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={courierRest}
               onChange={(e) => setCourierRest(e.target.value)}
               placeholder={DEFAULT_API_URLS.courier.rest}
+              className="font-mono"
             />
           </div>
 
@@ -156,6 +151,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={courierGraphql}
               onChange={(e) => setCourierGraphql(e.target.value)}
               placeholder={DEFAULT_API_URLS.courier.graphql}
+              className="font-mono"
             />
           </div>
         </div>
@@ -174,6 +170,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={inboxGraphql}
               onChange={(e) => setInboxGraphql(e.target.value)}
               placeholder={DEFAULT_API_URLS.inbox.graphql}
+              className="font-mono"
             />
           </div>
 
@@ -187,6 +184,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={inboxWebSocket}
               onChange={(e) => setInboxWebSocket(e.target.value)}
               placeholder={DEFAULT_API_URLS.inbox.webSocket}
+              className="font-mono"
             />
           </div>
         </div>

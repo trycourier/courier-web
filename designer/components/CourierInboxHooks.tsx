@@ -67,7 +67,7 @@ export function CourierInboxHooks({ feeds }: CourierInboxHooksProps) {
           {messages.map((message: InboxMessage) => (
             <Card
               key={message.messageId}
-              className={message.read ? '' : 'border-primary'}
+              className={message.read ? '' : 'border-blue-500'}
             >
               <CardContent className="p-3">
                 <pre className="text-xs font-mono bg-muted p-2 rounded overflow-x-auto whitespace-pre-wrap break-words">

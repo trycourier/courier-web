@@ -87,7 +87,7 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
             variant="outline"
             size="sm"
           >
-            Reset
+            Reset to Defaults
           </Button>
           <Button
             type="button"
