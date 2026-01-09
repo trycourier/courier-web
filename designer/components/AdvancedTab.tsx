@@ -82,7 +82,14 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
     }
 
     // Build new URL and reload
-    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    // Ensure basePath is included in the URL
+    const basePath = '/inbox-demo';
+    let path = pathname;
+    if (!pathname.startsWith(basePath)) {
+      // If pathname is just "/", use basePath, otherwise prepend basePath
+      path = pathname === '/' ? basePath : `${basePath}${pathname}`;
+    }
+    const newUrl = params.toString() ? `${path}?${params.toString()}` : path;
     window.location.href = newUrl;
   };
 
