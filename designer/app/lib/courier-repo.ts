@@ -14,9 +14,24 @@ export interface MessageAction {
   href: string;
 }
 
+// Helper function to get the API base path
+function getApiBasePath(): string {
+  if (typeof window === 'undefined') {
+    return '/api';
+  }
+  // Get the current pathname
+  const pathname = window.location.pathname;
+  // If pathname starts with /inbox-demo, use that as base, otherwise use root
+  if (pathname.startsWith('/inbox-demo')) {
+    return '/inbox-demo/api';
+  }
+  return '/api';
+}
+
 export class CourierRepo {
   async generateJWT(userId: string, apiKey?: string): Promise<JWTResponse> {
-    const response = await fetch("/inbox-demo/api/jwt", {
+    const apiBase = getApiBasePath();
+    const response = await fetch(`${apiBase}/jwt`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +58,8 @@ export class CourierRepo {
     actions?: MessageAction[],
     apiKey?: string
   ): Promise<SendMessageResponse> {
-    const response = await fetch("/inbox-demo/api/messages", {
+    const apiBase = getApiBasePath();
+    const response = await fetch(`${apiBase}/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
