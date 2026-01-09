@@ -69,11 +69,14 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
         setIsLoading(true);
         setError(null);
         const res = await repo.generateJWT(userId, apiKey);
+        console.log('JWT Response received:', { hasToken: !!res.token, tokenLength: res.token?.length });
+
         if (!res.token) {
           throw new Error('Failed to generate JWT');
         }
 
         // Sign into Courier with optional custom API URLs
+        console.log('Signing in with JWT:', { userId, hasJwt: !!res.token, hasApiUrls: !!apiUrls });
         courier.shared.signIn({
           userId: userId,
           jwt: res.token,

@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import { getCourierClient } from '@/app/api/lib/courier';
 
+// Add CORS headers helper
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders() });
+}
+
 export async function POST(request: Request) {
   try {
     // Read user_id and optional api_key from request body
@@ -10,7 +24,10 @@ export async function POST(request: Request) {
     if (!user_id) {
       return NextResponse.json(
         { error: 'user_id is required in request body' },
-        { status: 400 }
+        {
+          status: 400,
+          headers: corsHeaders()
+        }
       );
     }
 
@@ -31,10 +48,15 @@ export async function POST(request: Request) {
       expires_in: '7d',
     });
 
-    // Return JWT
-    return NextResponse.json({
-      token: response.token,
-    });
+    // Return JWT with CORS headers
+    return NextResponse.json(
+      {
+        token: response.token,
+      },
+      {
+        headers: corsHeaders()
+      }
+    );
   } catch (error) {
     console.error('Error generating JWT:', error);
     return NextResponse.json(
@@ -42,7 +64,10 @@ export async function POST(request: Request) {
         error: 'Failed to generate JWT',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
-      { status: 500 }
+      {
+        status: 500,
+        headers: corsHeaders()
+      }
     );
   }
 }
