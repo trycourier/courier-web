@@ -1,4 +1,3 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "cd .. && yarn build-packages && cd designer && yarn build"
+  "framework": "nextjs"
 }
