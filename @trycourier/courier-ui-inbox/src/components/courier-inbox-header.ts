@@ -79,7 +79,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   onComponentMounted() {
     // Initialize style element if not already set (may have been set by refreshTheme if called earlier)
     if (!this._style) {
-      this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
+    this._style = injectGlobalStyle(CourierInboxHeader.id, CourierInboxHeader.getStyles(this.theme));
     } else {
       // Ensure style is up to date with current theme
       this._style.textContent = CourierInboxHeader.getStyles(this.theme);
