@@ -1,5 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd .. && yarn install && yarn build-packages",
+  "installCommand": "yarn --cwd .. install && yarn --cwd .. build-packages",
   "buildCommand": "next build"
 }
