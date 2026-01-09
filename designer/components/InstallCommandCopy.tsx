@@ -36,7 +36,7 @@ export function InstallCommandCopy() {
       </code>
       <button
         onClick={handleCopy}
-        className="p-1 hover:bg-gray-200 dark:hover:bg-muted-foreground/20 rounded transition-colors"
+        className="px-4 py-2 hover:bg-gray-200 dark:hover:bg-muted-foreground/20 rounded transition-colors"
         aria-label="Copy command"
       >
         {copied ? (
