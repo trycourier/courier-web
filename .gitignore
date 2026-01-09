@@ -14,6 +14,8 @@ coverage/
 !designer/lib/
 !designer/app/lib/
 !designer/app/api/lib/
+!designer/app/inbox-demo/lib/
+!designer/app/inbox-demo/api/lib/
 *.tgz
 
 # IDE and Editor files
