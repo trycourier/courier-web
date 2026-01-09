@@ -15,7 +15,7 @@ export interface MessageAction {
 }
 
 export class CourierRepo {
-  async generateJWT(userId: string, apiKey?: string): Promise<JWTResponse> {
+  async generateJWT(userId: string, apiKey?: string, courierRest?: string): Promise<JWTResponse> {
     const response = await fetch("/inbox-demo/api/jwt", {
       method: "POST",
       headers: {
@@ -24,6 +24,7 @@ export class CourierRepo {
       body: JSON.stringify({
         user_id: userId,
         ...(apiKey && { api_key: apiKey }),
+        courierRest: courierRest || 'https://api.courier.com',
       }),
     });
 
@@ -41,7 +42,8 @@ export class CourierRepo {
     body: string,
     tags?: string[],
     actions?: MessageAction[],
-    apiKey?: string
+    apiKey?: string,
+    courierRest?: string
   ): Promise<SendMessageResponse> {
     const response = await fetch("/inbox-demo/api/messages", {
       method: "POST",
@@ -55,6 +57,7 @@ export class CourierRepo {
         tags,
         actions,
         ...(apiKey && { api_key: apiKey }),
+        courierRest: courierRest || 'https://api.courier.com',
       }),
     });
 

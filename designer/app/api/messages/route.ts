@@ -8,9 +8,9 @@ interface MessageAction {
 
 export async function POST(request: Request) {
   try {
-    // Read user_id, title, body, optional tags, optional actions, and optional api_key from request body
+    // Read user_id, title, body, optional tags, optional actions, optional api_key, and courierRest from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody, tags, actions, api_key } = body;
+    const { user_id, title, body: messageBody, tags, actions, api_key, courierRest } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     // Use provided api_key or fall back to environment default
-    const courier = getCourierClient(api_key);
+    const courier = getCourierClient(courierRest, api_key);
 
     // Build the content - use Elemental format if actions are provided
     let content: any;

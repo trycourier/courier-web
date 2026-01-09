@@ -37,9 +37,10 @@ interface CourierAuthProps {
   apiUrls?: CourierApiUrls;
   overrideUserId?: string;
   apiKey?: string;
+  hideLoadingState?: boolean;
 }
 
-export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: CourierAuthProps) {
+export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoadingState }: CourierAuthProps) {
   const courier = useCourier();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -53,6 +54,9 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const repo = new CourierRepo();
+
+  // Get courierRest from apiUrls or default
+  const courierRest = apiUrls?.courier?.rest || 'https://api.courier.com';
 
   // Serialize apiUrls for comparison
   const apiUrlsKey = apiUrls ? JSON.stringify(apiUrls) : 'default';
@@ -68,7 +72,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
       try {
         setIsLoading(true);
         setError(null);
-        const res = await repo.generateJWT(userId, apiKey);
+        const res = await repo.generateJWT(userId, apiKey, courierRest);
         if (!res.token) {
           throw new Error('Failed to generate JWT');
         }
@@ -110,7 +114,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
     // initializeCourier will be called automatically via useEffect when userId changes
   };
 
-  if (isLoading) {
+  if (isLoading && !hideLoadingState) {
     return (
       <div className="flex h-full items-center justify-center">
         <p className="text-muted-foreground">Setting up...</p>
@@ -118,7 +122,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey }: Couri
     );
   }
 
-  if (error) {
+  if (error && !hideLoadingState) {
     return (
       <div className="flex h-full items-center justify-center p-4">
         <Alert variant="destructive" className="max-w-md">

@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 interface SendMessageFormProps {
   userId: string;
   apiKey?: string;
+  courierRest?: string;
 }
 
 interface ActionField {
@@ -19,7 +20,7 @@ interface ActionField {
   href: string;
 }
 
-export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
+export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -67,7 +68,8 @@ export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
         body,
         tagsArray.length > 0 ? tagsArray : undefined,
         validActions.length > 0 ? validActions : undefined,
-        apiKey
+        apiKey,
+        courierRest
       );
       setTitle('');
       setBody('');

@@ -17,10 +17,12 @@ import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
-import { ExternalLink as ExternalLinkBase } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase, Menu as MenuBase, X as XBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
+const Menu = MenuBase as React.ComponentType<any>;
+const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
 type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';
@@ -92,6 +94,9 @@ function HomeContent() {
     apiUrls.inbox.graphql !== DEFAULT_API_URLS.inbox.graphql ||
     apiUrls.inbox.webSocket !== DEFAULT_API_URLS.inbox.webSocket;
 
+  // Get courierRest for API calls
+  const courierRest = apiUrls.courier.rest;
+
   // Get userId override from query params
   const overrideUserId = searchParams.get('userId') || undefined;
 
@@ -161,8 +166,18 @@ function HomeContent() {
   }, [colorMode]);
   const [leftPanelWidth, setLeftPanelWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(73);
   const resizeRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const initialWidth = 400; // Initial panel width
+
+  // Measure header height
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -198,38 +213,143 @@ function HomeContent() {
     setIsResizing(true);
   };
 
+  // Left Panel Content Component (reusable for desktop and mobile)
+  const LeftPanelContent = ({ userId, onClearUser, onTabChange, courierRest }: { userId: string; onClearUser: () => void; onTabChange?: () => void; courierRest?: string }) => (
+    <Tabs
+      value={activeLeftTab}
+      onValueChange={(tabId: string) => {
+        setActiveLeftTab(tabId as LeftTab);
+        onTabChange?.();
+      }}
+      className="flex flex-col h-full"
+    >
+      <div className="flex items-center justify-center p-4 border-b border-border h-[73px] flex-shrink-0">
+        <TabsList>
+          <TabsTrigger value="send-test">Test</TabsTrigger>
+          <TabsTrigger value="theme">Theme</TabsTrigger>
+          <TabsTrigger value="feeds">Feeds</TabsTrigger>
+          <TabsTrigger value="current-user">User</TabsTrigger>
+          {isAdvancedMode && <TabsTrigger value="advanced">Advanced</TabsTrigger>}
+        </TabsList>
+      </div>
+      <div className="flex-1 flex flex-col min-h-0">
+        <TabsContent value="send-test" className="mt-0 flex-1 min-h-0">
+          <SendTestTab userId={userId} apiKey={overrideApiKey} courierRest={courierRest} />
+        </TabsContent>
+        <TabsContent value="theme" className="mt-0 flex-1 min-h-0">
+          <ThemeTab
+            selectedTheme={selectedTheme}
+            onThemeChange={setSelectedTheme}
+            colorMode={colorMode}
+            onColorModeChange={setColorMode}
+          />
+        </TabsContent>
+        <TabsContent value="feeds" className="mt-0 flex-1 min-h-0">
+          <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
+        </TabsContent>
+        <TabsContent value="current-user" className="mt-0 flex-1 min-h-0">
+          <CurrentUserTab
+            userId={userId}
+            onClearUser={onClearUser}
+            isAdvancedMode={isAdvancedMode}
+            onUserIdChange={(newUserId) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('userId', newUserId);
+              const newUrl = `${pathname}?${params.toString()}`;
+              router.replace(newUrl, { scroll: false });
+            }}
+          />
+        </TabsContent>
+        {isAdvancedMode && (
+          <TabsContent value="advanced" className="mt-0 flex-1 min-h-0">
+            <AdvancedTab apiUrls={apiUrls} />
+          </TabsContent>
+        )}
+      </div>
+    </Tabs>
+  );
+
   return (
     <div className="flex h-screen w-screen flex-col bg-background text-foreground">
       {/* Header */}
-      <header className="p-4 border-b border-border flex items-center justify-between px-4 gap-4">
-        <a
-          href="https://www.courier.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center hover:opacity-80 transition-opacity"
-          aria-label="Courier Home"
-        >
-          <svg
-            width="90"
-            height="22"
-            viewBox="0 0 90 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-[#7B2668] dark:text-foreground"
+      <header ref={headerRef} className="p-4 border-b border-border flex items-center justify-between px-4 gap-4">
+        <div className="flex items-center gap-2">
+          {/* Mobile Menu Button */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Open menu"
           >
-            <path
-              d="M18.9841 9.07718C19.0254 9.01314 19.0481 8.93888 19.0496 8.8627C18.269 4.39927 14.3255 1.00825 9.60004 1.00825C4.29109 1.00825 -0.0213001 5.30065 7.91505e-05 10.5792C0.0428376 15.7082 4.39868 19.9999 9.55659 19.9999C13.9559 20.0206 17.6614 17.1033 18.8103 13.133C18.8538 13.0041 18.7669 12.8537 18.6365 12.7896L18.2469 12.6392C17.4871 12.3731 16.6768 12.2832 15.8772 12.3761C15.0776 12.4691 14.3095 12.7425 13.6311 13.1758C13.0021 13.5834 12.5469 13.9054 12.5469 13.9054C11.7676 14.4206 10.8138 14.742 9.81659 14.742C7.10763 14.742 5.22212 12.5537 4.91868 9.89235L4.70351 8.43442C4.63868 7.98339 4.33523 7.61857 3.90144 7.44684L3.36006 7.23236C3.27317 7.1896 3.22972 7.08202 3.29524 6.9965C5.61385 3.92755 8.45245 4.59306 8.45245 4.59306C8.91209 4.63792 9.35243 4.80038 9.73107 5.06478C10.2304 5.41465 10.621 5.8982 10.858 6.45995C11.3018 7.46309 12.0277 8.31559 12.9472 8.91371C13.8667 9.51183 14.9403 9.82979 16.0372 9.8289C16.0372 9.8289 18.2476 9.91511 18.9841 9.07718Z"
-              fill="currentColor"
-            />
-            <path
-              d="M5.8945 6.78135C5.96819 6.78171 6.04123 6.76754 6.10944 6.73966C6.17765 6.71177 6.23969 6.67072 6.29202 6.61884C6.34435 6.56695 6.38594 6.50527 6.41441 6.4373C6.44288 6.36933 6.45768 6.29642 6.45795 6.22273C6.45703 6.07415 6.39718 5.932 6.29153 5.82752C6.18589 5.72303 6.04309 5.66476 5.8945 5.66549C5.82087 5.66513 5.74789 5.67927 5.67972 5.70711C5.61156 5.73496 5.54955 5.77595 5.49723 5.82776C5.4449 5.87957 5.4033 5.94118 5.37479 6.00906C5.34628 6.07695 5.33142 6.14979 5.33105 6.22342C5.33105 6.531 5.58347 6.78135 5.8945 6.78135ZM33.8723 13.0468C33.8723 16.9096 30.9034 19.8068 27.0241 19.8068C23.1455 19.8068 20.1979 16.931 20.1979 13.0468C20.1979 9.11996 23.1455 6.22342 27.0241 6.22342C30.9254 6.22342 33.8723 9.14134 33.8723 13.0468ZM24.4241 13.0468C24.4241 14.5917 25.551 15.7296 27.0461 15.7296C28.5634 15.7296 29.6903 14.5917 29.6903 13.0468C29.6903 11.4593 28.5634 10.3006 27.0461 10.3006C25.551 10.3006 24.4241 11.4593 24.4241 13.0468ZM47.9805 13.6268C47.9805 17.3392 45.3805 19.8061 41.6957 19.8061C37.9902 19.8061 35.3247 17.1889 35.3247 13.4765V6.48066H39.5937V13.4758C39.5937 14.8489 40.3957 15.7289 41.6743 15.7289C42.9095 15.7289 43.733 14.8489 43.733 13.4758V6.48066H47.9812L47.9805 13.6268ZM58.5563 6.37307V10.2358C58.0798 10.1503 57.6246 10.0855 57.1908 10.0855C55.3922 10.0855 53.9619 11.0082 53.9619 13.4979V19.5275H49.6929V6.48066H53.9619V7.85376C54.7419 6.82411 55.8688 6.2448 57.2998 6.2448C57.6894 6.2448 58.1012 6.30894 58.5563 6.37307ZM64.8846 2.51033C64.8846 3.88412 63.7356 5.04274 62.3487 5.04274C60.9618 5.04274 59.7915 3.88412 59.7915 2.51102C59.7915 1.15862 60.9618 0 62.3487 0C63.7356 0 64.8846 1.15862 64.8846 2.51033ZM64.4508 6.48066V19.5275H60.1818V6.48066H64.4508ZM79.2307 14.0986H69.8252C70.1508 15.4503 71.2776 16.2875 72.7294 16.2875C74.008 16.2875 74.7445 15.751 74.9183 15.0427H79.1224C78.7107 17.9185 76.2404 19.7854 72.8597 19.7854C68.9584 19.7854 65.9032 16.8027 65.9032 12.9613C65.9032 9.14134 68.8935 6.20135 72.7728 6.20135C76.3487 6.20135 79.3176 9.01306 79.3176 12.5751C79.339 12.9399 79.2742 13.6261 79.2307 14.0986ZM74.8535 11.4379C74.7445 10.3862 73.7266 9.65651 72.5776 9.65651C71.4073 9.65651 70.4756 10.1931 70.0204 11.4379H74.8535ZM89.6548 6.37307V10.2358C89.1783 10.1503 88.7231 10.0855 88.2893 10.0855C86.4907 10.0855 85.0603 11.0082 85.0603 13.4979V19.5275H80.7914V6.48066H85.0603V7.85376C85.8403 6.82411 86.9672 6.2448 88.3976 6.2448C88.8093 6.2448 89.2217 6.30894 89.6548 6.37307Z"
-              fill="currentColor"
-            />
-          </svg>
-        </a>
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+          {isMobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/50 z-[9998] lg:hidden"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              {/* Full Screen Menu - covers view below header */}
+              <div
+                className="fixed left-0 right-0 bottom-0 bg-background z-[9999] lg:hidden overflow-hidden flex flex-col"
+                style={{ top: `${headerHeight}px` }}
+              >
+                <CourierAuth
+                  apiUrls={hasCustomApiUrls ? apiUrls : undefined}
+                  overrideUserId={overrideUserId}
+                  apiKey={overrideApiKey}
+                  hideLoadingState={true}
+                >
+                  {({ userId, onClearUser }) => (
+                    <div className="flex-1 overflow-hidden">
+                      <LeftPanelContent
+                        userId={userId}
+                        onClearUser={onClearUser}
+                        courierRest={courierRest}
+                      />
+                    </div>
+                  )}
+                </CourierAuth>
+              </div>
+            </>
+          )}
+          <a
+            href="https://www.courier.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center hover:opacity-80 transition-opacity"
+            aria-label="Courier Home"
+          >
+            <svg
+              width="90"
+              height="22"
+              viewBox="0 0 90 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-[#7B2668] dark:text-foreground"
+            >
+              <path
+                d="M18.9841 9.07718C19.0254 9.01314 19.0481 8.93888 19.0496 8.8627C18.269 4.39927 14.3255 1.00825 9.60004 1.00825C4.29109 1.00825 -0.0213001 5.30065 7.91505e-05 10.5792C0.0428376 15.7082 4.39868 19.9999 9.55659 19.9999C13.9559 20.0206 17.6614 17.1033 18.8103 13.133C18.8538 13.0041 18.7669 12.8537 18.6365 12.7896L18.2469 12.6392C17.4871 12.3731 16.6768 12.2832 15.8772 12.3761C15.0776 12.4691 14.3095 12.7425 13.6311 13.1758C13.0021 13.5834 12.5469 13.9054 12.5469 13.9054C11.7676 14.4206 10.8138 14.742 9.81659 14.742C7.10763 14.742 5.22212 12.5537 4.91868 9.89235L4.70351 8.43442C4.63868 7.98339 4.33523 7.61857 3.90144 7.44684L3.36006 7.23236C3.27317 7.1896 3.22972 7.08202 3.29524 6.9965C5.61385 3.92755 8.45245 4.59306 8.45245 4.59306C8.91209 4.63792 9.35243 4.80038 9.73107 5.06478C10.2304 5.41465 10.621 5.8982 10.858 6.45995C11.3018 7.46309 12.0277 8.31559 12.9472 8.91371C13.8667 9.51183 14.9403 9.82979 16.0372 9.8289C16.0372 9.8289 18.2476 9.91511 18.9841 9.07718Z"
+                fill="currentColor"
+              />
+              <path
+                d="M5.8945 6.78135C5.96819 6.78171 6.04123 6.76754 6.10944 6.73966C6.17765 6.71177 6.23969 6.67072 6.29202 6.61884C6.34435 6.56695 6.38594 6.50527 6.41441 6.4373C6.44288 6.36933 6.45768 6.29642 6.45795 6.22273C6.45703 6.07415 6.39718 5.932 6.29153 5.82752C6.18589 5.72303 6.04309 5.66476 5.8945 5.66549C5.82087 5.66513 5.74789 5.67927 5.67972 5.70711C5.61156 5.73496 5.54955 5.77595 5.49723 5.82776C5.4449 5.87957 5.4033 5.94118 5.37479 6.00906C5.34628 6.07695 5.33142 6.14979 5.33105 6.22342C5.33105 6.531 5.58347 6.78135 5.8945 6.78135ZM33.8723 13.0468C33.8723 16.9096 30.9034 19.8068 27.0241 19.8068C23.1455 19.8068 20.1979 16.931 20.1979 13.0468C20.1979 9.11996 23.1455 6.22342 27.0241 6.22342C30.9254 6.22342 33.8723 9.14134 33.8723 13.0468ZM24.4241 13.0468C24.4241 14.5917 25.551 15.7296 27.0461 15.7296C28.5634 15.7296 29.6903 14.5917 29.6903 13.0468C29.6903 11.4593 28.5634 10.3006 27.0461 10.3006C25.551 10.3006 24.4241 11.4593 24.4241 13.0468ZM47.9805 13.6268C47.9805 17.3392 45.3805 19.8061 41.6957 19.8061C37.9902 19.8061 35.3247 17.1889 35.3247 13.4765V6.48066H39.5937V13.4758C39.5937 14.8489 40.3957 15.7289 41.6743 15.7289C42.9095 15.7289 43.733 14.8489 43.733 13.4758V6.48066H47.9812L47.9805 13.6268ZM58.5563 6.37307V10.2358C58.0798 10.1503 57.6246 10.0855 57.1908 10.0855C55.3922 10.0855 53.9619 11.0082 53.9619 13.4979V19.5275H49.6929V6.48066H53.9619V7.85376C54.7419 6.82411 55.8688 6.2448 57.2998 6.2448C57.6894 6.2448 58.1012 6.30894 58.5563 6.37307ZM64.8846 2.51033C64.8846 3.88412 63.7356 5.04274 62.3487 5.04274C60.9618 5.04274 59.7915 3.88412 59.7915 2.51102C59.7915 1.15862 60.9618 0 62.3487 0C63.7356 0 64.8846 1.15862 64.8846 2.51033ZM64.4508 6.48066V19.5275H60.1818V6.48066H64.4508ZM79.2307 14.0986H69.8252C70.1508 15.4503 71.2776 16.2875 72.7294 16.2875C74.008 16.2875 74.7445 15.751 74.9183 15.0427H79.1224C78.7107 17.9185 76.2404 19.7854 72.8597 19.7854C68.9584 19.7854 65.9032 16.8027 65.9032 12.9613C65.9032 9.14134 68.8935 6.20135 72.7728 6.20135C76.3487 6.20135 79.3176 9.01306 79.3176 12.5751C79.339 12.9399 79.2742 13.6261 79.2307 14.0986ZM74.8535 11.4379C74.7445 10.3862 73.7266 9.65651 72.5776 9.65651C71.4073 9.65651 70.4756 10.1931 70.0204 11.4379H74.8535ZM89.6548 6.37307V10.2358C89.1783 10.1503 88.7231 10.0855 88.2893 10.0855C86.4907 10.0855 85.0603 11.0082 85.0603 13.4979V19.5275H80.7914V6.48066H85.0603V7.85376C85.8403 6.82411 86.9672 6.2448 88.3976 6.2448C88.8093 6.2448 89.2217 6.30894 89.6548 6.37307Z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+        </div>
         <div className="flex items-center gap-2 ml-auto">
-          <InstallCommandCopy />
-          <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+          <div className="hidden sm:block">
+            <InstallCommandCopy />
+          </div>
+          <div className="hidden md:inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
             <button
               onClick={() => setFrameworkType('react')}
               className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${frameworkType === 'react'
@@ -253,6 +373,7 @@ function HomeContent() {
             variant="outline"
             size="sm"
             asChild
+            className="hidden sm:flex"
           >
             <a
               href={frameworkType === 'react'
@@ -262,7 +383,7 @@ function HomeContent() {
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              Docs
+              <span className="hidden md:inline">Docs</span>
               <ExternalLink className="h-4 w-4" />
             </a>
           </Button>
@@ -273,67 +394,19 @@ function HomeContent() {
       <CourierAuth apiUrls={hasCustomApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
         {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
-            {/* Left Panel */}
+            {/* Left Panel - Hidden on mobile, shown on desktop */}
             <div
-              className="border-r border-border flex-shrink-0 bg-background"
+              className="hidden lg:block border-r border-border flex-shrink-0 bg-background"
               style={{ width: `${leftPanelWidth}px`, minWidth: `${initialWidth}px` }}
             >
-              <Tabs
-                value={activeLeftTab}
-                onValueChange={(tabId: string) => setActiveLeftTab(tabId as LeftTab)}
-                className="flex flex-col h-full"
-              >
-                <div className="flex items-center justify-center p-4 border-b border-border h-[73px] flex-shrink-0">
-                  <TabsList>
-                    <TabsTrigger value="send-test">Test</TabsTrigger>
-                    <TabsTrigger value="theme">Theme</TabsTrigger>
-                    <TabsTrigger value="feeds">Feeds</TabsTrigger>
-                    <TabsTrigger value="current-user">User</TabsTrigger>
-                    {isAdvancedMode && <TabsTrigger value="advanced">Advanced</TabsTrigger>}
-                  </TabsList>
-                </div>
-                <div className="flex-1 flex flex-col min-h-0">
-                  <TabsContent value="send-test" className="mt-0 flex-1 min-h-0">
-                    <SendTestTab userId={userId} apiKey={overrideApiKey} />
-                  </TabsContent>
-                  <TabsContent value="theme" className="mt-0 flex-1 min-h-0">
-                    <ThemeTab
-                      selectedTheme={selectedTheme}
-                      onThemeChange={setSelectedTheme}
-                      colorMode={colorMode}
-                      onColorModeChange={setColorMode}
-                    />
-                  </TabsContent>
-                  <TabsContent value="feeds" className="mt-0 flex-1 min-h-0">
-                    <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
-                  </TabsContent>
-                  <TabsContent value="current-user" className="mt-0 flex-1 min-h-0">
-                    <CurrentUserTab
-                      userId={userId}
-                      onClearUser={onClearUser}
-                      isAdvancedMode={isAdvancedMode}
-                      onUserIdChange={(newUserId) => {
-                        const params = new URLSearchParams(searchParams.toString());
-                        params.set('userId', newUserId);
-                        const newUrl = `${pathname}?${params.toString()}`;
-                        router.replace(newUrl, { scroll: false });
-                      }}
-                    />
-                  </TabsContent>
-                  {isAdvancedMode && (
-                    <TabsContent value="advanced" className="mt-0 flex-1 min-h-0">
-                      <AdvancedTab apiUrls={apiUrls} />
-                    </TabsContent>
-                  )}
-                </div>
-              </Tabs>
+              <LeftPanelContent userId={userId} onClearUser={onClearUser} onTabChange={undefined} courierRest={courierRest} />
             </div>
 
-            {/* Resize Handle */}
+            {/* Resize Handle - Hidden on mobile */}
             <div
               ref={resizeRef}
               onMouseDown={handleMouseDown}
-              className={`w-1 bg-gray-300 dark:bg-gray-700 cursor-col-resize hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors flex-shrink-0 ${isResizing ? 'bg-gray-400 dark:bg-gray-600' : ''
+              className={`hidden lg:block w-1 bg-gray-300 dark:bg-gray-700 cursor-col-resize hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors flex-shrink-0 ${isResizing ? 'bg-gray-400 dark:bg-gray-600' : ''
                 }`}
             />
 
