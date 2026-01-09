@@ -11,7 +11,7 @@ interface SendTestTabProps {
 export function SendTestTab({ userId, apiKey }: SendTestTabProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <SendMessageForm userId={userId} apiKey={apiKey} />
       </div>
       <div className="flex-shrink-0 border-t border-border p-4">

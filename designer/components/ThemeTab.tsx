@@ -60,21 +60,20 @@ export function ThemeTab({ selectedTheme, onThemeChange, colorMode, onColorModeC
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         <div className="space-y-6">
           {/* Color Mode Selector */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">Appearance</Label>
-            <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
+            <div className="flex items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
               {colorModeOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => onColorModeChange(option.value)}
-                  className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${
-                    colorMode === option.value
-                      ? 'bg-background text-foreground shadow'
-                      : 'hover:bg-background/50'
-                  }`}
+                  className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-4 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 flex-1 ${colorMode === option.value
+                    ? 'bg-background text-foreground shadow'
+                    : 'hover:bg-background/50'
+                    }`}
                 >
                   {option.icon}
                   {option.label}
@@ -86,22 +85,21 @@ export function ThemeTab({ selectedTheme, onThemeChange, colorMode, onColorModeC
           {/* Theme Presets */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">Style Preset</Label>
-            <RadioGroup 
-              value={selectedTheme} 
-              onValueChange={(value: string) => onThemeChange(value as ThemePreset)} 
+            <RadioGroup
+              value={selectedTheme}
+              onValueChange={(value: string) => onThemeChange(value as ThemePreset)}
               className="space-y-2 pb-5"
             >
               {(Object.keys(themePresetLabels) as ThemePreset[]).map((themeKey) => {
                 const themeInfo = getThemeInfo(themeKey);
                 const isSelected = selectedTheme === themeKey;
-                
+
                 return (
                   <Label
                     key={themeKey}
                     htmlFor={themeKey}
-                    className={`flex items-center w-full p-3 border rounded-md cursor-pointer transition-colors ${
-                      isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-accent/50'
-                    }`}
+                    className={`flex items-center w-full p-3 border rounded-md cursor-pointer transition-colors ${isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                      }`}
                   >
                     <RadioGroupItem value={themeKey} id={themeKey} className="mr-3" />
                     <span

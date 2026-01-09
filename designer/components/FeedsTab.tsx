@@ -79,7 +79,7 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         <div className="flex items-center justify-between mb-4">
           <Button
             type="button"

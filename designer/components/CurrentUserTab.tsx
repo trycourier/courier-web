@@ -32,7 +32,7 @@ export function CurrentUserTab({ userId, onClearUser, isAdvancedMode, onUserIdCh
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">User ID</h2>
           {isAdvancedMode && isEditing ? (
