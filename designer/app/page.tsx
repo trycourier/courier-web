@@ -17,11 +17,11 @@ import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
-import { ExternalLink as ExternalLinkBase, Menu as MenuBase, X as XBase } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase, Settings as SettingsBase, X as XBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
-const Menu = MenuBase as React.ComponentType<any>;
+const Settings = SettingsBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
@@ -221,7 +221,7 @@ function HomeContent() {
         setActiveLeftTab(tabId as LeftTab);
         onTabChange?.();
       }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-full min-h-0"
     >
       <div className="flex items-center justify-center p-4 border-b border-border h-[73px] flex-shrink-0">
         <TabsList>
@@ -232,11 +232,11 @@ function HomeContent() {
           {isAdvancedMode && <TabsTrigger value="advanced">Advanced</TabsTrigger>}
         </TabsList>
       </div>
-      <div className="flex-1 flex flex-col min-h-0">
-        <TabsContent value="send-test" className="mt-0 flex-1 min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <TabsContent value="send-test" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
           <SendTestTab userId={userId} apiKey={overrideApiKey} courierRest={courierRest} />
         </TabsContent>
-        <TabsContent value="theme" className="mt-0 flex-1 min-h-0">
+        <TabsContent value="theme" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
           <ThemeTab
             selectedTheme={selectedTheme}
             onThemeChange={setSelectedTheme}
@@ -244,10 +244,10 @@ function HomeContent() {
             onColorModeChange={setColorMode}
           />
         </TabsContent>
-        <TabsContent value="feeds" className="mt-0 flex-1 min-h-0">
+        <TabsContent value="feeds" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
           <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
         </TabsContent>
-        <TabsContent value="current-user" className="mt-0 flex-1 min-h-0">
+        <TabsContent value="current-user" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
           <CurrentUserTab
             userId={userId}
             onClearUser={onClearUser}
@@ -261,7 +261,7 @@ function HomeContent() {
           />
         </TabsContent>
         {isAdvancedMode && (
-          <TabsContent value="advanced" className="mt-0 flex-1 min-h-0">
+          <TabsContent value="advanced" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
             <AdvancedTab apiUrls={apiUrls} />
           </TabsContent>
         )}
@@ -274,51 +274,6 @@ function HomeContent() {
       {/* Header */}
       <header ref={headerRef} className="p-4 border-b border-border flex items-center justify-between px-4 gap-4">
         <div className="flex items-center gap-2">
-          {/* Mobile Menu Button */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Open menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </Button>
-          {isMobileMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 bg-black/50 z-[9998] lg:hidden"
-                onClick={() => setIsMobileMenuOpen(false)}
-              />
-              {/* Full Screen Menu - covers view below header */}
-              <div
-                className="fixed left-0 right-0 bottom-0 bg-background z-[9999] lg:hidden overflow-hidden flex flex-col"
-                style={{ top: `${headerHeight}px` }}
-              >
-                <CourierAuth
-                  apiUrls={hasCustomApiUrls ? apiUrls : undefined}
-                  overrideUserId={overrideUserId}
-                  apiKey={overrideApiKey}
-                  hideLoadingState={true}
-                >
-                  {({ userId, onClearUser }) => (
-                    <div className="flex-1 overflow-hidden">
-                      <LeftPanelContent
-                        userId={userId}
-                        onClearUser={onClearUser}
-                        courierRest={courierRest}
-                      />
-                    </div>
-                  )}
-                </CourierAuth>
-              </div>
-            </>
-          )}
           <a
             href="https://www.courier.com"
             target="_blank"
@@ -346,6 +301,57 @@ function HomeContent() {
           </a>
         </div>
         <div className="flex items-center gap-2 ml-auto">
+          {/* Mobile Test Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="lg:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Test
+          </Button>
+          {isMobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/50 z-[9998] lg:hidden"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              {/* Full Screen Menu - covers entire viewport */}
+              <div
+                className="fixed top-0 left-0 right-0 bottom-0 bg-background z-[9999] lg:hidden flex flex-col"
+              >
+                {/* Close Button - positioned absolutely at top */}
+                <div className="absolute top-0 right-0 p-4 z-10">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CourierAuth
+                  apiUrls={hasCustomApiUrls ? apiUrls : undefined}
+                  overrideUserId={overrideUserId}
+                  apiKey={overrideApiKey}
+                  hideLoadingState={true}
+                >
+                  {({ userId, onClearUser }) => (
+                    <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-16">
+                      <LeftPanelContent
+                        userId={userId}
+                        onClearUser={onClearUser}
+                        courierRest={courierRest}
+                      />
+                    </div>
+                  )}
+                </CourierAuth>
+              </div>
+            </>
+          )}
           <div className="hidden sm:block">
             <InstallCommandCopy />
           </div>
