@@ -1,18 +1,19 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendTestTab } from "@/components/SendTestTab";
-import { ThemeTab } from "@/components/ThemeTab";
+import { ThemeTab, type ColorMode } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
 import { FeedsTab } from "@/components/FeedsTab";
+import { AdvancedTab, type ApiUrls, DEFAULT_API_URLS } from "@/components/AdvancedTab";
 import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
-import { ThemeFooter } from "@/components/ThemeFooter";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
@@ -21,15 +22,143 @@ import { ExternalLink as ExternalLinkBase } from 'lucide-react';
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
 
-type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds';
+type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
 type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';
 
+const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds', 'advanced'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks'];
+const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
+const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
+
 function HomeContent() {
-  const [activeLeftTab, setActiveLeftTab] = useState<LeftTab>('send-test');
-  const [activeRightTab, setActiveRightTab] = useState<RightTab>('courier-inbox');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Initialize tabs from URL or defaults
+  const getInitialLeftTab = useCallback((): LeftTab => {
+    const param = searchParams.get('tab');
+    if (param && VALID_LEFT_TABS.includes(param as LeftTab)) {
+      return param as LeftTab;
+    }
+    return DEFAULT_LEFT_TAB;
+  }, [searchParams]);
+
+  const getInitialRightTab = useCallback((): RightTab => {
+    const param = searchParams.get('layout');
+    if (param && VALID_RIGHT_TABS.includes(param as RightTab)) {
+      return param as RightTab;
+    }
+    return DEFAULT_RIGHT_TAB;
+  }, [searchParams]);
+
+  const [activeLeftTab, setActiveLeftTabState] = useState<LeftTab>(getInitialLeftTab);
+  const [activeRightTab, setActiveRightTabState] = useState<RightTab>(getInitialRightTab);
   const [feeds, setFeeds] = useState<CourierInboxFeed[]>(defaultFeeds());
   const [selectedTheme, setSelectedTheme] = useState<ThemePreset>('default');
+  const [colorMode, setColorMode] = useState<ColorMode>('system');
   const { frameworkType, setFrameworkType } = useFramework();
+
+  // Sync colorMode state from localStorage after hydration
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark') {
+      setColorMode('dark');
+    } else if (stored === 'light') {
+      setColorMode('light');
+    }
+    // If no stored preference, keep 'system' default
+  }, []);
+
+  // Check if advanced mode is enabled
+  const isAdvancedMode = searchParams.get('advanced') === 'true';
+
+  // Get API URLs from query params
+  const apiUrls: ApiUrls = {
+    courier: {
+      rest: searchParams.get('courierRest') || DEFAULT_API_URLS.courier.rest,
+      graphql: searchParams.get('courierGraphql') || DEFAULT_API_URLS.courier.graphql,
+    },
+    inbox: {
+      graphql: searchParams.get('inboxGraphql') || DEFAULT_API_URLS.inbox.graphql,
+      webSocket: searchParams.get('inboxWebSocket') || DEFAULT_API_URLS.inbox.webSocket,
+    },
+  };
+
+  // Check if any custom API URLs are set
+  const hasCustomApiUrls =
+    apiUrls.courier.rest !== DEFAULT_API_URLS.courier.rest ||
+    apiUrls.courier.graphql !== DEFAULT_API_URLS.courier.graphql ||
+    apiUrls.inbox.graphql !== DEFAULT_API_URLS.inbox.graphql ||
+    apiUrls.inbox.webSocket !== DEFAULT_API_URLS.inbox.webSocket;
+
+  // Get userId override from query params
+  const overrideUserId = searchParams.get('userId') || undefined;
+
+  // Get apiKey override from query params
+  const overrideApiKey = searchParams.get('apiKey') || undefined;
+
+  // Helper to update URL params
+  const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === defaultValue) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [searchParams, pathname, router]);
+
+  // Wrapper functions that update both state and URL
+  const setActiveLeftTab = useCallback((tab: LeftTab) => {
+    setActiveLeftTabState(tab);
+    updateUrlParams('tab', tab, DEFAULT_LEFT_TAB);
+  }, [updateUrlParams]);
+
+  const setActiveRightTab = useCallback((tab: RightTab) => {
+    setActiveRightTabState(tab);
+    updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
+  }, [updateUrlParams]);
+
+  // Apply color mode to the page
+  useEffect(() => {
+    function applyColorMode(mode: ColorMode) {
+      if (mode === 'dark') {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else if (mode === 'light') {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        // system mode - remove stored preference and check system
+        localStorage.removeItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+
+    applyColorMode(colorMode);
+
+    // Listen for system theme changes when in system mode
+    if (colorMode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      };
+
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, [colorMode]);
   const [leftPanelWidth, setLeftPanelWidth] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<HTMLDivElement>(null);
@@ -141,7 +270,7 @@ function HomeContent() {
       </header>
 
       {/* Main Content: Left and Right Panels */}
-      <CourierAuth>
+      <CourierAuth apiUrls={hasCustomApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
         {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
             {/* Left Panel */}
@@ -160,66 +289,42 @@ function HomeContent() {
                     <TabsTrigger value="theme">Theme</TabsTrigger>
                     <TabsTrigger value="feeds">Feeds</TabsTrigger>
                     <TabsTrigger value="current-user">User</TabsTrigger>
+                    {isAdvancedMode && <TabsTrigger value="advanced">Advanced</TabsTrigger>}
                   </TabsList>
                 </div>
                 <div className="flex-1 flex flex-col min-h-0">
-                  <div className="flex-1 overflow-y-auto min-h-0">
-                    <TabsContent value="send-test" className="mt-0">
-                      <SendTestTab userId={userId} />
+                  <TabsContent value="send-test" className="mt-0 flex-1 min-h-0">
+                    <SendTestTab userId={userId} apiKey={overrideApiKey} />
+                  </TabsContent>
+                  <TabsContent value="theme" className="mt-0 flex-1 min-h-0">
+                    <ThemeTab
+                      selectedTheme={selectedTheme}
+                      onThemeChange={setSelectedTheme}
+                      colorMode={colorMode}
+                      onColorModeChange={setColorMode}
+                    />
+                  </TabsContent>
+                  <TabsContent value="feeds" className="mt-0 flex-1 min-h-0">
+                    <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
+                  </TabsContent>
+                  <TabsContent value="current-user" className="mt-0 flex-1 min-h-0">
+                    <CurrentUserTab
+                      userId={userId}
+                      onClearUser={onClearUser}
+                      isAdvancedMode={isAdvancedMode}
+                      onUserIdChange={(newUserId) => {
+                        const params = new URLSearchParams(searchParams.toString());
+                        params.set('userId', newUserId);
+                        const newUrl = `${pathname}?${params.toString()}`;
+                        router.replace(newUrl, { scroll: false });
+                      }}
+                    />
+                  </TabsContent>
+                  {isAdvancedMode && (
+                    <TabsContent value="advanced" className="mt-0 flex-1 min-h-0">
+                      <AdvancedTab apiUrls={apiUrls} />
                     </TabsContent>
-                    <TabsContent value="theme" className="mt-0">
-                      <ThemeTab selectedTheme={selectedTheme} onThemeChange={setSelectedTheme} />
-                    </TabsContent>
-                    <TabsContent value="feeds" className="mt-0">
-                      <FeedsTab feeds={feeds} onFeedsChange={setFeeds} />
-                    </TabsContent>
-                    <TabsContent value="current-user" className="mt-0">
-                      <CurrentUserTab userId={userId} onClearUser={onClearUser} />
-                    </TabsContent>
-                  </div>
-                  <div className="flex-shrink-0 border-t border-border">
-                    <div className="p-4">
-                      {activeLeftTab === 'send-test' && (
-                        <ThemeFooter
-                          copy="Send test messages to your inbox to see how they appear in real-time."
-                          primaryButton={{
-                            label: "Send a Message",
-                            url: "https://www.courier.com/docs/platform/inbox/sending-a-message"
-                          }}
-                        />
-                      )}
-                      {activeLeftTab === 'theme' && (
-                        <ThemeFooter
-                          primaryButton={{
-                            label: "Styles and Theming",
-                            url: frameworkType === 'react'
-                              ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#styles-and-theming'
-                              : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#styles-and-theming'
-                          }}
-                        />
-                      )}
-                      {activeLeftTab === 'feeds' && (
-                        <ThemeFooter
-                          copy="Configure feeds and tabs to organize your inbox messages. Feeds docs coming soon."
-                          primaryButton={{
-                            label: "Inbox Overview",
-                            url: "https://www.courier.com/docs/platform/inbox/inbox-overview"
-                          }}
-                        />
-                      )}
-                      {activeLeftTab === 'current-user' && (
-                        <ThemeFooter
-                          copy="Authenticate users with JWT tokens generated from your backend server."
-                          primaryButton={{
-                            label: "Authentication",
-                            url: frameworkType === 'react'
-                              ? 'https://www.courier.com/docs/sdk-libraries/courier-react-web#authentication'
-                              : 'https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web#authentication'
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
+                  )}
                 </div>
               </Tabs>
             </div>
@@ -252,6 +357,7 @@ function HomeContent() {
                       feeds={feeds}
                       lightTheme={themePresets[selectedTheme].light}
                       darkTheme={themePresets[selectedTheme].dark}
+                      colorMode={colorMode}
                     />
                   </TabsContent>
                   <TabsContent value="courier-inbox-popup-menu" className="h-full mt-0">
@@ -259,6 +365,7 @@ function HomeContent() {
                       feeds={feeds}
                       lightTheme={themePresets[selectedTheme].light}
                       darkTheme={themePresets[selectedTheme].dark}
+                      colorMode={colorMode}
                     />
                   </TabsContent>
                   <TabsContent value="courier-inbox-hooks" className="h-full mt-0">
@@ -276,8 +383,10 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <FrameworkProvider>
-      <HomeContent />
-    </FrameworkProvider>
+    <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">Loading...</div>}>
+      <FrameworkProvider>
+        <HomeContent />
+      </FrameworkProvider>
+    </Suspense>
   );
 }

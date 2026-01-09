@@ -4,6 +4,10 @@ import {
   useCourier,
   type CourierInboxFeed,
 } from '@trycourier/courier-react'
+import customInboxIcon from './assets/custom-inbox.svg?raw'
+import jobsIcon from './assets/jobs-icon.svg?raw'
+import postsIcon from './assets/posts-icon.svg?raw'
+import mentionsIcon from './assets/mentions-icon.svg?raw'
 
 export default function InboxCustomFeed() {
 
@@ -20,6 +24,7 @@ export default function InboxCustomFeed() {
     {
       feedId: 'all',
       title: 'All',
+      iconSVG: customInboxIcon,
       tabs: [
         {
           datasetId: 'all',
@@ -31,6 +36,7 @@ export default function InboxCustomFeed() {
     {
       feedId: 'jobs',
       title: 'Jobs',
+      iconSVG: jobsIcon,
       tabs: [
         {
           datasetId: 'jobs',
@@ -42,11 +48,12 @@ export default function InboxCustomFeed() {
     {
       feedId: 'my-posts',
       title: 'My Posts',
+      iconSVG: postsIcon,
       tabs: [
         {
           datasetId: 'all-my-posts',
           title: 'All',
-          filter: { tags: ['my_post'] }
+          filter: {}
         },
         {
           datasetId: 'comments',
@@ -68,6 +75,7 @@ export default function InboxCustomFeed() {
     {
       feedId: 'mentions',
       title: 'Mentions',
+      iconSVG: mentionsIcon,
       tabs: [
         {
           datasetId: 'mentions',

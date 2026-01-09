@@ -8,7 +8,7 @@ import { ExternalLink as ExternalLinkBase } from 'lucide-react';
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
 
-interface ThemeFooterProps {
+interface TabFooterProps {
   copy?: string;
   primaryButton?: {
     label: string;
@@ -20,11 +20,11 @@ interface ThemeFooterProps {
   };
 }
 
-export function ThemeFooter({
+export function TabFooter({
   copy = "Customize fonts, colors, spacing, animations, and more through the theme system.",
   primaryButton,
   secondaryButton
-}: ThemeFooterProps) {
+}: TabFooterProps) {
   const { frameworkType } = useFramework();
 
   // Default URLs based on framework type if not provided

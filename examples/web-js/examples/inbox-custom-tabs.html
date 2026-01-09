@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+
+  <courier-inbox id="inbox"></courier-inbox>
+
+  <script type="module">
+    import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    // Reference the courier-inbox element
+    const inbox = document.getElementById('inbox');
+
+    // Single feed with multiple tabs for filtering
+    inbox.setFeeds([
+      {
+        feedId: 'notifications',
+        title: 'Notifications',
+        tabs: [
+          {
+            datasetId: 'all-notifications',
+            title: 'All',
+            filter: {}
+          },
+          {
+            datasetId: 'unread-notifications',
+            title: 'Unread',
+            filter: { status: 'unread' }
+          },
+          {
+            datasetId: 'read-notifications',
+            title: 'Read',
+            filter: { status: 'read' }
+          },
+          {
+            datasetId: 'important',
+            title: 'Important',
+            filter: { tags: ['important'] }
+          },
+          {
+            datasetId: 'archived',
+            title: 'Archived',
+            filter: { archived: true }
+          }
+        ]
+      }
+    ]);
+
+    // Handle message clicks
+    inbox.onMessageClick(({ message, index }) => {
+      alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
+    });
+  </script>
+
+</body>
+
+</html>
+

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { CourierRepo } from "@/app/lib/courier-repo";
+import { CourierRepo, type MessageAction } from "@/app/lib/courier-repo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,15 +10,37 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SendMessageFormProps {
   userId: string;
+  apiKey?: string;
 }
 
-export function SendMessageForm({ userId }: SendMessageFormProps) {
+interface ActionField {
+  id: string;
+  content: string;
+  href: string;
+}
+
+export function SendMessageForm({ userId, apiKey }: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState('');
+  const [actions, setActions] = useState<ActionField[]>([]);
   const repo = new CourierRepo();
+
+  const addAction = () => {
+    setActions([...actions, { id: crypto.randomUUID(), content: '', href: '' }]);
+  };
+
+  const removeAction = (id: string) => {
+    setActions(actions.filter(action => action.id !== id));
+  };
+
+  const updateAction = (id: string, field: 'content' | 'href', value: string) => {
+    setActions(actions.map(action =>
+      action.id === id ? { ...action, [field]: value } : action
+    ));
+  };
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,10 +53,26 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      await repo.sendMessage(userId, title, body, tagsArray.length > 0 ? tagsArray : undefined);
+      // Filter out empty actions and map to the API format
+      const validActions: MessageAction[] = actions
+        .filter(action => action.content.trim() && action.href.trim())
+        .map(action => ({
+          content: action.content.trim(),
+          href: action.href.trim(),
+        }));
+
+      await repo.sendMessage(
+        userId,
+        title,
+        body,
+        tagsArray.length > 0 ? tagsArray : undefined,
+        validActions.length > 0 ? validActions : undefined,
+        apiKey
+      );
       setTitle('');
       setBody('');
       setTags('');
+      setActions([]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setSendMessageError(errorMessage);
@@ -56,6 +94,7 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
             required
             rows={2}
             placeholder="Enter message title"
+            className="font-mono"
           />
         </div>
         <div className="space-y-2">
@@ -67,6 +106,7 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
             required
             rows={3}
             placeholder="Enter message body"
+            className="font-mono"
           />
         </div>
         <div className="space-y-2">
@@ -79,7 +119,56 @@ export function SendMessageForm({ userId }: SendMessageFormProps) {
             value={tags}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTags(e.target.value)}
             placeholder="e.g., important, notification, marketing"
+            className="font-mono"
           />
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>
+              Actions <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addAction}
+            >
+              + Add Action
+            </Button>
+          </div>
+          {actions.map((action, index) => (
+            <div key={action.id} className="flex gap-2 items-start p-3 border border-border rounded-md bg-muted/30">
+              <div className="flex-1 space-y-2">
+                <Input
+                  type="text"
+                  value={action.content}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    updateAction(action.id, 'content', e.target.value)
+                  }
+                  placeholder="Button label (e.g., View Details)"
+                  className="font-mono"
+                />
+                <Input
+                  type="url"
+                  value={action.href}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    updateAction(action.id, 'href', e.target.value)
+                  }
+                  placeholder="URL (e.g., https://example.com)"
+                  className="font-mono"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => removeAction(action.id)}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                ✕
+              </Button>
+            </div>
+          ))}
         </div>
         <div>
           <Button

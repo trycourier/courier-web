@@ -225,28 +225,6 @@
   --animate-slide-out-to-right-2: slide-out-to-right 0.15s ease-in;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --card: #0a0a0a;
-    --card-foreground: #ededed;
-    --popover: #0a0a0a;
-    --popover-foreground: #ededed;
-    --primary: #ededed;
-    --primary-foreground: #0a0a0a;
-    --secondary: #27272a;
-    --secondary-foreground: #ededed;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --accent: #27272a;
-    --accent-foreground: #ededed;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #ededed;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #d4d4d8;
-  }
-}
-
 /* Ensure buttons and interactive elements have pointer cursor */
 @layer base {
 
