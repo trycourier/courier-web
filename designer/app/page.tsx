@@ -59,6 +59,17 @@ function HomeContent() {
   const [colorMode, setColorMode] = useState<ColorMode>('system');
   const { frameworkType, setFrameworkType } = useFramework();
 
+  // Sync colorMode state from localStorage after hydration
+  useEffect(() => {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark') {
+      setColorMode('dark');
+    } else if (stored === 'light') {
+      setColorMode('light');
+    }
+    // If no stored preference, keep 'system' default
+  }, []);
+
   // Check if advanced mode is enabled
   const isAdvancedMode = searchParams.get('advanced') === 'true';
 
@@ -115,10 +126,13 @@ function HomeContent() {
     function applyColorMode(mode: ColorMode) {
       if (mode === 'dark') {
         document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
       } else if (mode === 'light') {
         document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
       } else {
-        // system mode - check preference
+        // system mode - remove stored preference and check system
+        localStorage.removeItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (prefersDark) {
           document.documentElement.classList.add('dark');
