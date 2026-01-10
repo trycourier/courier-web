@@ -17,11 +17,11 @@ import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
-import { ExternalLink as ExternalLinkBase, Settings as SettingsBase, X as XBase } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase, Send as SendBase, X as XBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
-const Settings = SettingsBase as React.ComponentType<any>;
+const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
@@ -308,8 +308,8 @@ function HomeContent() {
             className="lg:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Test
+            <Send className="h-4 w-4 mr-1" />
+            Send a Test Message
           </Button>
           {isMobileMenuOpen && (
             <>
