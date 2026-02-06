@@ -1,38 +1,52 @@
-import { CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, CourierUserPreferencesTopicResponse, PreferenceTransformer } from '../types/preference';
+import { CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, RecipientPreference } from '../types/preference';
 import { decode, encode } from '../utils/coding';
-import { http } from '../utils/request';
+import { graphql } from '../utils/request';
 import { Client } from './client';
 
 export class PreferenceClient extends Client {
-  private transformer = new PreferenceTransformer();
-
   /**
    * Get all preferences for a user
-   * @param paginationCursor - Optional cursor for pagination
+   * @param paginationCursor - Optional cursor for pagination (not used in GraphQL implementation)
    * @returns Promise resolving to user preferences
-   * @see https://www.courier.com/docs/api-reference/user-preferences/get-user-preferences
    */
   public async getUserPreferences(props?: { paginationCursor?: string; }): Promise<CourierUserPreferences> {
-    let url = `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/preferences`;
+    const query = `
+      query GetRecipientPreferences {
+        recipientPreferences${this.options.tenantId ? `(accountId: "${this.options.tenantId}")` : ''} {
+          nodes {
+            templateId
+            templateName
+            sectionId
+            sectionName
+            defaultStatus
+            status
+            hasCustomRouting
+            routingPreferences
+            digestSchedule
+          }
+        }
+      }
+    `;
 
-    if (props?.paginationCursor) {
-      url += `?cursor=${props.paginationCursor}`;
-    }
-
-    const json = await http({
+    const response = await graphql({
       options: this.options,
-      url,
-      method: 'GET',
+      url: this.options.apiUrls.courier.graphql,
+      query,
       headers: {
+        'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty', // Empty for now. Will be removed in future.
         'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
 
-    const data = json as CourierUserPreferences;
+    const nodes: RecipientPreference[] = response.data?.recipientPreferences?.nodes || [];
 
     return {
-      items: [...this.transformer.transform(data.items)],
-      paging: data.paging
+      items: nodes.map(node => this.transformToTopic(node)),
+      paging: {
+        cursor: props?.paginationCursor,
+        more: false // GraphQL returns all preferences at once
+      }
     };
   }
 
@@ -43,18 +57,40 @@ export class PreferenceClient extends Client {
    * @see https://www.courier.com/docs/api-reference/user-preferences/get-user-subscription-topic
    */
   public async getUserPreferenceTopic(props: { topicId: string; }): Promise<CourierUserPreferencesTopic> {
+    const query = `
+      query GetRecipientPreferenceTopic {
+        recipientPreference(templateId: "${props.topicId}"${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}) {
+          templateId
+          templateName
+          status
+          hasCustomRouting
+          routingPreferences
+          digestSchedule
+          sectionId
+          sectionName
+          defaultStatus
+        }
+      }
+    `;
 
-    const json = await http({
+    const response = await graphql({
       options: this.options,
-      url: `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/preferences/${props.topicId}`,
-      method: 'GET',
+      url: this.options.apiUrls.courier.graphql,
+      query,
       headers: {
+        'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty', // Empty for now. Will be removed in future.
         'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
 
-    const res = json as CourierUserPreferencesTopicResponse;
-    return this.transformer.transformItem(res.topic);
+    const node: RecipientPreference = response.data?.recipientPreference;
+
+    if (!node) {
+      throw new Error(`Preference topic not found: ${props.topicId}`);
+    }
+
+    return this.transformToTopic(node);
   }
 
   /**
@@ -67,23 +103,32 @@ export class PreferenceClient extends Client {
    * @see https://www.courier.com/docs/api-reference/user-preferences/update-or-create-user-preferences-for-subscription-topic
    */
   public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
+    const routingPreferences = props.customRouting.length > 0
+      ? `[${props.customRouting.map(r => `"${r}"`).join(', ')}]`
+      : '[]';
 
-    const payload = {
-      topic: {
-        status: props.status,
-        has_custom_routing: props.hasCustomRouting,
-        custom_routing: props.customRouting,
-      },
-    };
+    const query = `
+      mutation UpdateRecipientPreferences {
+        updatePreferences(
+          templateId: "${props.topicId}",
+          preferences: {
+            status: "${props.status}",
+            hasCustomRouting: ${props.hasCustomRouting},
+            routingPreferences: ${routingPreferences}
+          }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
+        )
+      }
+    `;
 
-    await http({
+    await graphql({
       options: this.options,
-      url: `${this.options.apiUrls.courier.rest}/users/${this.options.userId}/preferences/${props.topicId}`,
-      method: 'PUT',
+      url: this.options.apiUrls.courier.graphql,
+      query,
       headers: {
+        'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty', // Empty for now. Will be removed in future.
         'Authorization': `Bearer ${this.options.accessToken}`
       },
-      body: payload,
     });
   }
 
@@ -100,4 +145,19 @@ export class PreferenceClient extends Client {
     return `https://view.notificationcenter.app/p/${url}`;
   }
 
+  /**
+   * Transform a GraphQL RecipientPreference node to CourierUserPreferencesTopic
+   */
+  private transformToTopic(node: RecipientPreference): CourierUserPreferencesTopic {
+    return {
+      topicId: node.templateId,
+      topicName: node.templateName || '',
+      sectionId: node.sectionId || '',
+      sectionName: node.sectionName || '',
+      status: (node.status as CourierUserPreferencesStatus) || 'UNKNOWN',
+      defaultStatus: (node.defaultStatus as CourierUserPreferencesStatus) || 'UNKNOWN',
+      hasCustomRouting: node.hasCustomRouting || false,
+      customRouting: (node.routingPreferences || []) as CourierUserPreferencesChannel[]
+    };
+  }
 }

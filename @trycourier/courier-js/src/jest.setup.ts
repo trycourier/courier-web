@@ -4,9 +4,8 @@ import '@jest/globals';
 import fetchMock from 'jest-fetch-mock';
 import crypto from 'crypto';
 
-dotenv.config({
-  path: path.resolve(__dirname, '../../../.env.test')
-});
+// Load .env.test from this package dir only (courier-js/.env.test)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Comment these lines in to print the environment variables for each test:
 // console.log('🔑 Environment variables:');

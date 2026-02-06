@@ -33,7 +33,7 @@ describe('PreferenceClient', () => {
 
   it('should get notification center url successfully', () => {
     const url = courierClient.preferences.getNotificationCenterUrl({
-      clientKey: 'ZDk0OWU2YzAtODVmOC00Mjg0LTk1Y2MtY2JmMzZjNGMyOWFi',
+      clientKey: process.env.CLIENT_KEY!,
     });
     expect(url).toBeDefined();
   });

@@ -27,33 +27,18 @@ export interface CourierUserPreferencesTopicResponse {
   topic: CourierUserPreferencesTopic;
 }
 
-export class PreferenceTransformer {
-  /**
-   * Transforms a single API response item to the CourierUserPreferencesTopic type
-   * @param item - The API response item
-   * @returns A CourierUserPreferencesTopic object
-   */
-  transformItem(item: any): CourierUserPreferencesTopic {
-    return {
-      topicId: item.topic_id,
-      topicName: item.topic_name,
-      sectionId: item.section_id,
-      sectionName: item.section_name,
-      status: item.status,
-      defaultStatus: item.default_status,
-      hasCustomRouting: item.has_custom_routing,
-      customRouting: item.custom_routing || []
-    };
-  }
-
-  /**
-   * Transforms an array of API response items to CourierUserPreferencesTopic objects
-   * @param items - The API response items
-   * @returns A generator of CourierUserPreferencesTopic objects
-   */
-  *transform(items: any[]): Generator<CourierUserPreferencesTopic> {
-    for (const item of items) {
-      yield this.transformItem(item);
-    }
-  }
+/**
+ * GraphQL response type for recipient preference nodes
+ * @internal
+ */
+export interface RecipientPreference {
+  templateId: string;
+  templateName?: string;
+  status?: string;
+  hasCustomRouting?: boolean;
+  routingPreferences?: string[];
+  digestSchedule?: string;
+  sectionId?: string;
+  sectionName?: string;
+  defaultStatus?: string;
 }
