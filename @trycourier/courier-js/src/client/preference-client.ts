@@ -54,7 +54,6 @@ export class PreferenceClient extends Client {
    * Get preferences for a specific topic
    * @param topicId - The ID of the topic to get preferences for
    * @returns Promise resolving to topic preferences
-   * @see https://www.courier.com/docs/api-reference/user-preferences/get-user-subscription-topic
    */
   public async getUserPreferenceTopic(props: { topicId: string; }): Promise<CourierUserPreferencesTopic> {
     const query = `
@@ -100,11 +99,10 @@ export class PreferenceClient extends Client {
    * @param hasCustomRouting - Whether the topic has custom routing
    * @param customRouting - The custom routing channels for the topic
    * @returns Promise resolving when update is complete
-   * @see https://www.courier.com/docs/api-reference/user-preferences/update-or-create-user-preferences-for-subscription-topic
    */
   public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
     const routingPreferences = props.customRouting.length > 0
-      ? `[${props.customRouting.map(r => `"${r}"`).join(', ')}]`
+      ? `[${props.customRouting.join(', ')}]`
       : '[]';
 
     const query = `
@@ -112,7 +110,7 @@ export class PreferenceClient extends Client {
         updatePreferences(
           templateId: "${props.topicId}",
           preferences: {
-            status: "${props.status}",
+            status: ${props.status},
             hasCustomRouting: ${props.hasCustomRouting},
             routingPreferences: ${routingPreferences}
           }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}

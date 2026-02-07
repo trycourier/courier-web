@@ -18,8 +18,7 @@ describe('PreferenceClient', () => {
     expect(Array.isArray(topic.customRouting)).toBe(true);
   });
 
-  // TODO(C-14105): Create test project with channel delivery customization enabled.
-  it.skip('should update user preference topic successfully', async () => {
+  it('should update user preference topic successfully', async () => {
     const topicId = process.env.TOPIC_ID!;
     const result = await courierClient.preferences.putUserPreferenceTopic({
       topicId,
@@ -29,7 +28,6 @@ describe('PreferenceClient', () => {
     });
     expect(result).toBeUndefined();
   });
-
 
   it('should get notification center url successfully', () => {
     const url = courierClient.preferences.getNotificationCenterUrl({
