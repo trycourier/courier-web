@@ -31,10 +31,10 @@ jobs:
         run: yarn workspace @trycourier/courier-react-17 run test
         env:
           JWT: ${{ secrets.JWT }}
-          USER_ID: ${{ vars.USER_ID }}
-          COURIER_REST_URL: ${{ vars.COURIER_REST_URL }}
-          COURIER_GRAPHQL_URL: ${{ vars.COURIER_GRAPHQL_URL }}
-          INBOX_GRAPHQL_URL: ${{ vars.INBOX_GRAPHQL_URL }}
-          INBOX_WEBSOCKET_URL: ${{ vars.INBOX_WEBSOCKET_URL }}
-          BRAND_ID: ${{ vars.BRAND_ID }}
-          TOPIC_ID: ${{ vars.TOPIC_ID }}
+          USER_ID: ${{ secrets.USER_ID }}
+          COURIER_REST_URL: ${{ secrets.COURIER_REST_URL }}
+          COURIER_GRAPHQL_URL: ${{ secrets.COURIER_GRAPHQL_URL }}
+          INBOX_GRAPHQL_URL: ${{ secrets.INBOX_GRAPHQL_URL }}
+          INBOX_WEBSOCKET_URL: ${{ secrets.INBOX_WEBSOCKET_URL }}
+          BRAND_ID: ${{ secrets.BRAND_ID }}
+          TOPIC_ID: ${{ secrets.TOPIC_ID }}

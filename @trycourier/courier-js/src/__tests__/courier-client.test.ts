@@ -5,8 +5,6 @@ import { UUID } from '../utils/uuid';
 const nanoidSpy = jest.spyOn(UUID, "nanoid");
 
 const CONNECTION_ID = "mock-connection-id";
-const USER_AGENT_CLIENT_NAME = "test-sdk";
-const USER_AGENT_CLIENT_VERSION = "test-sdk-version";
 
 describe('CourierClient', () => {
 

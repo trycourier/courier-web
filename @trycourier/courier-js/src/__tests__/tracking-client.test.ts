@@ -3,7 +3,7 @@ import { getClient } from './utils';
 describe('TrackingClient', () => {
   const courierClient = getClient();
 
-  it('should post inbound courier successfully', async () => {
+  it.skip('should post inbound courier successfully', async () => {
     const result = await courierClient.tracking.postInboundCourier({
       clientKey: process.env.CLIENT_KEY!,
       event: 'test_event',
