@@ -1,6 +1,6 @@
 'use client';
 
-import { CourierToast, type CourierToastItemClickEvent, type CourierToastItemActionClickEvent } from '@trycourier/courier-react';
+import { CourierToast, type CourierToastItemClickEvent } from '@trycourier/courier-react';
 import type { ColorMode } from './ThemeTab';
 
 interface CourierToastTabProps {
@@ -12,7 +12,7 @@ export function CourierToastTab({ colorMode }: CourierToastTabProps) {
     alert(JSON.stringify(message, null, 2));
   };
 
-  const handleToastItemActionClick = ({ action, message }: CourierToastItemActionClickEvent) => {
+  const handleToastItemActionClick = ({ action, message }: { action: unknown; message: unknown }) => {
     alert(`Action clicked!\n\nAction: ${JSON.stringify(action, null, 2)}\n\nMessage: ${JSON.stringify(message, null, 2)}`);
   };
 
