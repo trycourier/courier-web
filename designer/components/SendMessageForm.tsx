@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { CourierRepo, type MessageAction } from "@/app/lib/courier-repo";
+import {
+  substituteVariables,
+  substituteVariablesRaw,
+  markdownLinksToHtml,
+} from "@/app/lib/message-utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +25,12 @@ interface ActionField {
   href: string;
 }
 
+interface VariableField {
+  id: string;
+  key: string;
+  value: string;
+}
+
 export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
@@ -27,6 +38,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
   const [body, setBody] = useState('');
   const [tags, setTags] = useState('');
   const [actions, setActions] = useState<ActionField[]>([]);
+  const [variables, setVariables] = useState<VariableField[]>([]);
   const repo = new CourierRepo();
 
   const addAction = () => {
@@ -43,29 +55,50 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
     ));
   };
 
+  const addVariable = () => {
+    setVariables([...variables, { id: crypto.randomUUID(), key: '', value: '' }]);
+  };
+
+  const removeVariable = (id: string) => {
+    setVariables(variables.filter(v => v.id !== id));
+  };
+
+  const updateVariable = (id: string, field: 'key' | 'value', value: string) => {
+    setVariables(variables.map(v =>
+      v.id === id ? { ...v, [field]: value } : v
+    ));
+  };
+
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSendingMessage(true);
     setSendMessageError(null);
     try {
-      // Parse tags from comma-separated string, trim whitespace, and filter out empty strings
       const tagsArray = tags
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0);
 
-      // Filter out empty actions and map to the API format
+      const varsRecord: Record<string, string> = {};
+      variables
+        .filter(v => v.key.trim() !== '')
+        .forEach(v => { varsRecord[v.key.trim()] = v.value; });
+
+      let resolvedTitle = substituteVariables(title.trim(), varsRecord);
+      let resolvedBody = substituteVariables(body.trim(), varsRecord);
+      resolvedBody = markdownLinksToHtml(resolvedBody);
+
       const validActions: MessageAction[] = actions
         .filter(action => action.content.trim() && action.href.trim())
         .map(action => ({
-          content: action.content.trim(),
-          href: action.href.trim(),
+          content: substituteVariables(action.content.trim(), varsRecord),
+          href: substituteVariablesRaw(action.href.trim(), varsRecord),
         }));
 
       await repo.sendMessage(
         userId,
-        title,
-        body,
+        resolvedTitle,
+        resolvedBody,
         tagsArray.length > 0 ? tagsArray : undefined,
         validActions.length > 0 ? validActions : undefined,
         apiKey,
@@ -107,9 +140,12 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)}
             required
             rows={3}
-            placeholder="Enter message body"
+            placeholder="Enter message body. Use [link text](https://url) for links and {{variableName}} for variables."
             className="font-mono"
           />
+          <p className="text-xs text-muted-foreground">
+            Links: <code className="bg-muted px-1 rounded">[text](https://example.com)</code> — Variables: <code className="bg-muted px-1 rounded">{'{{name}}'}</code>
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="tags">
@@ -123,6 +159,48 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             placeholder="e.g., important, notification, marketing"
             className="font-mono"
           />
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label>
+              Variables <span className="text-muted-foreground text-xs font-normal">(optional, for {'{{key}}'} in title, body, and action URLs)</span>
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addVariable}
+            >
+              + Add Variable
+            </Button>
+          </div>
+          {variables.map((v) => (
+            <div key={v.id} className="flex gap-2 items-center p-3 border border-border rounded-md bg-muted/20">
+              <Input
+                type="text"
+                value={v.key}
+                onChange={(e) => updateVariable(v.id, 'key', e.target.value)}
+                placeholder="key"
+                className="font-mono flex-1"
+              />
+              <Input
+                type="text"
+                value={v.value}
+                onChange={(e) => updateVariable(v.id, 'value', e.target.value)}
+                placeholder="value"
+                className="font-mono flex-1"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => removeVariable(v.id)}
+                className="text-muted-foreground hover:text-destructive shrink-0"
+              >
+                ✕
+              </Button>
+            </div>
+          ))}
         </div>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -156,7 +234,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateAction(action.id, 'href', e.target.value)
                   }
-                  placeholder="URL (e.g., https://example.com)"
+                  placeholder="URL (e.g., https://example.com or https://site.com/{{id}})"
                   className="font-mono"
                 />
               </div>

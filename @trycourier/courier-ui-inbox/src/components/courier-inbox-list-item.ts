@@ -2,6 +2,7 @@ import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
+import { looksLikeHtml, sanitizeHtmlForInbox } from "../utils/sanitize-html";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
@@ -491,7 +492,12 @@ export class CourierInboxListItem extends CourierBaseElement {
       this._titleElement.textContent = this._message.title || 'Untitled Message';
     }
     if (this._subtitleElement) {
-      this._subtitleElement.textContent = this._message.preview || this._message.body || '';
+      const subtitleText = this._message.preview || this._message.body || '';
+      if (looksLikeHtml(subtitleText)) {
+        this._subtitleElement.innerHTML = sanitizeHtmlForInbox(subtitleText);
+      } else {
+        this._subtitleElement.textContent = subtitleText;
+      }
     }
     if (this._timeElement) {
       this._timeElement.textContent = getMessageTime(this._message);
