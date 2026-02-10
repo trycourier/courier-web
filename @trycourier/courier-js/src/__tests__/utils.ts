@@ -2,7 +2,7 @@ import { CourierClient } from "../client/courier-client";
 
 export function getClient(tenantId?: string) {
   return new CourierClient({
-    showLogs: true,
+    showLogs: false,
     userId: process.env.USER_ID!,
     jwt: process.env.JWT!,
     tenantId: tenantId,
