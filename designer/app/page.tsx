@@ -13,6 +13,7 @@ import { AdvancedTab, type ApiUrls, DEFAULT_API_URLS } from "@/components/Advanc
 import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
+import { CourierToastTab } from "@/components/CourierToastTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
@@ -25,10 +26,10 @@ const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
-type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks';
+type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast';
 
 const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds', 'advanced'];
-const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast'];
 const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
 const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
 
@@ -428,6 +429,7 @@ function HomeContent() {
                     <TabsTrigger value="courier-inbox">Inbox</TabsTrigger>
                     <TabsTrigger value="courier-inbox-popup-menu">Popup</TabsTrigger>
                     <TabsTrigger value="courier-inbox-hooks">Hooks</TabsTrigger>
+                    <TabsTrigger value="courier-toast">Toast</TabsTrigger>
                   </TabsList>
                 </div>
                 <div className="flex-1 overflow-y-auto">
@@ -449,6 +451,9 @@ function HomeContent() {
                   </TabsContent>
                   <TabsContent value="courier-inbox-hooks" className="h-full mt-0">
                     <CourierInboxHooks feeds={feeds} />
+                  </TabsContent>
+                  <TabsContent value="courier-toast" className="h-full mt-0">
+                    <CourierToastTab colorMode={colorMode} />
                   </TabsContent>
                 </div>
               </Tabs>

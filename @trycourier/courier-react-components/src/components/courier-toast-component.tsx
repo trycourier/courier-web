@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties, useState } from "react";
+import { useRef, useEffect, forwardRef, ReactNode, useContext, CSSProperties, useState, useCallback } from "react";
 import { CourierToastTheme, CourierToast as CourierToastElement, CourierToastItemFactoryProps } from "@trycourier/courier-ui-toast";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
@@ -89,12 +89,23 @@ export interface CourierToastProps {
    * The toast item's container, including the stack, auto-dismiss timer, and dismiss button
    * are still present when this prop is set.
    *
+   * This callback is stabilized internally, so wrapping it in `useCallback` is optional.
+   * Memoizing in parent components can still reduce parent re-renders.
+   *
    * See {@link CourierToastProps.dismissButton} to customize the dismiss button's visibility and
    * {@link CourierToastProps.renderToastItem} to customize the entire toast item, including
    * its container.
    */
   renderToastItemContent?: (props: CourierToastItemFactoryProps) => ReactNode;
 }
+
+type SetupSteps = {
+  elementMounted: boolean;
+  onItemClickSet: boolean;
+  onItemActionClickSet: boolean;
+  renderToastItemSet: boolean;
+  renderToastItemContentSet: boolean;
+};
 
 export const CourierToastComponent = forwardRef<CourierToastElement, CourierToastProps>((props, ref) => {
   const render = useContext(CourierRenderContext);
@@ -105,7 +116,7 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   // Track ready state for each of the useEffects that is called for a prop set on CourierToastComponent
   // which must be translated into an imperative call on <courier-toast>.
   // When all the steps are complete, props.onReady is called to indicate the component is ready to receive toasts.
-  const [setupSteps, setSetupSteps] = useState({
+  const [setupSteps, setSetupSteps] = useState<SetupSteps>({
     elementMounted: false,
     onItemClickSet: false,
     onItemActionClickSet: false,
@@ -116,6 +127,42 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
 
   // Element ref for use in effects, updated by handleRef.
   const toastRef = useRef<CourierToastElement | null>(null);
+  const isMountedRef = useRef(false);
+  const onReadyCalledRef = useRef(false);
+  const renderToastItemRef = useRef<CourierToastProps["renderToastItem"]>(props.renderToastItem);
+  const renderToastItemContentRef = useRef<CourierToastProps["renderToastItemContent"]>(props.renderToastItemContent);
+
+  if (props.renderToastItem) {
+    renderToastItemRef.current = props.renderToastItem;
+  }
+
+  if (props.renderToastItemContent) {
+    renderToastItemContentRef.current = props.renderToastItemContent;
+  }
+
+  const hasRenderToastItem = !!props.renderToastItem;
+  const hasRenderToastItemContent = !!props.renderToastItemContent;
+
+  const markSetupStepComplete = useCallback((step: keyof SetupSteps) => {
+    setSetupSteps(prev => {
+      if (prev[step]) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        [step]: true,
+      } as SetupSteps;
+    });
+  }, []);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -149,7 +196,8 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   // Check if all setup steps are complete and fire onReady
   useEffect(() => {
     const allStepsComplete = Object.values(setupSteps).every(step => step);
-    if (allStepsComplete && props.onReady) {
+    if (allStepsComplete && props.onReady && !onReadyCalledRef.current) {
+      onReadyCalledRef.current = true;
       props.onReady(true);
     }
   }, [setupSteps, props.onReady]);
@@ -157,59 +205,107 @@ export const CourierToastComponent = forwardRef<CourierToastElement, CourierToas
   // Track when element is mounted
   useEffect(() => {
     if (elementReady) {
-      setSetupSteps(prev => ({ ...prev, elementMounted: true }));
+      markSetupStepComplete("elementMounted");
     }
-  }, [elementReady]);
+  }, [elementReady, markSetupStepComplete]);
 
   // Handle toast item click
   useEffect(() => {
+    if (!elementReady) return;
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemClick(props.onToastItemClick);
-    setSetupSteps(prev => ({ ...prev, onItemClickSet: true }));
-  }, [props.onToastItemClick, elementReady]);
+    markSetupStepComplete("onItemClickSet");
+  }, [props.onToastItemClick, elementReady, markSetupStepComplete]);
 
   // Handle toast item action click
   useEffect(() => {
+    if (!elementReady) return;
     const toast = getEl();
     if (!toast) return;
     toast.onToastItemActionClick(props.onToastItemActionClick);
-    setSetupSteps(prev => ({ ...prev, onItemActionClickSet: true }));
-  }, [props.onToastItemActionClick, elementReady]);
+    markSetupStepComplete("onItemActionClickSet");
+  }, [props.onToastItemActionClick, elementReady, markSetupStepComplete]);
 
   // Render toast item
   useEffect(() => {
+    if (!elementReady) return;
     const toast = getEl();
-    if (!toast || !props.renderToastItem) {
-      setSetupSteps(prev => ({ ...prev, renderToastItemSet: true }));
+    if (!toast) return;
+
+    if (!hasRenderToastItem) {
+      toast.setToastItem();
+      markSetupStepComplete("renderToastItemSet");
       return;
     }
 
+    let cancelled = false;
     queueMicrotask(() => {
-      toast.setToastItem((itemProps: CourierToastItemFactoryProps): HTMLElement => {
-        const reactNode = props.renderToastItem!(itemProps);
+      if (cancelled || !isMountedRef.current) {
+        return;
+      }
+
+      const currentToast = getEl();
+      if (!currentToast || !currentToast.isConnected) {
+        return;
+      }
+
+      currentToast.setToastItem((itemProps: CourierToastItemFactoryProps): HTMLElement => {
+        const renderToastItem = renderToastItemRef.current;
+        if (!renderToastItem) {
+          return document.createElement("div");
+        }
+
+        const reactNode = renderToastItem(itemProps);
         return render(reactNode);
       });
+      markSetupStepComplete("renderToastItemSet");
     });
-    setSetupSteps(prev => ({ ...prev, renderToastItemSet: true }));
 
-  }, [props.renderToastItem, elementReady]);
+    return () => {
+      cancelled = true;
+    };
+  }, [elementReady, hasRenderToastItem, markSetupStepComplete, render]);
 
   // Render toast item content
   useEffect(() => {
+    if (!elementReady) return;
     const toast = getEl();
-    if (!toast || !props.renderToastItemContent) {
-      setSetupSteps(prev => ({ ...prev, renderToastItemContentSet: true }));
+    if (!toast) return;
+
+    if (!hasRenderToastItemContent) {
+      toast.setToastItemContent();
+      markSetupStepComplete("renderToastItemContentSet");
       return;
     }
+
+    let cancelled = false;
     queueMicrotask(() => {
-      toast.setToastItemContent((itemProps: CourierToastItemFactoryProps): HTMLElement => {
-        const reactNode = props.renderToastItemContent!(itemProps);
+      if (cancelled || !isMountedRef.current) {
+        return;
+      }
+
+      const currentToast = getEl();
+      if (!currentToast || !currentToast.isConnected) {
+        return;
+      }
+
+      currentToast.setToastItemContent((itemProps: CourierToastItemFactoryProps): HTMLElement => {
+        const renderToastItemContent = renderToastItemContentRef.current;
+        if (!renderToastItemContent) {
+          return document.createElement("div");
+        }
+
+        const reactNode = renderToastItemContent(itemProps);
         return render(reactNode);
       });
-      setSetupSteps(prev => ({ ...prev, renderToastItemContentSet: true }));
+      markSetupStepComplete("renderToastItemContentSet");
     });
-  }, [props.renderToastItemContent, elementReady]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [elementReady, hasRenderToastItemContent, markSetupStepComplete, render]);
 
   const children = (
     /* @ts-ignore */
