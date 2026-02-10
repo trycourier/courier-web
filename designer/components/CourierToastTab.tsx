@@ -9,17 +9,17 @@ interface CourierToastTabProps {
 
 export function CourierToastTab({ colorMode }: CourierToastTabProps) {
   return (
-    <div className="h-full p-4 flex flex-col gap-4">
+    <div className="relative h-full p-5">
       <p className="text-sm text-muted-foreground text-center">
         Send a test message from the Test tab to preview default Courier toasts.
       </p>
-      <div className="relative flex-1 rounded-md border border-border bg-muted/20 overflow-hidden">
+      <div className="relative mt-5">
         <CourierToast
           mode={colorMode}
           style={{
             position: 'absolute',
-            top: '56px',
-            right: '24px',
+            top: '0px',
+            right: '0px',
           }}
         />
       </div>
