@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 3.1.0
+
+### Minor Changes
+
+- [#146](https://github.com/trycourier/courier-web/pull/146) [`a3bf046`](https://github.com/trycourier/courier-web/commit/a3bf046e66cc003bfc5e4d2fa8206a9330638335) Thanks [@mikemilla](https://github.com/mikemilla)! - GraphQL Preferences and Toast Crash fix
+
 ## 3.0.0
 
 ### Major Changes
