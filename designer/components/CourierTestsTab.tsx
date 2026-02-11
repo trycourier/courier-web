@@ -734,7 +734,11 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey }: Courier
               listener2Calls += 1;
             });
 
-            await socket2.onMessageReceived({
+            const triggerMessageEvent = socket2.onMessageReceived as (
+              event: { event: string; data: { messageId: string; created: string } }
+            ) => Promise<void>;
+
+            await triggerMessageEvent({
               event: 'message',
               data: {
                 messageId: 'shared-test-message',
