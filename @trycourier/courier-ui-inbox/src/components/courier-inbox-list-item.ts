@@ -109,6 +109,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       if (this._menu && (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu))) {
         return;
       }
+      if (e.target instanceof HTMLAnchorElement) return;
       if (this._message && this.onItemClick && !(e.target instanceof CourierIcon) && !this._isLongPress) {
         this.onItemClick(this._message);
       }
@@ -251,6 +252,16 @@ export class CourierInboxListItem extends CourierBaseElement {
         font-family: ${list?.item?.subtitle?.family ?? 'inherit'};
         font-size: ${list?.item?.subtitle?.size ?? '14px'};
         color: ${list?.item?.subtitle?.color ?? 'red'};
+      }
+
+      ${CourierInboxListItem.id} .subtitle a {
+        color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
+        text-decoration: ${list?.item?.subtitleLink?.textDecoration ?? 'underline'};
+        cursor: pointer;
+      }
+
+      ${CourierInboxListItem.id} .subtitle a:hover {
+        color: ${list?.item?.subtitleLink?.hoverColor ?? list?.item?.subtitleLink?.color ?? '#2563EB'};
       }
 
       ${CourierInboxListItem.id} .time {
