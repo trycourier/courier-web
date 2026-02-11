@@ -45,6 +45,12 @@ export type CourierInboxPopupTheme = {
   };
 }
 
+export type CourierInboxSubtitleLinkTheme = {
+  color?: string;
+  textDecoration?: string;
+  hoverColor?: string;
+}
+
 export type CourierInboxListItemTheme = {
   unreadIndicatorColor?: string;
   backgroundColor?: string;
@@ -53,6 +59,8 @@ export type CourierInboxListItemTheme = {
   transition?: string;
   title?: CourierInboxFontTheme;
   subtitle?: CourierInboxFontTheme;
+  /** Styles for inline links inside the subtitle/body text */
+  subtitleLink?: CourierInboxSubtitleLinkTheme;
   time?: CourierInboxFontTheme;
   archiveIcon?: CourierInboxIconTheme;
   divider?: string;
@@ -466,6 +474,11 @@ export const defaultLightTheme: CourierInboxTheme = {
           family: undefined,
           size: '14px'
         },
+        subtitleLink: {
+          color: CourierColors.blue[500],
+          textDecoration: 'underline',
+          hoverColor: CourierColors.blue[500]
+        },
         time: {
           color: CourierColors.gray[600],
           family: undefined,
@@ -805,6 +818,11 @@ export const defaultDarkTheme: CourierInboxTheme = {
           family: undefined,
           size: '14px'
         },
+        subtitleLink: {
+          color: CourierColors.blue[400],
+          textDecoration: 'underline',
+          hoverColor: CourierColors.blue[400]
+        },
         time: {
           color: CourierColors.gray[500],
           family: undefined,
@@ -1094,6 +1112,10 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
           subtitle: {
             ...defaultTheme.inbox?.list?.item?.subtitle,
             ...theme.inbox?.list?.item?.subtitle
+          },
+          subtitleLink: {
+            ...defaultTheme.inbox?.list?.item?.subtitleLink,
+            ...theme.inbox?.list?.item?.subtitleLink
           },
           time: {
             ...defaultTheme.inbox?.list?.item?.time,

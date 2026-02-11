@@ -2,6 +2,7 @@ import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
+import { looksLikeHtml, sanitizeHtmlForInbox } from "../utils/sanitize-html";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
@@ -108,6 +109,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       if (this._menu && (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu))) {
         return;
       }
+      if (e.target instanceof HTMLAnchorElement) return;
       if (this._message && this.onItemClick && !(e.target instanceof CourierIcon) && !this._isLongPress) {
         this.onItemClick(this._message);
       }
@@ -250,6 +252,20 @@ export class CourierInboxListItem extends CourierBaseElement {
         font-family: ${list?.item?.subtitle?.family ?? 'inherit'};
         font-size: ${list?.item?.subtitle?.size ?? '14px'};
         color: ${list?.item?.subtitle?.color ?? 'red'};
+      }
+
+      ${CourierInboxListItem.id} .subtitle a,
+      ${CourierInboxListItem.id} .subtitle .courier-inbox-subtitle-link {
+        --courier-inbox-subtitle-link-color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
+        --courier-inbox-subtitle-link-decoration: ${list?.item?.subtitleLink?.textDecoration ?? 'underline'};
+        color: var(--courier-inbox-subtitle-link-color);
+        text-decoration: var(--courier-inbox-subtitle-link-decoration);
+        cursor: pointer;
+      }
+
+      ${CourierInboxListItem.id} .subtitle a:hover,
+      ${CourierInboxListItem.id} .subtitle .courier-inbox-subtitle-link:hover {
+        color: ${list?.item?.subtitleLink?.hoverColor ?? list?.item?.subtitleLink?.color ?? '#2563EB'};
       }
 
       ${CourierInboxListItem.id} .time {
@@ -491,7 +507,15 @@ export class CourierInboxListItem extends CourierBaseElement {
       this._titleElement.textContent = this._message.title || 'Untitled Message';
     }
     if (this._subtitleElement) {
-      this._subtitleElement.textContent = this._message.preview || this._message.body || '';
+      const body = this._message.body ?? '';
+      const preview = this._message.preview ?? '';
+      const preferBodyWithHtml = body && looksLikeHtml(body);
+      const subtitleText = preferBodyWithHtml ? body : (preview || body || '');
+      if (looksLikeHtml(subtitleText)) {
+        this._subtitleElement.innerHTML = sanitizeHtmlForInbox(subtitleText);
+      } else {
+        this._subtitleElement.textContent = subtitleText;
+      }
     }
     if (this._timeElement) {
       this._timeElement.textContent = getMessageTime(this._message);
