@@ -56,7 +56,7 @@ export function sanitizeHtmlForInbox(html: string): string {
         if (/^https?:\/\//i.test(href)) {
           const safeHref = escapeAttr(href);
           const inner = Array.from(el.childNodes).map(walk).join('');
-          return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+          return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer" class="courier-inbox-subtitle-link" style="color: var(--courier-inbox-subtitle-link-color, #2563EB); text-decoration: var(--courier-inbox-subtitle-link-decoration, underline); cursor: pointer;">${inner}</a>`;
         }
       }
 

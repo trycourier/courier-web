@@ -254,13 +254,17 @@ export class CourierInboxListItem extends CourierBaseElement {
         color: ${list?.item?.subtitle?.color ?? 'red'};
       }
 
-      ${CourierInboxListItem.id} .subtitle a {
-        color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
-        text-decoration: ${list?.item?.subtitleLink?.textDecoration ?? 'underline'};
+      ${CourierInboxListItem.id} .subtitle a,
+      ${CourierInboxListItem.id} .subtitle .courier-inbox-subtitle-link {
+        --courier-inbox-subtitle-link-color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
+        --courier-inbox-subtitle-link-decoration: ${list?.item?.subtitleLink?.textDecoration ?? 'underline'};
+        color: var(--courier-inbox-subtitle-link-color);
+        text-decoration: var(--courier-inbox-subtitle-link-decoration);
         cursor: pointer;
       }
 
-      ${CourierInboxListItem.id} .subtitle a:hover {
+      ${CourierInboxListItem.id} .subtitle a:hover,
+      ${CourierInboxListItem.id} .subtitle .courier-inbox-subtitle-link:hover {
         color: ${list?.item?.subtitleLink?.hoverColor ?? list?.item?.subtitleLink?.color ?? '#2563EB'};
       }
 
@@ -503,7 +507,10 @@ export class CourierInboxListItem extends CourierBaseElement {
       this._titleElement.textContent = this._message.title || 'Untitled Message';
     }
     if (this._subtitleElement) {
-      const subtitleText = this._message.preview || this._message.body || '';
+      const body = this._message.body ?? '';
+      const preview = this._message.preview ?? '';
+      const preferBodyWithHtml = body && looksLikeHtml(body);
+      const subtitleText = preferBodyWithHtml ? body : (preview || body || '');
       if (looksLikeHtml(subtitleText)) {
         this._subtitleElement.innerHTML = sanitizeHtmlForInbox(subtitleText);
       } else {
