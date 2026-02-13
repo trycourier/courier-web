@@ -1,3 +1,4 @@
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
 # `@trycourier/courier-react-17`
 
 ![courier-react-17](https://github.com/user-attachments/assets/2f7889b4-0cc6-4ee3-a8d3-8e37385a8ccb)
@@ -17,9 +18,9 @@ npm install @trycourier/courier-react-17
 
 Check out the [Courier documentation](https://www.courier.com/docs/sdk-libraries/courier-react-web) for a full guide to Courier React.
 
-If you’re coming from an earlier version of the Courier React SDK,
+If you're coming from an earlier version of the Courier React SDK,
 check out [the v8 migration guide](https://www.courier.com/docs/sdk-libraries/courier-react-v8-migration-guide)
-for what’s changed, how to upgrade your app,
+for what's changed, how to upgrade your app,
 and links to documentation for past versions of the React SDK.
 
 
@@ -29,7 +30,7 @@ Below are a few examples of the Courier Inbox. Visit the [Courier documentation]
 
 ### `CourierInbox`
 
-<img width="688" alt="Screenshot 2025-06-25 at 5 17 47 PM" src="https://github.com/user-attachments/assets/1655f43b-cc61-473f-9204-8dffeae21042" />
+<img width="688" alt="Screenshot 2025-06-25 at 5 17 47 PM" src="https://github.com/user-attachments/assets/1655f43b-cc61-473f-9204-8dffeae21042" />
 
 ```ts
 import { useEffect } from 'react';
@@ -57,7 +58,7 @@ export default function App() {
 
 ### `CourierInboxPopupMenu`
 
-<img width="605" alt="Screenshot 2025-06-25 at 5 21 53 PM" src="https://github.com/user-attachments/assets/1c5497ba-a860-4d7e-8cf7-5b56a65cea51" />
+<img width="605" alt="Screenshot 2025-06-25 at 5 21 53 PM" src="https://github.com/user-attachments/assets/1c5497ba-a860-4d7e-8cf7-5b56a65cea51" />
 
 ```ts
 import { useEffect } from 'react';
@@ -86,6 +87,7 @@ export default function App() {
 
 }
 ```
+<!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
 

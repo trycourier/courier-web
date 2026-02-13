@@ -1,3 +1,4 @@
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
 <img width="1040" alt="courier-ui-inbox" src="https://github.com/user-attachments/assets/6227249b-d008-4719-bddc-874f34432376" />
 
 **Using React?** Use the [@trycourier/courier-react](../courier-react/) package.
@@ -18,7 +19,7 @@ Below are a few examples of the Courier Inbox. Visit the [Courier documentation]
 
 ### `courier-inbox`
 
-<img width="688" alt="Screenshot 2025-06-25 at 2 32 30 PM" src="https://github.com/user-attachments/assets/93246c34-3c5a-475e-8e83-7df6acf9bdf3" />
+<img width="688" alt="Screenshot 2025-06-25 at 2 32 30 PM" src="https://github.com/user-attachments/assets/93246c34-3c5a-475e-8e83-7df6acf9bdf3" />
 
 ```html
 <body>
@@ -43,7 +44,7 @@ Below are a few examples of the Courier Inbox. Visit the [Courier documentation]
 
 ### `courier-inbox-popup-menu`
 
-<img width="602" alt="Screenshot 2025-06-25 at 2 33 17 PM" src="https://github.com/user-attachments/assets/c3b7f4cc-26c1-4be6-9ed5-a3fc3c0b335b" />
+<img width="602" alt="Screenshot 2025-06-25 at 2 33 17 PM" src="https://github.com/user-attachments/assets/c3b7f4cc-26c1-4be6-9ed5-a3fc3c0b335b" />
 
 ```html
 <body>
@@ -67,6 +68,7 @@ Below are a few examples of the Courier Inbox. Visit the [Courier documentation]
 
 </body>
 ```
+<!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
 
