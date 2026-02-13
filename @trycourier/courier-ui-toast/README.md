@@ -1,3 +1,4 @@
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
 # @trycourier/courier-ui-toast
 
 Toast notification components for the Courier web UI.
@@ -38,6 +39,7 @@ Check out the [Courier documentation](https://www.courier.com/docs/sdk-libraries
 
 </body>
 ```
+<!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
 
