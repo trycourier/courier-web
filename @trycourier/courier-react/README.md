@@ -1,88 +1,72 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
-<img width="1040" alt="courier-react" src="https://github.com/user-attachments/assets/e886b445-d106-4dab-afca-82183e0fcbe7" />
+# Courier React SDK
 
-**Using React 17?** Use the [@trycourier/courier-react-17](../courier-react-17/) package.
+The Courier React SDK provides ready-made components and programmatic hooks for building notification experiences in React 18+ applications. It includes a full-featured inbox, popup menu, toast notifications, and a hook for custom UIs.
 
-**Not using React?** Use the [@trycourier/courier-ui-inbox](../courier-ui-inbox/) package.
+- [`<CourierInbox />`](https://www.courier.com/docs/sdk-libraries/courier-react-web/#inbox-component) — full-featured inbox for displaying and managing messages
+- [`<CourierInboxPopupMenu />`](https://www.courier.com/docs/sdk-libraries/courier-react-web/#inbox-component) — popup menu version of the inbox
+- [`<CourierToast />`](https://www.courier.com/docs/sdk-libraries/courier-react-web/#toast-component) — toast notifications for time-sensitive alerts
+- [`useCourier()`](https://www.courier.com/docs/sdk-libraries/courier-react-web/#usecourier-hook) — hook for programmatic access and custom UIs
+
+> **Not using React?** Check out the [`@trycourier/courier-ui-inbox`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) and [`@trycourier/courier-ui-toast`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast) packages, which provide Web Components for any JavaScript project.
 
 ## Installation
 
-```sh
+```bash
 npm install @trycourier/courier-react
 ```
 
-## Usage
+> Using React 17? Install [`@trycourier/courier-react-17`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react-17) instead.
 
-Check out the [Courier documentation](https://www.courier.com/docs/sdk-libraries/courier-react-web) for a full guide to Courier React.
+## Quick Start
 
-If you're coming from an earlier version of the Courier React SDK,
-check out [the v8 migration guide](https://www.courier.com/docs/sdk-libraries/courier-react-v8-migration-guide)
-for what's changed, how to upgrade your app,
-and links to documentation for past versions of the React SDK.
+```jsx
+"use client"
 
-## Examples
-
-Below are a few examples of the Courier Inbox. Visit the [Courier documentation](https://www.courier.com/docs/sdk-libraries/courier-react-web) for more examples.
-
-### `CourierInbox`
-
-<img width="688" alt="Screenshot 2025-06-25 at 5 17 47 PM" src="https://github.com/user-attachments/assets/1655f43b-cc61-473f-9204-8dffeae21042" />
-
-```ts
-import { useEffect } from 'react';
-import { CourierInbox, useCourier } from '@trycourier/courier-react';
+import { useEffect } from "react";
+import { CourierInbox, useCourier } from "@trycourier/courier-react";
 
 export default function App() {
-
   const courier = useCourier();
 
   useEffect(() => {
-    // Generate a JWT for your user (do this on your backend server)
-    const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
+    // Generate a JWT for your user on your backend server
+    const jwt = "your-jwt-token";
 
-    // Authenticate the user with the inbox
+    // Authenticate the user
     courier.shared.signIn({
-      userId: $YOUR_USER_ID,
+      userId: "your-user-id",
       jwt: jwt,
     });
   }, []);
 
   return <CourierInbox />;
-
 }
 ```
 
-### `CourierInboxPopupMenu`
+## Authentication
 
-<img width="605" alt="Screenshot 2025-06-25 at 5 21 53 PM" src="https://github.com/user-attachments/assets/1c5497ba-a860-4d7e-8cf7-5b56a65cea51" />
+The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JWTs on your backend server, never in client-side code.**
 
-```ts
-import { useEffect } from 'react';
-import { CourierInbox, useCourier } from '@trycourier/courier-react';
+1. Your client calls your backend to request a token.
+2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) using your API key.
+3. Your backend returns the JWT to your client and passes it to the SDK.
 
-export default function App() {
-
-  const courier = useCourier();
-
-  useEffect(() => {
-    // Generate a JWT for your user (do this on your backend server)
-    const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with actual JWT
-
-    // Authenticate the user with the inbox
-    courier.shared.signIn({
-      userId: $YOUR_USER_ID,
-      jwt: jwt,
-    });
-  }, []);
-
-  return (
-    <div style={{ padding: '24px' }}>
-      <CourierInboxPopupMenu />
-    </div>
-  );
-
-}
+```bash
+curl --request POST      --url https://api.courier.com/auth/issue-token      --header 'Authorization: Bearer $YOUR_API_KEY'      --header 'Content-Type: application/json'      --data '{
+       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+       "expires_in": "1 day"
+     }'
 ```
+
+## Documentation
+
+Full documentation: **[courier.com/docs/sdk-libraries/courier-react-web](https://www.courier.com/docs/sdk-libraries/courier-react-web/)**
+
+- [Inbox implementation tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-implement-inbox/)
+- [JWT authentication tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-send-jwt/)
+- [Theme reference](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web-theme/)
+- [v8 migration guide](https://www.courier.com/docs/sdk-libraries/courier-react-v8-migration-guide/)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
