@@ -31,9 +31,12 @@ export interface ApiUrls {
 
 interface AdvancedTabProps {
   apiUrls: ApiUrls;
+  brandId?: string;
+  topicId?: string;
+  clientKey?: string;
 }
 
-export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
+export function AdvancedTab({ apiUrls, brandId, topicId, clientKey }: AdvancedTabProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -46,6 +49,12 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
   // Get initial apiKey from URL params
   const initialApiKey = searchParams.get('apiKey') || '';
   const [apiKey, setApiKey] = useState(initialApiKey);
+  const initialBrandId = brandId ?? (searchParams.get('brandId') || '');
+  const initialTopicId = topicId ?? (searchParams.get('topicId') || '');
+  const initialClientKey = clientKey ?? (searchParams.get('clientKey') || '');
+  const [currentBrandId, setCurrentBrandId] = useState(initialBrandId);
+  const [currentTopicId, setCurrentTopicId] = useState(initialTopicId);
+  const [currentClientKey, setCurrentClientKey] = useState(initialClientKey);
 
   const handleSave = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -81,6 +90,24 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
       params.delete('apiKey');
     }
 
+    if (currentBrandId.trim()) {
+      params.set('brandId', currentBrandId.trim());
+    } else {
+      params.delete('brandId');
+    }
+
+    if (currentTopicId.trim()) {
+      params.set('topicId', currentTopicId.trim());
+    } else {
+      params.delete('topicId');
+    }
+
+    if (currentClientKey.trim()) {
+      params.set('clientKey', currentClientKey.trim());
+    } else {
+      params.delete('clientKey');
+    }
+
     // Build new URL and reload
     // Ensure basePath is included in the URL
     const basePath = '/inbox-demo';
@@ -99,6 +126,9 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
     setInboxGraphql(DEFAULT_API_URLS.inbox.graphql);
     setInboxWebSocket(DEFAULT_API_URLS.inbox.webSocket);
     setApiKey('');
+    setCurrentBrandId('');
+    setCurrentTopicId('');
+    setCurrentClientKey('');
   };
 
   const hasChanges =
@@ -106,7 +136,10 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
     courierGraphql !== apiUrls.courier.graphql ||
     inboxGraphql !== apiUrls.inbox.graphql ||
     inboxWebSocket !== apiUrls.inbox.webSocket ||
-    apiKey !== initialApiKey;
+    apiKey !== initialApiKey ||
+    currentBrandId !== initialBrandId ||
+    currentTopicId !== initialTopicId ||
+    currentClientKey !== initialClientKey;
 
   return (
     <div className="p-4 h-full overflow-y-auto">
@@ -125,6 +158,53 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="pk_prod_..."
+              className="font-mono"
+            />
+          </div>
+        </div>
+
+        {/* Test Inputs Section */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Test Inputs</h3>
+
+          <div className="space-y-2">
+            <Label htmlFor="brand-id" className="text-sm text-muted-foreground">
+              Brand ID <span className="text-xs">(used by Tests tab)</span>
+            </Label>
+            <Input
+              id="brand-id"
+              type="text"
+              value={currentBrandId}
+              onChange={(e) => setCurrentBrandId(e.target.value)}
+              placeholder="brand_..."
+              className="font-mono"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="topic-id" className="text-sm text-muted-foreground">
+              Topic ID <span className="text-xs">(used by Tests tab)</span>
+            </Label>
+            <Input
+              id="topic-id"
+              type="text"
+              value={currentTopicId}
+              onChange={(e) => setCurrentTopicId(e.target.value)}
+              placeholder="topic_..."
+              className="font-mono"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="client-key" className="text-sm text-muted-foreground">
+              Client Key <span className="text-xs">(used by Tests tab)</span>
+            </Label>
+            <Input
+              id="client-key"
+              type="text"
+              value={currentClientKey}
+              onChange={(e) => setCurrentClientKey(e.target.value)}
+              placeholder="client-key"
               className="font-mono"
             />
           </div>
