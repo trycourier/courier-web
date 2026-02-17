@@ -4,7 +4,7 @@ import { CourierInboxListItem } from "./courier-inbox-list-item";
 import { CourierInboxPaginationListItem } from "./courier-inbox-pagination-list-item";
 import { InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxStateErrorFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxListItemFactoryProps, CourierInboxPaginationItemFactoryProps } from "../types/factories";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager, CourierInboxThemeSubscription } from "../types/courier-inbox-theme-manager";
 import { CourierInboxSkeletonList } from "./courier-inbox-skeleton-list";
 import { CourierInboxListItemMenu } from "./courier-inbox-list-item-menu";
@@ -19,7 +19,8 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   // Theme
-  private _themeSubscription: CourierInboxThemeSubscription;
+  private _themeSubscription!: CourierInboxThemeSubscription;
+  private _isConfigured = false;
 
   // State
   private _messages: InboxMessage[] = [];
@@ -35,7 +36,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
   private _onMessageActionClick: ((message: InboxMessage, action: InboxAction, index: number) => void) | null = null;
   private _onMessageLongPress: ((message: InboxMessage, index: number) => void) | null = null;
-  private _onRefresh: () => void;
+  private _onRefresh: () => void = () => { };
 
   // Factories
   private _onPaginationTrigger?: (feedId: string) => void;
@@ -51,7 +52,7 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   private get theme(): CourierInboxTheme {
-    return this._themeSubscription.manager.getTheme();
+    return this._isConfigured ? this._themeSubscription.manager.getTheme() : defaultLightTheme;
   }
 
   // Components
@@ -61,7 +62,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _errorContainer?: CourierInfoState;
   private _emptyContainer?: CourierInfoState;
 
-  constructor(props: {
+  constructor(props?: {
     themeManager: CourierInboxThemeManager,
     listItemActions?: CourierInboxListItemAction[],
     canClickListItems: boolean,
@@ -73,6 +74,14 @@ export class CourierInboxList extends CourierBaseElement {
     onMessageLongPress: (message: InboxMessage, index: number) => void
   }) {
     super();
+
+    // Custom elements can be constructed by the browser without arguments
+    // (e.g. during cloneNode). Keep that path inert instead of throwing.
+    if (!props) {
+      return;
+    }
+
+    this._isConfigured = true;
 
     // Initialize the callbacks
     this._onRefresh = props.onRefresh;
@@ -94,6 +103,9 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
 
     // Inject styles at head
     // Since list items and menus don't listen to theme changes directly, their styles are created
@@ -108,7 +120,9 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   onComponentUnmounted() {
-    this._themeSubscription.unsubscribe();
+    if (this._isConfigured) {
+      this._themeSubscription.unsubscribe();
+    }
     this._listStyles?.remove();
     this._listItemStyles?.remove();
     this._listItemMenuStyles?.remove();
@@ -261,7 +275,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   get errorProps(): any {
     const error = this.theme.inbox?.error;
-    const themeMode = this._themeSubscription.manager.mode;
+    const themeMode = this._isConfigured ? this._themeSubscription.manager.mode : 'system';
     return {
       title: {
         text: error?.title?.text ?? this._error?.message,
@@ -290,7 +304,7 @@ export class CourierInboxList extends CourierBaseElement {
 
   get emptyProps(): any {
     const empty = this.theme.inbox?.empty;
-    const themeMode = this._themeSubscription.manager.mode;
+    const themeMode = this._isConfigured ? this._themeSubscription.manager.mode : 'system';
     return {
       title: {
         text: empty?.title?.text ?? `No Messages`,
@@ -318,6 +332,9 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   private render(): void {
+    if (!this._isConfigured) {
+      return;
+    }
 
     // Remove all existing elements
     while (this.firstChild) {
