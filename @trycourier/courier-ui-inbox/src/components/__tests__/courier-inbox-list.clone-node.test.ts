@@ -17,6 +17,20 @@ class MockIntersectionObserver implements IntersectionObserver {
 describe("CourierInboxList cloneNode safety", () => {
   beforeAll(() => {
     (globalThis as { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver = MockIntersectionObserver;
+
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation((query: string): MediaQueryList => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: () => { },
+        removeListener: () => { },
+        addEventListener: () => { },
+        removeEventListener: () => { },
+        dispatchEvent: () => false,
+      })),
+    });
   });
 
   afterEach(() => {
