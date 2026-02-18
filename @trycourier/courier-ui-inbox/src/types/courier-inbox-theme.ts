@@ -819,9 +819,9 @@ export const defaultDarkTheme: CourierInboxTheme = {
           size: '14px'
         },
         subtitleLink: {
-          color: CourierColors.blue[400],
+          color: CourierColors.blue[500],
           textDecoration: 'underline',
-          hoverColor: CourierColors.blue[400]
+          hoverColor: CourierColors.blue[500]
         },
         time: {
           color: CourierColors.gray[500],

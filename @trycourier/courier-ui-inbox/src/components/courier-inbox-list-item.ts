@@ -2,7 +2,7 @@ import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
-import { looksLikeHtml, sanitizeHtmlForInbox } from "../utils/sanitize-html";
+import { looksLikeHtml, linkifyPlainText, sanitizeHtmlForInbox } from "../utils/sanitize-html";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
@@ -246,6 +246,18 @@ export class CourierInboxListItem extends CourierBaseElement {
         font-size: ${list?.item?.title?.size ?? '14px'};
         color: ${list?.item?.title?.color ?? 'red'};
         margin-bottom: 4px;
+      }
+      ${CourierInboxListItem.id} .title a,
+      ${CourierInboxListItem.id} .title .courier-inbox-subtitle-link {
+        --courier-inbox-subtitle-link-color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
+        --courier-inbox-subtitle-link-decoration: ${list?.item?.subtitleLink?.textDecoration ?? 'underline'};
+        color: var(--courier-inbox-subtitle-link-color);
+        text-decoration: var(--courier-inbox-subtitle-link-decoration);
+        cursor: pointer;
+      }
+      ${CourierInboxListItem.id} .title a:hover,
+      ${CourierInboxListItem.id} .title .courier-inbox-subtitle-link:hover {
+        color: ${list?.item?.subtitleLink?.hoverColor ?? list?.item?.subtitleLink?.color ?? '#2563EB'};
       }
 
       ${CourierInboxListItem.id} .subtitle {
@@ -504,7 +516,12 @@ export class CourierInboxListItem extends CourierBaseElement {
     this.classList.toggle('unread', !this._message.read);
 
     if (this._titleElement) {
-      this._titleElement.textContent = this._message.title || 'Untitled Message';
+      const titleText = this._message.title || 'Untitled Message';
+      if (looksLikeHtml(titleText)) {
+        this._titleElement.innerHTML = sanitizeHtmlForInbox(titleText);
+      } else {
+        this._titleElement.innerHTML = sanitizeHtmlForInbox(linkifyPlainText(titleText));
+      }
     }
     if (this._subtitleElement) {
       const body = this._message.body ?? '';
@@ -514,7 +531,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       if (looksLikeHtml(subtitleText)) {
         this._subtitleElement.innerHTML = sanitizeHtmlForInbox(subtitleText);
       } else {
-        this._subtitleElement.textContent = subtitleText;
+        this._subtitleElement.innerHTML = sanitizeHtmlForInbox(linkifyPlainText(subtitleText));
       }
     }
     if (this._timeElement) {

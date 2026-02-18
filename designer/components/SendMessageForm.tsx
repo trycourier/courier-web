@@ -31,6 +31,14 @@ interface VariableField {
   value: string;
 }
 
+interface HistoryItem {
+  title: string;
+  body: string;
+  tags: string;
+  actions: { content: string; href: string }[];
+  variables: { key: string; value: string }[];
+}
+
 export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
@@ -39,7 +47,30 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
   const [tags, setTags] = useState('');
   const [actions, setActions] = useState<ActionField[]>([]);
   const [variables, setVariables] = useState<VariableField[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const repo = new CourierRepo();
+
+  const MAX_HISTORY = 20;
+
+  const applyHistoryItem = (item: HistoryItem) => {
+    setTitle(item.title);
+    setBody(item.body);
+    setTags(item.tags);
+    setActions(
+      item.actions.map((a) => ({
+        id: crypto.randomUUID(),
+        content: a.content,
+        href: a.href,
+      }))
+    );
+    setVariables(
+      item.variables.map((v) => ({
+        id: crypto.randomUUID(),
+        key: v.key,
+        value: v.value,
+      }))
+    );
+  };
 
   const addAction = () => {
     setActions([...actions, { id: crypto.randomUUID(), content: '', href: '' }]);
@@ -104,10 +135,24 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
         apiKey,
         courierRest
       );
+      setHistory((prev) => {
+        const next = [
+          {
+            title: title.trim(),
+            body: body.trim(),
+            tags,
+            actions: actions.map((a) => ({ content: a.content, href: a.href })),
+            variables: variables.map((v) => ({ key: v.key, value: v.value })),
+          },
+          ...prev,
+        ].slice(0, MAX_HISTORY);
+        return next;
+      });
       setTitle('');
       setBody('');
       setTags('');
       setActions([]);
+      setVariables([]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setSendMessageError(errorMessage);
@@ -140,13 +185,17 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)}
             required
             rows={3}
-            placeholder="Enter message body. Use [link text](https://url) for links and {{variableName}} for variables."
+            placeholder="Enter message body"
             className="font-mono"
           />
           <p className="text-xs text-muted-foreground">
-            Links: <code className="bg-muted px-1 rounded">[text](https://example.com)</code> — Variables: <code className="bg-muted px-1 rounded">{'{{name}}'}</code>
+            Links: <code className="bg-muted px-1 rounded">[text](https://example.com)</code>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Variables: <code className="bg-muted px-1 rounded">{'{{name}}'}</code>
           </p>
         </div>
+        <hr className="border-border my-4" />
         <div className="space-y-2">
           <Label htmlFor="tags">
             Tags <span className="text-muted-foreground text-xs font-normal">(optional, comma-separated)</span>
@@ -163,7 +212,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label>
-              Variables <span className="text-muted-foreground text-xs font-normal">(optional, for {'{{key}}'} in title, body, and action URLs)</span>
+              Variables <span className="text-muted-foreground text-xs font-normal">(optional)</span>
             </Label>
             <Button
               type="button"
@@ -250,6 +299,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             </div>
           ))}
         </div>
+        <hr className="border-border my-4" />
         <div>
           <Button
             type="submit"
@@ -264,6 +314,34 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
           </Alert>
         )}
       </form>
+      {history.length > 0 && (
+        <>
+          <hr className="border-border my-4" />
+          <div className="space-y-2">
+            <Label className="text-muted-foreground">History</Label>
+            <p className="text-xs text-muted-foreground">
+              Click an item to fill the form with that message.
+            </p>
+            <ul className="space-y-1 max-h-48 overflow-y-auto">
+              {history.map((item, index) => (
+                <li key={index}>
+                  <button
+                    type="button"
+                    onClick={() => applyHistoryItem(item)}
+                    className="w-full text-left px-3 py-2 rounded-md border border-border bg-muted/20 hover:bg-muted/40 text-sm font-mono transition-colors space-y-0.5"
+                    title={item.body || item.title || '(empty)'}
+                  >
+                    <div className="font-medium truncate">{item.title || '(no title)'}</div>
+                    <div className="text-muted-foreground text-xs line-clamp-2 break-words">
+                      {item.body || '(no body)'}
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }
