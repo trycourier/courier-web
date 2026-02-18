@@ -134,6 +134,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#8B5CF6',
+            subtitleLink: {
+              color: '#8B5CF6',
+              hoverColor: '#7C3AED',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Poppins',
             },
@@ -306,6 +311,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#8B5CF6',
+            subtitleLink: {
+              color: '#A78BFA',
+              hoverColor: '#8B5CF6',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Poppins',
               color: '#F9FAFB',
@@ -504,6 +514,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#10B981',
+            subtitleLink: {
+              color: '#10B981',
+              hoverColor: '#059669',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Montserrat',
               size: '14px',
@@ -717,6 +732,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#10B981',
+            subtitleLink: {
+              color: '#34D399',
+              hoverColor: '#10B981',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Montserrat',
               size: '14px',
@@ -928,6 +948,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#EF4444',
+            subtitleLink: {
+              color: '#EF4444',
+              hoverColor: '#DC2626',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Playfair Display',
               size: '15px',
@@ -1142,6 +1167,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#EF4444',
+            subtitleLink: {
+              color: '#F87171',
+              hoverColor: '#EF4444',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Playfair Display',
               size: '15px',
@@ -1353,6 +1383,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#F97316',
+            subtitleLink: {
+              color: '#F97316',
+              hoverColor: '#EA580C',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Raleway',
               size: '14px',
@@ -1566,6 +1601,11 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         list: {
           item: {
             unreadIndicatorColor: '#F97316',
+            subtitleLink: {
+              color: '#FB923C',
+              hoverColor: '#F97316',
+              textDecoration: 'underline',
+            },
             title: {
               family: 'Raleway',
               size: '14px',
