@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react",
-  "version": "9.0.3",
+  "version": "9.0.4",
   "description": "The React components for the Courier web UI",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -33,9 +33,9 @@
   },
   "dependencies": {
     "@trycourier/courier-js": "3.1.0",
-    "@trycourier/courier-react-components": "2.0.3",
+    "@trycourier/courier-react-components": "2.0.4",
     "@trycourier/courier-ui-core": "2.0.0",
-    "@trycourier/courier-ui-inbox": "2.2.1",
+    "@trycourier/courier-ui-inbox": "2.3.0",
     "@trycourier/courier-ui-toast": "2.1.0"
   },
   "peerDependencies": {
