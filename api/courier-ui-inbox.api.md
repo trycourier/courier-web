@@ -417,6 +417,7 @@ export type CourierInboxListItemTheme = {
     transition?: string;
     title?: CourierInboxFontTheme;
     subtitle?: CourierInboxFontTheme;
+    subtitleLink?: CourierInboxSubtitleLinkTheme;
     time?: CourierInboxFontTheme;
     archiveIcon?: CourierInboxIconTheme;
     divider?: string;
@@ -616,6 +617,15 @@ export type CourierInboxStateErrorFactoryProps = {
 // @public (undocumented)
 export type CourierInboxStateLoadingFactoryProps = {
     datasetId: string;
+};
+
+// Warning: (ae-missing-release-tag) "CourierInboxSubtitleLinkTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierInboxSubtitleLinkTheme = {
+    color?: string;
+    textDecoration?: string;
+    hoverColor?: string;
 };
 
 // Warning: (ae-missing-release-tag) "CourierInboxTab" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
