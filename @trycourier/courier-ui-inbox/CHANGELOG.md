@@ -1,5 +1,16 @@
 # @trycourier/courier-ui-inbox
 
+## 2.3.0
+
+### Minor Changes
+
+- [#145](https://github.com/trycourier/courier-web/pull/145) [`791ef56`](https://github.com/trycourier/courier-web/commit/791ef56d3383d078fbbb08162e8b3e4277b78eea) Thanks [@crrojas88](https://github.com/crrojas88)! - Support inline hyperlinks and variables in inbox designer and inbox UI
+
+  - **Designer**: Add optional Variables (key/value) section; substitute `{{variableName}}` in title, body, and action labels/URLs before send. Body supports markdown-style links `[text](url)` which are converted to HTML for display.
+  - **Inbox UI**: Render message body/preview as sanitized HTML when it contains markup (e.g. `<a>` from inline links), so inline links are clickable; plain text continues to use textContent.
+
+- [#145](https://github.com/trycourier/courier-web/pull/145) [`791ef56`](https://github.com/trycourier/courier-web/commit/791ef56d3383d078fbbb08162e8b3e4277b78eea) Thanks [@crrojas88](https://github.com/crrojas88)! - Link support
+
 ## 2.2.1
 
 ### Patch Changes
