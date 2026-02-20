@@ -45,7 +45,11 @@ If you've already set up authentication for [Courier Inbox](https://github.com/t
 3. Your backend returns the JWT to your client and passes it to the SDK.
 
 ```bash
-curl --request POST      --url https://api.courier.com/auth/issue-token      --header 'Authorization: Bearer $YOUR_API_KEY'      --header 'Content-Type: application/json'      --data '{
+curl --request POST \
+     --url https://api.courier.com/auth/issue-token \
+     --header 'Authorization: Bearer $YOUR_API_KEY' \
+     --header 'Content-Type: application/json' \
+     --data '{
        "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
        "expires_in": "1 day"
      }'
