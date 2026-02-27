@@ -14,15 +14,23 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   // State
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
+  private _isConfigured = false;
   private _options: CourierInboxListItemActionMenuOption[] = [];
 
-  constructor(theme: CourierInboxTheme) {
+  constructor(theme?: CourierInboxTheme) {
     super();
+    if (!theme) {
+      return;
+    }
+    this._isConfigured = true;
     this._theme = theme;
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
     const menu = document.createElement('ul');
     menu.className = 'menu';
     this.appendChild(menu);
@@ -79,6 +87,9 @@ export class CourierInboxListItemMenu extends CourierBaseElement {
   }
 
   setOptions(options: CourierInboxListItemActionMenuOption[]) {
+    if (!this._isConfigured) {
+      return;
+    }
     this._options = options;
     this.renderMenu();
   }

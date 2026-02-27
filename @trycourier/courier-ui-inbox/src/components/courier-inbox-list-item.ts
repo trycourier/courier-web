@@ -1,6 +1,6 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
-import { CourierInboxTheme } from "../types/courier-inbox-theme";
+import { CourierInboxTheme, defaultLightTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
 import { looksLikeHtml, linkifyPlainText, sanitizeHtmlForInbox } from "../utils/sanitize-html";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
@@ -16,8 +16,8 @@ export class CourierInboxListItem extends CourierBaseElement {
   }
 
   // State
-  private _themeManager: CourierInboxThemeManager;
-  private _theme: CourierInboxTheme;
+  private _themeManager?: CourierInboxThemeManager;
+  private _theme: CourierInboxTheme = defaultLightTheme;
   private _message: InboxMessage | null = null;
   private _isMobile: boolean = false;
   private _canClick: boolean = false;
@@ -45,8 +45,13 @@ export class CourierInboxListItem extends CourierBaseElement {
   private onItemActionClick: ((message: InboxMessage, action: InboxAction) => void) | null = null;
   private onItemVisible: ((message: InboxMessage) => void) | null = null;
 
-  constructor(themeManager: CourierInboxThemeManager, canClick: boolean, _canLongPress: boolean, listItemActions?: CourierInboxListItemAction[]) {
+  constructor(themeManager?: CourierInboxThemeManager, canClick = false, _canLongPress = false, listItemActions?: CourierInboxListItemAction[]) {
     super();
+
+    if (!themeManager) {
+      return;
+    }
+
     this._canClick = canClick;
     // this._canLongPress = canLongPress;
     this._themeManager = themeManager;
@@ -557,7 +562,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       this._message.actions.forEach(action => {
         // Create the action element
         const actionButton = new CourierButton({
-          mode: this._themeManager.mode,
+          mode: this._themeManager?.mode ?? 'system',
           text: action.content,
           variant: 'secondary',
           backgroundColor: actionsTheme?.backgroundColor,
