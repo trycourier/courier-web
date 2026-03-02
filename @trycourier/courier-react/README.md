@@ -21,8 +21,6 @@ npm install @trycourier/courier-react
 ## Quick Start
 
 ```jsx
-"use client"
-
 import { useEffect } from "react";
 import { CourierInbox, useCourier } from "@trycourier/courier-react";
 
@@ -53,10 +51,13 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 3. Your backend returns the JWT to your client and passes it to the SDK.
 
 ```bash
-curl --request POST      --url https://api.courier.com/auth/issue-token      --header 'Authorization: Bearer $YOUR_API_KEY'      --header 'Content-Type: application/json'      --data '{
-       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
-       "expires_in": "1 day"
-     }'
+curl -X POST https://api.courier.com/auth/issue-token \
+  -H 'Authorization: Bearer $YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+    "expires_in": "1 day"
+  }'
 ```
 
 ## Documentation
