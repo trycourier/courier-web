@@ -1,5 +1,11 @@
 # designer
 
+## 0.1.2
+
+### Patch Changes
+
+- [#155](https://github.com/trycourier/courier-web/pull/155) [`79ee192`](https://github.com/trycourier/courier-web/commit/79ee19281b74a43634c1b2f83c0a98608b891806) Thanks [@mikemilla](https://github.com/mikemilla)! - Link support
+
 ## 0.1.1
 
 ### Patch Changes
