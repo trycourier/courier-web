@@ -238,9 +238,12 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   private setupAuthListener() {
-    this._authListener = Courier.shared.addAuthenticationListener(async ({ userId }) => {
+    this._authListener = Courier.shared.addAuthenticationListener(({ userId }) => {
       if (userId) {
-        await this.refresh();
+        this.refresh().catch((err) => {
+          // Inbox fetch can fail (e.g. network). Handle to avoid unhandled rejection.
+          Courier.shared.client?.options.logger?.warn?.('Inbox refresh failed after sign-in', err);
+        });
       }
     });
   }
