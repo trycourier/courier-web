@@ -1,8 +1,13 @@
 import { CourierGetInboxMessagesQueryFilter } from '../types/inbox';
 import { InboxMessageEvent } from '../types/socket/protocol/messages';
-import { getClient } from './utils';
+import { getClient, hasClientTestEnv, hasTestEnv } from './utils';
 
-describe('InboxClient', () => {
+const describeIntegration = hasClientTestEnv() ? describe : describe.skip;
+const itWithMessageEnv =
+  hasTestEnv('MESSAGE_ID') && hasTestEnv('MESSAGE_TRACKING_ID') ? it : it.skip;
+const itWithTenantEnv = hasTestEnv('TENANT_ID') ? it : it.skip;
+
+describeIntegration('InboxClient', () => {
   const courierClient = getClient();
 
   describe('getMessages', () => {
@@ -66,20 +71,20 @@ describe('InboxClient', () => {
     }
   });
 
-  it('should track click events', async () => {
+  itWithMessageEnv('should track click events', async () => {
     await expect(courierClient.inbox.click({
       messageId: process.env.MESSAGE_ID!,
       trackingId: process.env.MESSAGE_TRACKING_ID!
     })).resolves.not.toThrow();
   });
 
-  it('should mark message as read', async () => {
+  itWithMessageEnv('should mark message as read', async () => {
     await expect(courierClient.inbox.read({
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
   });
 
-  it('should mark message as unread', async () => {
+  itWithMessageEnv('should mark message as unread', async () => {
     await expect(courierClient.inbox.unread({
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
@@ -89,13 +94,13 @@ describe('InboxClient', () => {
     await expect(courierClient.inbox.readAll()).resolves.not.toThrow();
   });
 
-  it('should mark message as opened', async () => {
+  itWithMessageEnv('should mark message as opened', async () => {
     await expect(courierClient.inbox.open({
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
   });
 
-  it('should archive message', async () => {
+  itWithMessageEnv('should archive message', async () => {
     await expect(courierClient.inbox.archive({
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
@@ -105,7 +110,7 @@ describe('InboxClient', () => {
     await expect(courierClient.inbox.archiveRead()).resolves.not.toThrow();
   });
 
-  it('should archive unread messages', async () => {
+  itWithMessageEnv('should archive unread messages', async () => {
     await expect(courierClient.inbox.unarchive({
       messageId: process.env.MESSAGE_ID!
     })).resolves.not.toThrow();
@@ -137,7 +142,7 @@ describe('InboxClient', () => {
 
   });
 
-  it('should see tenant messages with new client', async () => {
+  itWithTenantEnv('should see tenant messages with new client', async () => {
     const newClient = getClient(process.env.TENANT_ID!);
     const result = await newClient.inbox.getMessages({
       paginationLimit: 10,

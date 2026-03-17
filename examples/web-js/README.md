@@ -31,3 +31,17 @@ From the `courier-web` project root:
 Changes made to `@trycourier` modules are _not_ hot-reloaded since Vite isn't integrated with the Web Component dependencies yet.
 
 Restart the server to pick up changes.
+
+## EU Endpoints
+
+To point the example at Courier's EU endpoints, use the preset helper when authenticating:
+
+```ts
+import { Courier, getCourierApiUrlsForRegion } from "@trycourier/courier-ui-inbox";
+
+Courier.shared.signIn({
+  userId: import.meta.env.VITE_USER_ID,
+  jwt: import.meta.env.VITE_JWT,
+  apiUrls: getCourierApiUrlsForRegion("eu"),
+});
+```

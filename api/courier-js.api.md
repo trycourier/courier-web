@@ -49,6 +49,11 @@ export class Courier {
     signOut(): void;
 }
 
+// Warning: (ae-missing-release-tag) "CourierApiRegion" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type CourierApiRegion = 'us' | 'eu';
+
 // Warning: (ae-missing-release-tag) "CourierApiUrls" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -324,6 +329,26 @@ export interface CourierUserPreferencesTopicResponse {
     // (undocumented)
     topic: CourierUserPreferencesTopic;
 }
+
+// Warning: (ae-missing-release-tag) "DEFAULT_COURIER_API_URLS" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const DEFAULT_COURIER_API_URLS: Readonly<CourierApiUrls>;
+
+// Warning: (ae-missing-release-tag) "EU_COURIER_API_URLS" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const EU_COURIER_API_URLS: Readonly<CourierApiUrls>;
+
+// Warning: (ae-missing-release-tag) "getCourierApiUrls" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const getCourierApiUrls: (urls?: CourierApiUrls) => CourierApiUrls;
+
+// Warning: (ae-missing-release-tag) "getCourierApiUrlsForRegion" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const getCourierApiUrlsForRegion: (region?: CourierApiRegion) => CourierApiUrls;
 
 // Warning: (ae-missing-release-tag) "InboxAction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

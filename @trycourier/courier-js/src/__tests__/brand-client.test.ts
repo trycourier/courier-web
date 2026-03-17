@@ -1,6 +1,8 @@
-import { getClient } from './utils';
+import { getClient, hasClientTestEnv, hasTestEnv } from './utils';
 
-describe('BrandClient', () => {
+const describeIntegration = hasClientTestEnv() && hasTestEnv('BRAND_ID') ? describe : describe.skip;
+
+describeIntegration('BrandClient', () => {
   const courierClient = getClient();
 
   it('should fetch brand settings successfully', async () => {

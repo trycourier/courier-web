@@ -5,6 +5,7 @@
 ```ts
 
 import { Courier } from '@trycourier/courier-js';
+import { CourierApiRegion } from '@trycourier/courier-js';
 import { CourierApiUrls } from '@trycourier/courier-js';
 import { CourierBaseElement } from '@trycourier/courier-ui-core';
 import { CourierBrand } from '@trycourier/courier-js';
@@ -25,12 +26,18 @@ import { CourierUserPreferencesPaging } from '@trycourier/courier-js';
 import { CourierUserPreferencesStatus } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopicResponse } from '@trycourier/courier-js';
+import { DEFAULT_COURIER_API_URLS } from '@trycourier/courier-js';
+import { EU_COURIER_API_URLS } from '@trycourier/courier-js';
+import { getCourierApiUrls } from '@trycourier/courier-js';
+import { getCourierApiUrlsForRegion } from '@trycourier/courier-js';
 import { InboxAction } from '@trycourier/courier-js';
 import { InboxMessage } from '@trycourier/courier-js';
 import { InboxMessageEventEnvelope } from '@trycourier/courier-js';
 import { SystemThemeMode } from '@trycourier/courier-ui-core';
 
 export { Courier }
+
+export { CourierApiRegion }
 
 export { CourierApiUrls }
 
@@ -217,11 +224,19 @@ export { CourierUserPreferencesTopic }
 
 export { CourierUserPreferencesTopicResponse }
 
+export { DEFAULT_COURIER_API_URLS }
+
 // @public (undocumented)
 export const defaultDarkTheme: CourierToastTheme;
 
 // @public (undocumented)
 export const defaultLightTheme: CourierToastTheme;
+
+export { EU_COURIER_API_URLS }
+
+export { getCourierApiUrls }
+
+export { getCourierApiUrlsForRegion }
 
 export { InboxAction }
 

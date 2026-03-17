@@ -2,41 +2,31 @@
 
 import { useState } from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
+import {
+  type CourierApiRegion,
+  type CourierApiUrls,
+  getCourierApiUrlsForRegion
+} from "@trycourier/courier-react";
+import { DEFAULT_API_REGION } from '@/app/lib/api-urls';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Default API URLs from courier-js
-export const DEFAULT_API_URLS = {
-  courier: {
-    rest: 'https://api.courier.com',
-    graphql: 'https://api.courier.com/client/q',
-  },
-  inbox: {
-    graphql: 'https://inbox.courier.com/q',
-    webSocket: 'wss://realtime.courier.io',
-  },
-};
+export const DEFAULT_API_URLS = getCourierApiUrlsForRegion(DEFAULT_API_REGION);
 
-export interface ApiUrls {
-  courier: {
-    rest: string;
-    graphql: string;
-  };
-  inbox: {
-    graphql: string;
-    webSocket: string;
-  };
-}
+export type ApiUrls = CourierApiUrls;
 
 interface AdvancedTabProps {
   apiUrls: ApiUrls;
+  apiRegion: CourierApiRegion;
 }
 
-export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
+export function AdvancedTab({ apiUrls, apiRegion }: AdvancedTabProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const [selectedApiRegion, setSelectedApiRegion] = useState<CourierApiRegion>(apiRegion);
   // Local state for form inputs, initialized from current values
   const [courierRest, setCourierRest] = useState(apiUrls.courier.rest);
   const [courierGraphql, setCourierGraphql] = useState(apiUrls.courier.graphql);
@@ -47,29 +37,37 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
   const initialApiKey = searchParams.get('apiKey') || '';
   const [apiKey, setApiKey] = useState(initialApiKey);
 
+  const selectedPresetApiUrls = getCourierApiUrlsForRegion(selectedApiRegion);
+
   const handleSave = () => {
     const params = new URLSearchParams(searchParams.toString());
 
+    if (selectedApiRegion !== DEFAULT_API_REGION) {
+      params.set('apiRegion', selectedApiRegion);
+    } else {
+      params.delete('apiRegion');
+    }
+
     // Set or remove each param based on whether it differs from default
-    if (courierRest !== DEFAULT_API_URLS.courier.rest) {
+    if (courierRest !== selectedPresetApiUrls.courier.rest) {
       params.set('courierRest', courierRest);
     } else {
       params.delete('courierRest');
     }
 
-    if (courierGraphql !== DEFAULT_API_URLS.courier.graphql) {
+    if (courierGraphql !== selectedPresetApiUrls.courier.graphql) {
       params.set('courierGraphql', courierGraphql);
     } else {
       params.delete('courierGraphql');
     }
 
-    if (inboxGraphql !== DEFAULT_API_URLS.inbox.graphql) {
+    if (inboxGraphql !== selectedPresetApiUrls.inbox.graphql) {
       params.set('inboxGraphql', inboxGraphql);
     } else {
       params.delete('inboxGraphql');
     }
 
-    if (inboxWebSocket !== DEFAULT_API_URLS.inbox.webSocket) {
+    if (inboxWebSocket !== selectedPresetApiUrls.inbox.webSocket) {
       params.set('inboxWebSocket', inboxWebSocket);
     } else {
       params.delete('inboxWebSocket');
@@ -94,23 +92,56 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
   };
 
   const handleReset = () => {
-    setCourierRest(DEFAULT_API_URLS.courier.rest);
-    setCourierGraphql(DEFAULT_API_URLS.courier.graphql);
-    setInboxGraphql(DEFAULT_API_URLS.inbox.graphql);
-    setInboxWebSocket(DEFAULT_API_URLS.inbox.webSocket);
+    setCourierRest(selectedPresetApiUrls.courier.rest);
+    setCourierGraphql(selectedPresetApiUrls.courier.graphql);
+    setInboxGraphql(selectedPresetApiUrls.inbox.graphql);
+    setInboxWebSocket(selectedPresetApiUrls.inbox.webSocket);
     setApiKey('');
   };
 
   const hasChanges =
+    selectedApiRegion !== apiRegion ||
     courierRest !== apiUrls.courier.rest ||
     courierGraphql !== apiUrls.courier.graphql ||
     inboxGraphql !== apiUrls.inbox.graphql ||
     inboxWebSocket !== apiUrls.inbox.webSocket ||
     apiKey !== initialApiKey;
 
+  const handleApiRegionChange = (nextRegion: CourierApiRegion) => {
+    const nextPresetApiUrls = getCourierApiUrlsForRegion(nextRegion);
+
+    setSelectedApiRegion(nextRegion);
+    setCourierRest(nextPresetApiUrls.courier.rest);
+    setCourierGraphql(nextPresetApiUrls.courier.graphql);
+    setInboxGraphql(nextPresetApiUrls.inbox.graphql);
+    setInboxWebSocket(nextPresetApiUrls.inbox.webSocket);
+  };
+
   return (
     <div className="p-4 h-full overflow-y-auto">
       <div className="space-y-6">
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Endpoint Preset</h3>
+
+          <div className="space-y-2">
+            <Label htmlFor="api-region" className="text-sm text-muted-foreground">
+              Region
+            </Label>
+            <Select value={selectedApiRegion} onValueChange={handleApiRegionChange}>
+              <SelectTrigger id="api-region" className="w-full font-mono">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="us">US</SelectItem>
+                <SelectItem value="eu">EU</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Presets fill all Courier and Inbox endpoints. You can still override any field below.
+            </p>
+          </div>
+        </div>
+
         {/* API Key Section */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-foreground">API Key</h3>
@@ -203,7 +234,7 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
             size="sm"
             onClick={handleReset}
           >
-            Reset to Defaults
+            Reset to Preset
           </Button>
           <Button
             size="sm"
