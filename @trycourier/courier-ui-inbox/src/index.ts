@@ -25,6 +25,7 @@ export type {
   CourierProps,
   CourierClientOptions,
   CourierBrand,
+  CourierApiRegion,
   CourierApiUrls,
   CourierUserPreferences,
   CourierUserPreferencesStatus,
@@ -39,6 +40,13 @@ export type {
   InboxMessage,
   InboxAction,
   InboxMessageEventEnvelope,
+} from '@trycourier/courier-js';
+
+export {
+  DEFAULT_COURIER_API_URLS,
+  EU_COURIER_API_URLS,
+  getCourierApiUrls,
+  getCourierApiUrlsForRegion
 } from '@trycourier/courier-js';
 
 // Re-export types from courier-ui-core

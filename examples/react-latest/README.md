@@ -30,6 +30,20 @@ From the `courier-web` project root:
 
 Changes made to the app and `@trycourier` modules are hot-reloaded during development.
 
+## EU Endpoints
+
+To test the React example against Courier's EU endpoints, pass the preset helper to `apiUrls` when you call `courier.shared.signIn(...)`:
+
+```tsx
+import { getCourierApiUrlsForRegion } from "@trycourier/courier-react";
+
+courier.shared.signIn({
+  userId: import.meta.env.VITE_USER_ID,
+  jwt: import.meta.env.VITE_JWT,
+  apiUrls: getCourierApiUrlsForRegion("eu"),
+});
+```
+
 ## Plugins
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

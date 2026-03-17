@@ -7,6 +7,7 @@
 import { archiveMessage } from '@trycourier/courier-ui-inbox';
 import { clickMessage } from '@trycourier/courier-ui-inbox';
 import { CourierActionMenuTheme } from '@trycourier/courier-ui-inbox';
+import { CourierApiRegion } from '@trycourier/courier-js';
 import { CourierApiUrls } from '@trycourier/courier-js';
 import { CourierBrand } from '@trycourier/courier-js';
 import { CourierClientOptions } from '@trycourier/courier-js';
@@ -59,6 +60,7 @@ import { CourierUserPreferencesPaging } from '@trycourier/courier-js';
 import { CourierUserPreferencesStatus } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopicResponse } from '@trycourier/courier-js';
+import { DEFAULT_COURIER_API_URLS } from '@trycourier/courier-js';
 import { defaultActions } from '@trycourier/courier-ui-inbox';
 import { defaultDarkTheme } from '@trycourier/courier-ui-inbox';
 import { defaultFeeds } from '@trycourier/courier-ui-inbox';
@@ -66,7 +68,10 @@ import { defaultLightTheme } from '@trycourier/courier-ui-inbox';
 import { defaultListItemActions } from '@trycourier/courier-ui-inbox';
 import { defaultDarkTheme as defaultToastDarkTheme } from '@trycourier/courier-ui-toast';
 import { defaultLightTheme as defaultToastLightTheme } from '@trycourier/courier-ui-toast';
+import { EU_COURIER_API_URLS } from '@trycourier/courier-js';
 import { ForwardRefExoticComponent } from 'react';
+import { getCourierApiUrls } from '@trycourier/courier-js';
+import { getCourierApiUrlsForRegion } from '@trycourier/courier-js';
 import { InboxAction } from '@trycourier/courier-js';
 import { InboxMessage } from '@trycourier/courier-js';
 import { InboxMessageEventEnvelope } from '@trycourier/courier-js';
@@ -83,6 +88,8 @@ export { archiveMessage }
 export { clickMessage }
 
 export { CourierActionMenuTheme }
+
+export { CourierApiRegion }
 
 export { CourierApiUrls }
 
@@ -203,6 +210,8 @@ export { CourierUserPreferencesTopic }
 
 export { CourierUserPreferencesTopicResponse }
 
+export { DEFAULT_COURIER_API_URLS }
+
 export { defaultActions }
 
 export { defaultDarkTheme }
@@ -216,6 +225,12 @@ export { defaultListItemActions }
 export { defaultToastDarkTheme }
 
 export { defaultToastLightTheme }
+
+export { EU_COURIER_API_URLS }
+
+export { getCourierApiUrls }
+
+export { getCourierApiUrlsForRegion }
 
 export { InboxAction }
 

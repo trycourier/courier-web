@@ -9,7 +9,7 @@ import { SendTestTab } from "@/components/SendTestTab";
 import { ThemeTab, type ColorMode } from "@/components/ThemeTab";
 import { CurrentUserTab } from "@/components/CurrentUserTab";
 import { FeedsTab } from "@/components/FeedsTab";
-import { AdvancedTab, type ApiUrls, DEFAULT_API_URLS } from "@/components/AdvancedTab";
+import { AdvancedTab, type ApiUrls } from "@/components/AdvancedTab";
 import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
@@ -17,6 +17,11 @@ import { CourierToastTab } from "@/components/CourierToastTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
+import {
+  DEFAULT_API_REGION,
+  areApiUrlsEqual,
+  getApiUrlsFromSearchParams
+} from "@/app/lib/api-urls";
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
 import { ExternalLink as ExternalLinkBase, Send as SendBase, X as XBase } from 'lucide-react';
 
@@ -76,24 +81,18 @@ function HomeContent() {
   // Check if advanced mode is enabled
   const isAdvancedMode = searchParams.get('advanced') === 'true';
 
-  // Get API URLs from query params
-  const apiUrls: ApiUrls = {
-    courier: {
-      rest: searchParams.get('courierRest') || DEFAULT_API_URLS.courier.rest,
-      graphql: searchParams.get('courierGraphql') || DEFAULT_API_URLS.courier.graphql,
-    },
-    inbox: {
-      graphql: searchParams.get('inboxGraphql') || DEFAULT_API_URLS.inbox.graphql,
-      webSocket: searchParams.get('inboxWebSocket') || DEFAULT_API_URLS.inbox.webSocket,
-    },
-  };
+  const {
+    apiRegion,
+    presetApiUrls,
+    apiUrls,
+  }: {
+    apiRegion: 'us' | 'eu';
+    presetApiUrls: ApiUrls;
+    apiUrls: ApiUrls;
+  } = getApiUrlsFromSearchParams(searchParams);
 
-  // Check if any custom API URLs are set
-  const hasCustomApiUrls =
-    apiUrls.courier.rest !== DEFAULT_API_URLS.courier.rest ||
-    apiUrls.courier.graphql !== DEFAULT_API_URLS.courier.graphql ||
-    apiUrls.inbox.graphql !== DEFAULT_API_URLS.inbox.graphql ||
-    apiUrls.inbox.webSocket !== DEFAULT_API_URLS.inbox.webSocket;
+  const hasCustomApiUrls = !areApiUrlsEqual(apiUrls, presetApiUrls);
+  const shouldPassApiUrls = apiRegion !== DEFAULT_API_REGION || hasCustomApiUrls;
 
   // Get courierRest for API calls
   const courierRest = apiUrls.courier.rest;
@@ -263,7 +262,7 @@ function HomeContent() {
         </TabsContent>
         {isAdvancedMode && (
           <TabsContent value="advanced" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
-            <AdvancedTab apiUrls={apiUrls} />
+            <AdvancedTab apiUrls={apiUrls} apiRegion={apiRegion} />
           </TabsContent>
         )}
       </div>
@@ -335,7 +334,7 @@ function HomeContent() {
                   </Button>
                 </div>
                 <CourierAuth
-                  apiUrls={hasCustomApiUrls ? apiUrls : undefined}
+                  apiUrls={shouldPassApiUrls ? apiUrls : undefined}
                   overrideUserId={overrideUserId}
                   apiKey={overrideApiKey}
                   hideLoadingState={true}
@@ -398,7 +397,7 @@ function HomeContent() {
       </header>
 
       {/* Main Content: Left and Right Panels */}
-      <CourierAuth apiUrls={hasCustomApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
+      <CourierAuth apiUrls={shouldPassApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
         {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
             {/* Left Panel - Hidden on mobile, shown on desktop */}

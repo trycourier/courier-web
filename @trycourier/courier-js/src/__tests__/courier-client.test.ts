@@ -5,6 +5,20 @@ import { UUID } from '../utils/uuid';
 const nanoidSpy = jest.spyOn(UUID, "nanoid");
 
 const CONNECTION_ID = "mock-connection-id";
+const TEST_USER_ID = 'test-user-id';
+const TEST_JWT = 'test-jwt';
+const TEST_PUBLIC_API_KEY = 'test-public-api-key';
+const TEST_TENANT_ID = 'test-tenant-id';
+const TEST_API_URLS = {
+  courier: {
+    rest: 'https://api.example.com',
+    graphql: 'https://api.example.com/client/q'
+  },
+  inbox: {
+    graphql: 'https://inbox.example.com/q',
+    webSocket: 'wss://realtime.example.com'
+  }
+};
 
 describe('CourierClient', () => {
 
@@ -14,39 +28,21 @@ describe('CourierClient', () => {
 
   it('should validate client initialization with all options', () => {
     const testClient = new CourierClient({
-      userId: process.env.USER_ID!,
-      jwt: process.env.JWT!,
-      publicApiKey: process.env.PUBLIC_API_KEY!,
-      tenantId: process.env.TENANT_ID,
+      userId: TEST_USER_ID,
+      jwt: TEST_JWT,
+      publicApiKey: TEST_PUBLIC_API_KEY,
+      tenantId: TEST_TENANT_ID,
       showLogs: true,
-      apiUrls: {
-        courier: {
-          rest: process.env.COURIER_REST_URL!,
-          graphql: process.env.COURIER_GRAPHQL_URL!
-        },
-        inbox: {
-          graphql: process.env.INBOX_GRAPHQL_URL!,
-          webSocket: process.env.INBOX_WEBSOCKET_URL!
-        }
-      }
+      apiUrls: TEST_API_URLS
     });
 
-    expect(testClient.options.userId).toBe(process.env.USER_ID);
-    expect(testClient.options.jwt).toBe(process.env.JWT);
-    expect(testClient.options.publicApiKey).toBe(process.env.PUBLIC_API_KEY);
+    expect(testClient.options.userId).toBe(TEST_USER_ID);
+    expect(testClient.options.jwt).toBe(TEST_JWT);
+    expect(testClient.options.publicApiKey).toBe(TEST_PUBLIC_API_KEY);
     expect(testClient.options.connectionId).toBe(CONNECTION_ID);
-    expect(testClient.options.tenantId).toBe(process.env.TENANT_ID);
+    expect(testClient.options.tenantId).toBe(TEST_TENANT_ID);
     expect(testClient.options.showLogs).toBe(true);
-    expect(testClient.options.apiUrls).toEqual({
-      courier: {
-        rest: process.env.COURIER_REST_URL!,
-        graphql: process.env.COURIER_GRAPHQL_URL!
-      },
-      inbox: {
-        graphql: process.env.INBOX_GRAPHQL_URL!,
-        webSocket: process.env.INBOX_WEBSOCKET_URL!
-      }
-    });
+    expect(testClient.options.apiUrls).toEqual(TEST_API_URLS);
     expect(testClient.options.courierUserAgent).toBeDefined();
     expect(testClient.options.courierUserAgent.getUserAgentInfo()).toEqual({
       [SDK_KEY]: "courier-js",
@@ -57,12 +53,12 @@ describe('CourierClient', () => {
 
   it('should validate client initialization with minimal options', () => {
     const testClient = new CourierClient({
-      userId: process.env.USER_ID!,
-      publicApiKey: process.env.PUBLIC_API_KEY!
+      userId: TEST_USER_ID,
+      publicApiKey: TEST_PUBLIC_API_KEY
     });
 
-    expect(testClient.options.userId).toBe(process.env.USER_ID);
-    expect(testClient.options.publicApiKey).toBe(process.env.PUBLIC_API_KEY);
+    expect(testClient.options.userId).toBe(TEST_USER_ID);
+    expect(testClient.options.publicApiKey).toBe(TEST_PUBLIC_API_KEY);
     expect(testClient.options.showLogs).toBe(false);
     expect(testClient.options.courierUserAgent).toBeDefined();
   });

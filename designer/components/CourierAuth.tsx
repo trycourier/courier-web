@@ -2,7 +2,11 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { useCourier, type CourierApiUrls } from "@trycourier/courier-react";
+import {
+  DEFAULT_COURIER_API_URLS,
+  useCourier,
+  type CourierApiUrls
+} from "@trycourier/courier-react";
 import { CourierRepo } from "@/app/lib/courier-repo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -56,7 +60,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoa
   const repo = new CourierRepo();
 
   // Get courierRest from apiUrls or default
-  const courierRest = apiUrls?.courier?.rest || 'https://api.courier.com';
+  const courierRest = apiUrls?.courier?.rest || DEFAULT_COURIER_API_URLS.courier.rest;
 
   // Serialize apiUrls for comparison
   const apiUrlsKey = apiUrls ? JSON.stringify(apiUrls) : 'default';
@@ -134,4 +138,3 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoa
 
   return <>{children({ userId, onClearUser: handleClearUser })}</>;
 }
-
