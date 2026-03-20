@@ -206,15 +206,11 @@ export interface CourierGetInboxMessageResponse {
 
 // Warning: (ae-missing-release-tag) "CourierGetInboxMessagesQueryFilter" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export interface CourierGetInboxMessagesQueryFilter {
-    // (undocumented)
     archived?: boolean;
-    // (undocumented)
     from?: string;
-    // (undocumented)
     status?: 'read' | 'unread';
-    // (undocumented)
     tags?: string[];
 }
 

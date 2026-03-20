@@ -12,10 +12,28 @@ export interface CourierGetInboxMessagesResponse {
   };
 }
 
+/**
+ * Inbox message query filters. Each field you set narrows the result set; together they act as AND conditions.
+ */
 export interface CourierGetInboxMessagesQueryFilter {
+  /**
+   * If set, only messages that have at least one of these tags are returned (tag match is OR within the array).
+   */
   tags?: string[];
+  /**
+   * If `true`, only archived messages are returned. If omitted, the filter does not restrict by archive state
+   * and the API uses its default (typically the active inbox, excluding archived).
+   */
   archived?: boolean;
+  /**
+   * If set, only messages in that read state are included. If omitted, both read and unread messages may appear
+   * (subject to other filters and API defaults).
+   */
   status?: 'read' | 'unread';
+  /**
+   * Lower bound on message creation time: only messages created at or after this moment are included.
+   * Pass an ISO 8601 datetime string (e.g. `new Date().toISOString()`).
+   */
   from?: string;
 }
 
