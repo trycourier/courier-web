@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react-17",
-  "version": "9.0.5",
+  "version": "9.0.6",
   "description": "React 17 components for the Courier web UI",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -32,11 +32,11 @@
     "url": "https://github.com/trycourier/courier-web"
   },
   "dependencies": {
-    "@trycourier/courier-js": "3.1.0",
-    "@trycourier/courier-react-components": "2.0.5",
+    "@trycourier/courier-js": "3.1.1",
+    "@trycourier/courier-react-components": "2.0.6",
     "@trycourier/courier-ui-core": "2.0.0",
-    "@trycourier/courier-ui-inbox": "2.4.0",
-    "@trycourier/courier-ui-toast": "2.1.0"
+    "@trycourier/courier-ui-inbox": "2.4.1",
+    "@trycourier/courier-ui-toast": "2.1.1"
   },
   "peerDependencies": {
     "react": ">=17.0.0, <18.0.0",

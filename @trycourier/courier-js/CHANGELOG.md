@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 3.1.1
+
+### Patch Changes
+
+- [#158](https://github.com/trycourier/courier-web/pull/158) [`7be3434`](https://github.com/trycourier/courier-web/commit/7be3434b784581ffc1866819d07b93d6c7c247fb) Thanks [@Gabrielgvl](https://github.com/Gabrielgvl)! - Add EU endpoint presets for Courier web SDK consumers.
+
 ## 3.1.0
 
 ### Minor Changes
