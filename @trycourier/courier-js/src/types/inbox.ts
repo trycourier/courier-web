@@ -16,6 +16,7 @@ export interface CourierGetInboxMessagesQueryFilter {
   tags?: string[];
   archived?: boolean;
   status?: 'read' | 'unread';
+  from?: string;
 }
 
 export interface InboxAction {

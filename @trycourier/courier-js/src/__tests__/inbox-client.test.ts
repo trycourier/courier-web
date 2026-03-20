@@ -27,6 +27,20 @@ describe('InboxClient', () => {
       expect(result.data?.messages?.pageInfo).toBeDefined();
       expect(result.data?.unreadCount).toBeDefined();
     });
+
+    it('should fetch messages with from filter', async () => {
+      const from = new Date(Date.now() - 60_000).toISOString();
+      const result = await courierClient.inbox.getMessages({
+        filter: {
+          status: 'unread',
+          from,
+        }
+      });
+
+      expect(result.data?.messages?.nodes).toBeDefined();
+      expect(result.data?.count).toBeDefined();
+      expect(result.data?.unreadCount).toBeDefined();
+    });
   });
 
   it('should fetch archived messages', async () => {
