@@ -1,6 +1,10 @@
-import { getClient } from './utils';
+import { getClient, hasClientTestEnv, hasTestEnv } from './utils';
 
-describe('PreferenceClient', () => {
+const describeIntegration = hasClientTestEnv() ? describe : describe.skip;
+const itWithTopicEnv = hasTestEnv('TOPIC_ID') ? it : it.skip;
+const itWithClientKeyEnv = hasTestEnv('CLIENT_KEY') ? it : it.skip;
+
+describeIntegration('PreferenceClient', () => {
   const courierClient = getClient();
 
   it('should fetch user preferences successfully', async () => {
@@ -9,7 +13,7 @@ describe('PreferenceClient', () => {
     expect(Array.isArray(result.items)).toBe(true);
   });
 
-  it('should fetch user preference topic successfully', async () => {
+  itWithTopicEnv('should fetch user preference topic successfully', async () => {
     const topicId = process.env.TOPIC_ID!;
     const topic = await courierClient.preferences.getUserPreferenceTopic({ topicId });
     expect(topic.topicId).toBe(topicId);
@@ -18,7 +22,7 @@ describe('PreferenceClient', () => {
     expect(Array.isArray(topic.customRouting)).toBe(true);
   });
 
-  it('should update user preference topic successfully', async () => {
+  itWithTopicEnv('should update user preference topic successfully', async () => {
     const topicId = process.env.TOPIC_ID!;
     const result = await courierClient.preferences.putUserPreferenceTopic({
       topicId,
@@ -29,7 +33,7 @@ describe('PreferenceClient', () => {
     expect(result).toBeUndefined();
   });
 
-  it('should get notification center url successfully', () => {
+  itWithClientKeyEnv('should get notification center url successfully', () => {
     const url = courierClient.preferences.getNotificationCenterUrl({
       clientKey: process.env.CLIENT_KEY!,
     });

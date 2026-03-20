@@ -29,6 +29,20 @@ const { messageId } = inboxMessages.data.messages.nodes[0];
 await courierClient.inbox.read({ messageId });
 ```
 
+## EU Endpoints
+
+Use the built-in preset helper when your app should talk to Courier's EU endpoints:
+
+```ts
+import { CourierClient, getCourierApiUrlsForRegion } from "@trycourier/courier-js";
+
+const courierClient = new CourierClient({
+  userId: "my-user-id",
+  jwt: "eyJ.mock.jwt",
+  apiUrls: getCourierApiUrlsForRegion("eu"),
+});
+```
+
 ### `CourierClient` Options
 
 | Option   | Type    | Required | Description |

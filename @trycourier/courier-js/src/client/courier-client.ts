@@ -1,5 +1,9 @@
 
-import { CourierApiUrls, getCourierApiUrls } from '../types/courier-api-urls';
+import {
+  CourierApiUrls,
+  getCourierApiUrls,
+  getCourierApiUrlsForRegion
+} from '../types/courier-api-urls';
 import { Logger } from '../utils/logger';
 import { BrandClient } from './brand-client';
 import { InboxClient } from './inbox-client';
@@ -108,7 +112,7 @@ export class CourierClient extends Client {
       ...props,
       showLogs,
       connectionId,
-      apiUrls: props.apiUrls || getCourierApiUrls(),
+      apiUrls: props.apiUrls || getCourierApiUrlsForRegion('us'),
       accessToken: props.jwt ?? props.publicApiKey
     };
 

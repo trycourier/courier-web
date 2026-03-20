@@ -42,6 +42,29 @@ export default function App() {
 }
 ```
 
+## EU Endpoints
+
+If your app should talk to Courier's EU endpoints, pass the preset helper into `apiUrls`:
+
+```jsx
+import { useEffect } from "react";
+import { CourierInbox, getCourierApiUrlsForRegion, useCourier } from "@trycourier/courier-react";
+
+export default function App() {
+  const courier = useCourier();
+
+  useEffect(() => {
+    courier.shared.signIn({
+      userId: "your-user-id",
+      jwt: "your-jwt-token",
+      apiUrls: getCourierApiUrlsForRegion("eu"),
+    });
+  }, []);
+
+  return <CourierInbox />;
+}
+```
+
 ## Authentication
 
 The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JWTs on your backend server, never in client-side code.**
