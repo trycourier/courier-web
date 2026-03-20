@@ -211,6 +211,8 @@ export interface CourierGetInboxMessagesQueryFilter {
     // (undocumented)
     archived?: boolean;
     // (undocumented)
+    from?: string;
+    // (undocumented)
     status?: 'read' | 'unread';
     // (undocumented)
     tags?: string[];
