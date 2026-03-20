@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CopyFieldButton } from './CopyFieldButton';
 import { TabFooter } from './TabFooter';
 import { useFramework } from './FrameworkContext';
 
@@ -37,13 +38,16 @@ export function CurrentUserTab({ userId, onClearUser, isAdvancedMode, onUserIdCh
           <h2 className="text-lg font-semibold">User ID</h2>
           {isAdvancedMode && isEditing ? (
             <div className="space-y-2">
-              <Input
-                type="text"
-                value={editedUserId}
-                onChange={(e) => setEditedUserId(e.target.value)}
-                placeholder="Enter user ID"
-                className="font-mono text-sm"
-              />
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="text"
+                  value={editedUserId}
+                  onChange={(e) => setEditedUserId(e.target.value)}
+                  placeholder="Enter user ID"
+                  className="font-mono text-sm flex-1 min-w-0"
+                />
+                <CopyFieldButton value={editedUserId} label="user ID" className="shrink-0" />
+              </div>
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -65,8 +69,11 @@ export function CurrentUserTab({ userId, onClearUser, isAdvancedMode, onUserIdCh
             </div>
           ) : (
             <>
-              <div className="font-mono text-sm text-muted-foreground break-all">
-                {userId}
+              <div className="flex gap-2 items-start">
+                <div className="font-mono text-sm text-muted-foreground break-all flex-1 min-w-0">
+                  {userId}
+                </div>
+                <CopyFieldButton value={userId} label="user ID" className="shrink-0" />
               </div>
               <div className="flex gap-2">
                 <Button

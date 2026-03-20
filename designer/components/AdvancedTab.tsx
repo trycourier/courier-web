@@ -5,6 +5,7 @@ import { useSearchParams, usePathname } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { CopyFieldButton } from './CopyFieldButton';
 
 // Default API URLs from courier-js
 export const DEFAULT_API_URLS = {
@@ -119,14 +120,17 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
             <Label htmlFor="api-key" className="text-sm text-muted-foreground">
               Courier API Key <span className="text-xs">(optional, overrides server default)</span>
             </Label>
-            <Input
-              id="api-key"
-              type="text"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="pk_prod_..."
-              className="font-mono"
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                id="api-key"
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="pk_prod_..."
+                className="font-mono flex-1 min-w-0"
+              />
+              <CopyFieldButton value={apiKey} label="API key" className="shrink-0" />
+            </div>
           </div>
         </div>
 
@@ -138,28 +142,34 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
             <Label htmlFor="courier-rest" className="text-sm text-muted-foreground">
               REST Endpoint
             </Label>
-            <Input
-              id="courier-rest"
-              type="text"
-              value={courierRest}
-              onChange={(e) => setCourierRest(e.target.value)}
-              placeholder={DEFAULT_API_URLS.courier.rest}
-              className="font-mono"
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                id="courier-rest"
+                type="text"
+                value={courierRest}
+                onChange={(e) => setCourierRest(e.target.value)}
+                placeholder={DEFAULT_API_URLS.courier.rest}
+                className="font-mono flex-1 min-w-0"
+              />
+              <CopyFieldButton value={courierRest} label="Courier REST endpoint" className="shrink-0" />
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="courier-graphql" className="text-sm text-muted-foreground">
               GraphQL Endpoint
             </Label>
-            <Input
-              id="courier-graphql"
-              type="text"
-              value={courierGraphql}
-              onChange={(e) => setCourierGraphql(e.target.value)}
-              placeholder={DEFAULT_API_URLS.courier.graphql}
-              className="font-mono"
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                id="courier-graphql"
+                type="text"
+                value={courierGraphql}
+                onChange={(e) => setCourierGraphql(e.target.value)}
+                placeholder={DEFAULT_API_URLS.courier.graphql}
+                className="font-mono flex-1 min-w-0"
+              />
+              <CopyFieldButton value={courierGraphql} label="Courier GraphQL endpoint" className="shrink-0" />
+            </div>
           </div>
         </div>
 
@@ -171,28 +181,34 @@ export function AdvancedTab({ apiUrls }: AdvancedTabProps) {
             <Label htmlFor="inbox-graphql" className="text-sm text-muted-foreground">
               GraphQL Endpoint
             </Label>
-            <Input
-              id="inbox-graphql"
-              type="text"
-              value={inboxGraphql}
-              onChange={(e) => setInboxGraphql(e.target.value)}
-              placeholder={DEFAULT_API_URLS.inbox.graphql}
-              className="font-mono"
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                id="inbox-graphql"
+                type="text"
+                value={inboxGraphql}
+                onChange={(e) => setInboxGraphql(e.target.value)}
+                placeholder={DEFAULT_API_URLS.inbox.graphql}
+                className="font-mono flex-1 min-w-0"
+              />
+              <CopyFieldButton value={inboxGraphql} label="Inbox GraphQL endpoint" className="shrink-0" />
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="inbox-websocket" className="text-sm text-muted-foreground">
               WebSocket Endpoint
             </Label>
-            <Input
-              id="inbox-websocket"
-              type="text"
-              value={inboxWebSocket}
-              onChange={(e) => setInboxWebSocket(e.target.value)}
-              placeholder={DEFAULT_API_URLS.inbox.webSocket}
-              className="font-mono"
-            />
+            <div className="flex gap-2 items-center">
+              <Input
+                id="inbox-websocket"
+                type="text"
+                value={inboxWebSocket}
+                onChange={(e) => setInboxWebSocket(e.target.value)}
+                placeholder={DEFAULT_API_URLS.inbox.webSocket}
+                className="font-mono flex-1 min-w-0"
+              />
+              <CopyFieldButton value={inboxWebSocket} label="Inbox WebSocket endpoint" className="shrink-0" />
+            </div>
           </div>
         </div>
 
