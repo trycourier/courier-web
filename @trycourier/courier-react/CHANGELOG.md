@@ -1,5 +1,17 @@
 # @trycourier/courier-react
 
+## 9.0.6
+
+### Patch Changes
+
+- [#158](https://github.com/trycourier/courier-web/pull/158) [`7be3434`](https://github.com/trycourier/courier-web/commit/7be3434b784581ffc1866819d07b93d6c7c247fb) Thanks [@Gabrielgvl](https://github.com/Gabrielgvl)! - Add EU endpoint presets for Courier web SDK consumers.
+
+- Updated dependencies [[`7be3434`](https://github.com/trycourier/courier-web/commit/7be3434b784581ffc1866819d07b93d6c7c247fb)]:
+  - @trycourier/courier-js@3.1.1
+  - @trycourier/courier-ui-inbox@2.4.1
+  - @trycourier/courier-ui-toast@2.1.1
+  - @trycourier/courier-react-components@2.0.6
+
 ## 9.0.5
 
 ### Patch Changes
