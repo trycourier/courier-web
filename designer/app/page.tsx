@@ -14,11 +14,12 @@ import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { CourierToastTab } from "@/components/CourierToastTab";
+import { CourierTestsTab } from "@/components/CourierTestsTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import {
-  DEFAULT_API_REGION,
+  DEFAULT_API_ENVIRONMENT,
   areApiUrlsEqual,
   getApiUrlsFromSearchParams
 } from "@/app/lib/api-urls";
@@ -31,10 +32,10 @@ const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
-type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast';
+type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast' | 'courier-tests';
 
 const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds', 'advanced'];
-const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast', 'courier-tests'];
 const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
 const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
 
@@ -54,6 +55,10 @@ function HomeContent() {
 
   const getInitialRightTab = useCallback((): RightTab => {
     const param = searchParams.get('layout');
+    const isAdvanced = searchParams.get('advanced') === 'true';
+    if (param === 'courier-tests' && !isAdvanced) {
+      return DEFAULT_RIGHT_TAB;
+    }
     if (param && VALID_RIGHT_TABS.includes(param as RightTab)) {
       return param as RightTab;
     }
@@ -82,17 +87,13 @@ function HomeContent() {
   const isAdvancedMode = searchParams.get('advanced') === 'true';
 
   const {
-    apiRegion,
+    apiEnvironment,
     presetApiUrls,
     apiUrls,
-  }: {
-    apiRegion: 'us' | 'eu';
-    presetApiUrls: ApiUrls;
-    apiUrls: ApiUrls;
   } = getApiUrlsFromSearchParams(searchParams);
 
   const hasCustomApiUrls = !areApiUrlsEqual(apiUrls, presetApiUrls);
-  const shouldPassApiUrls = apiRegion !== DEFAULT_API_REGION || hasCustomApiUrls;
+  const shouldPassApiUrls = apiEnvironment !== DEFAULT_API_ENVIRONMENT || hasCustomApiUrls;
 
   // Get courierRest for API calls
   const courierRest = apiUrls.courier.rest;
@@ -102,6 +103,9 @@ function HomeContent() {
 
   // Get apiKey override from query params
   const overrideApiKey = searchParams.get('apiKey') || undefined;
+  const brandId = searchParams.get('brandId') || undefined;
+  const topicId = searchParams.get('topicId') || undefined;
+  const clientKey = searchParams.get('clientKey') || undefined;
 
   // Helper to update URL params
   const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
@@ -125,6 +129,9 @@ function HomeContent() {
     setActiveRightTabState(tab);
     updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
   }, [updateUrlParams]);
+  const visibleRightTab = !isAdvancedMode && activeRightTab === 'courier-tests'
+    ? DEFAULT_RIGHT_TAB
+    : activeRightTab;
 
   // Apply color mode to the page
   useEffect(() => {
@@ -262,7 +269,13 @@ function HomeContent() {
         </TabsContent>
         {isAdvancedMode && (
           <TabsContent value="advanced" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
-            <AdvancedTab apiUrls={apiUrls} apiRegion={apiRegion} />
+            <AdvancedTab
+              apiUrls={apiUrls}
+              apiEnvironment={apiEnvironment}
+              brandId={brandId}
+              topicId={topicId}
+              clientKey={clientKey}
+            />
           </TabsContent>
         )}
       </div>
@@ -419,7 +432,7 @@ function HomeContent() {
             {/* Right Panel */}
             <div className="flex-1 overflow-hidden bg-background">
               <Tabs
-                value={activeRightTab}
+                value={visibleRightTab}
                 onValueChange={(tabId: string) => setActiveRightTab(tabId as RightTab)}
                 className="flex flex-col h-full"
               >
@@ -429,6 +442,7 @@ function HomeContent() {
                     <TabsTrigger value="courier-inbox-popup-menu">Popup</TabsTrigger>
                     <TabsTrigger value="courier-inbox-hooks">Hooks</TabsTrigger>
                     <TabsTrigger value="courier-toast">Toast</TabsTrigger>
+                    {isAdvancedMode && <TabsTrigger value="courier-tests">Tests</TabsTrigger>}
                   </TabsList>
                 </div>
                 <div className="flex-1 overflow-y-auto">
@@ -454,6 +468,16 @@ function HomeContent() {
                   <TabsContent value="courier-toast" className="h-full mt-0">
                     <CourierToastTab colorMode={colorMode} />
                   </TabsContent>
+                  {isAdvancedMode && (
+                    <TabsContent value="courier-tests" className="h-full mt-0">
+                      <CourierTestsTab
+                        userId={userId}
+                        brandId={brandId}
+                        topicId={topicId}
+                        clientKey={clientKey}
+                      />
+                    </TabsContent>
+                  )}
                 </div>
               </Tabs>
             </div>

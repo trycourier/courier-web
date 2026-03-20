@@ -3,11 +3,11 @@
 import { useEffect, useState, ReactNode } from "react";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
-  DEFAULT_COURIER_API_URLS,
   useCourier,
   type CourierApiUrls
 } from "@trycourier/courier-react";
 import { CourierRepo } from "@/app/lib/courier-repo";
+import { API_ENVIRONMENT_PRESETS } from "@/app/lib/api-urls";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const USER_ID_STORAGE_KEY = 'courier_user_id';
@@ -60,7 +60,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoa
   const repo = new CourierRepo();
 
   // Get courierRest from apiUrls or default
-  const courierRest = apiUrls?.courier?.rest || DEFAULT_COURIER_API_URLS.courier.rest;
+  const courierRest = apiUrls?.courier?.rest || API_ENVIRONMENT_PRESETS.production.courier.rest;
 
   // Serialize apiUrls for comparison
   const apiUrlsKey = apiUrls ? JSON.stringify(apiUrls) : 'default';

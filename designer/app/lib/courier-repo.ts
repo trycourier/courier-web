@@ -1,4 +1,4 @@
-import { DEFAULT_COURIER_API_URLS } from "@trycourier/courier-react";
+import { API_ENVIRONMENT_PRESETS } from "@/app/lib/api-urls";
 
 export interface JWTResponse {
   token: string;
@@ -26,7 +26,7 @@ export class CourierRepo {
       body: JSON.stringify({
         user_id: userId,
         ...(apiKey && { api_key: apiKey }),
-        courierRest: courierRest || DEFAULT_COURIER_API_URLS.courier.rest,
+        courierRest: courierRest || API_ENVIRONMENT_PRESETS.production.courier.rest,
       }),
     });
 
@@ -59,7 +59,7 @@ export class CourierRepo {
         tags,
         actions,
         ...(apiKey && { api_key: apiKey }),
-        courierRest: courierRest || DEFAULT_COURIER_API_URLS.courier.rest,
+        courierRest: courierRest || API_ENVIRONMENT_PRESETS.production.courier.rest,
       }),
     });
 
