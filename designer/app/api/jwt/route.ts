@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   try {
     // Read user_id, optional api_key, and courierRest from request body
     const body = await request.json();
-    const { user_id, api_key, courierRest } = body;
+    const { user_id, api_key, courierRest, scope, expires_in } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -14,21 +14,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate JWT using provided api_key or fall back to environment default
+    const defaultScope = [
+      `user_id:${user_id}`,
+      'read:messages',
+      'read:user-tokens',
+      'write:user-tokens',
+      'read:brands',
+      'write:brands',
+      'inbox:read:messages',
+      'inbox:write:events',
+      'read:preferences',
+      'write:preferences',
+    ].join(' ');
+
     const response = await getCourierClient(courierRest, api_key).auth.issueToken({
-      scope: [
-        `user_id:${user_id}`,
-        'read:messages',
-        'read:user-tokens',
-        'write:user-tokens',
-        'read:brands',
-        'write:brands',
-        'inbox:read:messages',
-        'inbox:write:events',
-        'read:preferences',
-        'write:preferences'
-      ].join(' '),
-      expires_in: '7d',
+      scope: typeof scope === 'string' && scope.trim() ? scope : defaultScope,
+      expires_in: typeof expires_in === 'string' && expires_in.trim() ? expires_in : '7d',
     });
 
     // Return JWT

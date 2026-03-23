@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CopyFieldButton } from './CopyFieldButton';
+import { Copyable } from './Copyable';
 import { TabFooter } from './TabFooter';
 import { useFramework } from './FrameworkContext';
 
@@ -69,12 +70,13 @@ export function CurrentUserTab({ userId, onClearUser, isAdvancedMode, onUserIdCh
             </div>
           ) : (
             <>
-              <div className="flex gap-2 items-start">
-                <div className="font-mono text-sm text-muted-foreground break-all flex-1 min-w-0">
-                  {userId}
-                </div>
-                <CopyFieldButton value={userId} label="user ID" className="shrink-0" />
-              </div>
+              <Copyable
+                value={userId}
+                className="min-w-0"
+                contentClassName="text-sm text-muted-foreground"
+              >
+                {userId}
+              </Copyable>
               <div className="flex gap-2">
                 <Button
                   type="button"

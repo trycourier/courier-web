@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -18,15 +19,16 @@ import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import {
-  DEFAULT_API_REGION,
+  DEFAULT_API_ENVIRONMENT,
   areApiUrlsEqual,
   getApiUrlsFromSearchParams
 } from "@/app/lib/api-urls";
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
-import { ExternalLink as ExternalLinkBase, Send as SendBase, X as XBase } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase, FlaskConical as FlaskConicalBase, Send as SendBase, X as XBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
+const FlaskConical = FlaskConicalBase as React.ComponentType<any>;
 const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
@@ -82,17 +84,13 @@ function HomeContent() {
   const isAdvancedMode = searchParams.get('advanced') === 'true';
 
   const {
-    apiRegion,
+    apiEnvironment,
     presetApiUrls,
     apiUrls,
-  }: {
-    apiRegion: 'us' | 'eu';
-    presetApiUrls: ApiUrls;
-    apiUrls: ApiUrls;
   } = getApiUrlsFromSearchParams(searchParams);
 
   const hasCustomApiUrls = !areApiUrlsEqual(apiUrls, presetApiUrls);
-  const shouldPassApiUrls = apiRegion !== DEFAULT_API_REGION || hasCustomApiUrls;
+  const shouldPassApiUrls = apiEnvironment !== DEFAULT_API_ENVIRONMENT || hasCustomApiUrls;
 
   // Get courierRest for API calls
   const courierRest = apiUrls.courier.rest;
@@ -102,6 +100,9 @@ function HomeContent() {
 
   // Get apiKey override from query params
   const overrideApiKey = searchParams.get('apiKey') || undefined;
+  const brandId = searchParams.get('brandId') || undefined;
+  const topicId = searchParams.get('topicId') || undefined;
+  const clientKey = searchParams.get('clientKey') || undefined;
 
   // Helper to update URL params
   const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
@@ -125,6 +126,7 @@ function HomeContent() {
     setActiveRightTabState(tab);
     updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
   }, [updateUrlParams]);
+  const visibleRightTab = activeRightTab;
 
   // Apply color mode to the page
   useEffect(() => {
@@ -262,7 +264,10 @@ function HomeContent() {
         </TabsContent>
         {isAdvancedMode && (
           <TabsContent value="advanced" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
-            <AdvancedTab apiUrls={apiUrls} apiRegion={apiRegion} />
+            <AdvancedTab
+              apiUrls={apiUrls}
+              apiEnvironment={apiEnvironment}
+            />
           </TabsContent>
         )}
       </div>
@@ -272,8 +277,11 @@ function HomeContent() {
   return (
     <div className="flex h-screen w-screen flex-col bg-background text-foreground">
       {/* Header */}
-      <header ref={headerRef} className="p-4 border-b border-border flex items-center justify-between px-4 gap-4">
-        <div className="flex items-center gap-2">
+      <header
+        ref={headerRef}
+        className="flex h-[73px] shrink-0 items-center justify-between gap-4 border-b border-border px-4"
+      >
+        <div className="flex items-center gap-4">
           <a
             href="https://www.courier.com"
             target="_blank"
@@ -299,8 +307,19 @@ function HomeContent() {
               />
             </svg>
           </a>
+          {isAdvancedMode && (
+            <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+              <Link
+                href="/tests"
+                className="flex items-center gap-2 text-sm"
+              >
+                <span className="hidden md:inline">Tests</span>
+                <FlaskConical className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
         </div>
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2">
           {/* Mobile Test Button */}
           <Button
             variant="outline"
@@ -352,10 +371,10 @@ function HomeContent() {
               </div>
             </>
           )}
-          <div className="hidden sm:block">
+          <div className="hidden min-w-0 shrink sm:block sm:max-w-[13rem] md:max-w-xs lg:max-w-sm">
             <InstallCommandCopy />
           </div>
-          <div className="hidden md:inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+          <div className="hidden md:inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
             <button
               onClick={() => setFrameworkType('react')}
               className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${frameworkType === 'react'
@@ -419,7 +438,7 @@ function HomeContent() {
             {/* Right Panel */}
             <div className="flex-1 overflow-hidden bg-background">
               <Tabs
-                value={activeRightTab}
+                value={visibleRightTab}
                 onValueChange={(tabId: string) => setActiveRightTab(tabId as RightTab)}
                 className="flex flex-col h-full"
               >

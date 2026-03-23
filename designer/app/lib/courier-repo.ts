@@ -1,4 +1,4 @@
-import { DEFAULT_COURIER_API_URLS } from "@trycourier/courier-react";
+import { API_ENVIRONMENT_PRESETS } from "@/app/lib/api-urls";
 
 export interface JWTResponse {
   token: string;
@@ -16,23 +16,60 @@ export interface MessageAction {
   href: string;
 }
 
+export interface GenerateJWTIssueTokenOptions {
+  /** JWT scope string; omitted or empty → server default scope for user_id */
+  scope?: string;
+  /** e.g. `7d`; omitted or empty → server default */
+  expiresIn?: string;
+}
+
 export class CourierRepo {
-  async generateJWT(userId: string, apiKey?: string, courierRest?: string): Promise<JWTResponse> {
+  /**
+   * Issues a JWT via the Next.js API route (server uses getCourierClient → auth.issueToken).
+   * Auth key: optional `apiKey`, else server `COURIER_AUTH_TOKEN`.
+   */
+  async generateJWT(
+    userId: string,
+    apiKey?: string,
+    courierRest?: string,
+    issueToken?: GenerateJWTIssueTokenOptions
+  ): Promise<JWTResponse> {
+    const body: Record<string, string> = {
+      user_id: userId,
+      courierRest: courierRest || API_ENVIRONMENT_PRESETS.production.courier.rest,
+    };
+
+    if (apiKey) {
+      body.api_key = apiKey;
+    }
+
+    const scope = issueToken?.scope?.trim();
+    if (scope) {
+      body.scope = scope;
+    }
+
+    const expiresIn = issueToken?.expiresIn?.trim();
+    if (expiresIn) {
+      body.expires_in = expiresIn;
+    }
+
     const response = await fetch("/inbox-demo/api/jwt", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        user_id: userId,
-        ...(apiKey && { api_key: apiKey }),
-        courierRest: courierRest || DEFAULT_COURIER_API_URLS.courier.rest,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to generate JWT");
+      const error = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        details?: string;
+        message?: string;
+      };
+      throw new Error(
+        error.message || error.details || error.error || "Failed to generate JWT"
+      );
     }
 
     return response.json();
@@ -59,7 +96,7 @@ export class CourierRepo {
         tags,
         actions,
         ...(apiKey && { api_key: apiKey }),
-        courierRest: courierRest || DEFAULT_COURIER_API_URLS.courier.rest,
+        courierRest: courierRest || API_ENVIRONMENT_PRESETS.production.courier.rest,
       }),
     });
 
