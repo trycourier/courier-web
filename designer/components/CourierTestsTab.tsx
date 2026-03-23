@@ -9,8 +9,10 @@ import {
   type ApiEnvironment,
   getPresetApiUrls,
 } from '@/app/lib/api-urls';
+import { CourierRepo } from '@/app/lib/courier-repo';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TestJsonEditor } from '@/components/tests/TestJsonEditor';
@@ -208,8 +210,10 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         id: 'auth-issue-token',
         section: 'Authentication',
         title: 'Issue JWT (auth/issue-token)',
-        sdkCall: 'POST /auth/issue-token',
-        sourceTest: 'POST /inbox-demo/api/jwt (server proxy)',
+        sdkCall:
+          'CourierRepo.generateJWT() → /api/jwt → getCourierClient().auth.issueToken\nAPI key: optional input apiKey → api_key body; else server COURIER_AUTH_TOKEN',
+        sourceTest:
+          'app/lib/courier-repo.ts · app/api/jwt/route.ts · app/api/lib/courier.ts',
         getInputs: () => ({
           apiKey: '',
           userId,
@@ -224,24 +228,11 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
           const apiUrls = getPresetApiUrls(testEnv);
           const courierRest = apiUrls.courier.rest;
 
-          const res = await fetch('/inbox-demo/api/jwt', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              user_id: userIdInput,
-              ...(apiKey && { api_key: apiKey }),
-              courierRest,
-              scope,
-              expires_in: expiresIn,
-            }),
+          const repo = new CourierRepo();
+          const data = await repo.generateJWT(userIdInput, apiKey || undefined, courierRest, {
+            scope: scope || undefined,
+            expiresIn: expiresIn || undefined,
           });
-
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({ error: res.statusText }));
-            throw new Error(err.message || err.error || err.details || `HTTP ${res.status}`);
-          }
-
-          const data = await res.json();
 
           courier.shared.signIn({ userId: userIdInput, jwt: data.token, apiUrls });
 
@@ -1037,18 +1028,23 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                 (<span className="font-mono text-sm">useCourier().shared.client</span>).
               </p>
             </div>
-            <Select value={testEnv} onValueChange={(v) => handleTestEnvChange(v as TestApiEnvironment)}>
-              <SelectTrigger className="w-[140px] shrink-0 font-mono text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(TEST_ENV_LABELS) as TestApiEnvironment[]).map((env) => (
-                  <SelectItem key={env} value={env} className="text-sm">
-                    {TEST_ENV_LABELS[env]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex shrink-0 flex-col gap-2">
+              <Label htmlFor="tests-api-environment" className="text-sm text-muted-foreground">
+                API Environment
+              </Label>
+              <Select value={testEnv} onValueChange={(v) => handleTestEnvChange(v as TestApiEnvironment)}>
+                <SelectTrigger id="tests-api-environment" className="w-[175px] shrink-0 font-mono text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(TEST_ENV_LABELS) as TestApiEnvironment[]).map((env) => (
+                    <SelectItem key={env} value={env} className="text-sm">
+                      {TEST_ENV_LABELS[env]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
