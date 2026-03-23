@@ -86,7 +86,7 @@ export function TestJsonEditor({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-[inherit] border border-border bg-muted text-xs font-mono text-foreground',
+        'overflow-hidden rounded-[inherit] border border-border bg-muted text-sm font-mono text-foreground',
         minHeight,
         disabled && 'pointer-events-none opacity-60',
         className,
@@ -101,7 +101,7 @@ export function TestJsonEditor({
         readOnly={readOnly || disabled}
         basicSetup={{ lineNumbers: true, foldGutter: true }}
         onChange={readOnly || disabled ? undefined : onChange}
-        className="font-mono text-xs [&_.cm-editor]:min-h-[200px] [&_.cm-scroller]:font-mono"
+        className="font-mono text-sm [&_.cm-editor]:min-h-[200px] [&_.cm-scroller]:font-mono"
       />
     </div>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { CourierAuth } from "@/components/CourierAuth";
 import { FrameworkProvider, useFramework } from "@/components/FrameworkContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -14,7 +15,6 @@ import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { CourierToastTab } from "@/components/CourierToastTab";
-import { CourierTestsTab } from "@/components/CourierTestsTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
@@ -24,18 +24,19 @@ import {
   getApiUrlsFromSearchParams
 } from "@/app/lib/api-urls";
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
-import { ExternalLink as ExternalLinkBase, Send as SendBase, X as XBase } from 'lucide-react';
+import { ExternalLink as ExternalLinkBase, FlaskConical as FlaskConicalBase, Send as SendBase, X as XBase } from 'lucide-react';
 
 // Cast to any to work around React 19 type incompatibility with lucide-react
 const ExternalLink = ExternalLinkBase as React.ComponentType<any>;
+const FlaskConical = FlaskConicalBase as React.ComponentType<any>;
 const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
-type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast' | 'courier-tests';
+type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast';
 
 const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds', 'advanced'];
-const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast', 'courier-tests'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast'];
 const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
 const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
 
@@ -55,10 +56,6 @@ function HomeContent() {
 
   const getInitialRightTab = useCallback((): RightTab => {
     const param = searchParams.get('layout');
-    const isAdvanced = searchParams.get('advanced') === 'true';
-    if (param === 'courier-tests' && !isAdvanced) {
-      return DEFAULT_RIGHT_TAB;
-    }
     if (param && VALID_RIGHT_TABS.includes(param as RightTab)) {
       return param as RightTab;
     }
@@ -129,9 +126,7 @@ function HomeContent() {
     setActiveRightTabState(tab);
     updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
   }, [updateUrlParams]);
-  const visibleRightTab = !isAdvancedMode && activeRightTab === 'courier-tests'
-    ? DEFAULT_RIGHT_TAB
-    : activeRightTab;
+  const visibleRightTab = activeRightTab;
 
   // Apply color mode to the page
   useEffect(() => {
@@ -282,8 +277,11 @@ function HomeContent() {
   return (
     <div className="flex h-screen w-screen flex-col bg-background text-foreground">
       {/* Header */}
-      <header ref={headerRef} className="p-4 border-b border-border flex items-center justify-between px-4 gap-4">
-        <div className="flex items-center gap-2">
+      <header
+        ref={headerRef}
+        className="flex h-[73px] shrink-0 items-center justify-between gap-4 border-b border-border px-4"
+      >
+        <div className="flex items-center gap-4">
           <a
             href="https://www.courier.com"
             target="_blank"
@@ -309,6 +307,17 @@ function HomeContent() {
               />
             </svg>
           </a>
+          {isAdvancedMode && (
+            <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+              <Link
+                href="/tests"
+                className="flex items-center gap-2 text-sm"
+              >
+                <span className="hidden md:inline">Tests</span>
+                <FlaskConical className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
         </div>
         <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2">
           {/* Mobile Test Button */}
@@ -439,7 +448,6 @@ function HomeContent() {
                     <TabsTrigger value="courier-inbox-popup-menu">Popup</TabsTrigger>
                     <TabsTrigger value="courier-inbox-hooks">Hooks</TabsTrigger>
                     <TabsTrigger value="courier-toast">Toast</TabsTrigger>
-                    {isAdvancedMode && <TabsTrigger value="courier-tests">Tests</TabsTrigger>}
                   </TabsList>
                 </div>
                 <div className="flex-1 overflow-y-auto">
@@ -465,17 +473,6 @@ function HomeContent() {
                   <TabsContent value="courier-toast" className="h-full mt-0">
                     <CourierToastTab colorMode={colorMode} />
                   </TabsContent>
-                  {isAdvancedMode && (
-                    <TabsContent value="courier-tests" className="h-full mt-0">
-                      <CourierTestsTab
-                        userId={userId}
-                        brandId={brandId}
-                        topicId={topicId}
-                        clientKey={clientKey}
-                        apiEnvironment={apiEnvironment === 'custom' ? 'production' : apiEnvironment}
-                      />
-                    </TabsContent>
-                  )}
                 </div>
               </Tabs>
             </div>

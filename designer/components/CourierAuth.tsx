@@ -10,28 +10,31 @@ import { CourierRepo } from "@/app/lib/courier-repo";
 import { API_ENVIRONMENT_PRESETS } from "@/app/lib/api-urls";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const USER_ID_STORAGE_KEY = 'courier_user_id';
+/** Inbox demo default user id persistence (main designer page). */
+export const COURIER_DEMO_USER_ID_STORAGE_KEY = 'courier_user_id';
+/** Isolated user id for the /tests page — never shared with the inbox demo. */
+export const COURIER_TESTS_USER_ID_STORAGE_KEY = 'courier_tests_user_id';
 
 function generateUUID(): string {
   return crypto.randomUUID();
 }
 
-function getOrCreateUserId(): string {
+function getOrCreateUserId(storageKey: string): string {
   if (typeof window === 'undefined') {
     return generateUUID();
   }
 
-  let userId = localStorage.getItem(USER_ID_STORAGE_KEY);
+  let userId = localStorage.getItem(storageKey);
   if (!userId) {
     userId = generateUUID();
-    localStorage.setItem(USER_ID_STORAGE_KEY, userId);
+    localStorage.setItem(storageKey, userId);
   }
   return userId;
 }
 
-function clearUserId(): string {
+function clearUserId(storageKey: string): string {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem(USER_ID_STORAGE_KEY);
+    localStorage.removeItem(storageKey);
   }
   return generateUUID();
 }
@@ -42,14 +45,23 @@ interface CourierAuthProps {
   overrideUserId?: string;
   apiKey?: string;
   hideLoadingState?: boolean;
+  /** localStorage key for the anonymous user id (default: inbox demo). Use `COURIER_TESTS_USER_ID_STORAGE_KEY` on /tests. */
+  userIdStorageKey?: string;
 }
 
-export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoadingState }: CourierAuthProps) {
+export function CourierAuth({
+  children,
+  apiUrls,
+  overrideUserId,
+  apiKey,
+  hideLoadingState,
+  userIdStorageKey = COURIER_DEMO_USER_ID_STORAGE_KEY,
+}: CourierAuthProps) {
   const courier = useCourier();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [storedUserId, setStoredUserId] = useState<string>(() => getOrCreateUserId());
+  const [storedUserId, setStoredUserId] = useState<string>(() => getOrCreateUserId(userIdStorageKey));
 
   // Use override if provided, otherwise use stored
   const userId = overrideUserId || storedUserId;
@@ -113,7 +125,7 @@ export function CourierAuth({ children, apiUrls, overrideUserId, apiKey, hideLoa
       return;
     }
     // Otherwise, clear the stored user and generate a new one
-    const newUserId = clearUserId();
+    const newUserId = clearUserId(userIdStorageKey);
     setStoredUserId(newUserId);
     // initializeCourier will be called automatically via useEffect when userId changes
   };

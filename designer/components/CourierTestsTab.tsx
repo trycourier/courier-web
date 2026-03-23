@@ -204,16 +204,61 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
 
   const tests: CourierTestDefinition[] = [
       {
+        id: 'auth-issue-token',
+        section: 'Authentication',
+        title: 'Issue JWT (auth/issue-token)',
+        sdkCall: 'POST /auth/issue-token',
+        sourceTest: 'POST /inbox-demo/api/jwt (server proxy)',
+        getInputs: () => ({
+          apiKey: '',
+          userId,
+          scope: `user_id:${userId} read:messages read:user-tokens write:user-tokens read:brands write:brands inbox:read:messages inbox:write:events read:preferences write:preferences`,
+          expires_in: '7d',
+        }),
+        run: async (_client, inputs) => {
+          const apiKey = inputString(inputs, 'apiKey');
+          const scope = inputString(inputs, 'scope');
+          const expiresIn = inputString(inputs, 'expires_in', '7d');
+          const userIdInput = inputString(inputs, 'userId', userId);
+          const apiUrls = getPresetApiUrls(testEnv);
+          const courierRest = apiUrls.courier.rest;
+
+          const res = await fetch('/inbox-demo/api/jwt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: userIdInput,
+              ...(apiKey && { api_key: apiKey }),
+              courierRest,
+              scope,
+              expires_in: expiresIn,
+            }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: res.statusText }));
+            throw new Error(err.message || err.error || err.details || `HTTP ${res.status}`);
+          }
+
+          const data = await res.json();
+
+          courier.shared.signIn({ userId: userIdInput, jwt: data.token, apiUrls });
+
+          return data;
+        },
+      },
+      {
         id: 'courier-client-all-options',
         section: 'Client',
         title: 'Validate shared client initialization snapshot',
         sdkCall: 'client.options',
         sourceTest: 'courier-client.test.ts > should validate client initialization with all options',
         getInputs: () => ({
-          userId,
-          brandId: resolvedBrandId || undefined,
-          topicId: resolvedTopicId || undefined,
-          clientKey: resolvedClientKey || undefined,
+          userId: userId,
+          jwt: courier.shared.client?.options?.jwt ?? '',
+          publicApiKey: courier.shared.client?.options?.publicApiKey ?? '',
+          tenantId: courier.shared.client?.options?.tenantId ?? '',
+          showLogs: courier.shared.client?.options?.showLogs ?? false,
         }),
         run: async (client, _inputs) => {
           void _inputs;
@@ -227,7 +272,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.options',
         sourceTest: 'courier-client.test.ts > should validate client initialization with minimal options',
         getInputs: () => ({
-          userId,
+          userId: userId,
         }),
         run: async (client, _inputs) => {
           void _inputs;
@@ -896,7 +941,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
       },
   ];
 
-  const sectionOrder = ['Client', 'Brands', 'Preferences', 'Inbox', 'Lists', 'Tokens', 'Tracking', 'Shared'];
+  const sectionOrder = ['Authentication', 'Client', 'Brands', 'Preferences', 'Inbox', 'Lists', 'Tokens', 'Tracking', 'Shared'];
   const groupedTests = new Map<string, CourierTestDefinition[]>();
 
   for (const test of tests) {
@@ -988,16 +1033,16 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
               <h2 className="text-base font-semibold">Courier JS Tests</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Each test maps to the courier-js test suite and runs through the courier-react recommended access path
-                (<span className="font-mono">useCourier().shared.client</span>).
+                (<span className="font-mono text-sm">useCourier().shared.client</span>).
               </p>
             </div>
             <Select value={testEnv} onValueChange={(v) => handleTestEnvChange(v as TestApiEnvironment)}>
-              <SelectTrigger className="w-[140px] shrink-0 font-mono text-xs">
+              <SelectTrigger className="w-[140px] shrink-0 font-mono text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {(Object.keys(TEST_ENV_LABELS) as TestApiEnvironment[]).map((env) => (
-                  <SelectItem key={env} value={env}>
+                  <SelectItem key={env} value={env} className="text-sm">
                     {TEST_ENV_LABELS[env]}
                   </SelectItem>
                 ))}
@@ -1010,7 +1055,9 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
           <section key={sectionGroup.section} className="space-y-3">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold">{sectionGroup.section}</h3>
-              <Badge variant="secondary">{sectionGroup.tests.length} tests</Badge>
+              <Badge variant="secondary" className="text-sm">
+                {sectionGroup.tests.length} tests
+              </Badge>
             </div>
 
             <div className="space-y-3">
@@ -1049,16 +1096,20 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline" className={`${testBadgeClass} gap-1`}>
+                            <Badge variant="outline" className={`${testBadgeClass} gap-1 text-sm`}>
                               {outcome === 'success' && <Check className="size-3.5" aria-hidden />}
                               {outcome === 'error' && <X className="size-3.5" aria-hidden />}
                               Test {testIndex + 1}
                             </Badge>
                             <CardTitle className="text-sm">{test.title}</CardTitle>
-                            {test.sourceSkipped && <Badge variant="outline">Skipped in courier-js</Badge>}
+                            {test.sourceSkipped && (
+                              <Badge variant="outline" className="text-sm">
+                                Skipped in courier-js
+                              </Badge>
+                            )}
                           </div>
                           <pre
-                            className="m-0 w-fit cursor-text whitespace-pre rounded-md border border-border bg-muted px-2.5 py-1 font-mono text-xs text-muted-foreground"
+                            className="m-0 w-fit cursor-text whitespace-pre rounded-md border border-border bg-muted px-2.5 py-1 font-mono text-sm text-muted-foreground"
                             style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
                           >
                             {test.sdkCall}
@@ -1070,7 +1121,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                             size="sm"
                             onClick={() => runTest(test)}
                             disabled={isRunning}
-                            className="h-8 gap-1 px-2.5 text-xs has-[>svg]:px-2"
+                            className="h-9 gap-1 px-3 text-sm has-[>svg]:px-2.5"
                           >
                             {isRunning ? (
                               <Loader2 className="size-3.5 animate-spin" aria-hidden />
@@ -1080,7 +1131,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                             {isRunning ? 'Running…' : 'Run Test'}
                           </Button>
                           {testResult?.lastRunAt && (
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                               Last run: {new Date(testResult.lastRunAt).toLocaleTimeString()}
                             </p>
                           )}
@@ -1098,8 +1149,8 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                           style={{ borderRadius: innerRadius }}
                         >
                           <div className="mb-2 flex items-center justify-between">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                              Inputs
+                            <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                              Input
                             </p>
                             <button
                               type="button"
@@ -1115,7 +1166,9 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                             </button>
                           </div>
                           {Object.keys(test.getInputs()).length === 0 ? (
-                            <p className="text-xs text-muted-foreground">No explicit inputs (empty JSON object).</p>
+                            <p className="text-sm text-muted-foreground">
+                              No explicit input (empty JSON object).
+                            </p>
                           ) : null}
                           <TestJsonEditor
                             value={inputValue}
@@ -1137,11 +1190,11 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                         >
                           <div className="mb-2 flex items-center justify-between">
                             <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                                 Output
                               </p>
                               {isRunning && (
-                                <Badge variant="secondary" className="text-[10px]">
+                                <Badge variant="secondary" className="text-sm">
                                   Loading
                                 </Badge>
                               )}
@@ -1172,7 +1225,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                               className="border-0 bg-transparent"
                             />
                           ) : (
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                               Run this test to view the full JSON response.
                             </p>
                           )}
