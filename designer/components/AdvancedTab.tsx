@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CopyFieldButton } from './CopyFieldButton';
+import { Copyable } from './Copyable';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export type ApiUrls = CourierApiUrls;
@@ -20,9 +21,6 @@ export type ApiUrls = CourierApiUrls;
 interface AdvancedTabProps {
   apiUrls: ApiUrls;
   apiEnvironment: ApiEnvironment;
-  brandId?: string;
-  topicId?: string;
-  clientKey?: string;
 }
 
 const ENVIRONMENT_LABELS: Record<ApiEnvironment, string> = {
@@ -32,7 +30,7 @@ const ENVIRONMENT_LABELS: Record<ApiEnvironment, string> = {
   custom: 'Custom',
 };
 
-export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientKey }: AdvancedTabProps) {
+export function AdvancedTab({ apiUrls, apiEnvironment }: AdvancedTabProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -44,13 +42,6 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
 
   const initialApiKey = searchParams.get('apiKey') || '';
   const [apiKey, setApiKey] = useState(initialApiKey);
-  const initialBrandId = brandId ?? (searchParams.get('brandId') || '');
-  const initialTopicId = topicId ?? (searchParams.get('topicId') || '');
-  const initialClientKey = clientKey ?? (searchParams.get('clientKey') || '');
-  const [currentBrandId, setCurrentBrandId] = useState(initialBrandId);
-  const [currentTopicId, setCurrentTopicId] = useState(initialTopicId);
-  const [currentClientKey, setCurrentClientKey] = useState(initialClientKey);
-
   const isCustom = selectedEnv === 'custom';
 
   const handleSave = () => {
@@ -104,24 +95,6 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
       params.delete('apiKey');
     }
 
-    if (currentBrandId.trim()) {
-      params.set('brandId', currentBrandId.trim());
-    } else {
-      params.delete('brandId');
-    }
-
-    if (currentTopicId.trim()) {
-      params.set('topicId', currentTopicId.trim());
-    } else {
-      params.delete('topicId');
-    }
-
-    if (currentClientKey.trim()) {
-      params.set('clientKey', currentClientKey.trim());
-    } else {
-      params.delete('clientKey');
-    }
-
     const basePath = '/inbox-demo';
     let path = pathname;
     if (!pathname.startsWith(basePath)) {
@@ -141,9 +114,6 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
     setInboxGraphql(preset.inbox.graphql);
     setInboxWebSocket(preset.inbox.webSocket);
     setApiKey('');
-    setCurrentBrandId('');
-    setCurrentTopicId('');
-    setCurrentClientKey('');
   };
 
   const hasChanges =
@@ -152,10 +122,7 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
     courierGraphql !== apiUrls.courier.graphql ||
     inboxGraphql !== apiUrls.inbox.graphql ||
     inboxWebSocket !== apiUrls.inbox.webSocket ||
-    apiKey !== initialApiKey ||
-    currentBrandId !== initialBrandId ||
-    currentTopicId !== initialTopicId ||
-    currentClientKey !== initialClientKey;
+    apiKey !== initialApiKey;
 
   const handleEnvironmentChange = (nextEnv: ApiEnvironment) => {
     setSelectedEnv(nextEnv);
@@ -174,6 +141,11 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
       setInboxWebSocket(preset.inbox.webSocket);
     }
   };
+
+  const presetUrlsForSelection =
+    selectedEnv === 'custom' ? null : getPresetApiUrls(selectedEnv);
+
+  const copyableContentClass = 'text-sm text-muted-foreground';
 
   return (
     <div className="p-4 h-full overflow-y-auto">
@@ -197,58 +169,6 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              {isCustom
-                ? 'Enter custom API endpoints below.'
-                : `Using ${ENVIRONMENT_LABELS[selectedEnv]} endpoints.`}
-            </p>
-          </div>
-        </div>
-
-        {/* Test Inputs Section */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Test Inputs</h3>
-
-          <div className="space-y-2">
-            <Label htmlFor="brand-id" className="text-sm text-muted-foreground">
-              Brand ID <span className="text-xs">(used by Tests tab)</span>
-            </Label>
-            <Input
-              id="brand-id"
-              type="text"
-              value={currentBrandId}
-              onChange={(e) => setCurrentBrandId(e.target.value)}
-              placeholder="brand_..."
-              className="font-mono"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="topic-id" className="text-sm text-muted-foreground">
-              Topic ID <span className="text-xs">(used by Tests tab)</span>
-            </Label>
-            <Input
-              id="topic-id"
-              type="text"
-              value={currentTopicId}
-              onChange={(e) => setCurrentTopicId(e.target.value)}
-              placeholder="topic_..."
-              className="font-mono"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="client-key" className="text-sm text-muted-foreground">
-              Client Key <span className="text-xs">(used by Tests tab)</span>
-            </Label>
-            <Input
-              id="client-key"
-              type="text"
-              value={currentClientKey}
-              onChange={(e) => setCurrentClientKey(e.target.value)}
-              placeholder="client-key"
-              className="font-mono"
-            />
           </div>
         </div>
 
@@ -274,7 +194,64 @@ export function AdvancedTab({ apiUrls, apiEnvironment, brandId, topicId, clientK
           </div>
         </div>
 
-        {/* Custom URL inputs -- only shown when environment is "custom" */}
+        {/* Preset environments: read-only Copyables (same sections as custom) */}
+        {presetUrlsForSelection && (
+          <>
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground">Courier API</h3>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">REST Endpoint</Label>
+                <Copyable
+                  value={presetUrlsForSelection.courier.rest}
+                  className="min-w-0"
+                  contentClassName={copyableContentClass}
+                >
+                  {presetUrlsForSelection.courier.rest}
+                </Copyable>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">GraphQL Endpoint</Label>
+                <Copyable
+                  value={presetUrlsForSelection.courier.graphql}
+                  className="min-w-0"
+                  contentClassName={copyableContentClass}
+                >
+                  {presetUrlsForSelection.courier.graphql}
+                </Copyable>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground">Inbox API</h3>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">GraphQL Endpoint</Label>
+                <Copyable
+                  value={presetUrlsForSelection.inbox.graphql}
+                  className="min-w-0"
+                  contentClassName={copyableContentClass}
+                >
+                  {presetUrlsForSelection.inbox.graphql}
+                </Copyable>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">WebSocket Endpoint</Label>
+                <Copyable
+                  value={presetUrlsForSelection.inbox.webSocket}
+                  className="min-w-0"
+                  contentClassName={copyableContentClass}
+                >
+                  {presetUrlsForSelection.inbox.webSocket}
+                </Copyable>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Custom URL inputs — editable fields + copy */}
         {isCustom && (
           <>
             <div className="space-y-4">

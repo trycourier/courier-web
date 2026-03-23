@@ -272,9 +272,6 @@ function HomeContent() {
             <AdvancedTab
               apiUrls={apiUrls}
               apiEnvironment={apiEnvironment}
-              brandId={brandId}
-              topicId={topicId}
-              clientKey={clientKey}
             />
           </TabsContent>
         )}
@@ -313,7 +310,7 @@ function HomeContent() {
             </svg>
           </a>
         </div>
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2">
           {/* Mobile Test Button */}
           <Button
             variant="outline"
@@ -365,10 +362,10 @@ function HomeContent() {
               </div>
             </>
           )}
-          <div className="hidden sm:block">
+          <div className="hidden min-w-0 shrink sm:block sm:max-w-[13rem] md:max-w-xs lg:max-w-sm">
             <InstallCommandCopy />
           </div>
-          <div className="hidden md:inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+          <div className="hidden md:inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
             <button
               onClick={() => setFrameworkType('react')}
               className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${frameworkType === 'react'
@@ -475,6 +472,7 @@ function HomeContent() {
                         brandId={brandId}
                         topicId={topicId}
                         clientKey={clientKey}
+                        apiEnvironment={apiEnvironment === 'custom' ? 'production' : apiEnvironment}
                       />
                     </TabsContent>
                   )}
