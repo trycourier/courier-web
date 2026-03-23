@@ -19,6 +19,7 @@ type TestApiEnvironment = Exclude<ApiEnvironment, 'custom'>;
 
 const TEST_ENV_LABELS: Record<TestApiEnvironment, string> = {
   production: 'Production',
+  'production-eu': 'Production EU',
   staging: 'Staging',
   dev: 'Dev',
 };

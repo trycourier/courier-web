@@ -4,11 +4,11 @@ type SearchParamsLike = {
   get(name: string): string | null;
 };
 
-export type ApiEnvironment = 'production' | 'staging' | 'dev' | 'custom';
+export type ApiEnvironment = 'production' | 'production-eu' | 'staging' | 'dev' | 'custom';
 
 export const DEFAULT_API_ENVIRONMENT: ApiEnvironment = 'production';
 
-const VALID_ENVIRONMENTS: ApiEnvironment[] = ['production', 'staging', 'dev', 'custom'];
+const VALID_ENVIRONMENTS: ApiEnvironment[] = ['production', 'production-eu', 'staging', 'dev', 'custom'];
 
 export const API_ENVIRONMENT_PRESETS: Record<Exclude<ApiEnvironment, 'custom'>, Readonly<CourierApiUrls>> = {
   production: {
@@ -19,6 +19,16 @@ export const API_ENVIRONMENT_PRESETS: Record<Exclude<ApiEnvironment, 'custom'>, 
     inbox: {
       graphql: 'https://inbox.courier.com/q',
       webSocket: 'wss://realtime.courier.io',
+    },
+  },
+  'production-eu': {
+    courier: {
+      rest: 'https://api.eu.courier.com',
+      graphql: 'https://api.eu.courier.com/client/q',
+    },
+    inbox: {
+      graphql: 'https://inbox.eu.courier.io/q',
+      webSocket: 'wss://realtime.eu.courier.io',
     },
   },
   staging: {
@@ -64,37 +74,13 @@ export const getApiUrlsFromSearchParams = (searchParams: SearchParamsLike): {
   presetApiUrls: CourierApiUrls;
   apiUrls: CourierApiUrls;
 } => {
-  // Support legacy apiRegion param: treat eu as custom with EU URLs
-  const legacyRegion = searchParams.get('apiRegion');
   const envParam = searchParams.get('env');
+  const apiEnvironment = resolveApiEnvironment(envParam);
 
-  let apiEnvironment: ApiEnvironment;
   let presetApiUrls: CourierApiUrls;
 
-  if (envParam) {
-    apiEnvironment = resolveApiEnvironment(envParam);
-  } else if (legacyRegion === 'eu') {
-    apiEnvironment = 'custom';
-  } else {
-    apiEnvironment = DEFAULT_API_ENVIRONMENT;
-  }
-
   if (apiEnvironment === 'custom') {
-    // For custom, use production as the baseline for defaults
     presetApiUrls = getPresetApiUrls('production');
-
-    if (!envParam && legacyRegion === 'eu') {
-      presetApiUrls = {
-        courier: {
-          rest: 'https://api.eu.courier.com',
-          graphql: 'https://api.eu.courier.com/client/q',
-        },
-        inbox: {
-          graphql: 'https://inbox.eu.courier.io/q',
-          webSocket: 'wss://realtime.eu.courier.io',
-        },
-      };
-    }
   } else {
     presetApiUrls = getPresetApiUrls(apiEnvironment);
   }

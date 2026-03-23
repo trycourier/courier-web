@@ -25,6 +25,7 @@ interface AdvancedTabProps {
 
 const ENVIRONMENT_LABELS: Record<ApiEnvironment, string> = {
   production: 'Production',
+  'production-eu': 'Production EU',
   staging: 'Staging',
   dev: 'Dev',
   custom: 'Custom',
@@ -46,9 +47,6 @@ export function AdvancedTab({ apiUrls, apiEnvironment }: AdvancedTabProps) {
 
   const handleSave = () => {
     const params = new URLSearchParams(searchParams.toString());
-
-    // Clean up legacy param
-    params.delete('apiRegion');
 
     if (selectedEnv !== DEFAULT_API_ENVIRONMENT) {
       params.set('env', selectedEnv);
