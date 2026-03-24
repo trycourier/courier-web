@@ -44,6 +44,15 @@ export function parseTestsPageQuery(searchParams: URLSearchParams): {
     }
   }
 
+  const courierRest = pick('courierRest');
+  if (courierRest !== null) form.courierRest = courierRest;
+  const courierGraphql = pick('courierGraphql');
+  if (courierGraphql !== null) form.courierGraphql = courierGraphql;
+  const inboxGraphql = pick('inboxGraphql');
+  if (inboxGraphql !== null) form.inboxGraphql = inboxGraphql;
+  const inboxWebSocket = pick('inboxWebSocket');
+  if (inboxWebSocket !== null) form.inboxWebSocket = inboxWebSocket;
+
   return { form, env };
 }
 
@@ -77,6 +86,13 @@ export function buildTestsPageQuery(form: TestsSharedFieldValues, env: TestApiEn
   }
   if (form.paginationLimit !== def.paginationLimit) {
     p.set('paginationLimit', String(form.paginationLimit));
+  }
+
+  if (env === 'custom') {
+    if (form.courierRest.trim()) p.set('courierRest', form.courierRest.trim());
+    if (form.courierGraphql.trim()) p.set('courierGraphql', form.courierGraphql.trim());
+    if (form.inboxGraphql.trim()) p.set('inboxGraphql', form.inboxGraphql.trim());
+    if (form.inboxWebSocket.trim()) p.set('inboxWebSocket', form.inboxWebSocket.trim());
   }
 
   return p;

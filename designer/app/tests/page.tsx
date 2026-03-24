@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CourierAuth, COURIER_TESTS_USER_ID_STORAGE_KEY } from '@/components/CourierAuth';
@@ -75,6 +75,19 @@ function TestsSessionFields({
   onTestEnvChange,
 }: TestsSessionFieldsProps) {
   const uid = useId();
+  const isCustom = testEnv === 'custom';
+
+  const handleEnvChange = (nextEnv: TestApiEnvironment) => {
+    onTestEnvChange(nextEnv);
+    if (nextEnv === 'custom') {
+      const prod = getPresetApiUrls('production');
+      if (!sessionForm.courierRest.trim()) updateSessionField('courierRest', prod.courier.rest);
+      if (!sessionForm.courierGraphql.trim()) updateSessionField('courierGraphql', prod.courier.graphql);
+      if (!sessionForm.inboxGraphql.trim()) updateSessionField('inboxGraphql', prod.inbox.graphql);
+      if (!sessionForm.inboxWebSocket.trim()) updateSessionField('inboxWebSocket', prod.inbox.webSocket);
+    }
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
@@ -83,7 +96,7 @@ function TestsSessionFields({
             <Label htmlFor={`${uid}-api-environment`} className="text-xs text-muted-foreground">
               API environment
             </Label>
-            <Select value={testEnv} onValueChange={(v) => onTestEnvChange(v as TestApiEnvironment)}>
+            <Select value={testEnv} onValueChange={(v) => handleEnvChange(v as TestApiEnvironment)}>
               <SelectTrigger id={`${uid}-api-environment`} className="w-full font-mono text-sm">
                 <SelectValue />
               </SelectTrigger>
@@ -96,6 +109,64 @@ function TestsSessionFields({
               </SelectContent>
             </Select>
           </div>
+
+          {isCustom && (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-courier-rest`} className="text-xs text-muted-foreground">
+                  Courier REST
+                </Label>
+                <Input
+                  id={`${uid}-courier-rest`}
+                  className="font-mono text-sm"
+                  placeholder="https://api.courier.com"
+                  value={sessionForm.courierRest}
+                  onChange={(e) => updateSessionField('courierRest', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-courier-graphql`} className="text-xs text-muted-foreground">
+                  Courier GraphQL
+                </Label>
+                <Input
+                  id={`${uid}-courier-graphql`}
+                  className="font-mono text-sm"
+                  placeholder="https://api.courier.com/client/q"
+                  value={sessionForm.courierGraphql}
+                  onChange={(e) => updateSessionField('courierGraphql', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-inbox-graphql`} className="text-xs text-muted-foreground">
+                  Inbox GraphQL
+                </Label>
+                <Input
+                  id={`${uid}-inbox-graphql`}
+                  className="font-mono text-sm"
+                  placeholder="https://inbox.courier.com/q"
+                  value={sessionForm.inboxGraphql}
+                  onChange={(e) => updateSessionField('inboxGraphql', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-inbox-ws`} className="text-xs text-muted-foreground">
+                  Inbox WebSocket
+                </Label>
+                <Input
+                  id={`${uid}-inbox-ws`}
+                  className="font-mono text-sm"
+                  placeholder="wss://realtime.courier.io"
+                  value={sessionForm.inboxWebSocket}
+                  onChange={(e) => updateSessionField('inboxWebSocket', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            </>
+          )}
+
           <div className="space-y-1.5">
             <Label htmlFor={`${uid}-api-key`} className="text-xs text-muted-foreground">
               API key
@@ -290,6 +361,23 @@ function TestsPageContent() {
     setSessionForm((prev) => ({ ...prev, [key]: value }));
   }, []);
 
+  const committedApiUrls = useMemo(() => {
+    if (testEnv === 'custom') {
+      const defaults = getPresetApiUrls('production');
+      return {
+        courier: {
+          rest: sessionCommitted.courierRest.trim() || defaults.courier.rest,
+          graphql: sessionCommitted.courierGraphql.trim() || defaults.courier.graphql,
+        },
+        inbox: {
+          graphql: sessionCommitted.inboxGraphql.trim() || defaults.inbox.graphql,
+          webSocket: sessionCommitted.inboxWebSocket.trim() || defaults.inbox.webSocket,
+        },
+      };
+    }
+    return getPresetApiUrls(testEnv);
+  }, [testEnv, sessionCommitted.courierRest, sessionCommitted.courierGraphql, sessionCommitted.inboxGraphql, sessionCommitted.inboxWebSocket]);
+
   const sessionFieldsProps: TestsSessionFieldsProps = {
     sessionForm,
     updateSessionField,
@@ -386,7 +474,7 @@ function TestsPageContent() {
       <CourierAuth
         skipJwtInitialization
         userIdStorageKey={COURIER_TESTS_USER_ID_STORAGE_KEY}
-        apiUrls={getPresetApiUrls(testEnv)}
+        apiUrls={committedApiUrls}
         apiKey={sessionCommitted.apiKey.trim() || undefined}
         overrideUserId={sessionCommitted.userId.trim() || undefined}
       >
