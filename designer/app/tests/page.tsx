@@ -109,6 +109,64 @@ function TestsSessionFields({
               </SelectContent>
             </Select>
           </div>
+
+          {isCustom && (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-courier-rest`} className="text-xs text-muted-foreground">
+                  Courier REST
+                </Label>
+                <Input
+                  id={`${uid}-courier-rest`}
+                  className="font-mono text-sm"
+                  placeholder="https://api.courier.com"
+                  value={sessionForm.courierRest}
+                  onChange={(e) => updateSessionField('courierRest', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-courier-graphql`} className="text-xs text-muted-foreground">
+                  Courier GraphQL
+                </Label>
+                <Input
+                  id={`${uid}-courier-graphql`}
+                  className="font-mono text-sm"
+                  placeholder="https://api.courier.com/client/q"
+                  value={sessionForm.courierGraphql}
+                  onChange={(e) => updateSessionField('courierGraphql', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-inbox-graphql`} className="text-xs text-muted-foreground">
+                  Inbox GraphQL
+                </Label>
+                <Input
+                  id={`${uid}-inbox-graphql`}
+                  className="font-mono text-sm"
+                  placeholder="https://inbox.courier.com/q"
+                  value={sessionForm.inboxGraphql}
+                  onChange={(e) => updateSessionField('inboxGraphql', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`${uid}-inbox-ws`} className="text-xs text-muted-foreground">
+                  Inbox WebSocket
+                </Label>
+                <Input
+                  id={`${uid}-inbox-ws`}
+                  className="font-mono text-sm"
+                  placeholder="wss://realtime.courier.io"
+                  value={sessionForm.inboxWebSocket}
+                  onChange={(e) => updateSessionField('inboxWebSocket', e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            </>
+          )}
+
           <div className="space-y-1.5">
             <Label htmlFor={`${uid}-api-key`} className="text-xs text-muted-foreground">
               API key
@@ -211,66 +269,6 @@ function TestsSessionFields({
               }}
             />
           </div>
-
-          {isCustom && (
-            <>
-              <div className="mt-2 border-t border-border pt-3">
-                <span className="text-xs font-medium text-muted-foreground">Custom API URLs</span>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`${uid}-courier-rest`} className="text-xs text-muted-foreground">
-                  Courier REST
-                </Label>
-                <Input
-                  id={`${uid}-courier-rest`}
-                  className="font-mono text-sm"
-                  placeholder="https://api.courier.com"
-                  value={sessionForm.courierRest}
-                  onChange={(e) => updateSessionField('courierRest', e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`${uid}-courier-graphql`} className="text-xs text-muted-foreground">
-                  Courier GraphQL
-                </Label>
-                <Input
-                  id={`${uid}-courier-graphql`}
-                  className="font-mono text-sm"
-                  placeholder="https://api.courier.com/client/q"
-                  value={sessionForm.courierGraphql}
-                  onChange={(e) => updateSessionField('courierGraphql', e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`${uid}-inbox-graphql`} className="text-xs text-muted-foreground">
-                  Inbox GraphQL
-                </Label>
-                <Input
-                  id={`${uid}-inbox-graphql`}
-                  className="font-mono text-sm"
-                  placeholder="https://inbox.courier.com/q"
-                  value={sessionForm.inboxGraphql}
-                  onChange={(e) => updateSessionField('inboxGraphql', e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`${uid}-inbox-ws`} className="text-xs text-muted-foreground">
-                  Inbox WebSocket
-                </Label>
-                <Input
-                  id={`${uid}-inbox-ws`}
-                  className="font-mono text-sm"
-                  placeholder="wss://realtime.courier.io"
-                  value={sessionForm.inboxWebSocket}
-                  onChange={(e) => updateSessionField('inboxWebSocket', e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
-            </>
-          )}
         </div>
       </div>
       <div className="shrink-0 border-t border-border bg-background p-3">
