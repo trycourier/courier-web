@@ -16,13 +16,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TestJsonEditor } from '@/components/tests/TestJsonEditor';
 
-export type TestApiEnvironment = Exclude<ApiEnvironment, 'custom'>;
+export type TestApiEnvironment = ApiEnvironment;
 
 export const TEST_ENV_LABELS: Record<TestApiEnvironment, string> = {
   production: 'Production',
   'production-eu': 'Production EU',
   staging: 'Staging',
   dev: 'Dev',
+  custom: 'Custom',
 };
 
 interface RunAllControls {
@@ -73,6 +74,10 @@ export interface TestsSharedFieldValues {
   expiresIn: string;
   listId: string;
   paginationLimit: number;
+  courierRest: string;
+  courierGraphql: string;
+  inboxGraphql: string;
+  inboxWebSocket: string;
 }
 
 export const DEFAULT_TESTS_SHARED_FIELDS: TestsSharedFieldValues = {
@@ -84,6 +89,10 @@ export const DEFAULT_TESTS_SHARED_FIELDS: TestsSharedFieldValues = {
   expiresIn: '7d',
   listId: LIST_TEST_ID,
   paginationLimit: 10,
+  courierRest: '',
+  courierGraphql: '',
+  inboxGraphql: '',
+  inboxWebSocket: '',
 };
 
 export function jwtScopeForUserId(uid: string): string {
@@ -163,6 +172,7 @@ export function CourierTestsTab({
   useEffect(() => {
     if (prevEnvRef.current === apiEnvironment) return;
     prevEnvRef.current = apiEnvironment;
+    if (apiEnvironment === 'custom') return;
     const apiUrls = getPresetApiUrls(apiEnvironment);
     const currentOptions = courier.shared.client?.options;
     if (currentOptions) {
@@ -271,7 +281,9 @@ export function CourierTestsTab({
         const scope = inputString(inputs, 'scope');
         const expiresIn = inputString(inputs, 'expires_in', '7d');
         const userIdInput = inputString(inputs, 'userId', authUserId);
-        const apiUrls = getPresetApiUrls(apiEnvironment);
+        const apiUrls = apiEnvironment === 'custom'
+          ? courier.shared.client?.options?.apiUrls ?? getPresetApiUrls('production')
+          : getPresetApiUrls(apiEnvironment);
         const courierRest = apiUrls.courier.rest;
 
         const repo = new CourierRepo();
