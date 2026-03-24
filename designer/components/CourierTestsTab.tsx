@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CourierTrackingEvent } from '@trycourier/courier-js';
 import { useCourier } from '@trycourier/courier-react';
 import { Check, Copy, Loader2, Play, X } from 'lucide-react';
@@ -10,28 +10,32 @@ import {
   getPresetApiUrls,
 } from '@/app/lib/api-urls';
 import { CourierRepo } from '@/app/lib/courier-repo';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TestJsonEditor } from '@/components/tests/TestJsonEditor';
 
-type TestApiEnvironment = Exclude<ApiEnvironment, 'custom'>;
+export type TestApiEnvironment = Exclude<ApiEnvironment, 'custom'>;
 
-const TEST_ENV_LABELS: Record<TestApiEnvironment, string> = {
+export const TEST_ENV_LABELS: Record<TestApiEnvironment, string> = {
   production: 'Production',
   'production-eu': 'Production EU',
   staging: 'Staging',
   dev: 'Dev',
 };
 
+interface RunAllControls {
+  runAllTests: () => Promise<void>;
+}
+
 interface CourierTestsTabProps {
-  userId: string;
-  brandId?: string;
-  topicId?: string;
-  clientKey?: string;
+  authUserId: string;
+  sharedFieldValues: TestsSharedFieldValues;
   apiEnvironment?: TestApiEnvironment;
+  onRunControlsReady?: (controls: RunAllControls) => void;
+  onBatchRunningChange?: (running: boolean) => void;
+  onRegisterApplySharedDefaults?: (apply: (values: TestsSharedFieldValues) => void) => void;
 }
 
 type CourierClientInstance = NonNullable<ReturnType<typeof useCourier>['shared']['client']>;
@@ -59,6 +63,32 @@ interface CourierTestDefinition {
 const TRACKING_TEST_URL =
   'https://d949e6c0-85f8-4284-95cc-cbf36c4c29ab.ct0.app/t/zYLfXkZVSINu0pJBSrf0EjDdSGXJQ1Bx0kRg0ZJgbK-SMa4BF7x-I9-3MsSDH5NddcUhvMMbGOz5R4rrEyKESsSKO0m4MnosFZMEjWkG-Xjy5LSmO3mad4vO5Szeg04KILk5sZHEzNO5UwikXwSmvUH7VhlhrpZWJlHvJ2i-zquPlcfsVt5C3XBP1_08ep_90gqQ40CbjW0r5JQrVHm43BV2l-WIg8CJ6eNYp4nGTtc_h1_idE-WMenw2TPpuTELIoTD5EtP8X2eKszcQ5nBQvnUxL15MnrZVSkq8-BYewOufSbewTt2bGTUbnFRDtqrrh9mUmgYHmxPnyfL9PKnPA';
 const LIST_TEST_ID = 'example-list-id';
+
+export interface TestsSharedFieldValues {
+  apiKey: string;
+  userId: string;
+  brandId: string;
+  topicId: string;
+  clientKey: string;
+  expiresIn: string;
+  listId: string;
+  paginationLimit: number;
+}
+
+export const DEFAULT_TESTS_SHARED_FIELDS: TestsSharedFieldValues = {
+  apiKey: '',
+  userId: '',
+  brandId: '',
+  topicId: '',
+  clientKey: '',
+  expiresIn: '7d',
+  listId: LIST_TEST_ID,
+  paginationLimit: 10,
+};
+
+export function jwtScopeForUserId(uid: string): string {
+  return `user_id:${uid} read:messages read:user-tokens write:user-tokens read:brands write:brands inbox:read:messages inbox:write:events read:preferences write:preferences`;
+}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -107,16 +137,33 @@ function isExplicitMessageId(value: unknown): value is string {
   );
 }
 
-export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnvironment = 'production' }: CourierTestsTabProps) {
+export function CourierTestsTab({
+  authUserId,
+  sharedFieldValues,
+  apiEnvironment = 'production',
+  onRunControlsReady,
+  onBatchRunningChange,
+  onRegisterApplySharedDefaults,
+}: CourierTestsTabProps) {
   const courier = useCourier();
   const [testResults, setTestResults] = useState<Record<string, TestResultState>>({});
   const [inputDrafts, setInputDrafts] = useState<Record<string, string>>({});
   const [copiedPanel, setCopiedPanel] = useState<string | null>(null);
-  const [testEnv, setTestEnv] = useState<TestApiEnvironment>(apiEnvironment);
 
-  const handleTestEnvChange = (nextEnv: TestApiEnvironment) => {
-    setTestEnv(nextEnv);
-    const apiUrls = getPresetApiUrls(nextEnv);
+  const templateCtxRef = useRef({
+    authUserId: '',
+    shared: DEFAULT_TESTS_SHARED_FIELDS,
+  });
+  templateCtxRef.current = { authUserId, shared: sharedFieldValues };
+
+  const effectiveTemplateUserId = () =>
+    templateCtxRef.current.shared.userId.trim() || templateCtxRef.current.authUserId;
+
+  const prevEnvRef = useRef(apiEnvironment);
+  useEffect(() => {
+    if (prevEnvRef.current === apiEnvironment) return;
+    prevEnvRef.current = apiEnvironment;
+    const apiUrls = getPresetApiUrls(apiEnvironment);
     const currentOptions = courier.shared.client?.options;
     if (currentOptions) {
       courier.shared.signIn({
@@ -128,7 +175,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         apiUrls,
       });
     }
-  };
+  }, [apiEnvironment, courier.shared]);
 
   const copyPanel = async (key: string, text: string) => {
     try {
@@ -139,10 +186,6 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
       console.error('Copy failed:', err);
     }
   };
-
-  const resolvedBrandId = brandId?.trim() ?? '';
-  const resolvedTopicId = topicId?.trim() ?? '';
-  const resolvedClientKey = clientKey?.trim() ?? '';
 
   const getClient = (): CourierClientInstance => {
     const client = courier.shared.client;
@@ -214,18 +257,21 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
           'CourierRepo.generateJWT() → /api/jwt → getCourierClient().auth.issueToken\nAPI key: optional input apiKey → api_key body; else server COURIER_AUTH_TOKEN',
         sourceTest:
           'app/lib/courier-repo.ts · app/api/jwt/route.ts · app/api/lib/courier.ts',
-        getInputs: () => ({
-          apiKey: '',
-          userId,
-          scope: `user_id:${userId} read:messages read:user-tokens write:user-tokens read:brands write:brands inbox:read:messages inbox:write:events read:preferences write:preferences`,
-          expires_in: '7d',
-        }),
+        getInputs: () => {
+          const uid = effectiveTemplateUserId();
+          return {
+            apiKey: templateCtxRef.current.shared.apiKey,
+            userId: uid,
+            scope: jwtScopeForUserId(uid),
+            expires_in: templateCtxRef.current.shared.expiresIn || '7d',
+          };
+        },
         run: async (_client, inputs) => {
           const apiKey = inputString(inputs, 'apiKey');
           const scope = inputString(inputs, 'scope');
           const expiresIn = inputString(inputs, 'expires_in', '7d');
-          const userIdInput = inputString(inputs, 'userId', userId);
-          const apiUrls = getPresetApiUrls(testEnv);
+          const userIdInput = inputString(inputs, 'userId', authUserId);
+          const apiUrls = getPresetApiUrls(apiEnvironment);
           const courierRest = apiUrls.courier.rest;
 
           const repo = new CourierRepo();
@@ -246,7 +292,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.options',
         sourceTest: 'courier-client.test.ts > should validate client initialization with all options',
         getInputs: () => ({
-          userId: userId,
+          userId: effectiveTemplateUserId(),
           jwt: courier.shared.client?.options?.jwt ?? '',
           publicApiKey: courier.shared.client?.options?.publicApiKey ?? '',
           tenantId: courier.shared.client?.options?.tenantId ?? '',
@@ -264,7 +310,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.options',
         sourceTest: 'courier-client.test.ts > should validate client initialization with minimal options',
         getInputs: () => ({
-          userId: userId,
+          userId: effectiveTemplateUserId(),
         }),
         run: async (client, _inputs) => {
           void _inputs;
@@ -278,7 +324,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.brands.getBrand({ brandId })',
         sourceTest: 'brand-client.test.ts > should fetch brand settings successfully',
         getInputs: () => ({
-          brandId: resolvedBrandId || '',
+          brandId: templateCtxRef.current.shared.brandId.trim(),
         }),
         run: async (client, inputs) => {
           return await client.brands.getBrand({
@@ -305,7 +351,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.preferences.getUserPreferenceTopic({ topicId })',
         sourceTest: 'preferences-client.test.ts > should fetch user preference topic successfully',
         getInputs: () => ({
-          topicId: resolvedTopicId || '',
+          topicId: templateCtxRef.current.shared.topicId.trim(),
         }),
         run: async (client, inputs) => {
           return await client.preferences.getUserPreferenceTopic({
@@ -320,7 +366,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.preferences.putUserPreferenceTopic({ topicId, status, ... })',
         sourceTest: 'preferences-client.test.ts > should update user preference topic successfully',
         getInputs: () => ({
-          topicId: resolvedTopicId || '',
+          topicId: templateCtxRef.current.shared.topicId.trim(),
           status: 'OPTED_IN',
           hasCustomRouting: false,
           customRouting: [],
@@ -342,7 +388,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.preferences.getNotificationCenterUrl({ clientKey })',
         sourceTest: 'preferences-client.test.ts > should get notification center url successfully',
         getInputs: () => ({
-          clientKey: resolvedClientKey || '',
+          clientKey: templateCtxRef.current.shared.clientKey.trim(),
         }),
         run: async (client, inputs) => {
           return client.preferences.getNotificationCenterUrl({
@@ -357,7 +403,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.inbox.getMessages({ paginationLimit })',
         sourceTest: 'inbox-client.test.ts > should fetch messages and unread count',
         getInputs: () => ({
-          paginationLimit: 10,
+          paginationLimit: templateCtxRef.current.shared.paginationLimit,
         }),
         run: async (client, inputs) => {
           return await client.inbox.getMessages({
@@ -394,7 +440,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.inbox.getMessages({ paginationLimit, filter })',
         sourceTest: 'inbox-client.test.ts > should fetch messages with from filter',
         getInputs: () => ({
-          paginationLimit: 10,
+          paginationLimit: templateCtxRef.current.shared.paginationLimit,
           filter: {
             status: 'unread',
             from: new Date(Date.now() - 60_000).toISOString(),
@@ -429,7 +475,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.inbox.getArchivedMessages({ paginationLimit })',
         sourceTest: 'inbox-client.test.ts > should fetch archived messages',
         getInputs: () => ({
-          paginationLimit: 10,
+          paginationLimit: templateCtxRef.current.shared.paginationLimit,
         }),
         run: async (client, inputs) => {
           return await client.inbox.getArchivedMessages({
@@ -673,7 +719,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sdkCall: 'client.inbox.getMessages({ paginationLimit })',
         sourceTest: 'inbox-client.test.ts > should see tenant messages with new client',
         getInputs: () => ({
-          paginationLimit: 10,
+          paginationLimit: templateCtxRef.current.shared.paginationLimit,
         }),
         run: async (client, inputs) => {
           if (!client.options.tenantId) {
@@ -724,7 +770,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sourceTest: 'lists-client.test.ts > should put subscription successfully',
         sourceSkipped: true,
         getInputs: () => ({
-          listId: LIST_TEST_ID,
+          listId: templateCtxRef.current.shared.listId.trim() || LIST_TEST_ID,
         }),
         run: async (client, inputs) => {
           return await client.lists.putSubscription({
@@ -740,7 +786,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sourceTest: 'lists-client.test.ts > should delete subscription successfully',
         sourceSkipped: true,
         getInputs: () => ({
-          listId: LIST_TEST_ID,
+          listId: templateCtxRef.current.shared.listId.trim() || LIST_TEST_ID,
         }),
         run: async (client, inputs) => {
           return await client.lists.deleteSubscription({
@@ -805,7 +851,7 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
         sourceTest: 'tracking-client.test.ts > should post inbound courier successfully',
         sourceSkipped: true,
         getInputs: () => ({
-          clientKey: resolvedClientKey || '',
+          clientKey: templateCtxRef.current.shared.clientKey.trim(),
           event: 'test_event',
           messageId: crypto.randomUUID(),
           type: 'track',
@@ -949,10 +995,86 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
       tests: groupedTests.get(section) ?? [],
     }));
 
-  const defaultsKey = `${userId}|${resolvedBrandId}|${resolvedTopicId}|${resolvedClientKey}`;
+  const defaultsKey = `${authUserId}|${JSON.stringify(sharedFieldValues)}`;
   useEffect(() => {
     setInputDrafts({});
   }, [defaultsKey]);
+
+  const testsRef = useRef(tests);
+  testsRef.current = tests;
+
+  const applySharedToAllDrafts = useCallback((values: TestsSharedFieldValues) => {
+    const saved = templateCtxRef.current;
+    templateCtxRef.current = { authUserId: saved.authUserId, shared: values };
+    setInputDrafts((prev) => {
+      try {
+        const next: Record<string, string> = { ...prev };
+        for (const test of testsRef.current) {
+          const template = test.getInputs();
+          let merged: Record<string, unknown>;
+          try {
+            const raw = prev[test.id];
+            if (raw) {
+              const parsed = JSON.parse(raw) as unknown;
+              if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                merged = { ...template, ...(parsed as Record<string, unknown>) };
+              } else {
+                merged = { ...template };
+              }
+            } else {
+              merged = { ...template };
+            }
+          } catch {
+            merged = { ...template };
+          }
+
+          const uid = values.userId.trim() || saved.authUserId;
+          const sharedKeys = [
+            'apiKey',
+            'userId',
+            'brandId',
+            'topicId',
+            'clientKey',
+            'expires_in',
+            'listId',
+            'paginationLimit',
+          ] as const;
+          for (const key of sharedKeys) {
+            if (key in template) {
+              if (key === 'paginationLimit') {
+                merged[key] = values.paginationLimit;
+              } else if (key === 'userId') {
+                merged[key] = uid;
+              } else if (key === 'apiKey') {
+                merged[key] = values.apiKey;
+              } else if (key === 'brandId') {
+                merged[key] = values.brandId.trim();
+              } else if (key === 'topicId') {
+                merged[key] = values.topicId.trim();
+              } else if (key === 'clientKey') {
+                merged[key] = values.clientKey.trim();
+              } else if (key === 'expires_in') {
+                merged[key] = values.expiresIn || '7d';
+              } else if (key === 'listId') {
+                merged[key] = values.listId.trim() || LIST_TEST_ID;
+              }
+            }
+          }
+          if (test.id === 'auth-issue-token') {
+            merged.scope = jwtScopeForUserId(uid);
+          }
+          next[test.id] = toJson(merged);
+        }
+        return next;
+      } finally {
+        templateCtxRef.current = saved;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    onRegisterApplySharedDefaults?.(applySharedToAllDrafts);
+  }, [onRegisterApplySharedDefaults, applySharedToAllDrafts]);
 
   const runTest = async (test: CourierTestDefinition) => {
     const draft = inputDrafts[test.id] ?? toJson(test.getInputs());
@@ -1016,38 +1138,31 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
     }
   };
 
+  const runTestRef = useRef(runTest);
+  runTestRef.current = runTest;
+
+  const testsBySectionRef = useRef(testsBySection);
+  testsBySectionRef.current = testsBySection;
+
+  const runAllTests = useCallback(async () => {
+    onBatchRunningChange?.(true);
+    try {
+      const allTests = testsBySectionRef.current.flatMap((s) => s.tests);
+      for (const test of allTests) {
+        await runTestRef.current(test);
+      }
+    } finally {
+      onBatchRunningChange?.(false);
+    }
+  }, [onBatchRunningChange]);
+
+  useEffect(() => {
+    onRunControlsReady?.({ runAllTests });
+  }, [onRunControlsReady, runAllTests]);
+
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="space-y-6">
-        <div className="rounded-lg border bg-muted/20 p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-base font-semibold">Courier JS Tests</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Each test maps to the courier-js test suite and runs through the courier-react recommended access path
-                (<span className="font-mono text-sm">useCourier().shared.client</span>).
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-col gap-2">
-              <Label htmlFor="tests-api-environment" className="text-sm text-muted-foreground">
-                API Environment
-              </Label>
-              <Select value={testEnv} onValueChange={(v) => handleTestEnvChange(v as TestApiEnvironment)}>
-                <SelectTrigger id="tests-api-environment" className="w-[175px] shrink-0 font-mono text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(TEST_ENV_LABELS) as TestApiEnvironment[]).map((env) => (
-                    <SelectItem key={env} value={env} className="text-sm">
-                      {TEST_ENV_LABELS[env]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
         {testsBySection.map((sectionGroup) => (
           <section key={sectionGroup.section} className="space-y-3">
             <div className="flex items-center gap-2">
@@ -1074,10 +1189,17 @@ export function CourierTestsTab({ userId, brandId, topicId, clientKey, apiEnviro
                       ? 'border-destructive/50 bg-destructive/10 text-destructive'
                       : 'border-muted-foreground/30 bg-muted/40 text-muted-foreground';
 
+                const cardOutcomeBorder =
+                  outcome === 'success'
+                    ? 'border-emerald-600 dark:border-emerald-500'
+                    : outcome === 'error'
+                      ? 'border-destructive'
+                      : 'border-border';
+
                 return (
                   <Card
                     key={test.id}
-                    className="border"
+                    className={cn('border', cardOutcomeBorder)}
                     style={
                       {
                         '--test-card-radius': '14px',
