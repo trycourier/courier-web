@@ -208,21 +208,23 @@ export class CourierInboxDataset {
     }
 
     // At this point the message was neither updated, removed, nor added.
+    // We know afterMessage does NOT qualify for this dataset (checked above).
     // We must still determine if the mutation affects the unread count for this dataset.
     //
     // Consider the scenario where the unread count for this dataset has been loaded, but its messages have not.
-    // In another dataset, a message which affects the unread count here is marked read.
+    // In another dataset, a message which affects the unread count here is mutated (marked read, archived, etc).
     // We should update the unread count, even though the message hasn't been loaded here yet.
 
-    // beforeMessage would have qualified if the dataset and/or message were loaded
     const beforeQualifies = this.messageQualifiesForDataset(beforeMessage);
     if (beforeQualifies) {
 
-      // Update unreadCount based on the transition
-      this.totalUnreadCount += this.calculateUnreadChange(beforeMessage, afterMessage);
+      // beforeMessage qualified for this dataset but afterMessage does not.
+      // If beforeMessage was unread, it contributed to the count and should be decremented.
+      if (!beforeMessage.read) {
+        this.totalUnreadCount -= 1;
+      }
 
       this._datastoreListeners.forEach(listener => {
-        listener.events.onMessageUpdate?.(newMessage, index, this._id);
         listener.events.onUnreadCountChange?.(this.totalUnreadCount, this._id);
         listener.events.onTotalUnreadCountChange?.(CourierInboxDatastore.shared.totalUnreadCount);
       });
