@@ -393,6 +393,15 @@ export class CourierInboxDatastore {
         }
       }
 
+      // Force non-archived dataset unread counts to 0.
+      // The loop above only decrements for messages in _globalMessages, but
+      // _totalUnreadCount may include server-reported counts for unloaded pages.
+      for (const dataset of this._datasets.values()) {
+        if (!dataset.getFilter().archived) {
+          dataset.setUnreadCount(0);
+        }
+      }
+
       // Apply the archive to the server
       await Courier.shared.client?.inbox.archiveAll();
     });
@@ -413,6 +422,13 @@ export class CourierInboxDatastore {
           this._globalMessages.set(messageId, afterMessage);
           this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
         }
+      }
+
+      // Force all dataset unread counts to 0.
+      // The loop above only decrements for messages in _globalMessages, but
+      // _totalUnreadCount may include server-reported counts for unloaded pages.
+      for (const dataset of this._datasets.values()) {
+        dataset.setUnreadCount(0);
       }
 
       // Apply the read to the server
@@ -645,6 +661,21 @@ export class CourierInboxDatastore {
       if (afterMessage) {
         this._globalMessages.set(messageId, afterMessage);
         this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
+      }
+    }
+
+    // Force dataset unread counts to 0 for bulk operations where the loop
+    // only processes messages in _globalMessages but _totalUnreadCount may
+    // include server-reported counts for unloaded pages.
+    if (event === InboxMessageEvent.MarkAllRead) {
+      for (const dataset of this._datasets.values()) {
+        dataset.setUnreadCount(0);
+      }
+    } else if (event === InboxMessageEvent.ArchiveAll) {
+      for (const dataset of this._datasets.values()) {
+        if (!dataset.getFilter().archived) {
+          dataset.setUnreadCount(0);
+        }
       }
     }
   }
