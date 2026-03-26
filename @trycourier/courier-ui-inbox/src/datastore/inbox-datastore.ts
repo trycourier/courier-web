@@ -415,6 +415,13 @@ export class CourierInboxDatastore {
         }
       }
 
+      // Force all dataset unread counts to 0.
+      // The loop above only decrements for messages in _globalMessages, but
+      // _totalUnreadCount may include server-reported counts for unloaded pages.
+      for (const dataset of this._datasets.values()) {
+        dataset.setUnreadCount(0);
+      }
+
       // Apply the read to the server
       await Courier.shared.client?.inbox.readAll();
     });
@@ -645,6 +652,15 @@ export class CourierInboxDatastore {
       if (afterMessage) {
         this._globalMessages.set(messageId, afterMessage);
         this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
+      }
+    }
+
+    // For mark-all-read, force all dataset unread counts to 0.
+    // The loop only processes messages in _globalMessages, but unread counts
+    // may include server-reported counts for unloaded pages.
+    if (event === InboxMessageEvent.MarkAllRead) {
+      for (const dataset of this._datasets.values()) {
+        dataset.setUnreadCount(0);
       }
     }
   }
