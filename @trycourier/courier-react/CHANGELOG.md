@@ -1,5 +1,15 @@
 # @trycourier/courier-react
 
+## 9.0.7
+
+### Patch Changes
+
+- [#166](https://github.com/trycourier/courier-web/pull/166) [`bd79590`](https://github.com/trycourier/courier-web/commit/bd79590c9b21cd971372614d4b318752ce0201b0) Thanks [@mikemilla](https://github.com/mikemilla)! - Fix inbox unread counts after mark-all-read, archive-all, and related websocket events, and when cross-dataset message mutations remove messages from a tab’s filter.
+
+- Updated dependencies [[`bd79590`](https://github.com/trycourier/courier-web/commit/bd79590c9b21cd971372614d4b318752ce0201b0)]:
+  - @trycourier/courier-ui-inbox@2.4.2
+  - @trycourier/courier-react-components@2.0.7
+
 ## 9.0.6
 
 ### Patch Changes
