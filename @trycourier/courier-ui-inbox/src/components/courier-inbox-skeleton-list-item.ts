@@ -7,15 +7,23 @@ export class CourierInboxSkeletonListItem extends CourierBaseElement {
     return 'courier-inbox-skeleton-list-item';
   }
 
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
+  private _isConfigured = false;
   private _style?: HTMLStyleElement;
 
-  constructor(theme: CourierInboxTheme) {
+  constructor(theme?: CourierInboxTheme) {
     super();
+    if (!theme) {
+      return;
+    }
+    this._isConfigured = true;
     this._theme = theme;
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
     this._style = injectGlobalStyle(CourierInboxSkeletonListItem.id, CourierInboxSkeletonListItem.getStyles(this._theme));
     this.render();
   }
@@ -70,15 +78,23 @@ class CourierSkeletonAnimatedRow extends CourierBaseElement {
     return 'courier-skeleton-animated-row';
   }
 
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
+  private _isConfigured = false;
   private _style?: HTMLStyleElement;
 
-  constructor(theme: CourierInboxTheme) {
+  constructor(theme?: CourierInboxTheme) {
     super();
+    if (!theme) {
+      return;
+    }
+    this._isConfigured = true;
     this._theme = theme;
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
     this._style = injectGlobalStyle(CourierSkeletonAnimatedRow.id, CourierSkeletonAnimatedRow.getStyles(this._theme));
     this.render();
   }
