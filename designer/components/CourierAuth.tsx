@@ -47,11 +47,6 @@ interface CourierAuthProps {
   hideLoadingState?: boolean;
   /** localStorage key for the anonymous user id (default: inbox demo). Use `COURIER_TESTS_USER_ID_STORAGE_KEY` on /tests. */
   userIdStorageKey?: string;
-  /**
-   * When true, do not call `/api/jwt` or sign in on mount. Used by the tests hub so it never depends on
-   * inbox-demo JWT bootstrap; sign-in happens via the Issue JWT test (or other explicit flows).
-   */
-  skipJwtInitialization?: boolean;
 }
 
 export function CourierAuth({
@@ -61,7 +56,6 @@ export function CourierAuth({
   apiKey,
   hideLoadingState,
   userIdStorageKey = COURIER_DEMO_USER_ID_STORAGE_KEY,
-  skipJwtInitialization = false,
 }: CourierAuthProps) {
   const courier = useCourier();
   const searchParams = useSearchParams();
@@ -73,7 +67,7 @@ export function CourierAuth({
   const userId = overrideUserId || storedUserId;
   const [initializedUserId, setInitializedUserId] = useState<string | null>(null);
   const [initializedApiUrls, setInitializedApiUrls] = useState<CourierApiUrls | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(() => !skipJwtInitialization);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const repo = new CourierRepo();
 
@@ -85,20 +79,6 @@ export function CourierAuth({
   const initializedApiUrlsKey = initializedApiUrls ? JSON.stringify(initializedApiUrls) : 'default';
 
   useEffect(() => {
-    if (skipJwtInitialization) {
-      courier.shared.signIn({
-        userId,
-        ...(apiKey && { publicApiKey: apiKey }),
-        ...(apiUrls && { apiUrls }),
-      });
-      setInitializedUserId(userId);
-      setInitializedApiUrls(apiUrls);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
-
-    // Only initialize if userId changed, apiUrls changed, or hasn't been initialized yet
     if (initializedUserId === userId && apiUrlsKey === initializedApiUrlsKey) {
       return;
     }
@@ -132,7 +112,7 @@ export function CourierAuth({
 
     initializeCourier();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, apiUrlsKey, apiKey, skipJwtInitialization]);
+  }, [userId, apiUrlsKey, apiKey]);
 
   const handleClearUser = async () => {
     // If using URL override, remove the userId param from URL
