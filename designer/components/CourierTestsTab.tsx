@@ -179,7 +179,6 @@ export function CourierTestsTab({
       courier.shared.signIn({
         userId: currentOptions.userId,
         jwt: currentOptions.jwt,
-        publicApiKey: currentOptions.publicApiKey,
         tenantId: currentOptions.tenantId,
         showLogs: currentOptions.showLogs,
         apiUrls,
@@ -242,7 +241,6 @@ export function CourierTestsTab({
     return {
       userId: options.userId,
       jwt: options.jwt,
-      publicApiKey: options.publicApiKey,
       tenantId: options.tenantId,
       showLogs: options.showLogs,
       apiUrls: options.apiUrls,
@@ -306,7 +304,6 @@ export function CourierTestsTab({
       getInputs: () => ({
         userId: effectiveTemplateUserId(),
         jwt: courier.shared.client?.options?.jwt ?? '',
-        publicApiKey: courier.shared.client?.options?.publicApiKey ?? '',
         tenantId: courier.shared.client?.options?.tenantId ?? '',
         showLogs: courier.shared.client?.options?.showLogs ?? false,
       }),
