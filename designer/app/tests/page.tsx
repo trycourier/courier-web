@@ -472,7 +472,6 @@ function TestsPageContent() {
       </header>
 
       <CourierAuth
-        skipJwtInitialization
         userIdStorageKey={COURIER_TESTS_USER_ID_STORAGE_KEY}
         apiUrls={committedApiUrls}
         apiKey={sessionCommitted.apiKey.trim() || undefined}
