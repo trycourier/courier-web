@@ -9,7 +9,8 @@ export class CourierInboxPaginationListItem extends CourierBaseElement {
   }
 
   // State
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
+  private _isConfigured = false;
 
   // Components
   private _style?: HTMLStyleElement;
@@ -18,16 +19,23 @@ export class CourierInboxPaginationListItem extends CourierBaseElement {
   private _customItem?: HTMLElement;
 
   // Handlers
-  private _onPaginationTrigger: () => void;
+  private _onPaginationTrigger: () => void = () => { };
 
-  constructor(props: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
+  constructor(props?: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
     super();
+    if (!props) {
+      return;
+    }
+    this._isConfigured = true;
     this._theme = props.theme;
     this._customItem = props.customItem;
     this._onPaginationTrigger = props.onPaginationTrigger;
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
 
     this._style = injectGlobalStyle(CourierInboxPaginationListItem.id, CourierInboxPaginationListItem.getStyles(this._theme));
 

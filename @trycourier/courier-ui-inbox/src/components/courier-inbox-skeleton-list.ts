@@ -8,15 +8,23 @@ export class CourierInboxSkeletonList extends CourierFactoryElement {
     return 'courier-inbox-skeleton-list';
   }
 
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
+  private _isConfigured = false;
   private _style?: HTMLStyleElement;
 
-  constructor(theme: CourierInboxTheme) {
+  constructor(theme?: CourierInboxTheme) {
     super();
+    if (!theme) {
+      return;
+    }
+    this._isConfigured = true;
     this._theme = theme;
   }
 
   onComponentMounted() {
+    if (!this._isConfigured) {
+      return;
+    }
     this._style = injectGlobalStyle(CourierInboxSkeletonList.id, CourierInboxSkeletonList.getStyles(this._theme));
   }
 
@@ -25,6 +33,10 @@ export class CourierInboxSkeletonList extends CourierFactoryElement {
   }
 
   defaultElement(): HTMLElement {
+    if (!this._isConfigured) {
+      return document.createElement('div');
+    }
+
     const list = document.createElement('div');
     list.className = 'list';
 
