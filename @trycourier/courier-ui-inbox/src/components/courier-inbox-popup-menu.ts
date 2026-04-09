@@ -74,11 +74,14 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   // State
   private _totalUnreadCount: number = 0;
 
+  // Feeds (stored from attribute before inner inbox is created)
+  private _feeds?: CourierInboxFeed[];
+
   // Factories
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'message-click', 'message-action-click', 'message-long-press', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
+    return ['popup-alignment', 'feeds', 'message-click', 'message-action-click', 'message-long-press', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
   }
 
   constructor() {
@@ -108,6 +111,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Create content container
     this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
+    if (this._feeds) {
+      this._inbox.setAttribute('feeds', JSON.stringify(this._feeds));
+    }
 
     this.refreshTheme();
 
@@ -241,6 +247,19 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
       case 'left':
         this._left = newValue;
         this.updatePopupPosition();
+        break;
+      case 'feeds':
+        if (newValue) {
+          try {
+            const feeds = JSON.parse(newValue);
+            this._feeds = feeds;
+            if (this._inbox) {
+              this._inbox.setFeeds(feeds);
+            }
+          } catch (error) {
+            Courier.shared.client?.options.logger?.error('Failed to parse feeds attribute:', error);
+          }
+        }
         break;
       case 'light-theme':
         if (newValue) {

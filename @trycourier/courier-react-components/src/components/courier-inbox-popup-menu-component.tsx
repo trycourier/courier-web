@@ -1,4 +1,4 @@
-import { useEffect, useRef, forwardRef, ReactNode, useContext, useState } from 'react';
+import { useEffect, useMemo, useRef, forwardRef, ReactNode, useContext, useState } from 'react';
 import {
   CourierInboxHeaderFactoryProps,
   CourierInboxListItemActionFactoryProps,
@@ -92,7 +92,6 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
     // Element ref for use in effects, updated by handleRef.
     const inboxRef = useRef<CourierInboxPopupMenuElement | null>(null);
     const [elementReady, setElementReady] = useState(false);
-    const feedsSetRef = useRef(false);
 
     // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
     // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -225,15 +224,10 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
       });
     }, [props.renderMenuButton, elementReady]);
 
-    // Set feeds (only once when element is ready)
-    useEffect(() => {
-      const menu = getEl();
-      if (!menu || !props.feeds || feedsSetRef.current) return;
-      feedsSetRef.current = true;
-      queueMicrotask(() => {
-        menu.setFeeds(props.feeds!);
-      });
-    }, [props.feeds, elementReady]);
+    const feedsAttr = useMemo(
+      () => props.feeds ? JSON.stringify(props.feeds) : undefined,
+      [props.feeds]
+    );
 
     const children = (
       /* @ts-ignore */
@@ -249,6 +243,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
         light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
         dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
         mode={props.mode}
+        feeds={feedsAttr as any}
       />
     );
 
