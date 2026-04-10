@@ -373,6 +373,71 @@ describe("CourierInboxDatastore", () => {
       expect(mockBatchOpen).toHaveBeenLastCalledWith([MSG_2.messageId]);
     });
 
+    it("should split large batches into chunks of 50", async () => {
+      const messages: InboxMessage[] = [];
+      for (let i = 0; i < 120; i++) {
+        messages.push(getMessage());
+      }
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: messages.length,
+          unreadCount: messages.length,
+          messages: {
+            nodes: messages,
+          },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(messages.length);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+
+      for (const msg of messages) {
+        datastore.openMessage({ message: msg });
+      }
+
+      jest.advanceTimersByTime(100);
+      await Promise.resolve();
+
+      // 120 messages should produce 3 chunks: 50 + 50 + 20
+      expect(mockBatchOpen).toHaveBeenCalledTimes(3);
+      expect(mockBatchOpen.mock.calls[0][0]).toHaveLength(50);
+      expect(mockBatchOpen.mock.calls[1][0]).toHaveLength(50);
+      expect(mockBatchOpen.mock.calls[2][0]).toHaveLength(20);
+    });
+
+    it("should not chunk when batch is within the limit", async () => {
+      const messages: InboxMessage[] = [];
+      for (let i = 0; i < 50; i++) {
+        messages.push(getMessage());
+      }
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: messages.length,
+          unreadCount: messages.length,
+          messages: {
+            nodes: messages,
+          },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(messages.length);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+
+      for (const msg of messages) {
+        datastore.openMessage({ message: msg });
+      }
+
+      jest.advanceTimersByTime(100);
+      await Promise.resolve();
+
+      expect(mockBatchOpen).toHaveBeenCalledTimes(1);
+      expect(mockBatchOpen.mock.calls[0][0]).toHaveLength(50);
+    });
+
     it("should notify error listeners on batch flush failure", async () => {
       const UNREAD_MESSAGE = getMessage();
 
@@ -402,8 +467,10 @@ describe("CourierInboxDatastore", () => {
       // Optimistic update is still applied
       expect(datastore.getDatasetById('inbox')?.messages[0].opened).toBeDefined();
 
-      // Flush the batch
+      // Flush the batch and allow the rejection to propagate through Promise.all
       jest.advanceTimersByTime(100);
+      await Promise.resolve();
+      await Promise.resolve();
       await Promise.resolve();
 
       expect(onErrorMock).toHaveBeenCalledTimes(1);

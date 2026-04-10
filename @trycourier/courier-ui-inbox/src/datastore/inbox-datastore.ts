@@ -32,6 +32,7 @@ interface DatastoreSnapshot {
 export class CourierInboxDatastore {
   private static readonly TAG = "CourierInboxDatastore";
   private static readonly OPEN_BATCH_DELAY_MS = 100;
+  private static readonly OPEN_BATCH_MAX_SIZE = 50;
 
   private static instance: CourierInboxDatastore;
 
@@ -314,8 +315,16 @@ export class CourierInboxDatastore {
 
     if (messageIds.length === 0) return;
 
+    const maxSize = CourierInboxDatastore.OPEN_BATCH_MAX_SIZE;
+    const chunks: string[][] = [];
+    for (let i = 0; i < messageIds.length; i += maxSize) {
+      chunks.push(messageIds.slice(i, i + maxSize));
+    }
+
     try {
-      await Courier.shared.client?.inbox.batchOpen(messageIds);
+      await Promise.all(
+        chunks.map(chunk => Courier.shared.client?.inbox.batchOpen(chunk))
+      );
     } catch (error) {
       Courier.shared.client?.options.logger?.error(
         `[${CourierInboxDatastore.TAG}] Error batch opening messages:`, error
