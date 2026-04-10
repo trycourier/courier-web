@@ -31,12 +31,16 @@ interface DatastoreSnapshot {
  */
 export class CourierInboxDatastore {
   private static readonly TAG = "CourierInboxDatastore";
+  private static readonly OPEN_BATCH_DELAY_MS = 100;
+  private static readonly OPEN_BATCH_MAX_SIZE = 50;
 
   private static instance: CourierInboxDatastore;
 
   private _datasets: Map<string, CourierInboxDataset> = new Map();
   private _listeners: CourierInboxDataStoreListener[] = [];
   private _removeMessageEventListener?: () => void;
+  private _pendingOpenMessageIds = new Set<string>();
+  private _openBatchTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Global message store is a map of Message ID to Message for all messages
@@ -265,31 +269,71 @@ export class CourierInboxDatastore {
 
   /**
    * Mark a message as opened.
+   *
+   * The local state is updated optimistically and the server call is
+   * batched: multiple opens arriving within a short window
+   * are collected and flushed as a single GraphQL request.
+   *
    * @param message - The message to mark as opened
    */
-  public async openMessage({ message }: { message: InboxMessage }): Promise<void> {
-    // Don't mark as opened if already opened
+  public openMessage({ message }: { message: InboxMessage }): void {
     if (message.opened) {
       return;
     }
 
     const beforeMessage = this._globalMessages.get(message.messageId);
-    if (!beforeMessage) {
+    if (!beforeMessage || beforeMessage.opened) {
       return;
     }
 
-    await this.executeWithRollback(async () => {
-      // Mutate in global store
-      const afterMessage = copyMessage(beforeMessage);
-      afterMessage.opened = CourierInboxDatastore.getISONow();
-      this._globalMessages.set(message.messageId, afterMessage);
+    // Optimistic update
+    const afterMessage = copyMessage(beforeMessage);
+    afterMessage.opened = CourierInboxDatastore.getISONow();
+    this._globalMessages.set(message.messageId, afterMessage);
+    this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
 
-      // Update all datasets
-      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
+    // Queue for batched server call
+    this._pendingOpenMessageIds.add(message.messageId);
+    this.scheduleBatchOpen();
+  }
 
-      // Apply the open to the server
-      await Courier.shared.client?.inbox.open({ messageId: message.messageId });
-    });
+  private scheduleBatchOpen(): void {
+    if (this._openBatchTimer !== null) {
+      clearTimeout(this._openBatchTimer);
+    }
+
+    this._openBatchTimer = setTimeout(() => {
+      this.flushBatchOpen();
+    }, CourierInboxDatastore.OPEN_BATCH_DELAY_MS);
+  }
+
+  private async flushBatchOpen(): Promise<void> {
+    this._openBatchTimer = null;
+
+    const messageIds = Array.from(this._pendingOpenMessageIds);
+    this._pendingOpenMessageIds.clear();
+
+    if (messageIds.length === 0) return;
+
+    const maxSize = CourierInboxDatastore.OPEN_BATCH_MAX_SIZE;
+    const chunks: string[][] = [];
+    for (let i = 0; i < messageIds.length; i += maxSize) {
+      chunks.push(messageIds.slice(i, i + maxSize));
+    }
+
+    try {
+      await Promise.all(
+        chunks.map(chunk => Courier.shared.client?.inbox.batchOpen(chunk))
+      );
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error(
+        `[${CourierInboxDatastore.TAG}] Error batch opening messages:`, error
+      );
+
+      this._listeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
+    }
   }
 
   /**

@@ -17,6 +17,6 @@ export function archiveMessage(message: InboxMessage): Promise<void> {
   return CourierInboxDatastore.shared.archiveMessage({ message });
 }
 
-export function openMessage(message: InboxMessage): Promise<void> {
-  return CourierInboxDatastore.shared.openMessage({ message });
+export function openMessage(message: InboxMessage): void {
+  CourierInboxDatastore.shared.openMessage({ message });
 }

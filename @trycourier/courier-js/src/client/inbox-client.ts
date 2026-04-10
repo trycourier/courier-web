@@ -313,6 +313,45 @@ export class InboxClient extends Client {
   }
 
   /**
+   * Mark multiple messages as opened in a single request.
+   * @param messageIds - IDs of the messages to mark as opened
+   * @returns Promise resolving when all messages are marked as opened
+   */
+  public async batchOpen(messageIds: string[]): Promise<void> {
+    if (messageIds.length === 0) return;
+
+    if (messageIds.length === 1) {
+      return this.open({ messageId: messageIds[0] });
+    }
+
+    const mutations = messageIds.map((id, index) =>
+      `open_${index}: opened(messageId: "${id}")`
+    );
+
+    const query = `
+      mutation BatchTrackEvents {
+        ${mutations.join('\n        ')}
+      }
+    `;
+
+    const headers: Record<string, string> = {
+      'x-courier-user-id': this.options.userId,
+      'Authorization': `Bearer ${this.options.accessToken}`
+    };
+
+    if (this.options.connectionId) {
+      headers['x-courier-client-source-id'] = this.options.connectionId;
+    }
+
+    await graphql({
+      options: this.options,
+      query,
+      headers,
+      url: this.options.apiUrls.inbox.graphql,
+    });
+  }
+
+  /**
    * Archive a message
    * @param messageId - ID of the message to archive
    * @returns Promise resolving when message is archived

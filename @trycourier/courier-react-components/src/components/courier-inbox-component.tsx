@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, ReactNode, useContext, useState } from "react";
+import { useRef, useEffect, useMemo, forwardRef, ReactNode, useContext, useState } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
 import { CourierClientComponent } from "./courier-client-component";
@@ -60,7 +60,6 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
   // Element ref for use in effects, updated by handleRef.
   const inboxRef = useRef<CourierInboxElement | null>(null);
   const [elementReady, setElementReady] = useState(false);
-  const feedsSetRef = useRef(false);
 
   // Callback ref passed to rendered component, used to propagate the DOM element's ref to the parent component.
   // We use a callback ref (rather than a React.RefObject) since we want the parent ref to be up-to-date with
@@ -184,15 +183,10 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     });
   }, [props.renderPaginationItem, elementReady]);
 
-  // Set feeds (only once when element is ready)
-  useEffect(() => {
-    const inbox = getEl();
-    if (!inbox || !props.feeds || feedsSetRef.current) return;
-    feedsSetRef.current = true;
-    queueMicrotask(() => {
-      inbox.setFeeds(props.feeds!);
-    });
-  }, [props.feeds, elementReady]);
+  const feedsAttr = useMemo(
+    () => props.feeds ? JSON.stringify(props.feeds) : undefined,
+    [props.feeds]
+  );
 
   const children = (
     /* @ts-ignore */
@@ -202,6 +196,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
       light-theme={props.lightTheme ? JSON.stringify(props.lightTheme) : undefined}
       dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
       mode={props.mode}
+      feeds={feedsAttr as any}
     />
   );
 

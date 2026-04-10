@@ -199,7 +199,7 @@ export class CourierInboxDatastore {
     loadUnreadCountsForTabs(tabIds: string[]): Promise<void>;
     openMessage({ message }: {
         message: InboxMessage;
-    }): Promise<void>;
+    }): void;
     readAllMessages(): Promise<void>;
     readMessage({ message }: {
         message: InboxMessage;
@@ -859,11 +859,11 @@ export const mergeTheme: (mode: SystemThemeMode, theme: CourierInboxTheme) => Co
 // Warning: (ae-missing-release-tag) "openMessage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function openMessage(message: InboxMessage): Promise<void>;
+export function openMessage(message: InboxMessage): void;
 
 // Warnings were encountered during analysis:
 //
-// dist/components/courier-inbox-popup-menu.d.ts:80:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// dist/components/courier-inbox-popup-menu.d.ts:81:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 

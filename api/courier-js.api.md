@@ -374,6 +374,7 @@ export class InboxClient extends Client {
     }): Promise<void>;
     archiveAll(): Promise<void>;
     archiveRead(): Promise<void>;
+    batchOpen(messageIds: string[]): Promise<void>;
     click(props: {
         messageId: string;
         trackingId: string;

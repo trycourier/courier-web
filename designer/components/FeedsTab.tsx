@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import type { CourierInboxFeed } from '@trycourier/courier-react';
 import { defaultFeeds } from '@trycourier/courier-react';
 import { Button } from './ui/button';
@@ -14,18 +15,28 @@ interface FeedsTabProps {
 }
 
 export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
-  const handleUpdateFeed = (index: number, updates: Partial<CourierInboxFeed>) => {
-    const updated = [...feeds];
-    updated[index] = { ...updated[index], ...updates };
-    onFeedsChange(updated);
-  };
+  const [draftFeeds, setDraftFeeds] = useState<CourierInboxFeed[]>(feeds);
 
-  const handleUpdateTab = (feedIndex: number, tabIndex: number, updates: Partial<CourierInboxFeed['tabs'][0]>) => {
-    const feed = feeds[feedIndex];
-    const updatedTabs = [...feed.tabs];
-    updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...updates };
-    handleUpdateFeed(feedIndex, { tabs: updatedTabs });
-  };
+  const isDirty = JSON.stringify(draftFeeds) !== JSON.stringify(feeds);
+
+  const handleUpdateFeed = useCallback((index: number, updates: Partial<CourierInboxFeed>) => {
+    setDraftFeeds(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], ...updates };
+      return updated;
+    });
+  }, []);
+
+  const handleUpdateTab = useCallback((feedIndex: number, tabIndex: number, updates: Partial<CourierInboxFeed['tabs'][0]>) => {
+    setDraftFeeds(prev => {
+      const updated = [...prev];
+      const feed = updated[feedIndex];
+      const updatedTabs = [...feed.tabs];
+      updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...updates };
+      updated[feedIndex] = { ...feed, tabs: updatedTabs };
+      return updated;
+    });
+  }, []);
 
   const handleAddFeed = () => {
     const newFeed: CourierInboxFeed = {
@@ -39,19 +50,19 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
         }
       ]
     };
-    onFeedsChange([...feeds, newFeed]);
+    setDraftFeeds(prev => [...prev, newFeed]);
   };
 
   const handleRemoveFeed = (index: number) => {
-    if (feeds.length <= 1) {
+    if (draftFeeds.length <= 1) {
       alert('You must have at least one feed.');
       return;
     }
-    onFeedsChange(feeds.filter((_, i) => i !== index));
+    setDraftFeeds(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleAddTab = (feedIndex: number) => {
-    const feed = feeds[feedIndex];
+    const feed = draftFeeds[feedIndex];
     const newTab = {
       datasetId: `dataset_${Date.now()}`,
       title: 'New Tab',
@@ -63,7 +74,7 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
   };
 
   const handleRemoveTab = (feedIndex: number, tabIndex: number) => {
-    const feed = feeds[feedIndex];
+    const feed = draftFeeds[feedIndex];
     handleUpdateFeed(feedIndex, {
       tabs: feed.tabs.filter((_, i) => i !== tabIndex)
     });
@@ -71,8 +82,18 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
 
   const handleResetToDefaults = () => {
     if (window.confirm('Are you sure you want to reset all feeds to default? This action cannot be undone.')) {
-      onFeedsChange(defaultFeeds());
+      const defaults = defaultFeeds();
+      setDraftFeeds(defaults);
+      onFeedsChange(defaults);
     }
+  };
+
+  const handleSave = () => {
+    onFeedsChange(draftFeeds);
+  };
+
+  const handleDiscard = () => {
+    setDraftFeeds(feeds);
   };
 
   const { frameworkType } = useFramework();
@@ -99,7 +120,7 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
         </div>
 
         <Accordion type="single" collapsible>
-          {feeds.map((feed, feedIndex) => (
+          {draftFeeds.map((feed, feedIndex) => (
             <FeedItem
               key={feed.feedId}
               feed={feed}
@@ -113,7 +134,27 @@ export function FeedsTab({ feeds, onFeedsChange }: FeedsTabProps) {
           ))}
         </Accordion>
       </div>
-      <div className="flex-shrink-0 border-t border-border p-4">
+      <div className="flex-shrink-0 border-t border-border p-4 space-y-4">
+        {isDirty && (
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              onClick={handleDiscard}
+              variant="outline"
+              size="sm"
+            >
+              Discard
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSave}
+              size="sm"
+            >
+              Save
+            </Button>
+            <span className="text-xs text-muted-foreground">Unsaved changes</span>
+          </div>
+        )}
         <TabFooter
           copy="Configure feeds and tabs to organize your inbox messages."
           primaryButton={{
