@@ -405,6 +405,44 @@ describe("CourierInboxDatastore", () => {
       expect(mockBatchOpen.mock.calls[0][0]).toHaveLength(50);
       expect(mockBatchOpen.mock.calls[1][0]).toHaveLength(50);
       expect(mockBatchOpen.mock.calls[2][0]).toHaveLength(20);
+
+      // No single call should ever exceed 50
+      for (const call of mockBatchOpen.mock.calls) {
+        expect(call[0].length).toBeLessThanOrEqual(50);
+      }
+    });
+
+    it("should chunk when batch is just over the limit", async () => {
+      const messages: InboxMessage[] = [];
+      for (let i = 0; i < 51; i++) {
+        messages.push(getMessage());
+      }
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: messages.length,
+          unreadCount: messages.length,
+          messages: {
+            nodes: messages,
+          },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(messages.length);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+
+      for (const msg of messages) {
+        datastore.openMessage({ message: msg });
+      }
+
+      jest.advanceTimersByTime(100);
+      await Promise.resolve();
+
+      // 51 messages should produce 2 chunks: 50 + 1
+      expect(mockBatchOpen).toHaveBeenCalledTimes(2);
+      expect(mockBatchOpen.mock.calls[0][0]).toHaveLength(50);
+      expect(mockBatchOpen.mock.calls[1][0]).toHaveLength(1);
     });
 
     it("should not chunk when batch is within the limit", async () => {
