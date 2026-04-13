@@ -30,7 +30,9 @@ describeIntegration('PreferenceClient', () => {
       hasCustomRouting: false,
       customRouting: []
     });
-    expect(result).toBeUndefined();
+    expect(result.topicId).toBe(topicId);
+    expect(result.status).toBe('OPTED_IN');
+    expect(result.hasCustomRouting).toBe(false);
   });
 
   itWithClientKeyEnv('should get notification center url successfully', () => {
