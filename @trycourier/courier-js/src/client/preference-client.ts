@@ -114,7 +114,12 @@ export class PreferenceClient extends Client {
             hasCustomRouting: ${props.hasCustomRouting},
             routingPreferences: ${routingPreferences}
           }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
-        )
+        ) {
+          templateId
+          status
+          hasCustomRouting
+          routingPreferences
+        }
       }
     `;
 
