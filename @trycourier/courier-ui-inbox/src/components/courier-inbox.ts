@@ -164,7 +164,7 @@ export class CourierInbox extends CourierBaseElement {
   };
 
   static get observedAttributes() {
-    return ['height', 'light-theme', 'dark-theme', 'mode', 'message-click', 'message-action-click', 'message-long-press'];
+    return ['height', 'light-theme', 'dark-theme', 'mode', 'feeds', 'message-click', 'message-action-click', 'message-long-press'];
   }
 
   constructor(themeManager?: CourierInboxThemeManager) {
@@ -362,6 +362,7 @@ export class CourierInbox extends CourierBaseElement {
         }
       },
       onMessageClick: (message, index) => {
+        CourierInboxDatastore.shared.openMessage({ message });
         CourierInboxDatastore.shared.clickMessage({ message });
 
         this.dispatchEvent(new CustomEvent('message-click', {
@@ -763,6 +764,20 @@ export class CourierInbox extends CourierBaseElement {
           }
         } else {
           this._onMessageLongPress = undefined;
+        }
+        break;
+      case 'feeds':
+        if (newValue) {
+          try {
+            const feeds = JSON.parse(newValue);
+            if (this._datastoreListener) {
+              this.setFeeds(feeds);
+            } else {
+              this._feeds = feeds;
+            }
+          } catch (error) {
+            Courier.shared.client?.options.logger?.error('Failed to parse feeds attribute:', error);
+          }
         }
         break;
       case 'light-theme':

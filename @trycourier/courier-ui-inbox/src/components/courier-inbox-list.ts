@@ -383,12 +383,8 @@ export class CourierInboxList extends CourierBaseElement {
     }
   }
 
-  private async openVisibleMessage(message: InboxMessage) {
-    try {
-      await openMessage(message);
-    } catch (error) {
-      // Error ignored. Will get logged in the openMessage function
-    }
+  private openVisibleMessage(message: InboxMessage) {
+    openMessage(message);
   }
 
   // Factories

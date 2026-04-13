@@ -114,6 +114,12 @@ describeIntegration('InboxClient', () => {
     })).resolves.not.toThrow();
   });
 
+  itWithMessageEnv('should batch open multiple messages', async () => {
+    await expect(courierClient.inbox.batchOpen([
+      process.env.MESSAGE_ID!,
+    ])).resolves.not.toThrow();
+  });
+
   itWithMessageEnv('should archive message', async () => {
     await expect(courierClient.inbox.archive({
       messageId: process.env.MESSAGE_ID!
