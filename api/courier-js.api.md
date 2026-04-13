@@ -514,7 +514,7 @@ export class PreferenceClient extends Client {
         status: CourierUserPreferencesStatus;
         hasCustomRouting: boolean;
         customRouting: CourierUserPreferencesChannel[];
-    }): Promise<void>;
+    }): Promise<CourierUserPreferencesTopic>;
 }
 
 // Warning: (ae-missing-release-tag) "TokenClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
