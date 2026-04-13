@@ -1,5 +1,16 @@
 # @trycourier/courier-react-components
 
+## 2.0.7
+
+### Patch Changes
+
+- [#169](https://github.com/trycourier/courier-web/pull/169) [`903f89b`](https://github.com/trycourier/courier-web/commit/903f89bc281b106bdb8df2797ad2ff1af5d4226f) Thanks [@mikemilla](https://github.com/mikemilla)! - Batch open requests to reduce network overhead. Multiple messages becoming visible within a short window are now collected and sent to the server in a single GraphQL mutation instead of individual requests per message.
+
+- Updated dependencies [[`903f89b`](https://github.com/trycourier/courier-web/commit/903f89bc281b106bdb8df2797ad2ff1af5d4226f), [`bd79590`](https://github.com/trycourier/courier-web/commit/bd79590c9b21cd971372614d4b318752ce0201b0)]:
+  - @trycourier/courier-js@3.1.2
+  - @trycourier/courier-ui-inbox@2.4.2
+  - @trycourier/courier-ui-toast@2.1.2
+
 ## 2.0.6
 
 ### Patch Changes

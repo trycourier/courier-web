@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 3.1.2
+
+### Patch Changes
+
+- [#169](https://github.com/trycourier/courier-web/pull/169) [`903f89b`](https://github.com/trycourier/courier-web/commit/903f89bc281b106bdb8df2797ad2ff1af5d4226f) Thanks [@mikemilla](https://github.com/mikemilla)! - Batch open requests to reduce network overhead. Multiple messages becoming visible within a short window are now collected and sent to the server in a single GraphQL mutation instead of individual requests per message.
+
 ## 3.1.1
 
 ### Patch Changes
