@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useCourier, CourierInbox, CourierInboxListItemFactoryProps } from '@trycourier/courier-react';
+import { getSignInProps } from '../../courier-env';
 
 export default function Home() {
   const SIGN_IN_COUNT = 3;
@@ -17,10 +18,7 @@ export default function Home() {
   //   3. The UI to reload several times.
   useEffect(() => {
     if (signInCount < SIGN_IN_COUNT) {
-      courier.shared.signIn({
-        userId: process.env.NEXT_PUBLIC_USER_ID!,
-        jwt: process.env.NEXT_PUBLIC_JWT!,
-      });
+      courier.shared.signIn(getSignInProps());
 
       setTimeout(() => {
         setSignInCount(c => c + 1);

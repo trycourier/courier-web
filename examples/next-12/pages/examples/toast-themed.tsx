@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import type { NextPage } from 'next'
 import { CourierToast, useCourier, type CourierToastTheme } from '@trycourier/courier-react-17';
+import { getSignInProps } from '../../courier-env';
 
 const ToastIcon = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="4" y="4" width="24" height="24" rx="8" fill="#6366F1" />
@@ -39,10 +40,7 @@ const ToastThemed: NextPage = () => {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

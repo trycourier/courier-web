@@ -4,6 +4,7 @@ import {
   CourierInbox,
   useCourier,
 } from '@trycourier/courier-react-17';
+import { getSignInProps } from '../../courier-env';
 import Markdown from 'markdown-to-jsx';
 
 const MarkdownListItemInbox: NextPage = () => {
@@ -20,10 +21,7 @@ const MarkdownListItemInbox: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: courierJwt,
-    });
+    courier.shared.signIn(getSignInProps({ jwt: courierJwt }));
   }, [courierJwt]);
 
   return (

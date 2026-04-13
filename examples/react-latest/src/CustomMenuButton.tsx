@@ -4,6 +4,7 @@ import {
   useCourier,
   type CourierInboxMenuButtonFactoryProps,
 } from '@trycourier/courier-react';
+import { getSignInProps } from './courier-env';
 
 const CustomMenuButton = ({ totalUnreadCount, feeds }: CourierInboxMenuButtonFactoryProps) => (
   <button>
@@ -16,11 +17,7 @@ export default function App() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   return (

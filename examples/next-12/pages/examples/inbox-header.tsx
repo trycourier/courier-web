@@ -7,6 +7,7 @@ import {
   type CourierInboxFeed,
   type CourierInboxElement,
 } from '@trycourier/courier-react-17';
+import { getSignInProps } from '../../courier-env';
 
 const CustomHeader = (props: CourierInboxHeaderFactoryProps) => {
   const selectedFeed = props.feeds.find(feed => feed.isSelected);
@@ -30,11 +31,7 @@ const CustomHeaderPage: NextPage = () => {
   const inboxRef = useRef<CourierInboxElement>(null);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   useEffect(() => {

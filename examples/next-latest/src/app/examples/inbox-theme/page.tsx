@@ -6,15 +6,13 @@ import {
   useCourier,
   type CourierInboxTheme,
 } from '@trycourier/courier-react';
+import { getSignInProps } from '../../../courier-env';
 
 export default function InboxTheme() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const theme: CourierInboxTheme = {

@@ -2,16 +2,14 @@
 
 import { useEffect } from 'react';
 import { useCourier, CourierInboxPopupMenu } from '@trycourier/courier-react';
+import { getSignInProps } from '../../courier-env';
 
 export default function Home() {
 
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   // Handler for message click

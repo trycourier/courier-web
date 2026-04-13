@@ -5,16 +5,14 @@ import {
   useCourier,
   type CourierInboxFeed,
 } from '@trycourier/courier-react-17'
+import { getSignInProps } from '../../courier-env'
 
 const InboxCustomTabs: NextPage = () => {
 
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   // Single feed with multiple tabs for filtering

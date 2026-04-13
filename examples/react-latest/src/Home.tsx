@@ -1,16 +1,14 @@
 import { useEffect } from 'react';
 import { useCourier, CourierInbox } from '@trycourier/courier-react';
 import { Link } from 'react-router-dom';
+import { getSignInProps } from './courier-env';
 
 export default function Home() {
 
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const handleMessageClick = (props: any) => {

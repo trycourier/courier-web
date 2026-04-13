@@ -5,17 +5,14 @@ import {
   useCourier,
   type CourierInboxFeed,
 } from '@trycourier/courier-react-17'
+import { getSignInProps } from '../../courier-env'
 
 const PopupCustomFeed: NextPage = () => {
 
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   const feeds: CourierInboxFeed[] = [

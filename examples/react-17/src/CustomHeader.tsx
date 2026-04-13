@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { getSignInProps } from './courier-env'
 import {
   CourierInbox,
   useCourier,
@@ -29,11 +30,7 @@ export default function App() {
   const inboxRef = useRef<CourierInboxElement>(null);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   useEffect(() => {

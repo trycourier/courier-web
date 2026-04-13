@@ -8,16 +8,14 @@ import customInboxIcon from './assets/custom-inbox.svg?raw'
 import jobsIcon from './assets/jobs-icon.svg?raw'
 import postsIcon from './assets/posts-icon.svg?raw'
 import mentionsIcon from './assets/mentions-icon.svg?raw'
+import { getSignInProps } from './courier-env'
 
 export default function InboxCustomFeed() {
 
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const feeds: CourierInboxFeed[] = [

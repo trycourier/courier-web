@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useCourier, type InboxMessage, defaultFeeds } from '@trycourier/courier-react'
+import { getSignInProps } from '../../../courier-env'
 
 export default function Hooks() {
 
@@ -10,11 +11,7 @@ export default function Hooks() {
   useEffect(() => {
 
     // Authenticate the user
-    auth.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    auth.signIn(getSignInProps({ showLogs: false }));
 
     // Load the inbox
     loadInbox();

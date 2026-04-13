@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { CourierToast, useCourier, type CourierToastTheme } from '@trycourier/courier-react';
 import ToastIcon from './toast-icon.svg?raw';
+import { getSignInProps } from './courier-env';
 
 const themedToast: CourierToastTheme = {
   item: {
@@ -34,10 +35,7 @@ export default function ToastThemed() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

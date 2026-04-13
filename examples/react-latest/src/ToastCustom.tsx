@@ -4,6 +4,7 @@ import {
   useCourier,
   type CourierToastItemFactoryProps,
 } from '@trycourier/courier-react';
+import { getSignInProps } from './courier-env';
 
 // Render a custom component
 const CustomToastItem = ({ message }: CourierToastItemFactoryProps) => (
@@ -57,10 +58,7 @@ export default function App() {
 
   useEffect(() => {
     // Authenticate with the Courier backend
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

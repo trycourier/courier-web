@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useCourier, CourierInboxPopupMenu, CourierInboxPopupMenuElement, CourierInboxFeedType } from '@trycourier/courier-react';
+import { getSignInProps } from '../../courier-env';
 
 export default function Home() {
 
@@ -10,11 +11,7 @@ export default function Home() {
   const [feedType] = useState<CourierInboxFeedType>('inbox');
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   useEffect(() => {

@@ -2,15 +2,13 @@
 
 import { useEffect } from 'react';
 import { CourierToast, useCourier } from '@trycourier/courier-react';
+import { getSignInProps } from '../../../courier-env';
 
 export default function ToastBasic() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

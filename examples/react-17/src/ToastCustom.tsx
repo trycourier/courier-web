@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { getSignInProps } from './courier-env'
 import {
   CourierToast,
   useCourier,
@@ -57,10 +58,7 @@ export default function App() {
 
   useEffect(() => {
     // Authenticate with the Courier backend
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

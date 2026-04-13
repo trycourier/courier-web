@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
 import type { NextPage } from 'next'
 import { CourierToast, useCourier } from '@trycourier/courier-react-17';
+import { getSignInProps } from '../../courier-env';
 
 const ToastBasic: NextPage = () => {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const showToast = () => {

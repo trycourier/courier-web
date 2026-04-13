@@ -6,6 +6,7 @@ import {
   useCourier,
   type CourierInboxElement,
 } from '@trycourier/courier-react'
+import { getSignInProps } from '../../../courier-env'
 
 export default function ElementRef() {
 
@@ -13,11 +14,7 @@ export default function ElementRef() {
   const inboxRef = useRef<CourierInboxElement>(null);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
   useEffect(() => {
     if (inboxRef.current) {

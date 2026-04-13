@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getSignInProps } from './courier-env';
 import {
   CourierInbox,
   useCourier,
@@ -9,10 +10,7 @@ export default function App() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const theme: CourierInboxTheme = {

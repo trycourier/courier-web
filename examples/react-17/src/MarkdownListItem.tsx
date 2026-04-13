@@ -3,6 +3,7 @@ import {
   CourierInbox,
   useCourier,
 } from '@trycourier/courier-react-17';
+import { getSignInProps } from './courier-env'
 import Markdown from 'markdown-to-jsx';
 
 export default function MarkdownListItemInbox() {
@@ -19,10 +20,7 @@ export default function MarkdownListItemInbox() {
   }, []);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: courierJwt,
-    });
+    courier.shared.signIn(getSignInProps({ jwt: courierJwt }));
   }, [courierJwt]);
 
   return (

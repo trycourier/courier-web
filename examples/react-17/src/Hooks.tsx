@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useCourier, type InboxMessage, defaultFeeds } from '@trycourier/courier-react-17'
+import { getSignInProps } from './courier-env'
 
 export default function App() {
 
@@ -8,11 +9,7 @@ export default function App() {
   useEffect(() => {
 
     // Authenticate the user
-    auth.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT,
-      showLogs: false,
-    });
+    auth.signIn(getSignInProps({ showLogs: false }));
 
     // Load the inbox
     loadInbox();

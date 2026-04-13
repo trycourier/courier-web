@@ -1,16 +1,14 @@
 import { CourierToast, useCourier } from '@trycourier/courier-react-17';
 import type { CourierToast as CourierToastElement } from '@trycourier/courier-ui-inbox';
 import { useEffect, useRef } from 'react';
+import { getSignInProps } from './courier-env';
 
 export function ToastApp() {
   const courier = useCourier();
   const el = useRef<CourierToastElement>(null);
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: import.meta.env.VITE_USER_ID,
-      jwt: import.meta.env.VITE_JWT
-    });
+    courier.shared.signIn(getSignInProps());
   }, []);
 
   const customToastItemContent = () => {

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { NextPage } from 'next'
 import { useCourier, type InboxMessage, defaultFeeds } from '@trycourier/courier-react-17'
+import { getSignInProps } from '../../courier-env'
 
 const Hooks: NextPage = () => {
 
@@ -9,11 +10,7 @@ const Hooks: NextPage = () => {
   useEffect(() => {
 
     // Authenticate the user
-    auth.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    auth.signIn(getSignInProps({ showLogs: false }));
 
     // Load the inbox
     loadInbox();

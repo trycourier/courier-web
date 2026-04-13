@@ -9,6 +9,7 @@ import {
   type CourierInboxStateErrorFactoryProps,
   type CourierInboxPaginationItemFactoryProps,
 } from '@trycourier/courier-react';
+import { getSignInProps } from '../../../courier-env';
 
 const CustomLoadingState = ({ datasetId }: CourierInboxStateLoadingFactoryProps) => (
   <div style={{
@@ -58,11 +59,7 @@ export default function CustomOther() {
   const courier = useCourier();
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId: process.env.NEXT_PUBLIC_USER_ID!,
-      jwt: process.env.NEXT_PUBLIC_JWT!,
-      showLogs: false,
-    });
+    courier.shared.signIn(getSignInProps({ showLogs: false }));
   }, []);
 
   return (
