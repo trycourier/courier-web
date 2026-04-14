@@ -316,9 +316,11 @@ describe('CourierSocket', () => {
       expect(connectSpy).toHaveBeenCalledTimes(2);
       const reconnectTime = Date.now();
 
-      // The reconnect time should be within the backoff interval with jitter
+      // The reconnect time should be within the backoff interval with jitter.
+      // Adding a small tolerance (50ms) for timer imprecision in CI.
+      const TIMER_TOLERANCE_MS = 50;
       expect(reconnectTime - disconnectTime).toBeGreaterThan(BACKOFF_JITTER_FACTOR * BACKOFF_INTERVALS_IN_MILLIS[0]);
-      expect(reconnectTime - disconnectTime).toBeLessThan((1 + BACKOFF_JITTER_FACTOR) * BACKOFF_INTERVALS_IN_MILLIS[0]);
+      expect(reconnectTime - disconnectTime).toBeLessThan((1 + BACKOFF_JITTER_FACTOR) * BACKOFF_INTERVALS_IN_MILLIS[0] + TIMER_TOLERANCE_MS);
 
       expect(socket.isOpen).toBe(true);
     });

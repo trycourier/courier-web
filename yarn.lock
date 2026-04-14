@@ -2339,42 +2339,42 @@
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
 "@trycourier/courier-react-17@file:@trycourier/courier-react-17":
-  version "9.0.6"
+  version "9.0.7"
   dependencies:
-    "@trycourier/courier-js" "3.1.1"
-    "@trycourier/courier-react-components" "2.0.6"
+    "@trycourier/courier-js" "3.1.2"
+    "@trycourier/courier-react-components" "2.0.7"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.1"
-    "@trycourier/courier-ui-toast" "2.1.1"
+    "@trycourier/courier-ui-inbox" "2.4.2"
+    "@trycourier/courier-ui-toast" "2.1.2"
 
 "@trycourier/courier-react@file:@trycourier/courier-react":
-  version "9.0.6"
+  version "9.0.7"
   dependencies:
-    "@trycourier/courier-js" "3.1.1"
-    "@trycourier/courier-react-components" "2.0.6"
+    "@trycourier/courier-js" "3.1.2"
+    "@trycourier/courier-react-components" "2.0.7"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.1"
-    "@trycourier/courier-ui-toast" "2.1.1"
+    "@trycourier/courier-ui-inbox" "2.4.2"
+    "@trycourier/courier-ui-toast" "2.1.2"
 
 "@trycourier/courier-react@file:@trycourier/courier-react-17":
-  version "9.0.6"
+  version "9.0.7"
   dependencies:
-    "@trycourier/courier-js" "3.1.1"
-    "@trycourier/courier-react-components" "2.0.6"
+    "@trycourier/courier-js" "3.1.2"
+    "@trycourier/courier-react-components" "2.0.7"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.1"
-    "@trycourier/courier-ui-toast" "2.1.1"
+    "@trycourier/courier-ui-inbox" "2.4.2"
+    "@trycourier/courier-ui-toast" "2.1.2"
 
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
-  version "2.4.1"
+  version "2.4.2"
   dependencies:
-    "@trycourier/courier-js" "3.1.1"
+    "@trycourier/courier-js" "3.1.2"
     "@trycourier/courier-ui-core" "2.0.0"
 
 "@trycourier/courier-ui-toast@file:@trycourier/courier-ui-toast":
-  version "2.1.1"
+  version "2.1.2"
   dependencies:
-    "@trycourier/courier-js" "3.1.1"
+    "@trycourier/courier-js" "3.1.2"
     "@trycourier/courier-ui-core" "2.0.0"
 
 "@trycourier/courier@^7.3.0":
@@ -3644,7 +3644,7 @@ cross-env@^7.0.3:
   dependencies:
     cross-spawn "^7.0.1"
 
-cross-fetch@^3.0.4:
+cross-fetch@^3.0.4, cross-fetch@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.2.0.tgz"
   integrity sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==
@@ -3906,6 +3906,11 @@ dotenv@16.4.7:
   version "16.4.7"
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.4.7.tgz"
   integrity sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==
+
+dotenv@^17.4.2:
+  version "17.4.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.4.2.tgz#c07e54a746e11eba021dd9e1047ced5afdc1c034"
+  integrity sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==
 
 dotenv@^8.1.0:
   version "8.6.0"
@@ -6677,7 +6682,7 @@ queue-microtask@^1.2.2:
 
 react-dom@17.0.2, react-dom@^17.0.2:
   version "17.0.2"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
   integrity sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==
   dependencies:
     loose-envify "^1.1.0"
@@ -6693,7 +6698,7 @@ react-dom@19.1.0, react-dom@^19.0.0:
 
 react-dom@19.2.3:
   version "19.2.3"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-19.2.3.tgz"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-19.2.3.tgz#f0b61d7e5c4a86773889fcc1853af3ed5f215b17"
   integrity sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==
   dependencies:
     scheduler "^0.27.0"
@@ -6777,7 +6782,7 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
 
 react@17.0.2, react@^17.0.2:
   version "17.0.2"
-  resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
   dependencies:
     loose-envify "^1.1.0"
@@ -6790,7 +6795,7 @@ react@19.1.0, react@^19.0.0:
 
 react@19.2.3:
   version "19.2.3"
-  resolved "https://registry.npmjs.org/react/-/react-19.2.3.tgz"
+  resolved "https://registry.yarnpkg.com/react/-/react-19.2.3.tgz#d83e5e8e7a258cf6b4fe28640515f99b87cd19b8"
   integrity sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==
 
 read-yaml-file@^1.1.0:
@@ -7011,7 +7016,7 @@ saxes@^6.0.0:
 
 scheduler@^0.20.2:
   version "0.20.2"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.20.2.tgz"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.2.tgz#4baee39436e34aa93b4874bddcbf0fe8b8b50e91"
   integrity sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==
   dependencies:
     loose-envify "^1.1.0"
@@ -7024,7 +7029,7 @@ scheduler@^0.26.0:
 
 scheduler@^0.27.0:
   version "0.27.0"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.27.0.tgz#0c4ef82d67d1e5c1e359e8fc76d3a87f045fe5bd"
   integrity sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==
 
 semver@^6.3.0, semver@^6.3.1:

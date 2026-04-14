@@ -98,9 +98,9 @@ export class PreferenceClient extends Client {
    * @param status - The new status for the topic
    * @param hasCustomRouting - Whether the topic has custom routing
    * @param customRouting - The custom routing channels for the topic
-   * @returns Promise resolving to the updated topic preferences
+   * @returns Promise resolving when update is complete
    */
-  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<CourierUserPreferencesTopic> {
+  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
     const routingPreferences = props.customRouting.length > 0
       ? `[${props.customRouting.join(', ')}]`
       : '[]';
@@ -114,20 +114,11 @@ export class PreferenceClient extends Client {
             hasCustomRouting: ${props.hasCustomRouting},
             routingPreferences: ${routingPreferences}
           }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
-        ) {
-          templateId
-          templateName
-          status
-          hasCustomRouting
-          routingPreferences
-          sectionId
-          sectionName
-          defaultStatus
-        }
+        )
       }
     `;
 
-    const response = await graphql({
+    await graphql({
       options: this.options,
       url: this.options.apiUrls.courier.graphql,
       query,
@@ -137,12 +128,11 @@ export class PreferenceClient extends Client {
         'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
-
-    const node: RecipientPreference = response.data?.updatePreferences;
-    return this.transformToTopic(node);
   }
 
   /**
+   * @deprecated The clientKey parameter is deprecated and will be removed in a future release.
+   *
    * Get the notification center URL
    * @param clientKey - The client key to use for the URL
    * @returns The notification center URL
@@ -150,6 +140,7 @@ export class PreferenceClient extends Client {
   public getNotificationCenterUrl(props: {
     clientKey: string;
   }): string {
+    this.options.logger.warn('Courier Warning: The clientKey parameter in getNotificationCenterUrl is deprecated and will be removed in a future release.');
     const rootTenantId = decode(props.clientKey);
     const url = encode(`${rootTenantId}#${this.options.userId}${this.options.tenantId ? `#${this.options.tenantId}` : ""}#${false}`);
     return `https://view.notificationcenter.app/p/${url}`;

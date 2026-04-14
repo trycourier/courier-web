@@ -1,0 +1,62 @@
+---
+description: Create changesets when package source code is modified
+globs: "@trycourier/*/src/**"
+alwaysApply: false
+---
+
+# Changesets
+
+This monorepo uses [Changesets](https://github.com/changesets/changesets) to track version bumps and generate changelogs.
+
+## When to create a changeset
+
+Create a changeset whenever you modify source code in any `@trycourier/*` package. Do NOT create changesets for test-only, config-only, or docs-only changes.
+
+## How to create one
+
+Write a markdown file in `.changeset/` with a random kebab-case name:
+
+```markdown
+---
+"@trycourier/courier-js": patch
+---
+
+Fix preference client response parsing
+```
+
+## Bump types
+
+| Type    | When to use                                      |
+|---------|--------------------------------------------------|
+| `patch` | Bug fixes, internal refactors, small improvements |
+| `minor` | New features, new exports, non-breaking additions |
+| `major` | Breaking API changes, removed exports, renamed public types |
+
+## Packages
+
+Valid package names for the frontmatter:
+
+- `@trycourier/courier-js`
+- `@trycourier/courier-react`
+- `@trycourier/courier-react-17`
+- `@trycourier/courier-react-components`
+- `@trycourier/courier-ui-core`
+- `@trycourier/courier-ui-inbox`
+- `@trycourier/courier-ui-toast`
+
+## Multi-package changes
+
+If a change spans multiple packages, list them all in the same changeset:
+
+```markdown
+---
+"@trycourier/courier-js": minor
+"@trycourier/courier-react": patch
+---
+
+Add getUnreadCounts API and expose it through useCourier hook
+```
+
+## File naming
+
+Use a short, random, kebab-case name like `happy-dogs-fly.md`. Avoid naming it after the branch or ticket.

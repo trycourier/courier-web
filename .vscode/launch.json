@@ -4,11 +4,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "🌐 Run Web",
+      "name": "🚀 Run Example App",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "workspace",
-        "web-js",
+        "${input:exampleApp}",
         "run",
         "dev"
       ],
@@ -19,177 +19,15 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "⚡ Run Next Latest",
-      "runtimeExecutable": "yarn",
+      "name": "🧪 Run Tests",
+      "runtimeExecutable": "/bin/bash",
       "runtimeArgs": [
-        "workspace",
-        "next-latest",
-        "run",
-        "dev"
+        "-c",
+        "yarn ${input:testTarget}"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "⚡ Run Next 12",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "next-12",
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "⚛️ Run React Latest",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "react-latest",
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "⚛️ Run React 17",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "react-17",
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🎨 Run Designer",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "designer",
-        "run",
-        "dev"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Courier-JS Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "@trycourier/courier-js",
-        "run",
-        "test"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Courier-UI-Inbox Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "@trycourier/courier-ui-inbox",
-        "run",
-        "test"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Courier-React Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "@trycourier/courier-react",
-        "run",
-        "test"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Courier-React-17 Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "@trycourier/courier-react-17",
-        "run",
-        "test"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Courier-UI-Toast Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "workspace",
-        "@trycourier/courier-ui-toast",
-        "run",
-        "test"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "🧪 Run All Tests",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "run",
-        "test:all"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "📱 Localhost QR",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "run",
-        "ipqr"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
     },
     {
       "type": "node",
@@ -206,22 +44,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "🔨 Build Packages",
+      "name": "📱 Show Local IP QR",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
-        "build-packages"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "📱 Run Example on Phone",
-      "runtimeExecutable": "sh",
-      "runtimeArgs": [
-        "./scripts/ipqr.sh"
+        "ipqr"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
@@ -238,30 +64,34 @@
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "exampleApp",
+      "type": "pickString",
+      "description": "Select example app to run",
+      "options": [
+        "web-js",
+        "next-latest",
+        "next-12",
+        "react-latest",
+        "react-17",
+        "designer"
+      ]
     },
     {
-      "type": "node",
-      "request": "launch",
-      "name": "📚 Generate API Docs (All Packages)",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "generate-api-docs"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "📝 Create Changeset",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": [
-        "changeset"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "id": "testTarget",
+      "type": "pickString",
+      "description": "Select package to test",
+      "options": [
+        { "label": "All",                    "value": "test:all" },
+        { "label": "courier-js",             "value": "workspace @trycourier/courier-js run test" },
+        { "label": "courier-react",          "value": "workspace @trycourier/courier-react run test" },
+        { "label": "courier-react-17",       "value": "workspace @trycourier/courier-react-17 run test" },
+        { "label": "courier-ui-inbox",       "value": "workspace @trycourier/courier-ui-inbox run test" },
+        { "label": "courier-ui-toast",       "value": "workspace @trycourier/courier-ui-toast run test" }
+      ]
     }
   ]
 }

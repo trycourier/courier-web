@@ -488,11 +488,15 @@ export interface InboxMessageEventEnvelope {
 //
 // @public (undocumented)
 export class ListClient extends Client {
+    // @deprecated (undocumented)
     deleteSubscription(props: {
         listId: string;
+        clientKey: string;
     }): Promise<void>;
+    // @deprecated (undocumented)
     putSubscription(props: {
         listId: string;
+        clientKey: string;
     }): Promise<void>;
 }
 
@@ -500,6 +504,7 @@ export class ListClient extends Client {
 //
 // @public (undocumented)
 export class PreferenceClient extends Client {
+    // @deprecated (undocumented)
     getNotificationCenterUrl(props: {
         clientKey: string;
     }): string;
@@ -514,7 +519,7 @@ export class PreferenceClient extends Client {
         status: CourierUserPreferencesStatus;
         hasCustomRouting: boolean;
         customRouting: CourierUserPreferencesChannel[];
-    }): Promise<CourierUserPreferencesTopic>;
+    }): Promise<void>;
 }
 
 // Warning: (ae-missing-release-tag) "TokenClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

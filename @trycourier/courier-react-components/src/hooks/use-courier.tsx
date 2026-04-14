@@ -1,5 +1,5 @@
 import React from 'react';
-import { Courier, CourierProps, InboxMessage } from '@trycourier/courier-js';
+import { Courier, CourierProps, InboxMessage, CourierUserPreferences, CourierUserPreferencesStatus, CourierUserPreferencesChannel, CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierInboxDatastore, CourierInboxDataStoreListener, InboxDataSet, CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierToastDatastore, CourierToastDatastoreListener } from '@trycourier/courier-ui-toast';
 
@@ -31,6 +31,18 @@ type ToastHooks = {
   addMessage: (message: InboxMessage) => void;
   removeMessage: (message: InboxMessage) => void;
   error?: Error,
+}
+
+type PreferencesHooks = {
+  getUserPreferences: (props?: { paginationCursor?: string }) => Promise<CourierUserPreferences>;
+  getUserPreferenceTopic: (props: { topicId: string }) => Promise<CourierUserPreferencesTopic>;
+  putUserPreferenceTopic: (props: {
+    topicId: string;
+    status: CourierUserPreferencesStatus;
+    hasCustomRouting: boolean;
+    customRouting: CourierUserPreferencesChannel[];
+  }) => Promise<void>;
+  getNotificationCenterUrl: (props: { clientKey: string }) => string;
 }
 
 // A hook for managing the shared state of Courier
@@ -86,6 +98,18 @@ export const useCourier = () => {
     addMessage: addToastMessage,
     removeMessage: removeToastMessage,
   });
+
+  const getUserPreferences = (props?: { paginationCursor?: string }) => Courier.shared.client!.preferences.getUserPreferences(props);
+  const getUserPreferenceTopic = (props: { topicId: string }) => Courier.shared.client!.preferences.getUserPreferenceTopic(props);
+  const putUserPreferenceTopic = (props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[] }) => Courier.shared.client!.preferences.putUserPreferenceTopic(props);
+  const getNotificationCenterUrl = (props: { clientKey: string }) => Courier.shared.client!.preferences.getNotificationCenterUrl(props);
+
+  const preferences: PreferencesHooks = {
+    getUserPreferences,
+    getUserPreferenceTopic,
+    putUserPreferenceTopic,
+    getNotificationCenterUrl,
+  };
 
   React.useEffect(() => {
 
@@ -169,5 +193,6 @@ export const useCourier = () => {
     auth: auth,
     inbox: inbox,
     toast: toast,
+    preferences: preferences,
   };
 };

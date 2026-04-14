@@ -1,8 +1,6 @@
-import { getClient, hasClientTestEnv } from './utils';
+import { getClient } from './utils';
 
-const describeIntegration = hasClientTestEnv() ? describe : describe.skip;
-
-describeIntegration('TokenClient', () => {
+describe('TokenClient', () => {
   const courierClient = getClient();
 
   it('should store token successfully', async () => {

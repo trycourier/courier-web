@@ -778,15 +778,17 @@ export function CourierTestsTab({
       id: 'lists-put-subscription',
       section: 'Lists',
       title: 'Put list subscription',
-      sdkCall: 'client.lists.putSubscription({ listId })',
+      sdkCall: 'client.lists.putSubscription({ listId, clientKey })',
       sourceTest: 'lists-client.test.ts > should put subscription successfully',
       sourceSkipped: true,
       getInputs: () => ({
         listId: templateCtxRef.current.shared.listId.trim() || LIST_TEST_ID,
+        clientKey: templateCtxRef.current.shared.clientKey.trim(),
       }),
       run: async (client, inputs) => {
         return await client.lists.putSubscription({
           listId: inputString(inputs, 'listId'),
+          clientKey: inputString(inputs, 'clientKey'),
         });
       },
     },
@@ -794,15 +796,17 @@ export function CourierTestsTab({
       id: 'lists-delete-subscription',
       section: 'Lists',
       title: 'Delete list subscription',
-      sdkCall: 'client.lists.deleteSubscription({ listId })',
+      sdkCall: 'client.lists.deleteSubscription({ listId, clientKey })',
       sourceTest: 'lists-client.test.ts > should delete subscription successfully',
       sourceSkipped: true,
       getInputs: () => ({
         listId: templateCtxRef.current.shared.listId.trim() || LIST_TEST_ID,
+        clientKey: templateCtxRef.current.shared.clientKey.trim(),
       }),
       run: async (client, inputs) => {
         return await client.lists.deleteSubscription({
           listId: inputString(inputs, 'listId'),
+          clientKey: inputString(inputs, 'clientKey'),
         });
       },
     },

@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
-import { useCourier, type InboxMessage, defaultFeeds } from '@trycourier/courier-react-17'
+import { useCourier, type InboxMessage, type CourierUserPreferencesTopic, defaultFeeds } from '@trycourier/courier-react-17'
 
 const Hooks: NextPage = () => {
 
-  const { auth, inbox } = useCourier();
+  const { auth, inbox, preferences } = useCourier();
+  const [topics, setTopics] = useState<CourierUserPreferencesTopic[]>([]);
 
   useEffect(() => {
 
@@ -17,6 +18,9 @@ const Hooks: NextPage = () => {
 
     // Load the inbox
     loadInbox();
+
+    // Load preferences
+    loadPreferences();
 
   }, []);
 
@@ -41,12 +45,23 @@ const Hooks: NextPage = () => {
     }
   }
 
+  async function loadPreferences() {
+    const prefs = await preferences.getUserPreferences();
+    setTopics(prefs.items);
+  }
+
   return (
     <div>
       <div style={{ padding: '24px' }}>Total Unread Count: {inbox.totalUnreadCount}</div>
       <ul>
         {inbox.feeds['all_messages']?.messages.map((message: InboxMessage) => (
           <li key={message.messageId} style={{ backgroundColor: `${message.read ? 'transparent' : 'red'}` }}>{message.title}</li>
+        ))}
+      </ul>
+      <h3>User Preferences</h3>
+      <ul>
+        {topics.map(topic => (
+          <li key={topic.topicId}>{topic.topicName} — {topic.status}</li>
         ))}
       </ul>
     </div>
