@@ -27,6 +27,10 @@ import { CourierToastItemActionClickEvent } from '@trycourier/courier-ui-toast';
 import { CourierToastItemClickEvent } from '@trycourier/courier-ui-toast';
 import { CourierToastItemFactoryProps } from '@trycourier/courier-ui-toast';
 import { CourierToastTheme } from '@trycourier/courier-ui-toast';
+import { CourierUserPreferences } from '@trycourier/courier-js';
+import { CourierUserPreferencesChannel } from '@trycourier/courier-js';
+import { CourierUserPreferencesStatus } from '@trycourier/courier-js';
+import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CSSProperties } from 'react';
 import { ForwardRefExoticComponent } from 'react';
 import { InboxDataSet } from '@trycourier/courier-ui-inbox';
@@ -129,13 +133,15 @@ export const useCourier: () => {
     auth: AuthenticationHooks;
     inbox: InboxHooks;
     toast: ToastHooks;
+    preferences: PreferencesHooks;
 };
 
 // Warnings were encountered during analysis:
 //
-// dist/hooks/use-courier.d.ts:36:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:37:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:38:5 - (ae-forgotten-export) The symbol "ToastHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:53:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:54:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:55:5 - (ae-forgotten-export) The symbol "ToastHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:56:5 - (ae-forgotten-export) The symbol "PreferencesHooks" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
