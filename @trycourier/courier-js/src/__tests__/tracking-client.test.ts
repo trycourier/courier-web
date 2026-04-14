@@ -1,11 +1,11 @@
-import { getClient } from './utils';
+import { env, getClient } from './utils';
 
 describe('TrackingClient', () => {
   const courierClient = getClient();
 
-  it.skip('should post inbound courier successfully', async () => {
+  it('should post inbound courier successfully', async () => {
     const result = await courierClient.tracking.postInboundCourier({
-      clientKey: process.env.CLIENT_KEY!,
+      clientKey: env('CLIENT_KEY'),
       event: 'test_event',
       messageId: crypto.randomUUID(),
       type: 'track',
@@ -24,6 +24,4 @@ describe('TrackingClient', () => {
       event: 'CLICKED'
     });
   });
-
-
 });

@@ -1,13 +1,8 @@
 import { CourierGetInboxMessagesQueryFilter } from '../types/inbox';
 import { InboxMessageEvent } from '../types/socket/protocol/messages';
-import { getClient, hasClientTestEnv, hasTestEnv } from './utils';
+import { env, getClient } from './utils';
 
-const describeIntegration = hasClientTestEnv() ? describe : describe.skip;
-const itWithMessageEnv =
-  hasTestEnv('MESSAGE_ID') && hasTestEnv('MESSAGE_TRACKING_ID') ? it : it.skip;
-const itWithTenantEnv = hasTestEnv('TENANT_ID') ? it : it.skip;
-
-describeIntegration('InboxClient', () => {
+describe('InboxClient', () => {
   const courierClient = getClient();
 
   describe('getMessages', () => {
@@ -77,7 +72,6 @@ describeIntegration('InboxClient', () => {
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
 
-    // Verify all dataset IDs from input are present in output
     for (const datasetId of Object.keys(filtersMap)) {
       expect(result).toHaveProperty(datasetId);
       expect(typeof result[datasetId]).toBe('number');
@@ -85,22 +79,22 @@ describeIntegration('InboxClient', () => {
     }
   });
 
-  itWithMessageEnv('should track click events', async () => {
+  it('should track click events', async () => {
     await expect(courierClient.inbox.click({
-      messageId: process.env.MESSAGE_ID!,
-      trackingId: process.env.MESSAGE_TRACKING_ID!
+      messageId: env('MESSAGE_ID'),
+      trackingId: env('MESSAGE_TRACKING_ID'),
     })).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should mark message as read', async () => {
+  it('should mark message as read', async () => {
     await expect(courierClient.inbox.read({
-      messageId: process.env.MESSAGE_ID!
+      messageId: env('MESSAGE_ID'),
     })).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should mark message as unread', async () => {
+  it('should mark message as unread', async () => {
     await expect(courierClient.inbox.unread({
-      messageId: process.env.MESSAGE_ID!
+      messageId: env('MESSAGE_ID'),
     })).resolves.not.toThrow();
   });
 
@@ -108,21 +102,21 @@ describeIntegration('InboxClient', () => {
     await expect(courierClient.inbox.readAll()).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should mark message as opened', async () => {
+  it('should mark message as opened', async () => {
     await expect(courierClient.inbox.open({
-      messageId: process.env.MESSAGE_ID!
+      messageId: env('MESSAGE_ID'),
     })).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should batch open multiple messages', async () => {
+  it('should batch open multiple messages', async () => {
     await expect(courierClient.inbox.batchOpen([
-      process.env.MESSAGE_ID!,
+      env('MESSAGE_ID'),
     ])).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should archive message', async () => {
+  it('should archive message', async () => {
     await expect(courierClient.inbox.archive({
-      messageId: process.env.MESSAGE_ID!
+      messageId: env('MESSAGE_ID'),
     })).resolves.not.toThrow();
   });
 
@@ -130,9 +124,9 @@ describeIntegration('InboxClient', () => {
     await expect(courierClient.inbox.archiveRead()).resolves.not.toThrow();
   });
 
-  itWithMessageEnv('should archive unread messages', async () => {
+  it('should archive unread messages', async () => {
     await expect(courierClient.inbox.unarchive({
-      messageId: process.env.MESSAGE_ID!
+      messageId: env('MESSAGE_ID'),
     })).resolves.not.toThrow();
   });
 
@@ -146,24 +140,17 @@ describeIntegration('InboxClient', () => {
 
     expect(socket.isOpen).toBe(false);
 
-    // Connect to the socket
     await socket.connect();
-
-    // Subscribe to the socket
     await socket.sendSubscribe();
-
-    // Disconnect from the socket
     socket.close();
 
-    // Wait for 1 second to ensure socket is fully disconnected
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(socket.isOpen).toBe(false);
-
   });
 
-  itWithTenantEnv('should see tenant messages with new client', async () => {
-    const newClient = getClient(process.env.TENANT_ID!);
+  it('should see tenant messages with new client', async () => {
+    const newClient = getClient(env('TENANT_ID'));
     const result = await newClient.inbox.getMessages({
       paginationLimit: 10,
     });
@@ -186,5 +173,4 @@ describeIntegration('InboxClient', () => {
 
     socket.close();
   }, 6000);
-
 });

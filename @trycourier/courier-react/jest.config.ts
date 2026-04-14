@@ -25,6 +25,7 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
     '**/__tests__/**/*(spec|test).ts?(x)',
     '**/?(*.)+(spec|test).ts?(x)'
   ],
+  setupFiles: ['dotenv/config'],
   setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
 
   // Module resolution
