@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 3.1.3
+
+### Patch Changes
+
+- [#173](https://github.com/trycourier/courier-web/pull/173) [`4fdef42`](https://github.com/trycourier/courier-web/commit/4fdef42cd19ec08977f02731cb7217c0238c9f06) Thanks [@mikemilla](https://github.com/mikemilla)! - Fix ListClient auth to use client-facing endpoints with proper x-courier-client-key header and JWT auth. Add deprecation warnings to functions accepting clientKey parameter. Enable skippable list subscription tests.
+
 ## 3.1.2
 
 ### Patch Changes
