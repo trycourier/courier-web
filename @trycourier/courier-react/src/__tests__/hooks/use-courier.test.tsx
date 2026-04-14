@@ -1,11 +1,12 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useCourier } from '@trycourier/courier-react-components';
 import type { CourierProps, InboxMessage } from '@trycourier/courier-js';
+import { env } from '../utils';
 
 function getSignInProps(): CourierProps {
   return {
-    userId: process.env.USER_ID!,
-    jwt: process.env.JWT!,
+    userId: env('USER_ID'),
+    jwt: env('JWT'),
   };
 }
 
@@ -43,7 +44,7 @@ describe('useCourier (E2E)', () => {
 
       await waitFor(() => {
         const { auth } = result.current;
-        expect(auth.userId).toBe(process.env.USER_ID);
+        expect(auth.userId).toBe(env('USER_ID'));
       });
       const { shared } = result.current;
       expect(shared.client).toBeDefined();
@@ -58,7 +59,7 @@ describe('useCourier (E2E)', () => {
       });
       await waitFor(() => {
         const { auth } = result.current;
-        expect(auth.userId).toBe(process.env.USER_ID);
+        expect(auth.userId).toBe(env('USER_ID'));
       });
 
       act(() => {
@@ -144,7 +145,7 @@ describe('useCourier (E2E)', () => {
         auth.signIn(getSignInProps());
       });
       await waitFor(() => {
-        expect(spy).toHaveBeenCalledWith({ userId: process.env.USER_ID });
+        expect(spy).toHaveBeenCalledWith({ userId: env('USER_ID') });
       });
 
       act(() => {
