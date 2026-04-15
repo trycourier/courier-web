@@ -26,7 +26,10 @@ describe('PreferenceClient', () => {
       hasCustomRouting: false,
       customRouting: []
     });
-    expect(result).toBeUndefined();
+    expect(result.topicId).toBe(topicId);
+    expect(result.status).toBeDefined();
+    expect(result.hasCustomRouting).toBeDefined();
+    expect(Array.isArray(result.customRouting)).toBe(true);
   });
 
   it('should get notification center url successfully', () => {

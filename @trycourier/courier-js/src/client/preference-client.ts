@@ -98,27 +98,37 @@ export class PreferenceClient extends Client {
    * @param status - The new status for the topic
    * @param hasCustomRouting - Whether the topic has custom routing
    * @param customRouting - The custom routing channels for the topic
-   * @returns Promise resolving when update is complete
+   * @returns Promise resolving to the updated topic preferences
    */
-  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<void> {
+  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<CourierUserPreferencesTopic> {
     const routingPreferences = props.customRouting.length > 0
       ? `[${props.customRouting.join(', ')}]`
       : '[]';
 
     const query = `
-      mutation UpdateRecipientPreferences {
-        updatePreferences(
+      mutation UpdateRecipientPreferenceV2 {
+        updatePreferenceV2(
           templateId: "${props.topicId}",
           preferences: {
             status: ${props.status},
             hasCustomRouting: ${props.hasCustomRouting},
             routingPreferences: ${routingPreferences}
           }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
-        )
+        ) {
+          templateId
+          templateName
+          status
+          hasCustomRouting
+          routingPreferences
+          digestSchedule
+          sectionId
+          sectionName
+          defaultStatus
+        }
       }
     `;
 
-    await graphql({
+    const response = await graphql({
       options: this.options,
       url: this.options.apiUrls.courier.graphql,
       query,
@@ -128,6 +138,9 @@ export class PreferenceClient extends Client {
         'Authorization': `Bearer ${this.options.accessToken}`
       },
     });
+
+    const node: RecipientPreference = response.data?.updatePreferenceV2;
+    return this.transformToTopic(node);
   }
 
   /**
