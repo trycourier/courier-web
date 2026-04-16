@@ -26,7 +26,79 @@ describe('PreferenceClient', () => {
       hasCustomRouting: false,
       customRouting: []
     });
-    expect(result).toBeUndefined();
+    expect(result.topicId).toBe(topicId);
+    expect(result.status).toBeDefined();
+    expect(result.hasCustomRouting).toBeDefined();
+    expect(Array.isArray(result.customRouting)).toBe(true);
+  });
+
+  it('should include digestSchedule in fetched topic', async () => {
+    const topicId = env('TOPIC_ID');
+    const topic = await courierClient.preferences.getUserPreferenceTopic({ topicId });
+    expect(topic).toHaveProperty('digestSchedule');
+  });
+
+  it('should update digest schedule for a topic', async () => {
+    const topicId = env('TOPIC_ID');
+    const digestScheduleId = env('DIGEST_SCHEDULE_ID');
+    const result = await courierClient.preferences.putUserPreferenceTopic({
+      topicId,
+      status: 'OPTED_IN',
+      hasCustomRouting: false,
+      customRouting: [],
+      digestSchedule: digestScheduleId,
+    });
+    expect(result.topicId).toBe(topicId);
+    expect(result.digestSchedule).toBe(digestScheduleId);
+  });
+
+  it('should ignore an invalid digest schedule id', async () => {
+    const topicId = env('TOPIC_ID');
+    const invalidId = 'invalid-digest-id-12345';
+
+    const result = await courierClient.preferences.putUserPreferenceTopic({
+      topicId,
+      status: 'OPTED_IN',
+      hasCustomRouting: false,
+      customRouting: [],
+      digestSchedule: invalidId,
+    });
+    expect(result.topicId).toBe(topicId);
+    expect(result.digestSchedule).not.toBe(invalidId);
+  });
+
+  it('should unset digest schedule when null is passed', async () => {
+    const topicId = env('TOPIC_ID');
+    const digestScheduleId = env('DIGEST_SCHEDULE_ID');
+
+    // First set a specific schedule
+    await courierClient.preferences.putUserPreferenceTopic({
+      topicId,
+      status: 'OPTED_IN',
+      hasCustomRouting: false,
+      customRouting: [],
+      digestSchedule: digestScheduleId,
+    });
+
+    // Unset it — the backend deletes the user preference and falls back to the topic default
+    const result = await courierClient.preferences.putUserPreferenceTopic({
+      topicId,
+      status: 'OPTED_IN',
+      hasCustomRouting: false,
+      customRouting: [],
+      digestSchedule: null,
+    });
+    expect(result.topicId).toBe(topicId);
+    expect(result.digestSchedule).not.toBe(digestScheduleId);
+  });
+
+  it('should fetch digest schedules for a topic', async () => {
+    const topicId = env('TOPIC_ID');
+    const schedules = await courierClient.preferences.getDigestSchedules({ topicId });
+    expect(Array.isArray(schedules)).toBe(true);
+    for (const schedule of schedules) {
+      expect(schedule.scheduleId).toBeDefined();
+    }
   });
 
   it('should get notification center url successfully', () => {
