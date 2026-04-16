@@ -309,6 +309,34 @@ describe('useCourier (E2E)', () => {
       expect(updated.digestSchedule).toBe(digestScheduleId);
     }, 15_000);
 
+    it('should unset digest schedule when null is passed through the hook', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = (await preferences.getUserPreferences()).items[0]?.topicId;
+      expect(topicId).toBeDefined();
+
+      const updated = await preferences.putUserPreferenceTopic({
+        topicId: topicId!,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+        digestSchedule: null,
+      });
+      expect(updated).toBeDefined();
+      expect(updated.topicId).toBe(topicId);
+      expect(updated.digestSchedule).toBeNull();
+    }, 15_000);
+
     it('should fetch digest schedules for a topic through the hook', async () => {
       const { result } = renderCourierHook();
 

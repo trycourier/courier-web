@@ -67,6 +67,20 @@ describe('PreferenceClient', () => {
     expect(result.digestSchedule).not.toBe(invalidId);
   });
 
+  it('should unset digest schedule when null is passed', async () => {
+    const topicId = env('TOPIC_ID');
+
+    const result = await courierClient.preferences.putUserPreferenceTopic({
+      topicId,
+      status: 'OPTED_IN',
+      hasCustomRouting: false,
+      customRouting: [],
+      digestSchedule: null,
+    });
+    expect(result.topicId).toBe(topicId);
+    expect(result.digestSchedule).toBeNull();
+  });
+
   it('should fetch digest schedules for a topic', async () => {
     const topicId = env('TOPIC_ID');
     const schedules = await courierClient.preferences.getDigestSchedules({ topicId });
