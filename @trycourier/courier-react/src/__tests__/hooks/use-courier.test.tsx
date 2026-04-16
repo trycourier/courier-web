@@ -227,6 +227,54 @@ describe('useCourier (E2E)', () => {
       expect(updated.topicId).toBe(topicId);
     }, 15_000);
 
+    it('should include digestSchedule in fetched topic', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = (await preferences.getUserPreferences()).items[0]?.topicId;
+      expect(topicId).toBeDefined();
+
+      const topic = await preferences.getUserPreferenceTopic({ topicId: topicId! });
+      expect(topic).toHaveProperty('digestSchedule');
+    }, 15_000);
+
+    it('should ignore an invalid digest schedule id through the hook', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = (await preferences.getUserPreferences()).items[0]?.topicId;
+      expect(topicId).toBeDefined();
+
+      const invalidId = 'invalid-digest-id-12345';
+      const updated = await preferences.putUserPreferenceTopic({
+        topicId: topicId!,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+        digestSchedule: invalidId,
+      });
+      expect(updated.topicId).toBe(topicId);
+      expect(updated.digestSchedule).not.toBe(invalidId);
+    }, 15_000);
+
     it('should update digest schedule through the hook', async () => {
       const digestScheduleId = process.env.DIGEST_SCHEDULE_ID;
       if (!digestScheduleId) {
