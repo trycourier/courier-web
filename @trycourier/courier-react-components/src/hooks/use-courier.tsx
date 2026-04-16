@@ -1,5 +1,5 @@
 import React from 'react';
-import { Courier, CourierProps, InboxMessage, CourierUserPreferences, CourierUserPreferencesStatus, CourierUserPreferencesChannel, CourierUserPreferencesTopic } from '@trycourier/courier-js';
+import { Courier, CourierProps, InboxMessage, CourierUserPreferences, CourierUserPreferencesStatus, CourierUserPreferencesChannel, CourierUserPreferencesTopic, CourierDigestScheduleOption } from '@trycourier/courier-js';
 import { CourierInboxDatastore, CourierInboxDataStoreListener, InboxDataSet, CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierToastDatastore, CourierToastDatastoreListener } from '@trycourier/courier-ui-toast';
 
@@ -41,7 +41,9 @@ type PreferencesHooks = {
     status: CourierUserPreferencesStatus;
     hasCustomRouting: boolean;
     customRouting: CourierUserPreferencesChannel[];
-  }) => Promise<void>;
+    digestSchedule?: string;
+  }) => Promise<CourierUserPreferencesTopic>;
+  getDigestSchedules: (props: { topicId: string }) => Promise<CourierDigestScheduleOption[]>;
   getNotificationCenterUrl: (props: { clientKey: string }) => string;
 }
 
@@ -101,13 +103,15 @@ export const useCourier = () => {
 
   const getUserPreferences = (props?: { paginationCursor?: string }) => Courier.shared.client!.preferences.getUserPreferences(props);
   const getUserPreferenceTopic = (props: { topicId: string }) => Courier.shared.client!.preferences.getUserPreferenceTopic(props);
-  const putUserPreferenceTopic = (props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[] }) => Courier.shared.client!.preferences.putUserPreferenceTopic(props);
+  const putUserPreferenceTopic = (props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; digestSchedule?: string }) => Courier.shared.client!.preferences.putUserPreferenceTopic(props);
+  const getDigestSchedules = (props: { topicId: string }) => Courier.shared.client!.preferences.getDigestSchedules(props);
   const getNotificationCenterUrl = (props: { clientKey: string }) => Courier.shared.client!.preferences.getNotificationCenterUrl(props);
 
   const preferences: PreferencesHooks = {
     getUserPreferences,
     getUserPreferenceTopic,
     putUserPreferenceTopic,
+    getDigestSchedules,
     getNotificationCenterUrl,
   };
 

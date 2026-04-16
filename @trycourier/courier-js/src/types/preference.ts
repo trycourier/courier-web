@@ -16,6 +16,7 @@ export interface CourierUserPreferencesTopic {
   defaultStatus: CourierUserPreferencesStatus;
   hasCustomRouting: boolean;
   customRouting: CourierUserPreferencesChannel[];
+  digestSchedule?: string;
 }
 
 export interface CourierUserPreferences {
@@ -25,6 +26,16 @@ export interface CourierUserPreferences {
 
 export interface CourierUserPreferencesTopicResponse {
   topic: CourierUserPreferencesTopic;
+}
+
+export interface CourierDigestScheduleOption {
+  scheduleId: string;
+  period?: string;
+  recurrence?: string;
+  repeat?: Record<string, unknown>;
+  repetition?: string;
+  start?: string;
+  default?: boolean;
 }
 
 /**

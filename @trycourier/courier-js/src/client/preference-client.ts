@@ -1,4 +1,4 @@
-import { CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, RecipientPreference } from '../types/preference';
+import { CourierDigestScheduleOption, CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, RecipientPreference } from '../types/preference';
 import { decode, encode } from '../utils/coding';
 import { graphql } from '../utils/request';
 import { Client } from './client';
@@ -100,10 +100,14 @@ export class PreferenceClient extends Client {
    * @param customRouting - The custom routing channels for the topic
    * @returns Promise resolving to the updated topic preferences
    */
-  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; }): Promise<CourierUserPreferencesTopic> {
+  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; digestSchedule?: string; }): Promise<CourierUserPreferencesTopic> {
     const routingPreferences = props.customRouting.length > 0
       ? `[${props.customRouting.join(', ')}]`
       : '[]';
+
+    const digestScheduleLine = props.digestSchedule != null
+      ? `\n            digestSchedule: "${props.digestSchedule}"`
+      : '';
 
     const query = `
       mutation UpdateRecipientPreferenceV2 {
@@ -112,7 +116,7 @@ export class PreferenceClient extends Client {
           preferences: {
             status: ${props.status},
             hasCustomRouting: ${props.hasCustomRouting},
-            routingPreferences: ${routingPreferences}
+            routingPreferences: ${routingPreferences}${digestScheduleLine}
           }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
         ) {
           templateId
@@ -144,6 +148,40 @@ export class PreferenceClient extends Client {
   }
 
   /**
+   * Get the available digest schedules for a specific topic
+   * @param topicId - The ID of the topic to get digest schedules for
+   * @returns Promise resolving to an array of available digest schedule options
+   */
+  public async getDigestSchedules(props: { topicId: string }): Promise<CourierDigestScheduleOption[]> {
+    const query = `
+      query GetDigestSchedulesForTopic {
+        digestSchedulesForTopic(templateId: "${props.topicId}") {
+          scheduleId
+          period
+          recurrence
+          repeat
+          repetition
+          start
+          default
+        }
+      }
+    `;
+
+    const response = await graphql({
+      options: this.options,
+      url: this.options.apiUrls.courier.graphql,
+      query,
+      headers: {
+        'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty',
+        'Authorization': `Bearer ${this.options.accessToken}`
+      },
+    });
+
+    return response.data?.digestSchedulesForTopic || [];
+  }
+
+  /**
    * @deprecated The clientKey parameter is deprecated and will be removed in a future release.
    *
    * Get the notification center URL
@@ -171,7 +209,8 @@ export class PreferenceClient extends Client {
       status: (node.status as CourierUserPreferencesStatus) || 'UNKNOWN',
       defaultStatus: (node.defaultStatus as CourierUserPreferencesStatus) || 'UNKNOWN',
       hasCustomRouting: node.hasCustomRouting || false,
-      customRouting: (node.routingPreferences || []) as CourierUserPreferencesChannel[]
+      customRouting: (node.routingPreferences || []) as CourierUserPreferencesChannel[],
+      digestSchedule: node.digestSchedule,
     };
   }
 }
