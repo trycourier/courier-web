@@ -310,6 +310,12 @@ describe('useCourier (E2E)', () => {
     }, 15_000);
 
     it('should unset digest schedule when null is passed through the hook', async () => {
+      const digestScheduleId = process.env.DIGEST_SCHEDULE_ID;
+      if (!digestScheduleId) {
+        console.warn('Skipping digest schedule unset hook test: DIGEST_SCHEDULE_ID not set');
+        return;
+      }
+
       const { result } = renderCourierHook();
 
       act(() => {
@@ -325,6 +331,16 @@ describe('useCourier (E2E)', () => {
       const topicId = (await preferences.getUserPreferences()).items[0]?.topicId;
       expect(topicId).toBeDefined();
 
+      // First set a specific schedule
+      await preferences.putUserPreferenceTopic({
+        topicId: topicId!,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+        digestSchedule: digestScheduleId,
+      });
+
+      // Unset it — the backend deletes the user preference and falls back to the topic default
       const updated = await preferences.putUserPreferenceTopic({
         topicId: topicId!,
         status: 'OPTED_IN',
@@ -334,7 +350,7 @@ describe('useCourier (E2E)', () => {
       });
       expect(updated).toBeDefined();
       expect(updated.topicId).toBe(topicId);
-      expect(updated.digestSchedule).toBeNull();
+      expect(updated.digestSchedule).not.toBe(digestScheduleId);
     }, 15_000);
 
     it('should fetch digest schedules for a topic through the hook', async () => {
