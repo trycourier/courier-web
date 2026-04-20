@@ -7,6 +7,7 @@
 import { Context } from 'react';
 import { Courier } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
+import { CourierDigestScheduleOption } from '@trycourier/courier-js';
 import { CourierInbox } from '@trycourier/courier-ui-inbox';
 import { CourierInboxFeed } from '@trycourier/courier-ui-inbox';
 import { CourierInboxHeaderFactoryProps } from '@trycourier/courier-ui-inbox';
@@ -138,10 +139,10 @@ export const useCourier: () => {
 
 // Warnings were encountered during analysis:
 //
-// dist/hooks/use-courier.d.ts:53:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:54:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:55:5 - (ae-forgotten-export) The symbol "ToastHooks" needs to be exported by the entry point index.d.ts
-// dist/hooks/use-courier.d.ts:56:5 - (ae-forgotten-export) The symbol "PreferencesHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:57:5 - (ae-forgotten-export) The symbol "AuthenticationHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:58:5 - (ae-forgotten-export) The symbol "InboxHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:59:5 - (ae-forgotten-export) The symbol "ToastHooks" needs to be exported by the entry point index.d.ts
+// dist/hooks/use-courier.d.ts:60:5 - (ae-forgotten-export) The symbol "PreferencesHooks" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
