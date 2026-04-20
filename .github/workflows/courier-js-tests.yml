@@ -33,6 +33,7 @@ jobs:
           INBOX_WEBSOCKET_URL: ${{ secrets.INBOX_WEBSOCKET_URL }}
           BRAND_ID: ${{ secrets.BRAND_ID }}
           TOPIC_ID: ${{ secrets.TOPIC_ID }}
+          DIGEST_SCHEDULE_ID: ${{ secrets.DIGEST_SCHEDULE_ID }}
           MESSAGE_ID: ${{ secrets.MESSAGE_ID }}
           MESSAGE_TRACKING_ID: ${{ secrets.MESSAGE_TRACKING_ID }}
           TENANT_ID: ${{ secrets.TENANT_ID }}
