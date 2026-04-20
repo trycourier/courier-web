@@ -28,6 +28,7 @@ export type {
   CourierUserPreferencesPaging,
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
+  CourierDigestScheduleOption,
   CourierDevice,
   CourierToken,
   CourierGetInboxMessageResponse,

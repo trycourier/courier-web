@@ -37,6 +37,7 @@ import {
   CourierUserPreferencesPaging,
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
+  CourierDigestScheduleOption,
 } from './types/preference';
 import { CourierDevice, CourierToken } from './types/token';
 import {
@@ -74,6 +75,7 @@ export type {
   CourierUserPreferencesPaging,
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
+  CourierDigestScheduleOption,
   CourierDevice,
   CourierToken,
   CourierGetInboxMessageResponse,

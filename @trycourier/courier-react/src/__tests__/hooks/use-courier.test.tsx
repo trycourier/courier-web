@@ -7,6 +7,16 @@ function getSignInProps(): CourierProps {
   return {
     userId: env('USER_ID'),
     jwt: env('JWT'),
+    apiUrls: {
+      courier: {
+        rest: env('COURIER_REST_URL'),
+        graphql: env('COURIER_GRAPHQL_URL'),
+      },
+      inbox: {
+        graphql: env('INBOX_GRAPHQL_URL'),
+        webSocket: env('INBOX_WEBSOCKET_URL'),
+      },
+    },
   };
 }
 
@@ -161,7 +171,7 @@ describe('useCourier (E2E)', () => {
   });
 
   describe('preferences', () => {
-    it('should fetch user preferences through the hook', async () => {
+    it('should fetch user preferences successfully', async () => {
       const { result } = renderCourierHook();
 
       act(() => {
@@ -175,11 +185,11 @@ describe('useCourier (E2E)', () => {
 
       const { preferences } = result.current;
       const prefs = await preferences.getUserPreferences();
-      expect(prefs).toBeDefined();
+      expect(prefs.paging.more).toBeDefined();
       expect(Array.isArray(prefs.items)).toBe(true);
     }, 15_000);
 
-    it('should fetch a single preference topic through the hook', async () => {
+    it('should fetch user preference topic successfully', async () => {
       const { result } = renderCourierHook();
 
       act(() => {
@@ -192,16 +202,15 @@ describe('useCourier (E2E)', () => {
       });
 
       const { preferences } = result.current;
-      const allPrefs = await preferences.getUserPreferences();
-      const topicId = allPrefs.items[0]?.topicId;
-      expect(topicId).toBeDefined();
-
-      const topic = await preferences.getUserPreferenceTopic({ topicId: topicId! });
-      expect(topic).toBeDefined();
+      const topicId = env('TOPIC_ID');
+      const topic = await preferences.getUserPreferenceTopic({ topicId });
       expect(topic.topicId).toBe(topicId);
+      expect(topic.status).toBeDefined();
+      expect(topic.hasCustomRouting).toBeDefined();
+      expect(Array.isArray(topic.customRouting)).toBe(true);
     }, 15_000);
 
-    it('should update user preference topic through the hook', async () => {
+    it('should update user preference topic successfully', async () => {
       const { result } = renderCourierHook();
 
       act(() => {
@@ -214,17 +223,90 @@ describe('useCourier (E2E)', () => {
       });
 
       const { preferences } = result.current;
-      const topicId = (await preferences.getUserPreferences()).items[0]?.topicId;
-      expect(topicId).toBeDefined();
+      const topicId = env('TOPIC_ID');
+      const result2 = await preferences.putUserPreferenceTopic({
+        topicId,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+      });
+      expect(result2.topicId).toBe(topicId);
+      expect(result2.status).toBeDefined();
+      expect(result2.hasCustomRouting).toBeDefined();
+      expect(Array.isArray(result2.customRouting)).toBe(true);
+    }, 15_000);
 
-      await expect(
-        preferences.putUserPreferenceTopic({
-          topicId: topicId!,
-          status: 'OPTED_IN',
-          hasCustomRouting: false,
-          customRouting: [],
-        }),
-      ).resolves.toBeUndefined();
+    it('should update digest schedule for a topic', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = env('TOPIC_ID');
+      const digestScheduleId = env('DIGEST_SCHEDULE_ID');
+      const result2 = await preferences.putUserPreferenceTopic({
+        topicId,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+        digestSchedule: digestScheduleId,
+      });
+      expect(result2.topicId).toBe(topicId);
+      expect(result2.digestSchedule).toBe(digestScheduleId);
+    }, 15_000);
+
+    it('should ignore an invalid digest schedule id', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = env('TOPIC_ID');
+      const invalidId = 'invalid-digest-id-12345';
+      const result2 = await preferences.putUserPreferenceTopic({
+        topicId,
+        status: 'OPTED_IN',
+        hasCustomRouting: false,
+        customRouting: [],
+        digestSchedule: invalidId,
+      });
+      expect(result2.topicId).toBe(topicId);
+      expect(result2.digestSchedule).not.toBe(invalidId);
+    }, 15_000);
+
+    it('should fetch digest schedules for a topic', async () => {
+      const { result } = renderCourierHook();
+
+      act(() => {
+        const { auth } = result.current;
+        auth.signIn(getSignInProps());
+      });
+      await waitFor(() => {
+        const { shared } = result.current;
+        expect(shared.client).toBeDefined();
+      });
+
+      const { preferences } = result.current;
+      const topicId = env('TOPIC_ID');
+      const schedules = await preferences.getDigestSchedules({ topicId });
+      expect(Array.isArray(schedules)).toBe(true);
+      for (const schedule of schedules) {
+        expect(schedule.scheduleId).toBeDefined();
+      }
     }, 15_000);
   });
 });

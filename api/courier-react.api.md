@@ -13,6 +13,7 @@ import { CourierBrand } from '@trycourier/courier-js';
 import { CourierClientOptions } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierDevice } from '@trycourier/courier-js';
+import { CourierDigestScheduleOption } from '@trycourier/courier-js';
 import { CourierGetInboxMessageResponse } from '@trycourier/courier-js';
 import { CourierGetInboxMessagesResponse } from '@trycourier/courier-js';
 import { CourierInboxButtonTheme } from '@trycourier/courier-ui-inbox';
@@ -100,6 +101,8 @@ export { CourierClientOptions }
 export { CourierComponentThemeMode }
 
 export { CourierDevice }
+
+export { CourierDigestScheduleOption }
 
 export { CourierGetInboxMessageResponse }
 
