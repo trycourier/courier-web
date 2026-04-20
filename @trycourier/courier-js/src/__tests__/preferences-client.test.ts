@@ -67,31 +67,6 @@ describe('PreferenceClient', () => {
     expect(result.digestSchedule).not.toBe(invalidId);
   });
 
-  it('should unset digest schedule when null is passed', async () => {
-    const topicId = env('TOPIC_ID');
-    const digestScheduleId = env('DIGEST_SCHEDULE_ID');
-
-    // First set a specific schedule
-    await courierClient.preferences.putUserPreferenceTopic({
-      topicId,
-      status: 'OPTED_IN',
-      hasCustomRouting: false,
-      customRouting: [],
-      digestSchedule: digestScheduleId,
-    });
-
-    // Unset it — the backend deletes the user preference and falls back to the topic default
-    const result = await courierClient.preferences.putUserPreferenceTopic({
-      topicId,
-      status: 'OPTED_IN',
-      hasCustomRouting: false,
-      customRouting: [],
-      digestSchedule: null,
-    });
-    expect(result.topicId).toBe(topicId);
-    expect(result.digestSchedule).not.toBe(digestScheduleId);
-  });
-
   it('should fetch digest schedules for a topic', async () => {
     const topicId = env('TOPIC_ID');
     const schedules = await courierClient.preferences.getDigestSchedules({ topicId });

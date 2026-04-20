@@ -100,17 +100,14 @@ export class PreferenceClient extends Client {
    * @param customRouting - The custom routing channels for the topic
    * @returns Promise resolving to the updated topic preferences
    */
-  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; digestSchedule?: string | null; }): Promise<CourierUserPreferencesTopic> {
+  public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; digestSchedule?: string; }): Promise<CourierUserPreferencesTopic> {
     const routingPreferences = props.customRouting.length > 0
       ? `[${props.customRouting.join(', ')}]`
       : '[]';
 
-    let digestScheduleLine = '';
-    if (props.digestSchedule === null) {
-      digestScheduleLine = '\n            digestSchedule: null';
-    } else if (props.digestSchedule !== undefined) {
-      digestScheduleLine = `\n            digestSchedule: "${props.digestSchedule}"`;
-    }
+    const digestScheduleLine = props.digestSchedule != null
+      ? `\n            digestSchedule: "${props.digestSchedule}"`
+      : '';
 
     const query = `
       mutation UpdateRecipientPreferenceV2 {
