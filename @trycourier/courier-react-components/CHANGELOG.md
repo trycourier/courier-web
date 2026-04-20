@@ -1,5 +1,16 @@
 # @trycourier/courier-react-components
 
+## 2.0.9
+
+### Patch Changes
+
+- [#175](https://github.com/trycourier/courier-web/pull/175) [`07acd75`](https://github.com/trycourier/courier-web/commit/07acd755b97bb6082115f7f2437d1bb5d44129a2) Thanks [@mikemilla](https://github.com/mikemilla)! - Add digest schedule support to preferences: getDigestSchedules API, digestSchedule field on putUserPreferenceTopic, and expose through useCourier hook
+
+- Updated dependencies [[`07acd75`](https://github.com/trycourier/courier-web/commit/07acd755b97bb6082115f7f2437d1bb5d44129a2)]:
+  - @trycourier/courier-js@3.2.0
+  - @trycourier/courier-ui-inbox@2.4.4
+  - @trycourier/courier-ui-toast@2.1.4
+
 ## 2.0.8
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @trycourier/courier-js
 
+## 3.2.0
+
+### Minor Changes
+
+- [#175](https://github.com/trycourier/courier-web/pull/175) [`07acd75`](https://github.com/trycourier/courier-web/commit/07acd755b97bb6082115f7f2437d1bb5d44129a2) Thanks [@mikemilla](https://github.com/mikemilla)! - Add digest schedule support to preferences: getDigestSchedules API, digestSchedule field on putUserPreferenceTopic, and expose through useCourier hook
+
 ## 3.1.3
 
 ### Patch Changes
