@@ -1,5 +1,12 @@
 # @trycourier/courier-ui-toast
 
+## 2.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`07acd75`](https://github.com/trycourier/courier-web/commit/07acd755b97bb6082115f7f2437d1bb5d44129a2)]:
+  - @trycourier/courier-js@3.2.0
+
 ## 2.1.3
 
 ### Patch Changes
