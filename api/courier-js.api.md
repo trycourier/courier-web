@@ -201,6 +201,26 @@ export interface CourierDevice {
     platform?: string;
 }
 
+// Warning: (ae-missing-release-tag) "CourierDigestScheduleOption" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierDigestScheduleOption {
+    // (undocumented)
+    default?: boolean;
+    // (undocumented)
+    period?: string;
+    // (undocumented)
+    recurrence?: string;
+    // (undocumented)
+    repeat?: Record<string, unknown>;
+    // (undocumented)
+    repetition?: string;
+    // (undocumented)
+    scheduleId: string;
+    // (undocumented)
+    start?: string;
+}
+
 // Warning: (ae-missing-release-tag) "CourierGetInboxMessageResponse" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -306,6 +326,8 @@ export interface CourierUserPreferencesTopic {
     customRouting: CourierUserPreferencesChannel[];
     // (undocumented)
     defaultStatus: CourierUserPreferencesStatus;
+    // (undocumented)
+    digestSchedule?: string;
     // (undocumented)
     hasCustomRouting: boolean;
     // (undocumented)
@@ -504,6 +526,9 @@ export class ListClient extends Client {
 //
 // @public (undocumented)
 export class PreferenceClient extends Client {
+    getDigestSchedules(props: {
+        topicId: string;
+    }): Promise<CourierDigestScheduleOption[]>;
     // @deprecated (undocumented)
     getNotificationCenterUrl(props: {
         clientKey: string;
@@ -519,7 +544,8 @@ export class PreferenceClient extends Client {
         status: CourierUserPreferencesStatus;
         hasCustomRouting: boolean;
         customRouting: CourierUserPreferencesChannel[];
-    }): Promise<void>;
+        digestSchedule?: string;
+    }): Promise<CourierUserPreferencesTopic>;
 }
 
 // Warning: (ae-missing-release-tag) "TokenClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
