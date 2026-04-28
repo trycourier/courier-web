@@ -26,7 +26,10 @@ export interface CourierInboxProps {
   /** Callback fired when a message is clicked. */
   onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
 
-  /** Callback fired when a message action (e.g., button) is clicked. */
+  /**
+   * Callback fired when a message action (e.g., button) is clicked.
+   * The inbox also opens `action.href` in a new tab when it is an http(s) URL (before this runs), so file and web links work without a custom handler.
+   */
   onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
 
   /** Callback fired when a message is long-pressed (for mobile/gesture support). Only works on devices that support touch. */

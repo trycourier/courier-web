@@ -1,4 +1,13 @@
-import { AuthenticationListener, Courier, InboxMessage } from "@trycourier/courier-js";
+import { AuthenticationListener, Courier, InboxAction, InboxMessage } from "@trycourier/courier-js";
+
+/** Opens a message action href in a new tab when set (http/https only). Runs synchronously on button click so popup blockers allow it. */
+function openInboxActionHref(action: InboxAction | undefined): void {
+  const raw = action?.href?.trim();
+  if (!raw || !/^https?:\/\//i.test(raw)) {
+    return;
+  }
+  window.open(raw, "_blank", "noopener,noreferrer");
+}
 import { CourierInboxList } from "./courier-inbox-list";
 import { CourierInboxHeader } from "./courier-inbox-header";
 import { CourierBaseElement, CourierComponentThemeMode, injectGlobalStyle, registerElement } from "@trycourier/courier-ui-core";
@@ -374,6 +383,7 @@ export class CourierInbox extends CourierBaseElement {
         this._onMessageClick?.({ message, index });
       },
       onMessageActionClick: (message, action, index) => {
+        openInboxActionHref(action);
 
         // TODO: Track action click?
 
