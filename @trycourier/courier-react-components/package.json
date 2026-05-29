@@ -26,13 +26,15 @@
     "@trycourier/courier-js": "3.2.0",
     "@trycourier/courier-ui-core": "2.0.0",
     "@trycourier/courier-ui-inbox": "2.4.4",
-    "@trycourier/courier-ui-toast": "2.1.4"
+    "@trycourier/courier-ui-toast": "2.1.4",
+    "@trycourier/courier-ui-preferences": "1.0.0"
   },
   "devDependencies": {
     "@trycourier/courier-js": "3.2.0",
     "@trycourier/courier-ui-core": "2.0.0",
     "@trycourier/courier-ui-inbox": "2.4.4",
     "@trycourier/courier-ui-toast": "2.1.4",
+    "@trycourier/courier-ui-preferences": "1.0.0",
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.2",
     "react": "17.0.2",

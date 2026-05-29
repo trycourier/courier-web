@@ -5,6 +5,8 @@ import { CourierLink } from './components/courier-link';
 import { CourierInfoState } from './components/courier-info-state';
 import { CourierIconButton } from './components/courier-icon-button';
 import { CourierSystemThemeElement } from './components/courier-system-theme-element';
+import { CourierRadio } from './components/courier-radio';
+import { CourierCheckbox } from './components/courier-checkbox';
 import { registerElement } from './utils/registeration';
 
 // Export all components for external use
@@ -16,6 +18,8 @@ export * from './components/courier-icon-button';
 export * from './components/courier-element';
 export * from './components/courier-system-theme-element';
 export * from './components/courier-base-element';
+export * from './components/courier-radio';
+export * from './components/courier-checkbox';
 export * from './utils/system-theme-mode';
 export * from './utils/theme';
 export * from './utils/courier-colors';
@@ -32,3 +36,5 @@ registerElement(CourierLink);
 registerElement(CourierInfoState);
 registerElement(CourierIconButton);
 registerElement(CourierSystemThemeElement);
+registerElement(CourierRadio);
+registerElement(CourierCheckbox);

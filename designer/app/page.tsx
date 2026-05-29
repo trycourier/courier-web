@@ -15,6 +15,7 @@ import { CourierInboxTab } from "@/components/CourierInboxTab";
 import { CourierInboxPopupMenuTab } from "@/components/CourierInboxPopupMenuTab";
 import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { CourierToastTab } from "@/components/CourierToastTab";
+import { CourierPreferencesTab } from "@/components/CourierPreferencesTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
@@ -33,10 +34,10 @@ const Send = SendBase as React.ComponentType<any>;
 const X = XBase as React.ComponentType<any>;
 
 type LeftTab = 'send-test' | 'theme' | 'current-user' | 'feeds' | 'advanced';
-type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast';
+type RightTab = 'courier-inbox' | 'courier-inbox-popup-menu' | 'courier-inbox-hooks' | 'courier-toast' | 'courier-preferences';
 
 const VALID_LEFT_TABS: LeftTab[] = ['send-test', 'theme', 'current-user', 'feeds', 'advanced'];
-const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast'];
+const VALID_RIGHT_TABS: RightTab[] = ['courier-inbox', 'courier-inbox-popup-menu', 'courier-inbox-hooks', 'courier-toast', 'courier-preferences'];
 const DEFAULT_LEFT_TAB: LeftTab = 'send-test';
 const DEFAULT_RIGHT_TAB: RightTab = 'courier-inbox';
 
@@ -448,6 +449,7 @@ function HomeContent() {
                     <TabsTrigger value="courier-inbox-popup-menu">Popup</TabsTrigger>
                     <TabsTrigger value="courier-inbox-hooks">Hooks</TabsTrigger>
                     <TabsTrigger value="courier-toast">Toast</TabsTrigger>
+                    <TabsTrigger value="courier-preferences">Preferences</TabsTrigger>
                   </TabsList>
                 </div>
                 <div className="flex-1 overflow-y-auto">
@@ -472,6 +474,13 @@ function HomeContent() {
                   </TabsContent>
                   <TabsContent value="courier-toast" className="h-full mt-0">
                     <CourierToastTab colorMode={colorMode} />
+                  </TabsContent>
+                  <TabsContent value="courier-preferences" className="h-full mt-0">
+                    <CourierPreferencesTab
+                      colorMode={colorMode}
+                      lightTheme={themePresets[selectedTheme].preferencesLight}
+                      darkTheme={themePresets[selectedTheme].preferencesDark}
+                    />
                   </TabsContent>
                 </div>
               </Tabs>

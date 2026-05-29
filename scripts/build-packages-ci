@@ -19,6 +19,9 @@ yarn workspace @trycourier/courier-ui-inbox run build:ci || exit $?
 echo "Building @trycourier/courier-ui-toast..."
 yarn workspace @trycourier/courier-ui-toast run build:ci || exit $?
 
+echo "Building @trycourier/courier-ui-preferences..."
+yarn workspace @trycourier/courier-ui-preferences run build:ci || exit $?
+
 echo "Building @trycourier/courier-react-components..."
 yarn workspace @trycourier/courier-react-components run build:ci || exit $?
 

@@ -130,6 +130,13 @@ export default function Examples() {
             Toast notifications rendered with a fully custom React component.
           </ExampleCard>
         </div>
+
+        {/* Preferences examples */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <ExampleCard to="/examples/preferences" title="Preferences — Default">
+            Full notification preferences page with sections, toggles, and channel routing.
+          </ExampleCard>
+        </div>
       </section>
     </main>
   );

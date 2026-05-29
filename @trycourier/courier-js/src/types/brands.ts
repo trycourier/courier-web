@@ -1,3 +1,16 @@
+export interface CourierBrandLogo {
+  href?: string;
+  image?: string;
+}
+
+export interface CourierBrandSocialLinks {
+  facebook?: { url: string };
+  instagram?: { url: string };
+  linkedin?: { url: string };
+  medium?: { url: string };
+  twitter?: { url: string };
+}
+
 export interface CourierBrand {
   id: string;
   name: string;
@@ -6,6 +19,8 @@ export interface CourierBrand {
   published: number;
   version: string;
   settings?: CourierBrandSettings;
+  logo?: CourierBrandLogo | null;
+  links?: CourierBrandSocialLinks | null;
 }
 
 export interface CourierBrandSettings {

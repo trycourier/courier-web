@@ -14,7 +14,8 @@
   "description": "",
   "dependencies": {
     "@trycourier/courier-ui-inbox": "file:../../@trycourier/courier-ui-inbox",
-    "@trycourier/courier-ui-toast": "file:../../@trycourier/courier-ui-toast"
+    "@trycourier/courier-ui-toast": "file:../../@trycourier/courier-ui-toast",
+    "@trycourier/courier-ui-preferences": "file:../../@trycourier/courier-ui-preferences"
   },
   "devDependencies": {
     "vite": "^6.2.4"

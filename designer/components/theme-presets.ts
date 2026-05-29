@@ -1,10 +1,12 @@
-import type { CourierInboxTheme } from '@trycourier/courier-react';
+import type { CourierInboxTheme, CourierPreferencesTheme } from '@trycourier/courier-react';
 
 export type ThemePreset = 'default' | 'poppins' | 'inter' | 'roboto' | 'open-sans';
 
 export interface ThemePresetPair {
   light: CourierInboxTheme;
   dark: CourierInboxTheme;
+  preferencesLight?: CourierPreferencesTheme;
+  preferencesDark?: CourierPreferencesTheme;
 }
 
 export const themePresets: Record<ThemePreset, ThemePresetPair> = {
@@ -15,6 +17,8 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
     dark: {
       // Default dark theme - no customizations
     },
+    preferencesLight: {},
+    preferencesDark: {},
   },
   poppins: {
     light: {
@@ -363,6 +367,20 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
           },
         },
       },
+    },
+    preferencesLight: {
+      primaryColor: '#8B5CF6',
+      title: { family: 'Poppins' },
+      subtitle: { family: 'Poppins' },
+      section: { title: { family: 'Poppins' } },
+      topic: { title: { family: 'Poppins' }, toggle: { trackActiveColor: '#8B5CF6' } },
+    },
+    preferencesDark: {
+      primaryColor: '#8B5CF6',
+      title: { family: 'Poppins', color: '#F9FAFB' },
+      subtitle: { family: 'Poppins', color: '#9CA3AF' },
+      section: { title: { family: 'Poppins', color: '#F9FAFB' } },
+      topic: { title: { family: 'Poppins', color: '#F9FAFB' }, toggle: { trackActiveColor: '#8B5CF6' } },
     },
   },
   inter: {
@@ -797,6 +815,20 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
           },
         },
       },
+    },
+    preferencesLight: {
+      primaryColor: '#10B981',
+      title: { family: 'Montserrat' },
+      subtitle: { family: 'Montserrat' },
+      section: { title: { family: 'Montserrat' } },
+      topic: { title: { family: 'Montserrat' }, toggle: { trackActiveColor: '#10B981' } },
+    },
+    preferencesDark: {
+      primaryColor: '#10B981',
+      title: { family: 'Montserrat', color: '#F9FAFB' },
+      subtitle: { family: 'Montserrat', color: '#9CA3AF' },
+      section: { title: { family: 'Montserrat', color: '#F9FAFB' } },
+      topic: { title: { family: 'Montserrat', color: '#F9FAFB' }, toggle: { trackActiveColor: '#10B981' } },
     },
   },
   roboto: {
@@ -1233,6 +1265,20 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
         },
       },
     },
+    preferencesLight: {
+      primaryColor: '#EF4444',
+      title: { family: 'Playfair Display' },
+      subtitle: { family: 'Playfair Display' },
+      section: { title: { family: 'Playfair Display' } },
+      topic: { title: { family: 'Playfair Display' }, toggle: { trackActiveColor: '#EF4444' } },
+    },
+    preferencesDark: {
+      primaryColor: '#EF4444',
+      title: { family: 'Playfair Display', color: '#F9FAFB' },
+      subtitle: { family: 'Playfair Display', color: '#9CA3AF' },
+      section: { title: { family: 'Playfair Display', color: '#F9FAFB' } },
+      topic: { title: { family: 'Playfair Display', color: '#F9FAFB' }, toggle: { trackActiveColor: '#EF4444' } },
+    },
   },
   'open-sans': {
     light: {
@@ -1666,6 +1712,20 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
           },
         },
       },
+    },
+    preferencesLight: {
+      primaryColor: '#F97316',
+      title: { family: 'Raleway' },
+      subtitle: { family: 'Raleway' },
+      section: { title: { family: 'Raleway' } },
+      topic: { title: { family: 'Raleway' }, toggle: { trackActiveColor: '#F97316' } },
+    },
+    preferencesDark: {
+      primaryColor: '#F97316',
+      title: { family: 'Raleway', color: '#F9FAFB' },
+      subtitle: { family: 'Raleway', color: '#9CA3AF' },
+      section: { title: { family: 'Raleway', color: '#F9FAFB' } },
+      topic: { title: { family: 'Raleway', color: '#F9FAFB' }, toggle: { trackActiveColor: '#F97316' } },
     },
   },
 };

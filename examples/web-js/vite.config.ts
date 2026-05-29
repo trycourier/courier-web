@@ -12,6 +12,7 @@ export default defineConfig({
       ignored: [
         '!../../@trycourier/courier-ui-inbox/src/**',
         '!../../@trycourier/courier-ui-toast/src/**',
+        '!../../@trycourier/courier-ui-preferences/src/**',
         '!../../@trycourier/courier-js/src/**',
         '!../../@trycourier/courier-ui-core/src/**'
       ]
@@ -21,6 +22,7 @@ export default defineConfig({
     alias: {
       '@trycourier/courier-ui-inbox': path.resolve(__dirname, '../../@trycourier/courier-ui-inbox/src'),
       '@trycourier/courier-ui-toast': path.resolve(__dirname, '../../@trycourier/courier-ui-toast/src'),
+      '@trycourier/courier-ui-preferences': path.resolve(__dirname, '../../@trycourier/courier-ui-preferences/src'),
       '@trycourier/courier-js': path.resolve(__dirname, '../../@trycourier/courier-js/src'),
       '@trycourier/courier-ui-core': path.resolve(__dirname, '../../@trycourier/courier-ui-core/src')
     }
@@ -30,6 +32,7 @@ export default defineConfig({
     include: [
       '@trycourier/courier-ui-inbox',
       '@trycourier/courier-ui-toast',
+      '@trycourier/courier-ui-preferences',
       '@trycourier/courier-js',
       '@trycourier/courier-ui-core'
     ]

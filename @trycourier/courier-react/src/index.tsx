@@ -6,6 +6,7 @@ Courier.shared.courierUserAgentVersion = __PACKAGE_VERSION__;
 export { CourierInbox } from './components/courier-inbox';
 export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
 export { CourierToast } from './components/courier-toast';
+export { CourierPreferences } from './components/courier-preferences';
 
 export { useCourier } from '@trycourier/courier-react-components';
 
@@ -13,6 +14,7 @@ export type {
   CourierInboxProps,
   CourierInboxPopupMenuProps,
   CourierToastProps,
+  CourierPreferencesProps,
 } from '@trycourier/courier-react-components';
 
 // Re-export types from courier-js
@@ -125,6 +127,27 @@ export {
   defaultDarkTheme as defaultToastDarkTheme,
   mergeTheme as mergeToastTheme
 } from '@trycourier/courier-ui-toast';
+
+// Re-export element types from courier-ui-preferences
+export type { CourierPreferences as CourierPreferencesElement } from '@trycourier/courier-ui-preferences';
+
+// Re-export preferences types from courier-ui-preferences
+export type {
+  CourierPreferencesTheme,
+  CourierPreferencesFontTheme,
+  CourierPreferencesToggleTheme,
+  CourierPreferencesSectionTheme,
+  CourierPreferencesTopicTheme,
+  CourierPreferencesDigestTheme,
+  CourierPreferencesChannelChipTheme,
+} from '@trycourier/courier-ui-preferences';
+
+// Re-export preferences theme utilities from courier-ui-preferences
+export {
+  defaultLightTheme as defaultPreferencesLightTheme,
+  defaultDarkTheme as defaultPreferencesDarkTheme,
+  mergeTheme as mergePreferencesTheme
+} from '@trycourier/courier-ui-preferences';
 
 // Re-export types from courier-ui-core
 export type {
