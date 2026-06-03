@@ -1,10 +1,15 @@
-import { Courier, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierDigestScheduleOption, CourierBrand } from "@trycourier/courier-js";
+import {
+  Courier,
+  CourierUserPreferencesChannel,
+  CourierUserPreferencesStatus,
+  CourierBrand,
+  CourierPreferencePage,
+  RecipientPreference,
+} from "@trycourier/courier-js";
 import { CourierBaseElement, CourierComponentThemeMode, registerElement, injectGlobalStyle } from "@trycourier/courier-ui-core";
 import { CourierPreferencesTheme, defaultLightTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager } from "../types/courier-preferences-theme-manager";
-import { CourierPreferencesDatastore } from "../datastore/preferences-datastore";
-import { CourierPreferencesDatastoreListener } from "../datastore/preferences-datastore-listener";
-import { PreferencesSection } from "../types/preferences";
+import { PreferencesSection, PreferencesTopic } from "../types/preferences";
 import { CourierPreferencesSection } from "./courier-preferences-section";
 import { CourierPreferencesTopic } from "./courier-preferences-topic";
 
@@ -204,12 +209,10 @@ export class CourierPreferences extends CourierBaseElement {
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
   private _styleEl?: HTMLStyleElement;
-  private _datastoreListener!: CourierPreferencesDatastoreListener;
   private _authListener?: { remove: () => void };
   private _sections: PreferencesSection[] = [];
   private _isLoading = false;
   private _error?: Error;
-  private _digestScheduleMap = new Map<string, CourierDigestScheduleOption[]>();
   private _channelLabels: Record<string, string> = {};
   private _brandId?: string;
   private _brand?: CourierBrand;
@@ -219,26 +222,6 @@ export class CourierPreferences extends CourierBaseElement {
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
-
-    this._datastoreListener = new CourierPreferencesDatastoreListener({
-      onSectionsChange: (sections) => {
-        this._sections = sections;
-        this._loadDigestSchedules();
-        this._render();
-      },
-      onTopicUpdate: (topic) => {
-        this._updateTopicInPlace(topic);
-      },
-      onLoading: (isLoading) => {
-        this._isLoading = isLoading;
-        this._render();
-      },
-      onError: (error) => {
-        this._error = error;
-        this._render();
-      },
-    });
-    CourierPreferencesDatastore.shared.addDatastoreListener(this._datastoreListener);
 
     this._authListener = Courier.shared.addAuthenticationListener(() => {
       this._refresh();
@@ -250,7 +233,6 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   protected onComponentUnmounted(): void {
-    this._datastoreListener?.remove();
     this._authListener?.remove();
     this._themeManager.cleanup();
     this._styleEl = undefined;
@@ -336,27 +318,31 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   private async _refresh() {
-    await Promise.all([
-      CourierPreferencesDatastore.shared.load({ brandId: this._brandId }),
-      this._brandId ? this._loadBrand() : Promise.resolve(),
-    ]);
-  }
+    const client = Courier.shared.client;
+    if (!client) return;
 
-  private async _loadBrand() {
-    if (!this._brandId || !Courier.shared.client) return;
+    this._isLoading = true;
+    this._error = undefined;
+    this._render();
 
     try {
-      this._brand = await CourierPreferencesDatastore.shared.loadBrand(this._brandId);
-      this._resolvePrimaryColor();
+      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId });
+
+      if (pageData) {
+        this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);
+        this._brand = pageData.brand as CourierBrand | undefined;
+        this._resolvePrimaryColor();
+      }
+    } catch (error: unknown) {
+      this._error = error as Error;
+    } finally {
+      this._isLoading = false;
       this._render();
-    } catch {
-      // Brand fetch failure is non-fatal
     }
   }
 
   /**
    * Precedence: user theme primaryColor > brand primaryColor > default
-   * (`DEFAULT_PREFERENCES_PRIMARY_COLOR`, which matches the inbox accent).
    */
   private _resolvePrimaryColor() {
     const theme = this._themeManager.getTheme();
@@ -373,34 +359,143 @@ export class CourierPreferences extends CourierBaseElement {
     }
   }
 
-  private async _loadDigestSchedules() {
+  private _mergePageWithPreferences(
+    page: CourierPreferencePage,
+    recipientPrefs: RecipientPreference[]
+  ): PreferencesSection[] {
+    const userPrefById = new Map<string, RecipientPreference>();
+    for (const pref of recipientPrefs) {
+      userPrefById.set(pref.templateId, pref);
+    }
+
+    return page.sections.map(section => ({
+      sectionId: section.sectionId,
+      sectionName: section.name,
+      hasCustomRouting: section.hasCustomRouting,
+      routingOptions: section.routingOptions,
+      topics: section.topics.map(topic => {
+        const userPref = userPrefById.get(topic.templateId);
+        const status: CourierUserPreferencesStatus =
+          userPref?.status && userPref.status !== 'UNKNOWN'
+            ? userPref.status as CourierUserPreferencesStatus
+            : topic.defaultStatus;
+
+        const hasUserRouting = Boolean(userPref?.hasCustomRouting) && (userPref?.routingPreferences?.length ?? 0) > 0;
+        const defaultAllOn = topic.defaultStatus !== 'OPTED_OUT';
+        const customRouting: CourierUserPreferencesChannel[] = hasUserRouting
+          ? (userPref!.routingPreferences || []) as CourierUserPreferencesChannel[]
+          : defaultAllOn
+            ? [...section.routingOptions]
+            : [];
+
+        return {
+          topicId: topic.templateId,
+          topicName: topic.templateName,
+          status,
+          defaultStatus: topic.defaultStatus,
+          hasCustomRouting: userPref?.hasCustomRouting ?? false,
+          customRouting,
+          digestSchedule: userPref?.digestSchedule,
+          digestScheduleOptions: topic.digestSchedules ?? [],
+        };
+      }),
+    }));
+  }
+
+  private _findTopicAndSnapshot(topicId: string): {
+    topic: PreferencesTopic | undefined;
+    snapshot: PreferencesSection[];
+  } {
+    const snapshot = JSON.parse(JSON.stringify(this._sections)) as PreferencesSection[];
     for (const section of this._sections) {
-      for (const topic of section.topics) {
-        if (!this._digestScheduleMap.has(topic.topicId)) {
-          const schedules = await CourierPreferencesDatastore.shared.getDigestSchedules(topic.topicId);
-          if (schedules.length > 0) {
-            this._digestScheduleMap.set(topic.topicId, schedules);
-          }
-        }
+      const topic = section.topics.find(t => t.topicId === topicId);
+      if (topic) {
+        return { topic, snapshot };
       }
     }
+    return { topic: undefined, snapshot };
+  }
+
+  private _restoreSnapshot(snapshot: PreferencesSection[]) {
+    this._sections = snapshot;
     this._render();
   }
 
-  private _updateTopicInPlace(topic: { topicId: string }) {
+  private async _updateTopicStatus(topicId: string, status: CourierUserPreferencesStatus): Promise<void> {
+    const { topic, snapshot } = this._findTopicAndSnapshot(topicId);
+    if (!topic) return;
+
+    topic.status = status;
+    this._updateTopicInPlace(topic);
+
+    try {
+      await Courier.shared.client!.preferences.putUserPreferenceTopic({
+        topicId,
+        status,
+        hasCustomRouting: topic.hasCustomRouting,
+        customRouting: topic.customRouting,
+        digestSchedule: topic.digestSchedule,
+      });
+    } catch (error: unknown) {
+      this._restoreSnapshot(snapshot);
+      this._error = error as Error;
+      this._render();
+    }
+  }
+
+  private async _updateDigestSchedule(topicId: string, scheduleId: string): Promise<void> {
+    const { topic, snapshot } = this._findTopicAndSnapshot(topicId);
+    if (!topic) return;
+
+    topic.digestSchedule = scheduleId;
+    this._updateTopicInPlace(topic);
+
+    try {
+      await Courier.shared.client!.preferences.putUserPreferenceTopic({
+        topicId,
+        status: topic.status,
+        hasCustomRouting: topic.hasCustomRouting,
+        customRouting: topic.customRouting,
+        digestSchedule: scheduleId,
+      });
+    } catch (error: unknown) {
+      this._restoreSnapshot(snapshot);
+      this._error = error as Error;
+      this._render();
+    }
+  }
+
+  private async _updateChannelRouting(topicId: string, channels: CourierUserPreferencesChannel[]): Promise<void> {
+    const { topic, snapshot } = this._findTopicAndSnapshot(topicId);
+    if (!topic) return;
+
+    topic.customRouting = channels;
+    topic.hasCustomRouting = channels.length > 0;
+    this._updateTopicInPlace(topic);
+
+    try {
+      await Courier.shared.client!.preferences.putUserPreferenceTopic({
+        topicId,
+        status: topic.status,
+        hasCustomRouting: topic.hasCustomRouting,
+        customRouting: channels,
+        digestSchedule: topic.digestSchedule,
+      });
+    } catch (error: unknown) {
+      this._restoreSnapshot(snapshot);
+      this._error = error as Error;
+      this._render();
+    }
+  }
+
+  private _updateTopicInPlace(topic: PreferencesTopic) {
     const topicEl = this.querySelector(
       `courier-preferences-topic[data-topic-id="${CSS.escape(topic.topicId)}"]`
     ) as CourierPreferencesTopic | null;
-    if (!topicEl) {
+    if (topicEl) {
+      topicEl.topic = topic;
+    } else {
       this._render();
-      return;
-    }
-    for (const section of this._sections) {
-      const match = section.topics.find(t => t.topicId === topic.topicId);
-      if (match) {
-        topicEl.topic = match;
-        return;
-      }
     }
   }
 
@@ -474,15 +569,14 @@ export class CourierPreferences extends CourierBaseElement {
       sectionEl.section = section;
       sectionEl.primaryColor = this._primaryColor;
       sectionEl.channelLabels = this._channelLabels;
-      sectionEl.digestScheduleMap = this._digestScheduleMap;
       sectionEl.onStatusChange = (topicId: string, status: CourierUserPreferencesStatus) => {
-        CourierPreferencesDatastore.shared.updateTopicStatus(topicId, status);
+        this._updateTopicStatus(topicId, status);
       };
       sectionEl.onDigestChange = (topicId: string, scheduleId: string) => {
-        CourierPreferencesDatastore.shared.updateDigestSchedule(topicId, scheduleId);
+        this._updateDigestSchedule(topicId, scheduleId);
       };
       sectionEl.onRoutingChange = (topicId: string, channels: CourierUserPreferencesChannel[]) => {
-        CourierPreferencesDatastore.shared.updateChannelRouting(topicId, channels);
+        this._updateChannelRouting(topicId, channels);
       };
       sectionsContainer.appendChild(sectionEl);
     }

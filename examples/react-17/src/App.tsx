@@ -21,6 +21,7 @@ import Hooks from './Hooks';
 import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
 import PopupCustomFeed from './PopupCustomFeed';
+import PreferencesDefault from './PreferencesDefault';
 import Examples from './Examples';
 
 function App() {
@@ -65,6 +66,9 @@ function App() {
 
         {/* Content / markdown examples */}
         <Route path="/examples/markdown" element={<MarkdownListItemInbox />} />
+
+        {/* Preferences */}
+        <Route path="/examples/preferences" element={<PreferencesDefault />} />
 
         {/* Toast & hooks */}
         <Route path="/examples/toast-basic" element={<ToastBasic />} />

@@ -1,5 +1,6 @@
 import { CourierBaseElement } from './courier-base-element';
 import { registerElement, injectGlobalStyle } from '../utils/registeration';
+import { COURIER_DEFAULT_PRIMARY_COLOR } from '../utils/courier-colors';
 
 const STYLE_ID = 'courier-radio';
 
@@ -45,7 +46,7 @@ const STYLES = `
 `;
 
 const DEFAULT_RING_COLOR = '#D4D4D4';
-const DEFAULT_CHECKED_COLOR = '#171717';
+const DEFAULT_CHECKED_COLOR = COURIER_DEFAULT_PRIMARY_COLOR;
 
 /**
  * Themeable radio indicator (visual only; no native input).

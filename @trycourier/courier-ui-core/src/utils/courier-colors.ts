@@ -33,3 +33,10 @@ export const CourierColors = {
     500: '#2563EB',
   }
 };
+
+/**
+ * Default primary color used across Courier UI components (checkboxes, radios, etc.).
+ * Matches the inbox primary color for consistency.
+ * @public
+ */
+export const COURIER_DEFAULT_PRIMARY_COLOR = CourierColors.blue[500];

@@ -44,6 +44,7 @@ import {
   CourierPreferencePageBrand,
   CourierPreferencePageChannelConfigs,
   CourierPreferencePageChannelLabel,
+  RecipientPreference,
 } from './types/preference';
 import { CourierDevice, CourierToken } from './types/token';
 import {
@@ -88,6 +89,7 @@ export type {
   CourierPreferencePageBrand,
   CourierPreferencePageChannelConfigs,
   CourierPreferencePageChannelLabel,
+  RecipientPreference,
   CourierDevice,
   CourierToken,
   CourierGetInboxMessageResponse,

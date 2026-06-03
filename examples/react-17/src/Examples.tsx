@@ -105,6 +105,13 @@ export default function Examples() {
           </ExampleCard>
         </div>
 
+        {/* Preferences examples */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <ExampleCard to="/examples/preferences" title="Preferences — Default">
+            User notification preference management UI with default styling.
+          </ExampleCard>
+        </div>
+
         {/* React-only examples */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <ExampleCard to="/examples/element-ref" title="Element Ref">

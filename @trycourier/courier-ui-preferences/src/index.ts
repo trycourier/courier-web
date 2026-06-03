@@ -7,9 +7,6 @@ export * from './components/courier-channel-routing';
 export * from './types/preferences';
 export * from './types/courier-preferences-theme';
 export * from './types/courier-preferences-theme-manager';
-export * from './datastore/preferences-datastore';
-export * from './datastore/preferences-datastore-listener';
-export * from './datastore/preferences-datastore-events';
 export * from './utils/format-digest';
 
 import { Courier } from "@trycourier/courier-js";

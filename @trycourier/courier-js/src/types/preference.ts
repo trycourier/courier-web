@@ -109,13 +109,14 @@ export interface CourierPreferencePageBrand {
 }
 
 /**
- * Full result of the `preferencePage` GraphQL query: workspace-configured
- * sections, topics, channel labels and brand info. Combine with
- * `getUserPreferences()` to get the user's current per-topic state.
+ * Full result of the combined `preferencePage` + `recipientPreferences`
+ * GraphQL query: workspace-configured sections, topics, channel labels, brand
+ * info, and the user's current per-topic preferences — all in one round-trip.
  */
 export interface CourierPreferencePage {
   showCourierFooter: boolean;
   brand?: CourierPreferencePageBrand | null;
   channelConfigs?: CourierPreferencePageChannelConfigs | null;
   sections: CourierPreferencePageSection[];
+  recipientPreferences: RecipientPreference[];
 }

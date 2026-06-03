@@ -217,6 +217,15 @@ export class PreferenceClient extends Client {
             }
           }
         }
+        recipientPreferences${accountId ? `(accountId: "${accountId}")` : ''} {
+          nodes {
+            templateId
+            status
+            hasCustomRouting
+            routingPreferences
+            digestSchedule
+          }
+        }
       }
     `;
 
@@ -234,7 +243,10 @@ export class PreferenceClient extends Client {
     const page = response.data?.preferencePage;
     if (!page) return null;
 
-    return this.transformPreferencePage(page);
+    const recipientPreferences: RecipientPreference[] =
+      response.data?.recipientPreferences?.nodes || [];
+
+    return this.transformPreferencePage(page, recipientPreferences);
   }
 
   /**
@@ -307,7 +319,7 @@ export class PreferenceClient extends Client {
   /**
    * Transform a raw `preferencePage` GraphQL response into the public shape.
    */
-  private transformPreferencePage(page: any): CourierPreferencePage {
+  private transformPreferencePage(page: any, recipientPreferences: RecipientPreference[] = []): CourierPreferencePage {
     const rawSections = page?.sections?.nodes ?? [];
     const sections: CourierPreferencePageSection[] = rawSections.map((section: any) => {
       const rawTopics = section?.topics?.nodes ?? [];
@@ -332,6 +344,7 @@ export class PreferenceClient extends Client {
       brand: page?.brand ?? null,
       channelConfigs: page?.channelConfigs ?? null,
       sections,
+      recipientPreferences,
     };
   }
 }

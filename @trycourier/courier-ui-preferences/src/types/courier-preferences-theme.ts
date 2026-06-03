@@ -267,7 +267,7 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     iconColor: '#525252',
     radio: {
       ringColor: '#D4D4D4',
-      checkedColor: CourierColors.black[500],
+      checkedColor: CourierColors.blue[500],
     },
   },
   channelChip: {
@@ -278,12 +278,12 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     selectedFont: {
       size: '14px',
-      weight: '500',
+      weight: '400',
       color: CourierColors.black[500],
     },
     divider: '1px solid #E5E5E5',
     checkbox: {
-      checkedColor: CourierColors.black[500],
+      checkedColor: CourierColors.blue[500],
     },
   },
 };
@@ -401,7 +401,7 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     iconColor: '#9CA3AF',
     radio: {
       ringColor: '#4B5563',
-      checkedColor: '#F9FAFB',
+      checkedColor: CourierColors.blue[400],
     },
   },
   channelChip: {
@@ -412,12 +412,12 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     selectedFont: {
       size: '14px',
-      weight: '500',
+      weight: '400',
       color: '#F9FAFB',
     },
     divider: `1px solid ${CourierColors.gray[400]}`,
     checkbox: {
-      checkedColor: '#F9FAFB',
+      checkedColor: CourierColors.blue[400],
     },
   },
 };

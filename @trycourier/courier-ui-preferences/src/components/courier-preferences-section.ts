@@ -1,5 +1,5 @@
 import { CourierBaseElement, registerElement, injectGlobalStyle } from "@trycourier/courier-ui-core";
-import { CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierDigestScheduleOption } from "@trycourier/courier-js";
+import { CourierUserPreferencesChannel, CourierUserPreferencesStatus } from "@trycourier/courier-js";
 import { CourierPreferencesTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager, CourierPreferencesThemeSubscription } from "../types/courier-preferences-theme-manager";
 import { PreferencesSection } from "../types/preferences";
@@ -44,7 +44,6 @@ export class CourierPreferencesSection extends CourierBaseElement {
   private _styleEl?: HTMLStyleElement;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   private _channelLabels: Record<string, string> = {};
-  private _digestScheduleMap: Map<string, CourierDigestScheduleOption[]> = new Map();
   private _mounted = false;
 
   private _onStatusChange?: (topicId: string, status: CourierUserPreferencesStatus) => void;
@@ -71,7 +70,6 @@ export class CourierPreferencesSection extends CourierBaseElement {
   }
 
   set channelLabels(val: Record<string, string>) { this._channelLabels = val; }
-  set digestScheduleMap(val: Map<string, CourierDigestScheduleOption[]>) { this._digestScheduleMap = val; }
 
   set onStatusChange(fn: (topicId: string, status: CourierUserPreferencesStatus) => void) {
     this._onStatusChange = fn;
@@ -136,7 +134,7 @@ export class CourierPreferencesSection extends CourierBaseElement {
       topicEl.hasCustomRouting = this._section.hasCustomRouting;
       topicEl.routingOptions = this._section.routingOptions;
       topicEl.channelLabels = this._channelLabels;
-      topicEl.digestSchedules = this._digestScheduleMap.get(topic.topicId) || [];
+      topicEl.digestSchedules = topic.digestScheduleOptions ?? [];
       topicEl.onStatusChange = (topicId, status) => this._onStatusChange?.(topicId, status);
       topicEl.onDigestChange = (topicId, scheduleId) => this._onDigestChange?.(topicId, scheduleId);
       topicEl.onRoutingChange = (topicId, channels) => this._onRoutingChange?.(topicId, channels);

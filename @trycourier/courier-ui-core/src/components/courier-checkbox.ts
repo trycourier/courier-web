@@ -1,6 +1,6 @@
 import { CourierBaseElement } from './courier-base-element';
 import { registerElement, injectGlobalStyle } from '../utils/registeration';
-import { isDarkColor } from '../utils/courier-colors';
+import { isDarkColor, COURIER_DEFAULT_PRIMARY_COLOR } from '../utils/courier-colors';
 
 const STYLE_ID = 'courier-checkbox';
 
@@ -53,7 +53,7 @@ const STYLES = `
 const CHECK_PATH = 'M13.8125 3.3125C14.2188 3.6875 14.2188 4.34375 13.8125 4.71875L5.8125 12.7188C5.4375 13.125 4.78125 13.125 4.40625 12.7188L0.40625 8.71875C0 8.34375 0 7.6875 0.40625 7.3125C0.78125 6.90625 1.4375 6.90625 1.8125 7.3125L5.125 10.5938L12.4062 3.3125C12.7812 2.90625 13.4375 2.90625 13.8125 3.3125Z';
 
 const DEFAULT_BORDER_COLOR = '#D4D4D4';
-const DEFAULT_CHECKED_COLOR = '#171717';
+const DEFAULT_CHECKED_COLOR = COURIER_DEFAULT_PRIMARY_COLOR;
 const DEFAULT_CHECKMARK_COLOR = '#FFFFFF';
 
 /**
