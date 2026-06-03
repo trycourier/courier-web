@@ -5,6 +5,10 @@ import { CourierPreferencesThemeManager, CourierPreferencesThemeSubscription } f
 const STYLE_ID = 'courier-preference-toggle';
 
 const STYLES = `
+  courier-preference-toggle {
+    display: inline-flex;
+    line-height: 0;
+  }
   .courier-pref-toggle {
     position: relative;
     display: inline-flex;

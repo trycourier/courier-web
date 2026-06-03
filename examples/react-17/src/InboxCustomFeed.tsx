@@ -78,7 +78,11 @@ export default function InboxCustomFeed() {
     }
   ];
 
-  return <CourierInbox feeds={feeds} />;
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox feeds={feeds} />
+    </div>
+  );
 
 }
 

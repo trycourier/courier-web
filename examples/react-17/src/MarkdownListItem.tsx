@@ -26,15 +26,17 @@ export default function MarkdownListItemInbox() {
   }, [courierJwt]);
 
   return (
-    <CourierInbox
-      renderListItem={props => {
-        return (
-          <div>
-            <Markdown>{props?.message?.preview || ""}</Markdown>
-          </div>
-        );
-      }}
-    />
+    <div style={{ padding: '24px' }}>
+      <CourierInbox
+        renderListItem={props => {
+          return (
+            <div>
+              <Markdown>{props?.message?.preview || ""}</Markdown>
+            </div>
+          );
+        }}
+      />
+    </div>
   );
 }
 

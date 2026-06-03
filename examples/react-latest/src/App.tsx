@@ -22,6 +22,7 @@ import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
 import PopupCustomFeed from './PopupCustomFeed';
 import PreferencesDefault from './PreferencesDefault';
+import PreferencesStyled from './PreferencesStyled';
 import Examples from './Examples';
 
 function App() {
@@ -76,6 +77,7 @@ function App() {
 
         {/* Preferences */}
         <Route path="/examples/preferences" element={<PreferencesDefault />} />
+        <Route path="/examples/preferences-styled" element={<PreferencesStyled />} />
       </Routes>
     </BrowserRouter>
   )

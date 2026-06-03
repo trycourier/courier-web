@@ -3,68 +3,106 @@ import type { CourierInboxTheme, CourierPreferencesTheme } from '@trycourier/cou
 export type ThemePreset = 'default' | 'poppins' | 'inter' | 'roboto' | 'open-sans';
 
 export interface ThemePresetPair {
-  light: CourierInboxTheme;
-  dark: CourierInboxTheme;
-  preferencesLight?: CourierPreferencesTheme;
-  preferencesDark?: CourierPreferencesTheme;
+  inbox: {
+    light: CourierInboxTheme;
+    dark: CourierInboxTheme;
+  };
+  preferences: {
+    light: CourierPreferencesTheme;
+    dark: CourierPreferencesTheme;
+  };
 }
 
 export const themePresets: Record<ThemePreset, ThemePresetPair> = {
   default: {
-    light: {
-      // Default theme - no customizations
+    inbox: {
+      light: {
+        // Default theme - no customizations
+      },
+      dark: {
+        // Default dark theme - no customizations
+      },
     },
-    dark: {
-      // Default dark theme - no customizations
+    preferences: {
+      light: {},
+      dark: {},
     },
-    preferencesLight: {},
-    preferencesDark: {},
   },
   poppins: {
-    light: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#8B5CF6',
-          },
-        },
-        window: {
-          animation: {
-            transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-            initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          feeds: {
-            button: {
-              font: {
-                family: 'Poppins',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#8B5CF6',
-                font: {
-                  family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
-                  color: '#FFFFFF',
-                },
-              },
+    inbox: {
+      light: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#8B5CF6',
             },
-            menu: {
-              animation: {
-                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-                initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
+          },
+          window: {
+            animation: {
+              transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+              initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+              visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+            },
+          },
+        },
+        inbox: {
+          header: {
+            feeds: {
+              button: {
                 font: {
                   family: 'Poppins',
                 },
-                selectedIcon: {
-                  color: '#8B5CF6',
+                unreadCountIndicator: {
+                  backgroundColor: '#8B5CF6',
+                  font: {
+                    family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
+                    color: '#FFFFFF',
+                  },
+                },
+              },
+              menu: {
+                animation: {
+                  transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                  initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Poppins',
+                  },
+                  selectedIcon: {
+                    color: '#8B5CF6',
+                  },
+                },
+              },
+              tabs: {
+                default: {
+                  font: {
+                    family: 'Poppins',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Poppins',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#8B5CF6',
+                  font: {
+                    color: '#8B5CF6',
+                    family: 'Poppins',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#8B5CF6',
+                    font: {
+                      family: 'Poppins',
+                      size: '11px',
+                      weight: '600',
+                      color: '#FFFFFF',
+                    },
+                  },
                 },
               },
             },
@@ -76,6 +114,8 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 unreadIndicator: {
                   font: {
                     family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
                   },
                 },
               },
@@ -96,146 +136,148 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
-          },
-          tabs: {
-            default: {
-              font: {
-                family: 'Poppins',
-              },
-              unreadIndicator: {
-                font: {
-                  family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
-                },
+            actions: {
+              animation: {
+                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
               },
             },
-            selected: {
-              indicatorColor: '#8B5CF6',
-              font: {
+          },
+          list: {
+            item: {
+              unreadIndicatorColor: '#8B5CF6',
+              subtitleLink: {
                 color: '#8B5CF6',
+                hoverColor: '#7C3AED',
+                textDecoration: 'underline',
+              },
+              title: {
                 family: 'Poppins',
               },
-              unreadIndicator: {
-                backgroundColor: '#8B5CF6',
+              subtitle: {
+                family: 'Poppins',
+              },
+              time: {
+                family: 'Poppins',
+              },
+              actions: {
                 font: {
                   family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
-                  color: '#FFFFFF',
                 },
               },
             },
           },
-          actions: {
+          empty: {
+            title: {
+              font: {
+                family: 'Poppins',
+              },
+            },
+            button: {
+              font: {
+                family: 'Poppins',
+              },
+            },
+          },
+          error: {
+            title: {
+              font: {
+                family: 'Poppins',
+              },
+            },
+            button: {
+              font: {
+                family: 'Poppins',
+              },
+            },
+          },
+        },
+      },
+      dark: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#8B5CF6',
+            },
+          },
+          window: {
+            border: '1px solid #374151',
+            shadow: '0px 4px 8px -2px rgba(0, 0, 0, 0.3)',
             animation: {
               transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-              initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
+              initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#8B5CF6',
-            subtitleLink: {
-              color: '#8B5CF6',
-              hoverColor: '#7C3AED',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Poppins',
-            },
-            subtitle: {
-              family: 'Poppins',
-            },
-            time: {
-              family: 'Poppins',
-            },
-            actions: {
-              font: {
-                family: 'Poppins',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Poppins',
-            },
-          },
-          button: {
-            font: {
-              family: 'Poppins',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Poppins',
-            },
-          },
-          button: {
-            font: {
-              family: 'Poppins',
-            },
-          },
-        },
-      },
-    },
-    dark: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#8B5CF6',
-          },
-        },
-        window: {
-          border: '1px solid #374151',
-          shadow: '0px 4px 8px -2px rgba(0, 0, 0, 0.3)',
-          animation: {
-            transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-            initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #374151',
-          feeds: {
-            button: {
-              font: {
-                family: 'Poppins',
-                color: '#F9FAFB',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#8B5CF6',
-                font: {
-                  family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
-                  color: '#FFFFFF',
-                },
-              },
-            },
-            menu: {
-              border: '1px solid #374151',
-              shadow: '0px 4px 8px -2px rgba(0, 0, 0, 0.3)',
-              animation: {
-                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-                initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
+        inbox: {
+          header: {
+            border: '1px solid #374151',
+            feeds: {
+              button: {
                 font: {
                   family: 'Poppins',
                   color: '#F9FAFB',
                 },
-                selectedIcon: {
-                  color: '#8B5CF6',
+                unreadCountIndicator: {
+                  backgroundColor: '#8B5CF6',
+                  font: {
+                    family: 'Poppins',
+                    size: '11px',
+                    weight: '600',
+                    color: '#FFFFFF',
+                  },
+                },
+              },
+              menu: {
+                border: '1px solid #374151',
+                shadow: '0px 4px 8px -2px rgba(0, 0, 0, 0.3)',
+                animation: {
+                  transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                  initialTransform: 'translate3d(-8px, -16px, 0) scale(0.97)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Poppins',
+                    color: '#F9FAFB',
+                  },
+                  selectedIcon: {
+                    color: '#8B5CF6',
+                  },
+                },
+              },
+              tabs: {
+                default: {
+                  font: {
+                    family: 'Poppins',
+                    color: '#D1D5DB',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Poppins',
+                      size: '11px',
+                      weight: '600',
+                      color: '#F9FAFB',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#8B5CF6',
+                  font: {
+                    color: '#8B5CF6',
+                    family: 'Poppins',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#8B5CF6',
+                    font: {
+                      family: 'Poppins',
+                      size: '11px',
+                      weight: '600',
+                      color: '#FFFFFF',
+                    },
+                  },
                 },
               },
             },
@@ -271,176 +313,214 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
-          },
-          tabs: {
-            default: {
-              font: {
-                family: 'Poppins',
-                color: '#D1D5DB',
+            actions: {
+              animation: {
+                transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
+                initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
               },
-              unreadIndicator: {
+            },
+          },
+          list: {
+            item: {
+              unreadIndicatorColor: '#8B5CF6',
+              subtitleLink: {
+                color: '#A78BFA',
+                hoverColor: '#8B5CF6',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Poppins',
+                color: '#F9FAFB',
+              },
+              subtitle: {
+                family: 'Poppins',
+                color: '#9CA3AF',
+              },
+              time: {
+                family: 'Poppins',
+                color: '#9CA3AF',
+              },
+              actions: {
                 font: {
                   family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
                   color: '#F9FAFB',
                 },
               },
             },
-            selected: {
-              indicatorColor: '#8B5CF6',
-              font: {
-                color: '#8B5CF6',
-                family: 'Poppins',
-              },
-              unreadIndicator: {
-                backgroundColor: '#8B5CF6',
-                font: {
-                  family: 'Poppins',
-                  size: '11px',
-                  weight: '600',
-                  color: '#FFFFFF',
-                },
-              },
-            },
           },
-          actions: {
-            animation: {
-              transition: 'all 200ms cubic-bezier(0.16, 1, 0.22, 1)',
-              initialTransform: 'translate3d(8px, -16px, 0) scale(0.97)',
-              visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-            },
-          },
-        },
-        list: {
-          item: {
-            unreadIndicatorColor: '#8B5CF6',
-            subtitleLink: {
-              color: '#A78BFA',
-              hoverColor: '#8B5CF6',
-              textDecoration: 'underline',
-            },
+          empty: {
             title: {
-              family: 'Poppins',
-              color: '#F9FAFB',
-            },
-            subtitle: {
-              family: 'Poppins',
-              color: '#9CA3AF',
-            },
-            time: {
-              family: 'Poppins',
-              color: '#9CA3AF',
-            },
-            actions: {
               font: {
                 family: 'Poppins',
                 color: '#F9FAFB',
               },
             },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Poppins',
-              color: '#F9FAFB',
+            button: {
+              font: {
+                family: 'Poppins',
+              },
             },
           },
-          button: {
-            font: {
-              family: 'Poppins',
+          error: {
+            title: {
+              font: {
+                family: 'Poppins',
+                color: '#F9FAFB',
+              },
             },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Poppins',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Poppins',
+            button: {
+              font: {
+                family: 'Poppins',
+              },
             },
           },
         },
       },
     },
-    preferencesLight: {
-      primaryColor: '#8B5CF6',
-      title: { family: 'Poppins' },
-      subtitle: { family: 'Poppins' },
-      section: { title: { family: 'Poppins' } },
-      topic: { title: { family: 'Poppins' }, toggle: { trackActiveColor: '#8B5CF6' } },
-    },
-    preferencesDark: {
-      primaryColor: '#8B5CF6',
-      title: { family: 'Poppins', color: '#F9FAFB' },
-      subtitle: { family: 'Poppins', color: '#9CA3AF' },
-      section: { title: { family: 'Poppins', color: '#F9FAFB' } },
-      topic: { title: { family: 'Poppins', color: '#F9FAFB' }, toggle: { trackActiveColor: '#8B5CF6' } },
+    preferences: {
+      light: {
+        primaryColor: '#8B5CF6',
+        container: { font: { family: 'Poppins' } },
+        section: { title: { family: 'Poppins' } },
+        topic: {
+          title: { family: 'Poppins' },
+          statusLabel: { family: 'Poppins' },
+          toggle: { trackActiveColor: '#8B5CF6' },
+        },
+        digest: {
+          font: { family: 'Poppins' },
+          selectedFont: { family: 'Poppins' },
+          iconColor: '#8B5CF6',
+          radio: { checkedColor: '#8B5CF6' },
+        },
+        channelChip: {
+          font: { family: 'Poppins' },
+          selectedFont: { family: 'Poppins' },
+          checkbox: { checkedColor: '#8B5CF6' },
+        },
+      },
+      dark: {
+        primaryColor: '#8B5CF6',
+        container: { font: { family: 'Poppins' } },
+        section: { title: { family: 'Poppins' } },
+        topic: {
+          title: { family: 'Poppins' },
+          statusLabel: { family: 'Poppins' },
+          toggle: { trackActiveColor: '#8B5CF6' },
+        },
+        digest: {
+          font: { family: 'Poppins' },
+          selectedFont: { family: 'Poppins' },
+          iconColor: '#8B5CF6',
+          radio: { checkedColor: '#8B5CF6' },
+        },
+        channelChip: {
+          font: { family: 'Poppins' },
+          selectedFont: { family: 'Poppins' },
+          checkbox: { checkedColor: '#8B5CF6' },
+        },
+      },
     },
   },
   inter: {
-    light: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#10B981',
-            borderRadius: '50%',
-            height: '10px',
-            width: '10px',
-          },
-        },
-        window: {
-          borderRadius: '12px',
-          border: '2px solid #E5E7EB',
-          shadow: '0px 12px 24px -6px rgba(0, 0, 0, 0.15)',
-          animation: {
-            transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            initialTransform: 'translate3d(0, -20px, 0) scale(0.95)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #E5E7EB',
-          feeds: {
-            button: {
-              font: {
-                family: 'Montserrat',
-                size: '15px',
-                weight: '500',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#10B981',
-                borderRadius: '6px',
-                padding: '3px 8px',
-                font: {
-                  family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
-                },
-              },
+    inbox: {
+      light: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#10B981',
+              borderRadius: '50%',
+              height: '10px',
+              width: '10px',
             },
-            menu: {
-              borderRadius: '8px',
-              shadow: '0px 6px 12px -4px rgba(0, 0, 0, 0.12)',
-              animation: {
-                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                initialTransform: 'translate3d(0, -12px, 0) scale(0.96)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
+          },
+          window: {
+            borderRadius: '12px',
+            border: '2px solid #E5E7EB',
+            shadow: '0px 12px 24px -6px rgba(0, 0, 0, 0.15)',
+            animation: {
+              transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+              initialTransform: 'translate3d(0, -20px, 0) scale(0.95)',
+              visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+            },
+          },
+        },
+        inbox: {
+          header: {
+            border: '1px solid #E5E7EB',
+            feeds: {
+              button: {
                 font: {
                   family: 'Montserrat',
-                  size: '14px',
+                  size: '15px',
+                  weight: '500',
                 },
-                selectedIcon: {
-                  color: '#10B981',
+                unreadCountIndicator: {
+                  backgroundColor: '#10B981',
+                  borderRadius: '6px',
+                  padding: '3px 8px',
+                  font: {
+                    family: 'Montserrat',
+                    size: '11px',
+                    weight: '600',
+                  },
+                },
+              },
+              menu: {
+                borderRadius: '8px',
+                shadow: '0px 6px 12px -4px rgba(0, 0, 0, 0.12)',
+                animation: {
+                  transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  initialTransform: 'translate3d(0, -12px, 0) scale(0.96)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Montserrat',
+                    size: '14px',
+                  },
+                  selectedIcon: {
+                    color: '#10B981',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '6px',
+                  topRight: '6px',
+                },
+                default: {
+                  font: {
+                    family: 'Montserrat',
+                    size: '13px',
+                    weight: '500',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Montserrat',
+                      size: '11px',
+                      weight: '600',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#10B981',
+                  indicatorHeight: '2px',
+                  font: {
+                    color: '#10B981',
+                    family: 'Montserrat',
+                    size: '13px',
+                    weight: '600',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#10B981',
+                    font: {
+                      family: 'Montserrat',
+                      size: '11px',
+                      weight: '600',
+                    },
+                  },
                 },
               },
             },
@@ -482,177 +562,180 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
+            actions: {
+              animation: {
+                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                initialTransform: 'translate3d(12px, -12px, 0) scale(0.96)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
+            },
           },
-          tabs: {
-            borderRadius: {
-              topLeft: '6px',
-              topRight: '6px',
-            },
-            default: {
-              font: {
-                family: 'Montserrat',
-                size: '13px',
-                weight: '500',
-              },
-              unreadIndicator: {
-                font: {
-                  family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
-                },
-              },
-            },
-            selected: {
-              indicatorColor: '#10B981',
-              indicatorHeight: '2px',
-              font: {
+          list: {
+            item: {
+              unreadIndicatorColor: '#10B981',
+              subtitleLink: {
                 color: '#10B981',
+                hoverColor: '#059669',
+                textDecoration: 'underline',
+              },
+              title: {
                 family: 'Montserrat',
-                size: '13px',
+                size: '14px',
                 weight: '600',
               },
-              unreadIndicator: {
-                backgroundColor: '#10B981',
+              subtitle: {
+                family: 'Montserrat',
+                size: '13px',
+              },
+              time: {
+                family: 'Montserrat',
+                size: '12px',
+              },
+              actions: {
                 font: {
                   family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
+                  size: '13px',
                 },
               },
             },
           },
-          actions: {
+          empty: {
+            title: {
+              font: {
+                family: 'Montserrat',
+                size: '16px',
+                weight: '600',
+              },
+            },
+            button: {
+              font: {
+                family: 'Montserrat',
+                size: '14px',
+                weight: '500',
+              },
+            },
+          },
+          error: {
+            title: {
+              font: {
+                family: 'Montserrat',
+                size: '16px',
+                weight: '600',
+              },
+            },
+            button: {
+              font: {
+                family: 'Montserrat',
+                size: '14px',
+                weight: '500',
+              },
+            },
+          },
+        },
+      },
+      dark: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#10B981',
+              borderRadius: '50%',
+              height: '10px',
+              width: '10px',
+            },
+          },
+          window: {
+            borderRadius: '12px',
+            border: '2px solid #374151',
+            shadow: '0px 12px 24px -6px rgba(0, 0, 0, 0.4)',
             animation: {
-              transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-              initialTransform: 'translate3d(12px, -12px, 0) scale(0.96)',
+              transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+              initialTransform: 'translate3d(0, -20px, 0) scale(0.95)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#10B981',
-            subtitleLink: {
-              color: '#10B981',
-              hoverColor: '#059669',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '600',
-            },
-            subtitle: {
-              family: 'Montserrat',
-              size: '13px',
-            },
-            time: {
-              family: 'Montserrat',
-              size: '12px',
-            },
-            actions: {
-              font: {
-                family: 'Montserrat',
-                size: '13px',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Montserrat',
-              size: '16px',
-              weight: '600',
-            },
-          },
-          button: {
-            font: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '500',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Montserrat',
-              size: '16px',
-              weight: '600',
-            },
-          },
-          button: {
-            font: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '500',
-            },
-          },
-        },
-      },
-    },
-    dark: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#10B981',
-            borderRadius: '50%',
-            height: '10px',
-            width: '10px',
-          },
-        },
-        window: {
-          borderRadius: '12px',
-          border: '2px solid #374151',
-          shadow: '0px 12px 24px -6px rgba(0, 0, 0, 0.4)',
-          animation: {
-            transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            initialTransform: 'translate3d(0, -20px, 0) scale(0.95)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #374151',
-          feeds: {
-            button: {
-              font: {
-                family: 'Montserrat',
-                size: '15px',
-                weight: '500',
-                color: '#F9FAFB',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#10B981',
-                borderRadius: '6px',
-                padding: '3px 8px',
+        inbox: {
+          header: {
+            border: '1px solid #374151',
+            feeds: {
+              button: {
                 font: {
                   family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
-                  color: '#111827',
-                },
-              },
-            },
-            menu: {
-              border: '1px solid #374151',
-              borderRadius: '8px',
-              shadow: '0px 6px 12px -4px rgba(0, 0, 0, 0.4)',
-              animation: {
-                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                initialTransform: 'translate3d(0, -12px, 0) scale(0.96)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
-                font: {
-                  family: 'Montserrat',
-                  size: '14px',
+                  size: '15px',
+                  weight: '500',
                   color: '#F9FAFB',
                 },
-                selectedIcon: {
-                  color: '#10B981',
+                unreadCountIndicator: {
+                  backgroundColor: '#10B981',
+                  borderRadius: '6px',
+                  padding: '3px 8px',
+                  font: {
+                    family: 'Montserrat',
+                    size: '11px',
+                    weight: '600',
+                    color: '#111827',
+                  },
+                },
+              },
+              menu: {
+                border: '1px solid #374151',
+                borderRadius: '8px',
+                shadow: '0px 6px 12px -4px rgba(0, 0, 0, 0.4)',
+                animation: {
+                  transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  initialTransform: 'translate3d(0, -12px, 0) scale(0.96)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Montserrat',
+                    size: '14px',
+                    color: '#F9FAFB',
+                  },
+                  selectedIcon: {
+                    color: '#10B981',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '6px',
+                  topRight: '6px',
+                },
+                default: {
+                  font: {
+                    family: 'Montserrat',
+                    size: '13px',
+                    weight: '500',
+                    color: '#D1D5DB',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Montserrat',
+                      size: '11px',
+                      weight: '600',
+                      color: '#F9FAFB',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#10B981',
+                  indicatorHeight: '2px',
+                  font: {
+                    color: '#10B981',
+                    family: 'Montserrat',
+                    size: '13px',
+                    weight: '600',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#10B981',
+                    font: {
+                      family: 'Montserrat',
+                      size: '11px',
+                      weight: '600',
+                      color: '#111827',
+                    },
+                  },
                 },
               },
             },
@@ -697,198 +780,227 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
-          },
-          tabs: {
-            borderRadius: {
-              topLeft: '6px',
-              topRight: '6px',
+            actions: {
+              animation: {
+                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                initialTransform: 'translate3d(12px, -12px, 0) scale(0.96)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
             },
-            default: {
-              font: {
+          },
+          list: {
+            item: {
+              unreadIndicatorColor: '#10B981',
+              subtitleLink: {
+                color: '#34D399',
+                hoverColor: '#10B981',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Montserrat',
+                size: '14px',
+                weight: '600',
+                color: '#F9FAFB',
+              },
+              subtitle: {
                 family: 'Montserrat',
                 size: '13px',
-                weight: '500',
-                color: '#D1D5DB',
+                color: '#9CA3AF',
               },
-              unreadIndicator: {
+              time: {
+                family: 'Montserrat',
+                size: '12px',
+                color: '#9CA3AF',
+              },
+              actions: {
                 font: {
                   family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
+                  size: '13px',
                   color: '#F9FAFB',
                 },
               },
             },
-            selected: {
-              indicatorColor: '#10B981',
-              indicatorHeight: '2px',
+          },
+          empty: {
+            title: {
               font: {
-                color: '#10B981',
                 family: 'Montserrat',
-                size: '13px',
+                size: '16px',
                 weight: '600',
+                color: '#F9FAFB',
               },
-              unreadIndicator: {
-                backgroundColor: '#10B981',
-                font: {
-                  family: 'Montserrat',
-                  size: '11px',
-                  weight: '600',
-                  color: '#111827',
-                },
+            },
+            button: {
+              font: {
+                family: 'Montserrat',
+                size: '14px',
+                weight: '500',
               },
             },
           },
-          actions: {
+          error: {
+            title: {
+              font: {
+                family: 'Montserrat',
+                size: '16px',
+                weight: '600',
+                color: '#F9FAFB',
+              },
+            },
+            button: {
+              font: {
+                family: 'Montserrat',
+                size: '14px',
+                weight: '500',
+              },
+            },
+          },
+        },
+      },
+    },
+    preferences: {
+      light: {
+        primaryColor: '#10B981',
+        container: { font: { family: 'Montserrat' } },
+        section: { title: { family: 'Montserrat' } },
+        topic: {
+          title: { family: 'Montserrat' },
+          statusLabel: { family: 'Montserrat' },
+          toggle: { trackActiveColor: '#10B981' },
+        },
+        digest: {
+          font: { family: 'Montserrat' },
+          selectedFont: { family: 'Montserrat' },
+          iconColor: '#10B981',
+          radio: { checkedColor: '#10B981' },
+        },
+        channelChip: {
+          font: { family: 'Montserrat' },
+          selectedFont: { family: 'Montserrat' },
+          checkbox: { checkedColor: '#10B981' },
+        },
+      },
+      dark: {
+        primaryColor: '#10B981',
+        container: { font: { family: 'Montserrat' } },
+        section: { title: { family: 'Montserrat' } },
+        topic: {
+          title: { family: 'Montserrat' },
+          statusLabel: { family: 'Montserrat' },
+          toggle: { trackActiveColor: '#10B981' },
+        },
+        digest: {
+          font: { family: 'Montserrat' },
+          selectedFont: { family: 'Montserrat' },
+          iconColor: '#10B981',
+          radio: { checkedColor: '#10B981' },
+        },
+        channelChip: {
+          font: { family: 'Montserrat' },
+          selectedFont: { family: 'Montserrat' },
+          checkbox: { checkedColor: '#10B981' },
+        },
+      },
+    },
+  },
+  roboto: {
+    inbox: {
+      light: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#EF4444',
+              borderRadius: '50%',
+              height: '9px',
+              width: '9px',
+            },
+          },
+          window: {
+            borderRadius: '16px',
+            border: '1px solid #F3F4F6',
+            shadow: '0px 16px 32px -8px rgba(0, 0, 0, 0.2)',
             animation: {
-              transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-              initialTransform: 'translate3d(12px, -12px, 0) scale(0.96)',
+              transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+              initialTransform: 'translate3d(-12px, -24px, 0) scale(0.9)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#10B981',
-            subtitleLink: {
-              color: '#34D399',
-              hoverColor: '#10B981',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '600',
-              color: '#F9FAFB',
-            },
-            subtitle: {
-              family: 'Montserrat',
-              size: '13px',
-              color: '#9CA3AF',
-            },
-            time: {
-              family: 'Montserrat',
-              size: '12px',
-              color: '#9CA3AF',
-            },
-            actions: {
-              font: {
-                family: 'Montserrat',
-                size: '13px',
-                color: '#F9FAFB',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Montserrat',
-              size: '16px',
-              weight: '600',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '500',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Montserrat',
-              size: '16px',
-              weight: '600',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Montserrat',
-              size: '14px',
-              weight: '500',
-            },
-          },
-        },
-      },
-    },
-    preferencesLight: {
-      primaryColor: '#10B981',
-      title: { family: 'Montserrat' },
-      subtitle: { family: 'Montserrat' },
-      section: { title: { family: 'Montserrat' } },
-      topic: { title: { family: 'Montserrat' }, toggle: { trackActiveColor: '#10B981' } },
-    },
-    preferencesDark: {
-      primaryColor: '#10B981',
-      title: { family: 'Montserrat', color: '#F9FAFB' },
-      subtitle: { family: 'Montserrat', color: '#9CA3AF' },
-      section: { title: { family: 'Montserrat', color: '#F9FAFB' } },
-      topic: { title: { family: 'Montserrat', color: '#F9FAFB' }, toggle: { trackActiveColor: '#10B981' } },
-    },
-  },
-  roboto: {
-    light: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#EF4444',
-            borderRadius: '50%',
-            height: '9px',
-            width: '9px',
-          },
-        },
-        window: {
-          borderRadius: '16px',
-          border: '1px solid #F3F4F6',
-          shadow: '0px 16px 32px -8px rgba(0, 0, 0, 0.2)',
-          animation: {
-            transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-            initialTransform: 'translate3d(-12px, -24px, 0) scale(0.9)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          shadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-          feeds: {
-            button: {
-              font: {
-                family: 'Playfair Display',
-                size: '16px',
-                weight: '500',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#EF4444',
-                borderRadius: '8px',
-                padding: '4px 10px',
+        inbox: {
+          header: {
+            shadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+            feeds: {
+              button: {
                 font: {
                   family: 'Playfair Display',
-                  size: '12px',
-                  weight: '700',
+                  size: '16px',
+                  weight: '500',
+                },
+                unreadCountIndicator: {
+                  backgroundColor: '#EF4444',
+                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  font: {
+                    family: 'Playfair Display',
+                    size: '12px',
+                    weight: '700',
+                  },
                 },
               },
-            },
-            menu: {
-              borderRadius: '12px',
-              shadow: '0px 8px 16px -4px rgba(0, 0, 0, 0.15)',
-              animation: {
-                transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-                initialTransform: 'translate3d(-10px, -18px, 0) scale(0.92)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
-                font: {
-                  family: 'Playfair Display',
-                  size: '15px',
+              menu: {
+                borderRadius: '12px',
+                shadow: '0px 8px 16px -4px rgba(0, 0, 0, 0.15)',
+                animation: {
+                  transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  initialTransform: 'translate3d(-10px, -18px, 0) scale(0.92)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
                 },
-                selectedIcon: {
-                  color: '#EF4444',
+                list: {
+                  font: {
+                    family: 'Playfair Display',
+                    size: '15px',
+                  },
+                  selectedIcon: {
+                    color: '#EF4444',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '8px',
+                  topRight: '8px',
+                },
+                default: {
+                  font: {
+                    family: 'Playfair Display',
+                    size: '14px',
+                    weight: '400',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Playfair Display',
+                      size: '11px',
+                      weight: '500',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#EF4444',
+                  indicatorHeight: '3px',
+                  font: {
+                    color: '#EF4444',
+                    family: 'Playfair Display',
+                    size: '14px',
+                    weight: '700',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#EF4444',
+                    font: {
+                      family: 'Playfair Display',
+                      size: '11px',
+                      weight: '700',
+                    },
+                  },
                 },
               },
             },
@@ -930,178 +1042,181 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
+            actions: {
+              animation: {
+                transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                initialTransform: 'translate3d(12px, -18px, 0) scale(0.92)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
+            },
           },
-          tabs: {
-            borderRadius: {
-              topLeft: '8px',
-              topRight: '8px',
-            },
-            default: {
-              font: {
-                family: 'Playfair Display',
-                size: '14px',
-                weight: '400',
-              },
-              unreadIndicator: {
-                font: {
-                  family: 'Playfair Display',
-                  size: '11px',
-                  weight: '500',
-                },
-              },
-            },
-            selected: {
-              indicatorColor: '#EF4444',
-              indicatorHeight: '3px',
-              font: {
+          list: {
+            item: {
+              unreadIndicatorColor: '#EF4444',
+              subtitleLink: {
                 color: '#EF4444',
+                hoverColor: '#DC2626',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
+              },
+              subtitle: {
                 family: 'Playfair Display',
                 size: '14px',
-                weight: '700',
               },
-              unreadIndicator: {
-                backgroundColor: '#EF4444',
+              time: {
+                family: 'Playfair Display',
+                size: '13px',
+              },
+              actions: {
                 font: {
                   family: 'Playfair Display',
-                  size: '11px',
-                  weight: '700',
+                  size: '14px',
                 },
               },
             },
           },
-          actions: {
+          empty: {
+            title: {
+              font: {
+                family: 'Playfair Display',
+                size: '18px',
+                weight: '500',
+              },
+            },
+            button: {
+              font: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
+              },
+            },
+          },
+          error: {
+            title: {
+              font: {
+                family: 'Playfair Display',
+                size: '18px',
+                weight: '500',
+              },
+            },
+            button: {
+              font: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
+              },
+            },
+          },
+        },
+      },
+      dark: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#EF4444',
+              borderRadius: '50%',
+              height: '9px',
+              width: '9px',
+            },
+          },
+          window: {
+            borderRadius: '16px',
+            border: '1px solid #374151',
+            shadow: '0px 16px 32px -8px rgba(0, 0, 0, 0.5)',
             animation: {
-              transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-              initialTransform: 'translate3d(12px, -18px, 0) scale(0.92)',
+              transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+              initialTransform: 'translate3d(-12px, -24px, 0) scale(0.9)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#EF4444',
-            subtitleLink: {
-              color: '#EF4444',
-              hoverColor: '#DC2626',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-            },
-            subtitle: {
-              family: 'Playfair Display',
-              size: '14px',
-            },
-            time: {
-              family: 'Playfair Display',
-              size: '13px',
-            },
-            actions: {
-              font: {
-                family: 'Playfair Display',
-                size: '14px',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Playfair Display',
-              size: '18px',
-              weight: '500',
-            },
-          },
-          button: {
-            font: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Playfair Display',
-              size: '18px',
-              weight: '500',
-            },
-          },
-          button: {
-            font: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-            },
-          },
-        },
-      },
-    },
-    dark: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#EF4444',
-            borderRadius: '50%',
-            height: '9px',
-            width: '9px',
-          },
-        },
-        window: {
-          borderRadius: '16px',
-          border: '1px solid #374151',
-          shadow: '0px 16px 32px -8px rgba(0, 0, 0, 0.5)',
-          animation: {
-            transition: 'all 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-            initialTransform: 'translate3d(-12px, -24px, 0) scale(0.9)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #374151',
-          shadow: 'none',
-          feeds: {
-            button: {
-              font: {
-                family: 'Playfair Display',
-                size: '16px',
-                weight: '500',
-                color: '#F9FAFB',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#EF4444',
-                borderRadius: '8px',
-                padding: '4px 10px',
+        inbox: {
+          header: {
+            border: '1px solid #374151',
+            shadow: 'none',
+            feeds: {
+              button: {
                 font: {
                   family: 'Playfair Display',
-                  size: '12px',
-                  weight: '700',
-                  color: '#FFFFFF',
-                },
-              },
-            },
-            menu: {
-              border: '1px solid #374151',
-              borderRadius: '12px',
-              shadow: '0px 8px 16px -4px rgba(0, 0, 0, 0.5)',
-              animation: {
-                transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-                initialTransform: 'translate3d(-10px, -18px, 0) scale(0.92)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
-                font: {
-                  family: 'Playfair Display',
-                  size: '15px',
+                  size: '16px',
+                  weight: '500',
                   color: '#F9FAFB',
                 },
-                selectedIcon: {
-                  color: '#EF4444',
+                unreadCountIndicator: {
+                  backgroundColor: '#EF4444',
+                  borderRadius: '8px',
+                  padding: '4px 10px',
+                  font: {
+                    family: 'Playfair Display',
+                    size: '12px',
+                    weight: '700',
+                    color: '#FFFFFF',
+                  },
+                },
+              },
+              menu: {
+                border: '1px solid #374151',
+                borderRadius: '12px',
+                shadow: '0px 8px 16px -4px rgba(0, 0, 0, 0.5)',
+                animation: {
+                  transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  initialTransform: 'translate3d(-10px, -18px, 0) scale(0.92)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Playfair Display',
+                    size: '15px',
+                    color: '#F9FAFB',
+                  },
+                  selectedIcon: {
+                    color: '#EF4444',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '8px',
+                  topRight: '8px',
+                },
+                default: {
+                  font: {
+                    family: 'Playfair Display',
+                    size: '14px',
+                    weight: '400',
+                    color: '#D1D5DB',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Playfair Display',
+                      size: '11px',
+                      weight: '500',
+                      color: '#F9FAFB',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#EF4444',
+                  indicatorHeight: '3px',
+                  font: {
+                    color: '#EF4444',
+                    family: 'Playfair Display',
+                    size: '14px',
+                    weight: '700',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#EF4444',
+                    font: {
+                      family: 'Playfair Display',
+                      size: '11px',
+                      weight: '700',
+                      color: '#FFFFFF',
+                    },
+                  },
                 },
               },
             },
@@ -1146,198 +1261,227 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
-          },
-          tabs: {
-            borderRadius: {
-              topLeft: '8px',
-              topRight: '8px',
+            actions: {
+              animation: {
+                transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+                initialTransform: 'translate3d(12px, -18px, 0) scale(0.92)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
             },
-            default: {
-              font: {
+          },
+          list: {
+            item: {
+              unreadIndicatorColor: '#EF4444',
+              subtitleLink: {
+                color: '#F87171',
+                hoverColor: '#EF4444',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
+                color: '#F9FAFB',
+              },
+              subtitle: {
                 family: 'Playfair Display',
                 size: '14px',
-                weight: '400',
-                color: '#D1D5DB',
+                color: '#9CA3AF',
               },
-              unreadIndicator: {
+              time: {
+                family: 'Playfair Display',
+                size: '13px',
+                color: '#9CA3AF',
+              },
+              actions: {
                 font: {
                   family: 'Playfair Display',
-                  size: '11px',
-                  weight: '500',
+                  size: '14px',
                   color: '#F9FAFB',
                 },
               },
             },
-            selected: {
-              indicatorColor: '#EF4444',
-              indicatorHeight: '3px',
+          },
+          empty: {
+            title: {
               font: {
-                color: '#EF4444',
                 family: 'Playfair Display',
-                size: '14px',
-                weight: '700',
+                size: '18px',
+                weight: '500',
+                color: '#F9FAFB',
               },
-              unreadIndicator: {
-                backgroundColor: '#EF4444',
-                font: {
-                  family: 'Playfair Display',
-                  size: '11px',
-                  weight: '700',
-                  color: '#FFFFFF',
-                },
+            },
+            button: {
+              font: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
               },
             },
           },
-          actions: {
+          error: {
+            title: {
+              font: {
+                family: 'Playfair Display',
+                size: '18px',
+                weight: '500',
+                color: '#F9FAFB',
+              },
+            },
+            button: {
+              font: {
+                family: 'Playfair Display',
+                size: '15px',
+                weight: '500',
+              },
+            },
+          },
+        },
+      },
+    },
+    preferences: {
+      light: {
+        primaryColor: '#EF4444',
+        container: { font: { family: 'Playfair Display' } },
+        section: { title: { family: 'Playfair Display' } },
+        topic: {
+          title: { family: 'Playfair Display' },
+          statusLabel: { family: 'Playfair Display' },
+          toggle: { trackActiveColor: '#EF4444' },
+        },
+        digest: {
+          font: { family: 'Playfair Display' },
+          selectedFont: { family: 'Playfair Display' },
+          iconColor: '#EF4444',
+          radio: { checkedColor: '#EF4444' },
+        },
+        channelChip: {
+          font: { family: 'Playfair Display' },
+          selectedFont: { family: 'Playfair Display' },
+          checkbox: { checkedColor: '#EF4444' },
+        },
+      },
+      dark: {
+        primaryColor: '#EF4444',
+        container: { font: { family: 'Playfair Display' } },
+        section: { title: { family: 'Playfair Display' } },
+        topic: {
+          title: { family: 'Playfair Display' },
+          statusLabel: { family: 'Playfair Display' },
+          toggle: { trackActiveColor: '#EF4444' },
+        },
+        digest: {
+          font: { family: 'Playfair Display' },
+          selectedFont: { family: 'Playfair Display' },
+          iconColor: '#EF4444',
+          radio: { checkedColor: '#EF4444' },
+        },
+        channelChip: {
+          font: { family: 'Playfair Display' },
+          selectedFont: { family: 'Playfair Display' },
+          checkbox: { checkedColor: '#EF4444' },
+        },
+      },
+    },
+  },
+  'open-sans': {
+    inbox: {
+      light: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#F97316',
+              borderRadius: '50%',
+              height: '8px',
+              width: '8px',
+            },
+          },
+          window: {
+            borderRadius: '10px',
+            border: '1px solid #D1D5DB',
+            shadow: '0px 10px 20px -5px rgba(0, 0, 0, 0.1)',
             animation: {
-              transition: 'all 350ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-              initialTransform: 'translate3d(12px, -18px, 0) scale(0.92)',
+              transition: 'all 250ms ease-out',
+              initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#EF4444',
-            subtitleLink: {
-              color: '#F87171',
-              hoverColor: '#EF4444',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-              color: '#F9FAFB',
-            },
-            subtitle: {
-              family: 'Playfair Display',
-              size: '14px',
-              color: '#9CA3AF',
-            },
-            time: {
-              family: 'Playfair Display',
-              size: '13px',
-              color: '#9CA3AF',
-            },
-            actions: {
-              font: {
-                family: 'Playfair Display',
-                size: '14px',
-                color: '#F9FAFB',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Playfair Display',
-              size: '18px',
-              weight: '500',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Playfair Display',
-              size: '18px',
-              weight: '500',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Playfair Display',
-              size: '15px',
-              weight: '500',
-            },
-          },
-        },
-      },
-    },
-    preferencesLight: {
-      primaryColor: '#EF4444',
-      title: { family: 'Playfair Display' },
-      subtitle: { family: 'Playfair Display' },
-      section: { title: { family: 'Playfair Display' } },
-      topic: { title: { family: 'Playfair Display' }, toggle: { trackActiveColor: '#EF4444' } },
-    },
-    preferencesDark: {
-      primaryColor: '#EF4444',
-      title: { family: 'Playfair Display', color: '#F9FAFB' },
-      subtitle: { family: 'Playfair Display', color: '#9CA3AF' },
-      section: { title: { family: 'Playfair Display', color: '#F9FAFB' } },
-      topic: { title: { family: 'Playfair Display', color: '#F9FAFB' }, toggle: { trackActiveColor: '#EF4444' } },
-    },
-  },
-  'open-sans': {
-    light: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#F97316',
-            borderRadius: '50%',
-            height: '8px',
-            width: '8px',
-          },
-        },
-        window: {
-          borderRadius: '10px',
-          border: '1px solid #D1D5DB',
-          shadow: '0px 10px 20px -5px rgba(0, 0, 0, 0.1)',
-          animation: {
-            transition: 'all 250ms ease-out',
-            initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #D1D5DB',
-          feeds: {
-            button: {
-              font: {
-                family: 'Raleway',
-                size: '15px',
-                weight: '600',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#F97316',
-                borderRadius: '5px',
-                padding: '2px 7px',
+        inbox: {
+          header: {
+            border: '1px solid #D1D5DB',
+            feeds: {
+              button: {
                 font: {
                   family: 'Raleway',
-                  size: '11px',
+                  size: '15px',
                   weight: '600',
                 },
-              },
-            },
-            menu: {
-              borderRadius: '10px',
-              shadow: '0px 5px 10px -3px rgba(0, 0, 0, 0.1)',
-              animation: {
-                transition: 'all 250ms ease-out',
-                initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
-                font: {
-                  family: 'Raleway',
-                  size: '14px',
+                unreadCountIndicator: {
+                  backgroundColor: '#F97316',
+                  borderRadius: '5px',
+                  padding: '2px 7px',
+                  font: {
+                    family: 'Raleway',
+                    size: '11px',
+                    weight: '600',
+                  },
                 },
-                selectedIcon: {
-                  color: '#F97316',
+              },
+              menu: {
+                borderRadius: '10px',
+                shadow: '0px 5px 10px -3px rgba(0, 0, 0, 0.1)',
+                animation: {
+                  transition: 'all 250ms ease-out',
+                  initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Raleway',
+                    size: '14px',
+                  },
+                  selectedIcon: {
+                    color: '#F97316',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '5px',
+                  topRight: '5px',
+                },
+                default: {
+                  font: {
+                    family: 'Raleway',
+                    size: '13px',
+                    weight: '400',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Raleway',
+                      size: '11px',
+                      weight: '600',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#F97316',
+                  indicatorHeight: '2px',
+                  font: {
+                    color: '#F97316',
+                    family: 'Raleway',
+                    size: '13px',
+                    weight: '700',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#F97316',
+                    font: {
+                      family: 'Raleway',
+                      size: '11px',
+                      weight: '700',
+                    },
+                  },
                 },
               },
             },
@@ -1379,177 +1523,180 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
+            actions: {
+              animation: {
+                transition: 'all 250ms ease-out',
+                initialTransform: 'translate3d(10px, -10px, 0) scale(0.98)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
+            },
           },
-          tabs: {
-            borderRadius: {
-              topLeft: '5px',
-              topRight: '5px',
-            },
-            default: {
-              font: {
-                family: 'Raleway',
-                size: '13px',
-                weight: '400',
-              },
-              unreadIndicator: {
-                font: {
-                  family: 'Raleway',
-                  size: '11px',
-                  weight: '600',
-                },
-              },
-            },
-            selected: {
-              indicatorColor: '#F97316',
-              indicatorHeight: '2px',
-              font: {
+          list: {
+            item: {
+              unreadIndicatorColor: '#F97316',
+              subtitleLink: {
                 color: '#F97316',
+                hoverColor: '#EA580C',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+              },
+              subtitle: {
                 family: 'Raleway',
                 size: '13px',
-                weight: '700',
               },
-              unreadIndicator: {
-                backgroundColor: '#F97316',
+              time: {
+                family: 'Raleway',
+                size: '12px',
+              },
+              actions: {
                 font: {
                   family: 'Raleway',
-                  size: '11px',
-                  weight: '700',
+                  size: '13px',
                 },
               },
             },
           },
-          actions: {
+          empty: {
+            title: {
+              font: {
+                family: 'Raleway',
+                size: '17px',
+                weight: '600',
+              },
+            },
+            button: {
+              font: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+              },
+            },
+          },
+          error: {
+            title: {
+              font: {
+                family: 'Raleway',
+                size: '17px',
+                weight: '600',
+              },
+            },
+            button: {
+              font: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+              },
+            },
+          },
+        },
+      },
+      dark: {
+        popup: {
+          button: {
+            unreadDotIndicator: {
+              backgroundColor: '#F97316',
+              borderRadius: '50%',
+              height: '8px',
+              width: '8px',
+            },
+          },
+          window: {
+            borderRadius: '10px',
+            border: '1px solid #374151',
+            shadow: '0px 10px 20px -5px rgba(0, 0, 0, 0.3)',
             animation: {
               transition: 'all 250ms ease-out',
-              initialTransform: 'translate3d(10px, -10px, 0) scale(0.98)',
+              initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
               visibleTransform: 'translate3d(0, 0, 0) scale(1)',
             },
           },
         },
-        list: {
-          item: {
-            unreadIndicatorColor: '#F97316',
-            subtitleLink: {
-              color: '#F97316',
-              hoverColor: '#EA580C',
-              textDecoration: 'underline',
-            },
-            title: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
-            },
-            subtitle: {
-              family: 'Raleway',
-              size: '13px',
-            },
-            time: {
-              family: 'Raleway',
-              size: '12px',
-            },
-            actions: {
-              font: {
-                family: 'Raleway',
-                size: '13px',
-              },
-            },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Raleway',
-              size: '17px',
-              weight: '600',
-            },
-          },
-          button: {
-            font: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
-            },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Raleway',
-              size: '17px',
-              weight: '600',
-            },
-          },
-          button: {
-            font: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
-            },
-          },
-        },
-      },
-    },
-    dark: {
-      popup: {
-        button: {
-          unreadDotIndicator: {
-            backgroundColor: '#F97316',
-            borderRadius: '50%',
-            height: '8px',
-            width: '8px',
-          },
-        },
-        window: {
-          borderRadius: '10px',
-          border: '1px solid #374151',
-          shadow: '0px 10px 20px -5px rgba(0, 0, 0, 0.3)',
-          animation: {
-            transition: 'all 250ms ease-out',
-            initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
-            visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-          },
-        },
-      },
-      inbox: {
-        header: {
-          border: '1px solid #374151',
-          feeds: {
-            button: {
-              font: {
-                family: 'Raleway',
-                size: '15px',
-                weight: '600',
-                color: '#F9FAFB',
-              },
-              unreadCountIndicator: {
-                backgroundColor: '#F97316',
-                borderRadius: '5px',
-                padding: '2px 7px',
+        inbox: {
+          header: {
+            border: '1px solid #374151',
+            feeds: {
+              button: {
                 font: {
                   family: 'Raleway',
-                  size: '11px',
+                  size: '15px',
                   weight: '600',
-                  color: '#111827',
-                },
-              },
-            },
-            menu: {
-              border: '1px solid #374151',
-              borderRadius: '10px',
-              shadow: '0px 5px 10px -3px rgba(0, 0, 0, 0.3)',
-              animation: {
-                transition: 'all 250ms ease-out',
-                initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
-                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-              },
-              list: {
-                font: {
-                  family: 'Raleway',
-                  size: '14px',
                   color: '#F9FAFB',
                 },
-                selectedIcon: {
-                  color: '#F97316',
+                unreadCountIndicator: {
+                  backgroundColor: '#F97316',
+                  borderRadius: '5px',
+                  padding: '2px 7px',
+                  font: {
+                    family: 'Raleway',
+                    size: '11px',
+                    weight: '600',
+                    color: '#111827',
+                  },
+                },
+              },
+              menu: {
+                border: '1px solid #374151',
+                borderRadius: '10px',
+                shadow: '0px 5px 10px -3px rgba(0, 0, 0, 0.3)',
+                animation: {
+                  transition: 'all 250ms ease-out',
+                  initialTransform: 'translate3d(0, -10px, 0) scale(0.98)',
+                  visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+                },
+                list: {
+                  font: {
+                    family: 'Raleway',
+                    size: '14px',
+                    color: '#F9FAFB',
+                  },
+                  selectedIcon: {
+                    color: '#F97316',
+                  },
+                },
+              },
+              tabs: {
+                borderRadius: {
+                  topLeft: '5px',
+                  topRight: '5px',
+                },
+                default: {
+                  font: {
+                    family: 'Raleway',
+                    size: '13px',
+                    weight: '400',
+                    color: '#D1D5DB',
+                  },
+                  unreadIndicator: {
+                    font: {
+                      family: 'Raleway',
+                      size: '11px',
+                      weight: '600',
+                      color: '#F9FAFB',
+                    },
+                  },
+                },
+                selected: {
+                  indicatorColor: '#F97316',
+                  indicatorHeight: '2px',
+                  font: {
+                    color: '#F97316',
+                    family: 'Raleway',
+                    size: '13px',
+                    weight: '700',
+                  },
+                  unreadIndicator: {
+                    backgroundColor: '#F97316',
+                    font: {
+                      family: 'Raleway',
+                      size: '11px',
+                      weight: '700',
+                      color: '#111827',
+                    },
+                  },
                 },
               },
             },
@@ -1594,138 +1741,127 @@ export const themePresets: Record<ThemePreset, ThemePresetPair> = {
                 },
               },
             },
-          },
-          tabs: {
-            borderRadius: {
-              topLeft: '5px',
-              topRight: '5px',
+            actions: {
+              animation: {
+                transition: 'all 250ms ease-out',
+                initialTransform: 'translate3d(10px, -10px, 0) scale(0.98)',
+                visibleTransform: 'translate3d(0, 0, 0) scale(1)',
+              },
             },
-            default: {
-              font: {
+          },
+          list: {
+            item: {
+              unreadIndicatorColor: '#F97316',
+              subtitleLink: {
+                color: '#FB923C',
+                hoverColor: '#F97316',
+                textDecoration: 'underline',
+              },
+              title: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+                color: '#F9FAFB',
+              },
+              subtitle: {
                 family: 'Raleway',
                 size: '13px',
-                weight: '400',
-                color: '#D1D5DB',
+                color: '#9CA3AF',
               },
-              unreadIndicator: {
+              time: {
+                family: 'Raleway',
+                size: '12px',
+                color: '#9CA3AF',
+              },
+              actions: {
                 font: {
                   family: 'Raleway',
-                  size: '11px',
-                  weight: '600',
+                  size: '13px',
                   color: '#F9FAFB',
                 },
               },
             },
-            selected: {
-              indicatorColor: '#F97316',
-              indicatorHeight: '2px',
-              font: {
-                color: '#F97316',
-                family: 'Raleway',
-                size: '13px',
-                weight: '700',
-              },
-              unreadIndicator: {
-                backgroundColor: '#F97316',
-                font: {
-                  family: 'Raleway',
-                  size: '11px',
-                  weight: '700',
-                  color: '#111827',
-                },
-              },
-            },
           },
-          actions: {
-            animation: {
-              transition: 'all 250ms ease-out',
-              initialTransform: 'translate3d(10px, -10px, 0) scale(0.98)',
-              visibleTransform: 'translate3d(0, 0, 0) scale(1)',
-            },
-          },
-        },
-        list: {
-          item: {
-            unreadIndicatorColor: '#F97316',
-            subtitleLink: {
-              color: '#FB923C',
-              hoverColor: '#F97316',
-              textDecoration: 'underline',
-            },
+          empty: {
             title: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
-              color: '#F9FAFB',
-            },
-            subtitle: {
-              family: 'Raleway',
-              size: '13px',
-              color: '#9CA3AF',
-            },
-            time: {
-              family: 'Raleway',
-              size: '12px',
-              color: '#9CA3AF',
-            },
-            actions: {
               font: {
                 family: 'Raleway',
-                size: '13px',
+                size: '17px',
+                weight: '600',
                 color: '#F9FAFB',
               },
             },
-          },
-        },
-        empty: {
-          title: {
-            font: {
-              family: 'Raleway',
-              size: '17px',
-              weight: '600',
-              color: '#F9FAFB',
+            button: {
+              font: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+              },
             },
           },
-          button: {
-            font: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
+          error: {
+            title: {
+              font: {
+                family: 'Raleway',
+                size: '17px',
+                weight: '600',
+                color: '#F9FAFB',
+              },
             },
-          },
-        },
-        error: {
-          title: {
-            font: {
-              family: 'Raleway',
-              size: '17px',
-              weight: '600',
-              color: '#F9FAFB',
-            },
-          },
-          button: {
-            font: {
-              family: 'Raleway',
-              size: '14px',
-              weight: '600',
+            button: {
+              font: {
+                family: 'Raleway',
+                size: '14px',
+                weight: '600',
+              },
             },
           },
         },
       },
     },
-    preferencesLight: {
-      primaryColor: '#F97316',
-      title: { family: 'Raleway' },
-      subtitle: { family: 'Raleway' },
-      section: { title: { family: 'Raleway' } },
-      topic: { title: { family: 'Raleway' }, toggle: { trackActiveColor: '#F97316' } },
-    },
-    preferencesDark: {
-      primaryColor: '#F97316',
-      title: { family: 'Raleway', color: '#F9FAFB' },
-      subtitle: { family: 'Raleway', color: '#9CA3AF' },
-      section: { title: { family: 'Raleway', color: '#F9FAFB' } },
-      topic: { title: { family: 'Raleway', color: '#F9FAFB' }, toggle: { trackActiveColor: '#F97316' } },
+    preferences: {
+      light: {
+        primaryColor: '#F97316',
+        container: { font: { family: 'Raleway' } },
+        section: { title: { family: 'Raleway' } },
+        topic: {
+          title: { family: 'Raleway' },
+          statusLabel: { family: 'Raleway' },
+          toggle: { trackActiveColor: '#F97316' },
+        },
+        digest: {
+          font: { family: 'Raleway' },
+          selectedFont: { family: 'Raleway' },
+          iconColor: '#F97316',
+          radio: { checkedColor: '#F97316' },
+        },
+        channelChip: {
+          font: { family: 'Raleway' },
+          selectedFont: { family: 'Raleway' },
+          checkbox: { checkedColor: '#F97316' },
+        },
+      },
+      dark: {
+        primaryColor: '#F97316',
+        container: { font: { family: 'Raleway' } },
+        section: { title: { family: 'Raleway' } },
+        topic: {
+          title: { family: 'Raleway' },
+          statusLabel: { family: 'Raleway' },
+          toggle: { trackActiveColor: '#F97316' },
+        },
+        digest: {
+          font: { family: 'Raleway' },
+          selectedFont: { family: 'Raleway' },
+          iconColor: '#F97316',
+          radio: { checkedColor: '#F97316' },
+        },
+        channelChip: {
+          font: { family: 'Raleway' },
+          selectedFont: { family: 'Raleway' },
+          checkbox: { checkedColor: '#F97316' },
+        },
+      },
     },
   },
 };
@@ -1737,4 +1873,3 @@ export const themePresetLabels: Record<ThemePreset, string> = {
   roboto: 'Playfair Display',
   'open-sans': 'Raleway',
 };
-

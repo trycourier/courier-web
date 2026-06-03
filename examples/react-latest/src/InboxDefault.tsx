@@ -22,6 +22,10 @@ export default function App() {
     });
   }, []);
 
-  return <CourierInbox />;
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox />
+    </div>
+  );
 
 }

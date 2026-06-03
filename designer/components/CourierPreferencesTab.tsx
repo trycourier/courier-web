@@ -1,22 +1,21 @@
 'use client';
 
-import { CourierPreferences } from '@trycourier/courier-react';
-import type { CourierPreferencesTheme } from '@trycourier/courier-react';
+import { CourierPreferences, type CourierPreferencesTheme } from '@trycourier/courier-react';
 import type { ColorMode } from './ThemeTab';
 
 interface CourierPreferencesTabProps {
-  colorMode: ColorMode;
   lightTheme?: CourierPreferencesTheme;
   darkTheme?: CourierPreferencesTheme;
+  colorMode: ColorMode;
 }
 
-export function CourierPreferencesTab({ colorMode, lightTheme, darkTheme }: CourierPreferencesTabProps) {
+export function CourierPreferencesTab({ lightTheme, darkTheme, colorMode }: CourierPreferencesTabProps) {
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto p-6">
       <CourierPreferences
-        mode={colorMode}
         lightTheme={lightTheme}
         darkTheme={darkTheme}
+        mode={colorMode}
       />
     </div>
   );

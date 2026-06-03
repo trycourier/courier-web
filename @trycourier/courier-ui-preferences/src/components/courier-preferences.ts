@@ -6,7 +6,7 @@ import {
   CourierPreferencePage,
   RecipientPreference,
 } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierComponentThemeMode, registerElement, injectGlobalStyle } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, registerElement, injectGlobalStyle, CourierInfoState } from "@trycourier/courier-ui-core";
 import { CourierPreferencesTheme, defaultLightTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager } from "../types/courier-preferences-theme-manager";
 import { PreferencesSection, PreferencesTopic } from "../types/preferences";
@@ -44,12 +44,6 @@ function getStyles(theme: CourierPreferencesTheme): string {
   const errorButtonFont = errorButton?.font;
   const errorButtonBg = errorButton?.backgroundColor || '#171717';
   const errorButtonHoverBg = errorButton?.hoverBackgroundColor || errorButtonBg;
-
-  const emptyTitle = theme.empty?.title?.font;
-  const emptyButton = theme.empty?.button;
-  const emptyButtonFont = emptyButton?.font;
-  const emptyButtonBg = emptyButton?.backgroundColor || '#171717';
-  const emptyButtonHoverBg = emptyButton?.hoverBackgroundColor || emptyButtonBg;
 
   return `
     .courier-preferences-root {
@@ -89,24 +83,27 @@ function getStyles(theme: CourierPreferencesTheme): string {
     .courier-preferences-skeleton {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
       width: 100%;
+    }
+    .courier-preferences-skeleton-topics {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
     .courier-preferences-skeleton-card {
       background: ${topic?.backgroundColor || '#FFFFFF'};
       border: ${topic?.border || 'none'};
       border-radius: ${topic?.borderRadius || '12px'};
-      padding: 20px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      padding: 26px 0;
       box-sizing: border-box;
     }
-    .courier-preferences-skeleton-card:nth-child(1) { opacity: 1; }
-    .courier-preferences-skeleton-card:nth-child(2) { opacity: 0.7; }
-    .courier-preferences-skeleton-card:nth-child(3) { opacity: 0.4; }
+    .courier-preferences-skeleton-card-header {
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+    }
     .courier-preferences-skeleton-bar {
-      height: ${barHeight};
       border-radius: ${barRadius};
       background: linear-gradient(
         90deg,
@@ -117,8 +114,14 @@ function getStyles(theme: CourierPreferencesTheme): string {
       background-size: 200% 100%;
       animation: courier-preferences-shimmer ${shimmerDuration} ease-in-out infinite;
     }
-    .courier-preferences-skeleton-bar--title { width: 35%; }
-    .courier-preferences-skeleton-bar--body { width: 100%; }
+    .courier-preferences-skeleton-bar--section-title {
+      width: 25%;
+      height: 18px;
+    }
+    .courier-preferences-skeleton-bar--topic {
+      width: 35%;
+      height: ${barHeight};
+    }
     @keyframes courier-preferences-shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
@@ -167,24 +170,6 @@ function getStyles(theme: CourierPreferencesTheme): string {
       background-color: ${errorButtonHoverBg};
     }
 
-    .courier-preferences-empty-title {
-      color: ${emptyTitle?.color || '#171717'};
-      font-size: ${emptyTitle?.size || '16px'};
-      font-weight: ${emptyTitle?.weight || '500'};
-      font-family: ${emptyTitle?.family || 'inherit'};
-    }
-    .courier-preferences-empty-button {
-      background-color: ${emptyButtonBg};
-      color: ${emptyButtonFont?.color || '#FFFFFF'};
-      font-size: ${emptyButtonFont?.size || '14px'};
-      font-weight: ${emptyButtonFont?.weight || '500'};
-      font-family: ${emptyButtonFont?.family || 'inherit'};
-      border: ${emptyButton?.border || 'none'};
-      border-radius: ${emptyButton?.borderRadius || '8px'};
-    }
-    .courier-preferences-empty-button:hover {
-      background-color: ${emptyButtonHoverBg};
-    }
   `;
 }
 
@@ -591,21 +576,29 @@ export class CourierPreferences extends CourierBaseElement {
     const container = document.createElement('div');
     container.className = 'courier-preferences-skeleton';
 
+    const titleBar = document.createElement('div');
+    titleBar.className = 'courier-preferences-skeleton-bar courier-preferences-skeleton-bar--section-title';
+    container.appendChild(titleBar);
+
+    const topicsContainer = document.createElement('div');
+    topicsContainer.className = 'courier-preferences-skeleton-topics';
+
     for (let i = 0; i < 3; i++) {
       const card = document.createElement('div');
       card.className = 'courier-preferences-skeleton-card';
 
-      const titleBar = document.createElement('div');
-      titleBar.className = 'courier-preferences-skeleton-bar courier-preferences-skeleton-bar--title';
-      card.appendChild(titleBar);
+      const header = document.createElement('div');
+      header.className = 'courier-preferences-skeleton-card-header';
 
-      const bodyBar = document.createElement('div');
-      bodyBar.className = 'courier-preferences-skeleton-bar courier-preferences-skeleton-bar--body';
-      card.appendChild(bodyBar);
+      const bar = document.createElement('div');
+      bar.className = 'courier-preferences-skeleton-bar courier-preferences-skeleton-bar--topic';
+      header.appendChild(bar);
+      card.appendChild(header);
 
-      container.appendChild(card);
+      topicsContainer.appendChild(card);
     }
 
+    container.appendChild(topicsContainer);
     return container;
   }
 
@@ -637,27 +630,32 @@ export class CourierPreferences extends CourierBaseElement {
 
   private _buildEmptyState(): HTMLElement {
     const theme = this._themeManager.getTheme();
-    const titleText = theme.empty?.title?.text ?? 'No preferences available';
-    const buttonText = theme.empty?.button?.text ?? 'Refresh';
+    const emptyTheme = theme.empty;
 
-    const container = document.createElement('div');
-    container.className = 'courier-preferences-info-state';
-
-    const title = document.createElement('h2');
-    title.className = 'courier-preferences-info-state-title courier-preferences-empty-title';
-    title.textContent = titleText;
-    container.appendChild(title);
-
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'courier-preferences-info-state-button courier-preferences-empty-button';
-    button.textContent = buttonText;
-    button.addEventListener('click', () => {
-      this._refresh();
+    const emptyState = new CourierInfoState({
+      title: {
+        text: emptyTheme?.title?.text ?? 'No preferences available',
+        textColor: emptyTheme?.title?.font?.color,
+        fontSize: emptyTheme?.title?.font?.size,
+        fontWeight: emptyTheme?.title?.font?.weight,
+        fontFamily: emptyTheme?.title?.font?.family,
+      },
+      button: {
+        mode: 'system',
+        text: emptyTheme?.button?.text ?? 'Refresh',
+        backgroundColor: emptyTheme?.button?.backgroundColor ?? '#171717',
+        hoverBackgroundColor: emptyTheme?.button?.hoverBackgroundColor,
+        textColor: emptyTheme?.button?.font?.color ?? '#FFFFFF',
+        fontSize: emptyTheme?.button?.font?.size ?? '14px',
+        fontWeight: emptyTheme?.button?.font?.weight ?? '500',
+        fontFamily: emptyTheme?.button?.font?.family ?? 'inherit',
+        border: emptyTheme?.button?.border ?? 'none',
+        borderRadius: emptyTheme?.button?.borderRadius ?? '8px',
+        onClick: () => { this._refresh(); },
+      },
     });
-    container.appendChild(button);
-
-    return container;
+    emptyState.build(undefined);
+    return emptyState;
   }
 }
 

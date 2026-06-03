@@ -20,21 +20,23 @@ export default function InboxActions() {
   }, []);
 
   return (
-    <CourierInbox
-      onMessageClick={({ message, index }: CourierInboxListItemFactoryProps) => {
-        alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
-      }}
-      onMessageActionClick={({ message, action, index }: CourierInboxListItemActionFactoryProps) => {
-        alert(
-          "Message action clicked at index " + index + ":\n" +
-          "Action: " + JSON.stringify(action, null, 2) + "\n" +
-          "Message: " + JSON.stringify(message, null, 2)
-        );
-      }}
-      onMessageLongPress={({ message, index }: CourierInboxListItemFactoryProps) => {
-        alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
-      }}
-    />
+    <div style={{ padding: '24px' }}>
+      <CourierInbox
+        onMessageClick={({ message, index }: CourierInboxListItemFactoryProps) => {
+          alert("Message clicked at index " + index + ":\n" + JSON.stringify(message, null, 2));
+        }}
+        onMessageActionClick={({ message, action, index }: CourierInboxListItemActionFactoryProps) => {
+          alert(
+            "Message action clicked at index " + index + ":\n" +
+            "Action: " + JSON.stringify(action, null, 2) + "\n" +
+            "Message: " + JSON.stringify(message, null, 2)
+          );
+        }}
+        onMessageLongPress={({ message, index }: CourierInboxListItemFactoryProps) => {
+          alert("Message long pressed at index " + index + ":\n" + JSON.stringify(message, null, 2));
+        }}
+      />
+    </div>
   );
 
 }

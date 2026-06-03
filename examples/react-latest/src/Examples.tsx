@@ -136,6 +136,9 @@ export default function Examples() {
           <ExampleCard to="/examples/preferences" title="Preferences — Default">
             Full notification preferences page with sections, toggles, and channel routing.
           </ExampleCard>
+          <ExampleCard to="/examples/preferences-styled" title="Preferences — Styled">
+            Preferences themed with Poppins typography and a purple accent color.
+          </ExampleCard>
         </div>
       </section>
     </main>

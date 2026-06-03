@@ -456,16 +456,16 @@ function HomeContent() {
                   <TabsContent value="courier-inbox" className="h-full mt-0">
                     <CourierInboxTab
                       feeds={feeds}
-                      lightTheme={themePresets[selectedTheme].light}
-                      darkTheme={themePresets[selectedTheme].dark}
+                      lightTheme={themePresets[selectedTheme].inbox.light}
+                      darkTheme={themePresets[selectedTheme].inbox.dark}
                       colorMode={colorMode}
                     />
                   </TabsContent>
                   <TabsContent value="courier-inbox-popup-menu" className="h-full mt-0">
                     <CourierInboxPopupMenuTab
                       feeds={feeds}
-                      lightTheme={themePresets[selectedTheme].light}
-                      darkTheme={themePresets[selectedTheme].dark}
+                      lightTheme={themePresets[selectedTheme].inbox.light}
+                      darkTheme={themePresets[selectedTheme].inbox.dark}
                       colorMode={colorMode}
                     />
                   </TabsContent>
@@ -477,9 +477,9 @@ function HomeContent() {
                   </TabsContent>
                   <TabsContent value="courier-preferences" className="h-full mt-0">
                     <CourierPreferencesTab
+                      lightTheme={themePresets[selectedTheme].preferences.light}
+                      darkTheme={themePresets[selectedTheme].preferences.dark}
                       colorMode={colorMode}
-                      lightTheme={themePresets[selectedTheme].preferencesLight}
-                      darkTheme={themePresets[selectedTheme].preferencesDark}
                     />
                   </TabsContent>
                 </div>

@@ -42,6 +42,15 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
     }
   }, [props.channelLabels]);
 
+  // When themes change, the web component's setDarkTheme/setLightTheme only calls
+  // updateTheme() when _systemMode matches — it ignores an explicit _userMode override.
+  // Re-calling setMode() always triggers updateTheme(), picking up the new theme values.
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el || !props.mode) return;
+    el.setMode(props.mode);
+  }, [props.lightTheme, props.darkTheme, props.mode]);
+
   const children = (
     /* @ts-ignore */
     <courier-preferences

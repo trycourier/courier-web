@@ -21,7 +21,7 @@ export default function PreferencesDefault() {
           "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
       }}
     >
-      <div style={{ maxWidth: 640, margin: '0 auto' }}>
+      <div style={{ padding: '40px 16px' }}>
         <CourierPreferences />
       </div>
     </div>

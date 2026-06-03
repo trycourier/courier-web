@@ -14,7 +14,11 @@ export default function InboxDefault() {
     });
   }, []);
 
-  return <CourierInbox />;
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox />
+    </div>
+  );
 
 }
 

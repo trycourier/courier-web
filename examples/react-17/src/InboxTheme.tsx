@@ -164,6 +164,10 @@ export default function App() {
     },
   };
 
-  return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />; // Or use CourierInboxPopupMenu
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />
+    </div>
+  );
 }
 
