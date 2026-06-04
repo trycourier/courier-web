@@ -1,4 +1,14 @@
-import { CourierDigestScheduleOption, CourierUserPreferences, CourierUserPreferencesChannel, CourierUserPreferencesStatus, CourierUserPreferencesTopic, RecipientPreference } from '../types/preference';
+import {
+  CourierDigestScheduleOption,
+  CourierPreferencePage,
+  CourierPreferencePageSection,
+  CourierPreferencePageTopic,
+  CourierUserPreferences,
+  CourierUserPreferencesChannel,
+  CourierUserPreferencesStatus,
+  CourierUserPreferencesTopic,
+  RecipientPreference,
+} from '../types/preference';
 import { decode, encode } from '../utils/coding';
 import { graphql } from '../utils/request';
 import { Client } from './client';
@@ -148,6 +158,98 @@ export class PreferenceClient extends Client {
   }
 
   /**
+   * Get the published preference page for the current workspace.
+   *
+   * Returns workspace-configured sections, topics, channel label mappings,
+   * and optional brand metadata. Combine with `getUserPreferences()` to
+   * overlay the user's current per-topic preferences (status, custom routing,
+   * digest schedule).
+   *
+   * @param accountId - Optional account/tenant ID. Falls back to the client's tenantId.
+   * @param brandId - Optional brand ID to resolve brand colors/logo/links inline.
+   * @returns The published preference page, or `null` if none is published.
+   */
+  public async getPreferencePage(props?: { accountId?: string; brandId?: string }): Promise<CourierPreferencePage | null> {
+    const accountId = props?.accountId ?? this.options.tenantId;
+    const brandId = props?.brandId;
+
+    const accountArg = accountId ? `(accountId: "${accountId}")` : '';
+    const brandFragment = `
+        brand${brandId ? `(brandId: "${brandId}")` : ''} {
+          settings {
+            colors {
+              primary
+            }
+          }
+          links
+          logo {
+            href
+            image
+          }
+        }`;
+
+    const query = `
+      query GetPreferencePage {
+        preferencePage${accountArg} {
+          showCourierFooter
+          ${brandFragment}
+          channelConfigs {
+            channelLabels {
+              channel
+              name
+            }
+          }
+          sections {
+            nodes {
+              name
+              sectionId
+              routingOptions
+              hasCustomRouting
+              topics {
+                nodes {
+                  data
+                  defaultStatus
+                  templateName
+                  templateId
+                  digestSchedules
+                }
+              }
+            }
+          }
+        }
+        recipientPreferences${accountId ? `(accountId: "${accountId}")` : ''} {
+          nodes {
+            templateId
+            status
+            hasCustomRouting
+            routingPreferences
+            digestSchedule
+          }
+        }
+      }
+    `;
+
+    const response = await graphql({
+      options: this.options,
+      url: this.options.apiUrls.courier.graphql,
+      query,
+      headers: {
+        'x-courier-user-id': this.options.userId,
+        'x-courier-client-key': 'empty',
+        'Authorization': `Bearer ${this.options.accessToken}`,
+      },
+    });
+
+    const page = response.data?.preferencePage;
+    if (!page) return null;
+
+    const recipientPreferences: RecipientPreference[] =
+      response.data?.recipientPreferences?.nodes || [];
+
+    return this.transformPreferencePage(page, recipientPreferences);
+  }
+
+  /**
    * Get the available digest schedules for a specific topic
    * @param topicId - The ID of the topic to get digest schedules for
    * @returns Promise resolving to an array of available digest schedule options
@@ -211,6 +313,38 @@ export class PreferenceClient extends Client {
       hasCustomRouting: node.hasCustomRouting || false,
       customRouting: (node.routingPreferences || []) as CourierUserPreferencesChannel[],
       digestSchedule: node.digestSchedule,
+    };
+  }
+
+  /**
+   * Transform a raw `preferencePage` GraphQL response into the public shape.
+   */
+  private transformPreferencePage(page: any, recipientPreferences: RecipientPreference[] = []): CourierPreferencePage {
+    const rawSections = page?.sections?.nodes ?? [];
+    const sections: CourierPreferencePageSection[] = rawSections.map((section: any) => {
+      const rawTopics = section?.topics?.nodes ?? [];
+      const topics: CourierPreferencePageTopic[] = rawTopics.map((topic: any) => ({
+        templateId: topic.templateId,
+        templateName: topic.templateName ?? '',
+        defaultStatus: (topic.defaultStatus as CourierUserPreferencesStatus) ?? 'UNKNOWN',
+        data: topic.data,
+        digestSchedules: (topic.digestSchedules ?? undefined) as CourierDigestScheduleOption[] | undefined,
+      }));
+      return {
+        sectionId: section.sectionId,
+        name: section.name ?? '',
+        hasCustomRouting: Boolean(section.hasCustomRouting),
+        routingOptions: (section.routingOptions ?? []) as CourierUserPreferencesChannel[],
+        topics,
+      };
+    });
+
+    return {
+      showCourierFooter: Boolean(page?.showCourierFooter),
+      brand: page?.brand ?? null,
+      channelConfigs: page?.channelConfigs ?? null,
+      sections,
+      recipientPreferences,
     };
   }
 }

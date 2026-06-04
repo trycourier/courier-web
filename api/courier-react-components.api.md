@@ -21,6 +21,8 @@ import { CourierInboxStateEmptyFactoryProps } from '@trycourier/courier-ui-inbox
 import { CourierInboxStateErrorFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxStateLoadingFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
+import { CourierPreferences } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesTheme } from '@trycourier/courier-ui-preferences';
 import { CourierProps } from '@trycourier/courier-js';
 import { CourierToast } from '@trycourier/courier-ui-toast';
 import { CourierToastDismissButtonOption } from '@trycourier/courier-ui-toast';
@@ -95,6 +97,35 @@ export interface CourierInboxProps {
     renderListItem?: (props: CourierInboxListItemFactoryProps | undefined | null) => ReactNode;
     renderLoadingState?: (props: CourierInboxStateLoadingFactoryProps | undefined | null) => ReactNode;
     renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => ReactNode;
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencesComponent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CourierPreferencesComponent: ForwardRefExoticComponent<CourierPreferencesProps & RefAttributes<CourierPreferences>>;
+
+// Warning: (ae-missing-release-tag) "CourierPreferencesProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencesProps {
+    // (undocumented)
+    brandId?: string;
+    // (undocumented)
+    channelLabels?: Record<string, string>;
+    // (undocumented)
+    darkTheme?: CourierPreferencesTheme;
+    // (undocumented)
+    lightTheme?: CourierPreferencesTheme;
+    // (undocumented)
+    mode?: CourierComponentThemeMode;
+    // (undocumented)
+    onError?: (error: Error) => void;
+    // (undocumented)
+    style?: CSSProperties;
+    // (undocumented)
+    subtitle?: string;
+    // (undocumented)
+    title?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "RenderFn" needs to be exported by the entry point index.d.ts

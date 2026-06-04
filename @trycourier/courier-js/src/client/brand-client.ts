@@ -24,6 +24,11 @@ export class BrandClient extends Client {
               disableCourierFooter
             }
           }
+          logo {
+            href
+            image
+          }
+          links
         }
       }
     `;

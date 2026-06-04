@@ -21,6 +21,8 @@ import Hooks from './Hooks';
 import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
 import PopupCustomFeed from './PopupCustomFeed';
+import PreferencesDefault from './PreferencesDefault';
+import PreferencesStyled from './PreferencesStyled';
 import Examples from './Examples';
 
 function App() {
@@ -72,6 +74,10 @@ function App() {
         <Route path="/examples/toast-custom" element={<ToastCustom />} />
         <Route path="/examples/toast" element={<ToastCustom />} />
         <Route path="/examples/hooks" element={<Hooks />} />
+
+        {/* Preferences */}
+        <Route path="/examples/preferences" element={<PreferencesDefault />} />
+        <Route path="/examples/preferences-styled" element={<PreferencesStyled />} />
       </Routes>
     </BrowserRouter>
   )

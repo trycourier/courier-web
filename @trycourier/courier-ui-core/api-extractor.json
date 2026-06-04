@@ -35,11 +35,17 @@
       "ae-missing-release-tag": {
         "logLevel": "warning",
         "addToApiReportFile": true
+      },
+      "ae-missing-getter": {
+        "logLevel": "none"
       }
     },
     "tsdocMessageReporting": {
       "default": {
         "logLevel": "warning"
+      },
+      "tsdoc-malformed-html-name": {
+        "logLevel": "none"
       }
     }
   }

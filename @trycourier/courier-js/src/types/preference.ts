@@ -53,3 +53,70 @@ export interface RecipientPreference {
   sectionName?: string;
   defaultStatus?: string;
 }
+
+/**
+ * A channel label mapping for the preference page.
+ */
+export interface CourierPreferencePageChannelLabel {
+  channel: CourierUserPreferencesChannel;
+  name: string;
+}
+
+export interface CourierPreferencePageChannelConfigs {
+  channelLabels: CourierPreferencePageChannelLabel[];
+}
+
+/**
+ * A topic as published in the preference page (workspace-configured metadata
+ * such as default status and digest schedules), without the user's current
+ * preference values.
+ */
+export interface CourierPreferencePageTopic {
+  templateId: string;
+  templateName: string;
+  defaultStatus: CourierUserPreferencesStatus;
+  data?: unknown;
+  digestSchedules?: CourierDigestScheduleOption[];
+}
+
+/**
+ * A section as published in the preference page, including section-level
+ * routing configuration.
+ */
+export interface CourierPreferencePageSection {
+  sectionId: string;
+  name: string;
+  hasCustomRouting: boolean;
+  routingOptions: CourierUserPreferencesChannel[];
+  topics: CourierPreferencePageTopic[];
+}
+
+/**
+ * Brand metadata returned inline on the preference page query (a subset of
+ * `CourierBrand`).
+ */
+export interface CourierPreferencePageBrand {
+  settings?: {
+    colors?: {
+      primary?: string;
+    };
+  };
+  logo?: {
+    href?: string;
+    image?: string;
+  } | null;
+  links?: Record<string, unknown> | null;
+}
+
+/**
+ * Full result of the combined `preferencePage` + `recipientPreferences`
+ * GraphQL query: workspace-configured sections, topics, channel labels, brand
+ * info, and the user's current per-topic preferences — all in one round-trip.
+ */
+export interface CourierPreferencePage {
+  showCourierFooter: boolean;
+  brand?: CourierPreferencePageBrand | null;
+  channelConfigs?: CourierPreferencePageChannelConfigs | null;
+  sections: CourierPreferencePageSection[];
+  recipientPreferences: RecipientPreference[];
+}

@@ -1,4 +1,4 @@
-import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme, CourierButtonTheme, CourierIconButtonTheme } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme, CourierButtonTheme, CourierIconButtonTheme, COURIER_DEFAULT_PRIMARY_COLOR } from "@trycourier/courier-ui-core";
 
 // Re-export common types from core for convenience
 export type CourierInboxFontTheme = CourierFontTheme;
@@ -223,7 +223,7 @@ export const defaultLightTheme: CourierInboxTheme = {
       hoverBackgroundColor: CourierColors.black[500_10],
       activeBackgroundColor: CourierColors.black[500_20],
       unreadDotIndicator: {
-        backgroundColor: CourierColors.blue[500],
+        backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
         borderRadius: '50%',
         height: '8px',
         width: '8px',
@@ -267,7 +267,7 @@ export const defaultLightTheme: CourierInboxTheme = {
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.blue[500],
+            backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
             borderRadius: '4px',
             padding: '2px 6px',
           }
@@ -327,12 +327,12 @@ export const defaultLightTheme: CourierInboxTheme = {
           },
           selected: {
             indicatorHeight: '1px',
-            indicatorColor: CourierColors.blue[500],
+            indicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
             backgroundColor: 'transparent',
             hoverBackgroundColor: CourierColors.gray[200],
             activeBackgroundColor: CourierColors.gray[500],
             font: {
-              color: CourierColors.blue[500],
+              color: COURIER_DEFAULT_PRIMARY_COLOR,
               family: undefined,
               size: '14px'
             },
@@ -342,7 +342,7 @@ export const defaultLightTheme: CourierInboxTheme = {
                 family: undefined,
                 size: '12px'
               },
-              backgroundColor: CourierColors.blue[500],
+              backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
               borderRadius: '4px',
               padding: '2px 6px',
             }
@@ -379,12 +379,12 @@ export const defaultLightTheme: CourierInboxTheme = {
         },
         selected: {
           indicatorHeight: '1px',
-          indicatorColor: CourierColors.blue[500],
+          indicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.gray[200],
           activeBackgroundColor: CourierColors.gray[500],
           font: {
-            color: CourierColors.blue[500],
+            color: COURIER_DEFAULT_PRIMARY_COLOR,
             family: undefined,
             size: '14px'
           },
@@ -394,7 +394,7 @@ export const defaultLightTheme: CourierInboxTheme = {
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.blue[500],
+            backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
             borderRadius: '4px',
             padding: '2px 6px',
           }
@@ -447,7 +447,7 @@ export const defaultLightTheme: CourierInboxTheme = {
       },
       item: {
         backgroundColor: 'transparent',
-        unreadIndicatorColor: CourierColors.blue[500],
+        unreadIndicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
         transition: 'all 0.2s ease',
@@ -475,7 +475,7 @@ export const defaultLightTheme: CourierInboxTheme = {
           size: '14px'
         },
         subtitleLink: {
-          color: CourierColors.blue[500],
+          color: COURIER_DEFAULT_PRIMARY_COLOR,
           textDecoration: 'underline',
           hoverColor: CourierColors.blue[400]
         },
@@ -567,7 +567,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
       hoverBackgroundColor: CourierColors.white[500_10],
       activeBackgroundColor: CourierColors.white[500_20],
       unreadDotIndicator: {
-        backgroundColor: CourierColors.blue[500],
+        backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
         borderRadius: '50%',
         height: '8px',
         width: '8px',
@@ -611,7 +611,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.blue[500],
+            backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
             borderRadius: '4px',
             padding: '3px 8px',
           }
@@ -671,12 +671,12 @@ export const defaultDarkTheme: CourierInboxTheme = {
           },
           selected: {
             indicatorHeight: '1px',
-            indicatorColor: CourierColors.blue[500],
+            indicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
             backgroundColor: 'transparent',
             hoverBackgroundColor: CourierColors.white[500_10],
             activeBackgroundColor: CourierColors.white[500_20],
             font: {
-              color: CourierColors.blue[500],
+              color: COURIER_DEFAULT_PRIMARY_COLOR,
               family: undefined,
               size: '14px'
             },
@@ -686,7 +686,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
                 family: undefined,
                 size: '12px'
               },
-              backgroundColor: CourierColors.blue[500],
+              backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
               borderRadius: '4px',
               padding: '3px 8px',
             }
@@ -723,12 +723,12 @@ export const defaultDarkTheme: CourierInboxTheme = {
         },
         selected: {
           indicatorHeight: '1px',
-          indicatorColor: CourierColors.blue[500],
+          indicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
           backgroundColor: 'transparent',
           hoverBackgroundColor: CourierColors.white[500_10],
           activeBackgroundColor: CourierColors.white[500_20],
           font: {
-            color: CourierColors.blue[500],
+            color: COURIER_DEFAULT_PRIMARY_COLOR,
             family: undefined,
             size: '14px'
           },
@@ -738,7 +738,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
               family: undefined,
               size: '12px'
             },
-            backgroundColor: CourierColors.blue[500],
+            backgroundColor: COURIER_DEFAULT_PRIMARY_COLOR,
             borderRadius: '4px',
             padding: '3px 8px',
           }
@@ -791,7 +791,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
       },
       item: {
         backgroundColor: 'transparent',
-        unreadIndicatorColor: CourierColors.blue[500],
+        unreadIndicatorColor: COURIER_DEFAULT_PRIMARY_COLOR,
         hoverBackgroundColor: CourierColors.white[500_10],
         activeBackgroundColor: CourierColors.white[500_20],
         transition: 'all 0.2s ease',
@@ -819,7 +819,7 @@ export const defaultDarkTheme: CourierInboxTheme = {
           size: '14px'
         },
         subtitleLink: {
-          color: CourierColors.blue[500],
+          color: COURIER_DEFAULT_PRIMARY_COLOR,
           textDecoration: 'underline',
           hoverColor: CourierColors.blue[400]
         },

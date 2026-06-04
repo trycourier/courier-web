@@ -166,6 +166,10 @@ export default function InboxTheme() {
     },
   };
 
-  return <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />;
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox lightTheme={theme} darkTheme={theme} mode="light" />
+    </div>
+  );
 }
 

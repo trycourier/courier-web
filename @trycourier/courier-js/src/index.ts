@@ -38,6 +38,13 @@ import {
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
   CourierDigestScheduleOption,
+  CourierPreferencePage,
+  CourierPreferencePageSection,
+  CourierPreferencePageTopic,
+  CourierPreferencePageBrand,
+  CourierPreferencePageChannelConfigs,
+  CourierPreferencePageChannelLabel,
+  RecipientPreference,
 } from './types/preference';
 import { CourierDevice, CourierToken } from './types/token';
 import {
@@ -76,6 +83,13 @@ export type {
   CourierUserPreferencesTopic,
   CourierUserPreferencesTopicResponse,
   CourierDigestScheduleOption,
+  CourierPreferencePage,
+  CourierPreferencePageSection,
+  CourierPreferencePageTopic,
+  CourierPreferencePageBrand,
+  CourierPreferencePageChannelConfigs,
+  CourierPreferencePageChannelLabel,
+  RecipientPreference,
   CourierDevice,
   CourierToken,
   CourierGetInboxMessageResponse,

@@ -78,6 +78,14 @@ export interface CourierBrand {
     created: number;
     // (undocumented)
     id: string;
+    // Warning: (ae-forgotten-export) The symbol "CourierBrandSocialLinks" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    links?: CourierBrandSocialLinks | null;
+    // Warning: (ae-forgotten-export) The symbol "CourierBrandLogo" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    logo?: CourierBrandLogo | null;
     // (undocumented)
     name: string;
     // (undocumented)
@@ -255,6 +263,93 @@ export interface CourierGetInboxMessagesResponse {
             nodes?: InboxMessage[];
         };
     };
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencePage {
+    // (undocumented)
+    brand?: CourierPreferencePageBrand | null;
+    // (undocumented)
+    channelConfigs?: CourierPreferencePageChannelConfigs | null;
+    // Warning: (ae-incompatible-release-tags) The symbol "recipientPreferences" is marked as @public, but its signature references "RecipientPreference" which is marked as @internal
+    //
+    // (undocumented)
+    recipientPreferences: RecipientPreference[];
+    // (undocumented)
+    sections: CourierPreferencePageSection[];
+    // (undocumented)
+    showCourierFooter: boolean;
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePageBrand" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencePageBrand {
+    // (undocumented)
+    links?: Record<string, unknown> | null;
+    // (undocumented)
+    logo?: {
+        href?: string;
+        image?: string;
+    } | null;
+    // (undocumented)
+    settings?: {
+        colors?: {
+            primary?: string;
+        };
+    };
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePageChannelConfigs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export interface CourierPreferencePageChannelConfigs {
+    // (undocumented)
+    channelLabels: CourierPreferencePageChannelLabel[];
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePageChannelLabel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencePageChannelLabel {
+    // (undocumented)
+    channel: CourierUserPreferencesChannel;
+    // (undocumented)
+    name: string;
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePageSection" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencePageSection {
+    // (undocumented)
+    hasCustomRouting: boolean;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    routingOptions: CourierUserPreferencesChannel[];
+    // (undocumented)
+    sectionId: string;
+    // (undocumented)
+    topics: CourierPreferencePageTopic[];
+}
+
+// Warning: (ae-missing-release-tag) "CourierPreferencePageTopic" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierPreferencePageTopic {
+    // (undocumented)
+    data?: unknown;
+    // (undocumented)
+    defaultStatus: CourierUserPreferencesStatus;
+    // (undocumented)
+    digestSchedules?: CourierDigestScheduleOption[];
+    // (undocumented)
+    templateId: string;
+    // (undocumented)
+    templateName: string;
 }
 
 // Warning: (ae-missing-release-tag) "CourierProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -533,6 +628,10 @@ export class PreferenceClient extends Client {
     getNotificationCenterUrl(props: {
         clientKey: string;
     }): string;
+    getPreferencePage(props?: {
+        accountId?: string;
+        brandId?: string;
+    }): Promise<CourierPreferencePage | null>;
     getUserPreferences(props?: {
         paginationCursor?: string;
     }): Promise<CourierUserPreferences>;
@@ -546,6 +645,30 @@ export class PreferenceClient extends Client {
         customRouting: CourierUserPreferencesChannel[];
         digestSchedule?: string;
     }): Promise<CourierUserPreferencesTopic>;
+}
+
+// Warning: (ae-internal-missing-underscore) The name "RecipientPreference" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal
+export interface RecipientPreference {
+    // (undocumented)
+    defaultStatus?: string;
+    // (undocumented)
+    digestSchedule?: string;
+    // (undocumented)
+    hasCustomRouting?: boolean;
+    // (undocumented)
+    routingPreferences?: string[];
+    // (undocumented)
+    sectionId?: string;
+    // (undocumented)
+    sectionName?: string;
+    // (undocumented)
+    status?: string;
+    // (undocumented)
+    templateId: string;
+    // (undocumented)
+    templateName?: string;
 }
 
 // Warning: (ae-missing-release-tag) "TokenClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

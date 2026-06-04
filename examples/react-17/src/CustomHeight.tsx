@@ -12,7 +12,11 @@ export default function App() {
     });
   }, []);
 
-  return <CourierInbox height='50vh' />;
+  return (
+    <div style={{ padding: '24px' }}>
+      <CourierInbox height='50vh' />
+    </div>
+  );
 
 }
 

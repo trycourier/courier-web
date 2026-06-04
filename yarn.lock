@@ -2339,42 +2339,51 @@
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
 "@trycourier/courier-react-17@file:@trycourier/courier-react-17":
-  version "9.0.7"
+  version "9.0.9"
   dependencies:
-    "@trycourier/courier-js" "3.1.2"
-    "@trycourier/courier-react-components" "2.0.7"
+    "@trycourier/courier-js" "3.2.0"
+    "@trycourier/courier-react-components" "2.0.9"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.2"
-    "@trycourier/courier-ui-toast" "2.1.2"
+    "@trycourier/courier-ui-inbox" "2.4.4"
+    "@trycourier/courier-ui-preferences" "1.0.0"
+    "@trycourier/courier-ui-toast" "2.1.4"
 
 "@trycourier/courier-react@file:@trycourier/courier-react":
-  version "9.0.7"
+  version "9.0.9"
   dependencies:
-    "@trycourier/courier-js" "3.1.2"
-    "@trycourier/courier-react-components" "2.0.7"
+    "@trycourier/courier-js" "3.2.0"
+    "@trycourier/courier-react-components" "2.0.9"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.2"
-    "@trycourier/courier-ui-toast" "2.1.2"
+    "@trycourier/courier-ui-inbox" "2.4.4"
+    "@trycourier/courier-ui-preferences" "1.0.0"
+    "@trycourier/courier-ui-toast" "2.1.4"
 
 "@trycourier/courier-react@file:@trycourier/courier-react-17":
-  version "9.0.7"
+  version "9.0.9"
   dependencies:
-    "@trycourier/courier-js" "3.1.2"
-    "@trycourier/courier-react-components" "2.0.7"
+    "@trycourier/courier-js" "3.2.0"
+    "@trycourier/courier-react-components" "2.0.9"
     "@trycourier/courier-ui-core" "2.0.0"
-    "@trycourier/courier-ui-inbox" "2.4.2"
-    "@trycourier/courier-ui-toast" "2.1.2"
+    "@trycourier/courier-ui-inbox" "2.4.4"
+    "@trycourier/courier-ui-preferences" "1.0.0"
+    "@trycourier/courier-ui-toast" "2.1.4"
 
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
-  version "2.4.2"
+  version "2.4.4"
   dependencies:
-    "@trycourier/courier-js" "3.1.2"
+    "@trycourier/courier-js" "3.2.0"
+    "@trycourier/courier-ui-core" "2.0.0"
+
+"@trycourier/courier-ui-preferences@file:@trycourier/courier-ui-preferences":
+  version "1.0.0"
+  dependencies:
+    "@trycourier/courier-js" "3.2.0"
     "@trycourier/courier-ui-core" "2.0.0"
 
 "@trycourier/courier-ui-toast@file:@trycourier/courier-ui-toast":
-  version "2.1.2"
+  version "2.1.4"
   dependencies:
-    "@trycourier/courier-js" "3.1.2"
+    "@trycourier/courier-js" "3.2.0"
     "@trycourier/courier-ui-core" "2.0.0"
 
 "@trycourier/courier@^7.3.0":
