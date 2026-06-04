@@ -43,4 +43,5 @@ coverage/
 temp/
 stats.html
 
-.claude
+# Claude Code: ignore local machine settings, but keep shared skills (.claude/skills) checked in
+.claude/settings.local.json

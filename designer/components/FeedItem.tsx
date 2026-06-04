@@ -114,20 +114,13 @@ export function FeedItem({
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Tags (comma-separated)</Label>
-                    <Input
-                      type="text"
-                      value={tab.filter?.tags?.join(', ') || ''}
-                      onChange={(e) => {
-                        const tags = e.target.value
-                          .split(',')
-                          .map(t => t.trim())
-                          .filter(t => t.length > 0);
+                    <TagsInput
+                      tags={tab.filter?.tags}
+                      onChange={(tags) => {
                         onUpdateTab(tabIndex, {
                           filter: { ...tab.filter, tags: tags.length > 0 ? tags : undefined }
                         });
                       }}
-                      className="text-sm font-mono"
-                      placeholder="tag1, tag2"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -190,6 +183,55 @@ export function FeedItem({
         </div>
       </AccordionContent>
     </AccordionItem>
+  );
+}
+
+interface TagsInputProps {
+  tags: string[] | undefined;
+  onChange: (tags: string[]) => void;
+}
+
+/**
+ * Controlled text input for editing a comma-separated list of tags.
+ *
+ * Keeps the raw typed text in local state rather than deriving the displayed
+ * value from the parsed array — otherwise typing a comma (or trailing space)
+ * gets stripped on the next render, making it impossible to enter more than
+ * one tag. Parsing into a clean array only happens when propagating upward.
+ */
+function TagsInput({ tags, onChange }: TagsInputProps) {
+  const [text, setText] = React.useState(() => tags?.join(', ') ?? '');
+
+  // Re-sync when the upstream tags change from outside this input (e.g. when a
+  // different tab's data is loaded into the same component instance).
+  const parsedFromText = text
+    .split(',')
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
+  const upstream = tags ?? [];
+  React.useEffect(() => {
+    if (upstream.join(' ') !== parsedFromText.join(' ')) {
+      setText(upstream.join(', '));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags]);
+
+  return (
+    <Input
+      type="text"
+      value={text}
+      onChange={(e) => {
+        setText(e.target.value);
+        onChange(
+          e.target.value
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t.length > 0)
+        );
+      }}
+      className="text-sm font-mono"
+      placeholder="tag1, tag2"
+    />
   );
 }
 
