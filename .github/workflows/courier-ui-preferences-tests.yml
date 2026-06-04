@@ -1,0 +1,37 @@
+name: Courier UI Preferences Tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build courier-ui-preferences packages
+        run: |
+          yarn workspace @trycourier/courier-js run build
+          yarn workspace @trycourier/courier-ui-core run build
+          yarn workspace @trycourier/courier-ui-preferences run build
+      - name: Run courier-ui-preferences tests
+        run: yarn workspace @trycourier/courier-ui-preferences run test
+        env:
+          JWT: ${{ secrets.JWT }}
+          USER_ID: ${{ secrets.USER_ID }}
+          COURIER_REST_URL: ${{ secrets.COURIER_REST_URL }}
+          COURIER_GRAPHQL_URL: ${{ secrets.COURIER_GRAPHQL_URL }}
+          INBOX_GRAPHQL_URL: ${{ secrets.INBOX_GRAPHQL_URL }}
+          INBOX_WEBSOCKET_URL: ${{ secrets.INBOX_WEBSOCKET_URL }}
+          BRAND_ID: ${{ secrets.BRAND_ID }}
+          TOPIC_ID: ${{ secrets.TOPIC_ID }}

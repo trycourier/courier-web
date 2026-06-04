@@ -44,4 +44,5 @@ temp/
 stats.html
 
 # Claude Code: ignore local machine settings, but keep shared skills (.claude/skills) checked in
+.claude/settings.json
 .claude/settings.local.json

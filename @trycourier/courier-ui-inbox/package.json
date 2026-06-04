@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-inbox",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "description": "Inbox components for the Courier web UI",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -27,12 +27,13 @@
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
+  "homepage": "https://www.courier.com",
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-js": "3.3.0",
-    "@trycourier/courier-ui-core": "2.1.0"
+    "@trycourier/courier-js": "3.4.0",
+    "@trycourier/courier-ui-core": "2.2.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",

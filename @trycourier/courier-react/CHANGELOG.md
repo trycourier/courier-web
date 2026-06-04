@@ -1,5 +1,27 @@
 # @trycourier/courier-react
 
+## 9.2.0
+
+### Minor Changes
+
+- Add Courier preferences support and align package documentation.
+
+  - **courier-ui-preferences** (new package): web component for rendering and managing user notification preferences, with full theming support.
+  - **courier-js**: add preference V2 client methods and brand/preference types.
+  - **courier-ui-core**: add `courier-checkbox` and `courier-radio` components plus color/theme utilities used by preferences.
+  - **courier-react-components / courier-react / courier-react-17**: add `CourierPreferences` React wrapper around the preferences web component.
+  - All published packages: add READMEs that follow the shared SDK flow and set the npm `homepage` to courier.com.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @trycourier/courier-js@3.4.0
+  - @trycourier/courier-ui-core@2.2.0
+  - @trycourier/courier-react-components@2.2.0
+  - @trycourier/courier-ui-inbox@2.4.6
+  - @trycourier/courier-ui-toast@2.1.6
+  - @trycourier/courier-ui-preferences@1.0.2
+
 ## 9.1.0
 
 ### Minor Changes
