@@ -25,6 +25,9 @@ export interface Colors {
     secondary: string;
 }
 
+// @public
+export const COURIER_DEFAULT_PRIMARY_COLOR: string;
+
 // Warning: (ae-forgotten-export) The symbol "HTMLElementBase" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CourierBaseElement" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -120,6 +123,23 @@ export const CourierButtonVariants: {
         fontSize: "14px";
     };
 };
+
+// @public
+export class CourierCheckbox extends CourierBaseElement {
+    set checked(val: boolean);
+    // (undocumented)
+    get checked(): boolean;
+    // (undocumented)
+    set checkedColor(val: string);
+    // (undocumented)
+    set disabled(val: boolean);
+    // (undocumented)
+    static get id(): string;
+    // (undocumented)
+    protected onComponentMounted(): void;
+    // (undocumented)
+    protected onComponentUnmounted(): void;
+}
 
 // Warning: (ae-missing-release-tag) "CourierColors" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -290,6 +310,23 @@ export class CourierLink extends CourierBaseElement {
     static observedAttributes: string[];
 }
 
+// @public
+export class CourierRadio extends CourierBaseElement {
+    set checked(val: boolean);
+    // (undocumented)
+    get checked(): boolean;
+    // (undocumented)
+    set checkedColor(val: string);
+    // (undocumented)
+    static get id(): string;
+    // (undocumented)
+    protected onComponentMounted(): void;
+    // (undocumented)
+    protected onComponentUnmounted(): void;
+    // (undocumented)
+    set ringColor(val: string);
+}
+
 // Warning: (ae-missing-release-tag) "CourierSystemThemeElement" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -364,6 +401,11 @@ export const getSystemThemeMode: () => SystemThemeMode;
 //
 // @public (undocumented)
 export function injectGlobalStyle(styleId: string, styles: string): HTMLStyleElement;
+
+// Warning: (ae-missing-release-tag) "isDarkColor" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function isDarkColor(color: string): boolean;
 
 // Warning: (ae-missing-release-tag) "registerElement" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

@@ -43,6 +43,15 @@ import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadCountIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadDotIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierMenuItemTheme } from '@trycourier/courier-ui-inbox';
+import { CourierPreferencesChannelChipTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesDigestTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferences as CourierPreferencesElement } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesFontTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesProps } from '@trycourier/courier-react-components';
+import { CourierPreferencesSectionTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesToggleTheme } from '@trycourier/courier-ui-preferences';
+import { CourierPreferencesTopicTheme } from '@trycourier/courier-ui-preferences';
 import { CourierProps } from '@trycourier/courier-js';
 import { CourierToastDismissButtonOption } from '@trycourier/courier-ui-toast';
 import { CourierToast as CourierToastElement } from '@trycourier/courier-ui-toast';
@@ -66,6 +75,8 @@ import { defaultDarkTheme } from '@trycourier/courier-ui-inbox';
 import { defaultFeeds } from '@trycourier/courier-ui-inbox';
 import { defaultLightTheme } from '@trycourier/courier-ui-inbox';
 import { defaultListItemActions } from '@trycourier/courier-ui-inbox';
+import { defaultDarkTheme as defaultPreferencesDarkTheme } from '@trycourier/courier-ui-preferences';
+import { defaultLightTheme as defaultPreferencesLightTheme } from '@trycourier/courier-ui-preferences';
 import { defaultDarkTheme as defaultToastDarkTheme } from '@trycourier/courier-ui-toast';
 import { defaultLightTheme as defaultToastLightTheme } from '@trycourier/courier-ui-toast';
 import { EU_COURIER_API_URLS } from '@trycourier/courier-js';
@@ -77,6 +88,7 @@ import { InboxMessage } from '@trycourier/courier-js';
 import { InboxMessageEventEnvelope } from '@trycourier/courier-js';
 import { markAsRead } from '@trycourier/courier-ui-inbox';
 import { markAsUnread } from '@trycourier/courier-ui-inbox';
+import { mergeTheme as mergePreferencesTheme } from '@trycourier/courier-ui-preferences';
 import { mergeTheme } from '@trycourier/courier-ui-inbox';
 import { mergeTheme as mergeToastTheme } from '@trycourier/courier-ui-toast';
 import { openMessage } from '@trycourier/courier-ui-inbox';
@@ -171,6 +183,29 @@ export { CourierInboxUnreadDotIndicatorTheme }
 
 export { CourierMenuItemTheme }
 
+// Warning: (ae-missing-release-tag) "CourierPreferences" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const CourierPreferences: ForwardRefExoticComponent<CourierPreferencesProps & RefAttributes<CourierPreferencesElement>>;
+
+export { CourierPreferencesChannelChipTheme }
+
+export { CourierPreferencesDigestTheme }
+
+export { CourierPreferencesElement }
+
+export { CourierPreferencesFontTheme }
+
+export { CourierPreferencesProps }
+
+export { CourierPreferencesSectionTheme }
+
+export { CourierPreferencesTheme }
+
+export { CourierPreferencesToggleTheme }
+
+export { CourierPreferencesTopicTheme }
+
 export { CourierProps }
 
 // Warning: (ae-missing-release-tag) "CourierToast" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -222,6 +257,10 @@ export { defaultLightTheme }
 
 export { defaultListItemActions }
 
+export { defaultPreferencesDarkTheme }
+
+export { defaultPreferencesLightTheme }
+
 export { defaultToastDarkTheme }
 
 export { defaultToastLightTheme }
@@ -241,6 +280,8 @@ export { InboxMessageEventEnvelope }
 export { markAsRead }
 
 export { markAsUnread }
+
+export { mergePreferencesTheme }
 
 export { mergeTheme }
 
