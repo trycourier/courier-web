@@ -45,6 +45,9 @@ function getStyles(theme: CourierPreferencesTheme): string {
   const errorButtonBg = errorButton?.backgroundColor || '#171717';
   const errorButtonHoverBg = errorButton?.hoverBackgroundColor || errorButtonBg;
 
+  const titleFont = theme.title;
+  const subtitleFont = theme.subtitle;
+
   return `
     .courier-preferences-root {
       background: transparent;
@@ -63,15 +66,38 @@ function getStyles(theme: CourierPreferencesTheme): string {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 24px;
     }
     .courier-preferences-logo {
       display: flex;
       justify-content: flex-start;
+      /* Gap to the next block (title, or topics when there is no header). */
+      margin-bottom: 32px;
     }
     .courier-preferences-logo img {
       max-height: 40px;
       object-fit: contain;
+    }
+    .courier-preferences-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      /* Gap from the subtitle down to the topics. */
+      margin-bottom: 48px;
+    }
+    .courier-preferences-title {
+      margin: 0;
+      line-height: 1.2;
+      font-family: ${titleFont?.family || 'inherit'};
+      font-size: ${titleFont?.size || '28px'};
+      font-weight: ${titleFont?.weight || '500'};
+      color: ${titleFont?.color || '#171717'};
+    }
+    .courier-preferences-subtitle {
+      margin: 0;
+      font-family: ${subtitleFont?.family || 'inherit'};
+      font-size: ${subtitleFont?.size || '14px'};
+      font-weight: ${subtitleFont?.weight || '400'};
+      color: ${subtitleFont?.color || '#404040'};
     }
     .courier-preferences-sections {
       display: flex;
@@ -189,7 +215,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'title', 'subtitle'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -202,8 +228,12 @@ export class CourierPreferences extends CourierBaseElement {
   private _brandId?: string;
   private _brand?: CourierBrand;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
+  private _title?: string;
+  private _subtitle?: string;
 
   protected onComponentMounted(): void {
+    this._title = this.getAttribute('title') || undefined;
+    this._subtitle = this.getAttribute('subtitle') || undefined;
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
@@ -247,6 +277,14 @@ export class CourierPreferences extends CourierBaseElement {
         if (Courier.shared.client?.options.userId) {
           this._refresh();
         }
+        break;
+      case 'title':
+        this._title = newValue || undefined;
+        this._render();
+        break;
+      case 'subtitle':
+        this._subtitle = newValue || undefined;
+        this._render();
         break;
     }
   }
@@ -520,6 +558,12 @@ export class CourierPreferences extends CourierBaseElement {
       inner.appendChild(logoContainer);
     }
 
+    // Title / subtitle header (shown in every state)
+    const header = this._buildHeader();
+    if (header) {
+      inner.appendChild(header);
+    }
+
     // Error (takes precedence)
     if (this._error && this._sections.length === 0) {
       inner.appendChild(this._buildErrorState(this._error));
@@ -570,6 +614,29 @@ export class CourierPreferences extends CourierBaseElement {
 
     root.appendChild(inner);
     this.appendChild(root);
+  }
+
+  private _buildHeader(): HTMLElement | null {
+    if (!this._title && !this._subtitle) return null;
+
+    const header = document.createElement('div');
+    header.className = 'courier-preferences-header';
+
+    if (this._title) {
+      const title = document.createElement('h1');
+      title.className = 'courier-preferences-title';
+      title.textContent = this._title;
+      header.appendChild(title);
+    }
+
+    if (this._subtitle) {
+      const subtitle = document.createElement('p');
+      subtitle.className = 'courier-preferences-subtitle';
+      subtitle.textContent = this._subtitle;
+      header.appendChild(subtitle);
+    }
+
+    return header;
   }
 
   private _buildSkeleton(): HTMLElement {

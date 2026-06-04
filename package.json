@@ -11,7 +11,8 @@
     "@trycourier/courier-react",
     "@trycourier/courier-react-17",
     "examples/*",
-    "designer"
+    "designer",
+    "preferences-page"
   ],
   "repository": {
     "url": "https://github.com/trycourier/courier-web"

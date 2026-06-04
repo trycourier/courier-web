@@ -19,6 +19,21 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "🔔 Run Preferences Page",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "workspace",
+        "preferences-page",
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "🧪 Run Tests",
       "runtimeExecutable": "/bin/bash",
       "runtimeArgs": [
@@ -77,7 +92,8 @@
         "next-12",
         "react-latest",
         "react-17",
-        "designer"
+        "designer",
+        "preferences-page"
       ]
     },
     {

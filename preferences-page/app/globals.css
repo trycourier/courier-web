@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-page-bg: #F5F5F5;
+  --color-body-text: #171717;
+  --color-primary: #10B981;
+  --color-subtitle: #404040;
+  --color-muted: #737373;
+  --font-sans: "TWK Lausanne", system-ui, -apple-system, sans-serif;
+  --font-heading: "Inter", system-ui, -apple-system, sans-serif;
+}
