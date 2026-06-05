@@ -158,6 +158,22 @@ describe('InboxClient', () => {
     expect(result.data?.messages?.pageInfo).toBeDefined();
   });
 
+  it('should fetch a tenant\'s messages via the per-request accountId filter', async () => {
+    // Same scoping as constructing a client with tenantId, but supplied per request so a
+    // single client can read any tenant. All returned messages must belong to that account.
+    const tenantId = env('TENANT_ID');
+    const result = await courierClient.inbox.getMessages({
+      paginationLimit: 10,
+      filter: { accountId: tenantId },
+    });
+
+    expect(result.data?.messages?.nodes).toBeDefined();
+    expect(result.data?.messages?.pageInfo).toBeDefined();
+    for (const node of result.data?.messages?.nodes ?? []) {
+      expect(node.accountId).toBe(tenantId);
+    }
+  });
+
   it('testing socket events', async () => {
     const socket = courierClient.inbox.socket;
 

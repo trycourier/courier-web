@@ -45,6 +45,7 @@ export class InboxClient extends Client {
           }
           nodes {
             messageId
+            accountId
             read
             archived
             created
@@ -500,8 +501,12 @@ export class InboxClient extends Client {
   private createFilterParams(filter: CourierGetInboxMessagesQueryFilter) {
     const parts = []
 
-    if (this.options.tenantId) {
-      parts.push(`accountId: "${this.options.tenantId}"`);
+    // A per-request accountId (sub-tenant) takes precedence over the client-level tenantId,
+    // so a single client can fetch messages for any tenant via the filter. Falls back to the
+    // client-level tenantId when the filter doesn't specify one.
+    const accountId = filter.accountId ?? this.options.tenantId;
+    if (accountId) {
+      parts.push(`accountId: "${accountId}"`);
     }
 
     if (filter.tags) {
