@@ -89,7 +89,7 @@ export default async function UnsubscribePage({ params }: PageProps) {
   let recipientPreferences: RecipientPreference[];
   try {
     [page, recipientPreferences] = await Promise.all([
-      fetchPreferencePage(auth, accountId, brandId, false),
+      fetchPreferencePage(auth, accountId, brandId),
       fetchRecipientPreferences(auth, accountId),
     ]);
   } catch {

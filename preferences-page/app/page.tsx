@@ -11,7 +11,6 @@ export default function Home() {
   const [userId, setUserId] = useState("");
   const [brandId, setBrandId] = useState("");
   const [accountId, setAccountId] = useState("");
-  const [draft, setDraft] = useState(false);
   const [env, setEnv] = useState<"production" | "staging" | "dev">("production");
   const [topicId, setTopicId] = useState("");
   const [list, setList] = useState(false);
@@ -45,7 +44,6 @@ export default function Home() {
           workspaceId.trim(),
           brandId.trim(),
           userId.trim(),
-          String(draft),
           accountId.trim(),
           apiKey.trim(),
           env,
@@ -54,7 +52,7 @@ export default function Home() {
         window.location.href = `/p/${encodeURIComponent(encoded)}`;
       }
     },
-    [canSubmit, mode, apiKey, workspaceId, userId, brandId, accountId, draft, env, topicId, list]
+    [canSubmit, mode, apiKey, workspaceId, userId, brandId, accountId, env, topicId, list]
   );
 
   return (
@@ -154,17 +152,6 @@ export default function Home() {
               <option value="dev">Dev</option>
             </select>
           </Field>
-
-          {mode === "preferences" && (
-            <label className="flex items-center gap-2 text-[13px]">
-              <input
-                type="checkbox"
-                checked={draft}
-                onChange={(e) => setDraft(e.target.checked)}
-              />
-              <span>Draft mode</span>
-            </label>
-          )}
 
           {mode === "unsubscribe" && (
             <label className="flex items-center gap-2 text-[13px]">

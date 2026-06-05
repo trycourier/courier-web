@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { DecodedParams } from "@/lib/types";
 import { decodeParams } from "@/lib/decode-params";
 import { buildAuthContext } from "@/lib/auth";
 import { getApiUrls } from "@/lib/api-urls";
@@ -19,21 +20,24 @@ interface PageProps {
 export default async function HostedPreferencesPage({ params }: PageProps) {
   const { encodedId } = await params;
 
-  let decoded;
+  let decoded: DecodedParams;
   try {
     decoded = decodeParams(encodedId);
   } catch {
-    notFound();
+    notFound(); // returns `never` — narrows `decoded` to DecodedParams below
   }
 
   // `draft` is decoded for backwards compatibility but ignored: the
   // CourierPreferences component only renders published preference pages.
   const { workspaceId, brandId, userId, accountId, apiKey, env } = decoded;
 
+  // Mint a user JWT on the server from the API key carried in the token. The
+  // client signs in with this JWT so the component can read/write preferences.
   let jwt: string;
   try {
     ({ jwt } = await buildAuthContext(workspaceId, userId, apiKey, env));
-  } catch {
+  } catch (error) {
+    console.error("[preferences-page] Failed to authenticate:", error);
     return <ErrorPage />;
   }
 

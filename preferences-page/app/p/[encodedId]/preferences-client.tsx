@@ -25,8 +25,7 @@ const SUBTITLE =
 /**
  * Signs the user into Courier (so the `<courier-preferences>` web component can
  * read `Courier.shared.client`) and renders the real CourierPreferences
- * component, themed to match the legacy hosted page. Mirrors the auth flow in
- * `designer/components/CourierAuth.tsx`.
+ * component, themed to match the legacy hosted page.
  */
 export function PreferencesClient({
   userId,

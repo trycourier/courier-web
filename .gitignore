@@ -16,6 +16,8 @@ coverage/
 !designer/app/api/lib/
 !designer/app/inbox-demo/lib/
 !designer/app/inbox-demo/api/lib/
+# Exception: don't ignore preferences-page's lib source files
+!preferences-page/lib/
 *.tgz
 
 # IDE and Editor files
