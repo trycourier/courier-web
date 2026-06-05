@@ -501,12 +501,10 @@ export class InboxClient extends Client {
   private createFilterParams(filter: CourierGetInboxMessagesQueryFilter) {
     const parts = []
 
-    // A per-request accountId (sub-tenant) takes precedence over the client-level tenantId,
-    // so a single client can fetch messages for any tenant via the filter. Falls back to the
-    // client-level tenantId when the filter doesn't specify one.
-    const accountId = filter.accountId ?? this.options.tenantId;
-    if (accountId) {
-      parts.push(`accountId: "${accountId}"`);
+    // Tenant scope lives only on the client (`tenantId`) and is applied to every inbox request,
+    // so a dev sets it once and all reads/counts are scoped to that tenant's account.
+    if (this.options.tenantId) {
+      parts.push(`accountId: "${this.options.tenantId}"`);
     }
 
     if (filter.tags) {

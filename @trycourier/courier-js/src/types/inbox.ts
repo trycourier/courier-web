@@ -17,13 +17,6 @@ export interface CourierGetInboxMessagesResponse {
  */
 export interface CourierGetInboxMessagesQueryFilter {
   /**
-   * If set, only messages scoped to this account / sub-tenant are returned (maps to the inbox
-   * `accountId` filter). Use this to fetch a specific tenant's messages on a per-request basis
-   * without constructing a new client. When set, it takes precedence over the client-level
-   * `tenantId` for this request; when omitted, the client-level `tenantId` (if any) is used.
-   */
-  accountId?: string;
-  /**
    * If set, only messages that have at least one of these tags are returned (tag match is OR within the array).
    */
   tags?: string[];
