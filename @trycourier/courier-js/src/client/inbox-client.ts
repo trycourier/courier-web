@@ -45,6 +45,7 @@ export class InboxClient extends Client {
           }
           nodes {
             messageId
+            accountId
             read
             archived
             created

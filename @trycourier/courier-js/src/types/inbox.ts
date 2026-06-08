@@ -54,6 +54,8 @@ export interface InboxAction {
 
 export interface InboxMessage {
   messageId: string;
+  /** The account / sub-tenant this message is scoped to, if any. */
+  accountId?: string;
   title?: string;
   body?: string;
   preview?: string;
