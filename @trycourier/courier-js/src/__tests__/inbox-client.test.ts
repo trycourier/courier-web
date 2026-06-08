@@ -149,13 +149,19 @@ describe('InboxClient', () => {
     expect(socket.isOpen).toBe(false);
   });
 
-  it('should see tenant messages with new client', async () => {
-    const newClient = getClient(env('TENANT_ID'));
+  it('should see tenant messages scoped by the client-level tenantId', async () => {
+    // Tenant scope is set once on the client; every read is scoped to that tenant's account
+    // and all returned messages must belong to it.
+    const tenantId = env('TENANT_ID');
+    const newClient = getClient(tenantId);
     const result = await newClient.inbox.getMessages({
       paginationLimit: 10,
     });
     expect(result.data?.messages?.nodes).toBeDefined();
     expect(result.data?.messages?.pageInfo).toBeDefined();
+    for (const node of result.data?.messages?.nodes ?? []) {
+      expect(node.accountId).toBe(tenantId);
+    }
   });
 
   it('testing socket events', async () => {

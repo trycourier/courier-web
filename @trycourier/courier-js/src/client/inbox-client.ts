@@ -45,6 +45,7 @@ export class InboxClient extends Client {
           }
           nodes {
             messageId
+            accountId
             read
             archived
             created
@@ -500,6 +501,8 @@ export class InboxClient extends Client {
   private createFilterParams(filter: CourierGetInboxMessagesQueryFilter) {
     const parts = []
 
+    // Tenant scope lives only on the client (`tenantId`) and is applied to every inbox request,
+    // so a dev sets it once and all reads/counts are scoped to that tenant's account.
     if (this.options.tenantId) {
       parts.push(`accountId: "${this.options.tenantId}"`);
     }
