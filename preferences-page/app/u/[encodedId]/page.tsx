@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { decodeUnsubscribeParams } from "@/lib/decode-params";
 import { buildAuthContext } from "@/lib/auth";
+import { encodeBase64 } from "@/lib/token";
 import {
   fetchPreferencePage,
   fetchRecipientPreferences,
@@ -46,11 +47,12 @@ function buildPreferencesPageUrl(
   brandId: string,
   userId: string,
   accountId: string,
-  apiKey: string,
   env: string
 ): string {
-  const segments = [workspaceId, brandId, userId, "false", accountId, apiKey, env];
-  const encoded = Buffer.from(segments.join("#")).toString("base64");
+  // Fixed 6-segment layout (matches the tester / decodeParams): accountId holds
+  // its position even when empty so `env` stays at index 5.
+  const segments = [workspaceId, brandId, userId, "false", accountId, env];
+  const encoded = encodeBase64(segments.join("#"));
   return `/p/${encodeURIComponent(encoded)}`;
 }
 
@@ -75,12 +77,12 @@ export default async function UnsubscribePage({ params }: PageProps) {
     notFound();
   }
 
-  const { workspaceId, brandId, userId, topicId, list, accountId, apiKey, env } =
+  const { workspaceId, brandId, userId, topicId, list, accountId, env } =
     decoded;
 
   let auth: AuthContext;
   try {
-    auth = await buildAuthContext(workspaceId, userId, apiKey, env);
+    auth = await buildAuthContext(workspaceId, brandId, userId, accountId, env);
   } catch {
     return <ErrorPage />;
   }
@@ -112,7 +114,6 @@ export default async function UnsubscribePage({ params }: PageProps) {
     brandId,
     userId,
     accountId,
-    apiKey,
     env
   );
 

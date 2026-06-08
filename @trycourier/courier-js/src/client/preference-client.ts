@@ -169,11 +169,14 @@ export class PreferenceClient extends Client {
    * @param brandId - Optional brand ID to resolve brand colors/logo/links inline.
    * @returns The published preference page, or `null` if none is published.
    */
-  public async getPreferencePage(props?: { accountId?: string; brandId?: string }): Promise<CourierPreferencePage | null> {
+  public async getPreferencePage(props?: { accountId?: string; brandId?: string; draft?: boolean }): Promise<CourierPreferencePage | null> {
     const accountId = props?.accountId ?? this.options.tenantId;
     const brandId = props?.brandId;
+    const draft = props?.draft ?? false;
 
-    const accountArg = accountId ? `(accountId: "${accountId}")` : '';
+    // The draft page is built live from the workspace's current (unpublished)
+    // config and takes no page-level arguments; the published page accepts accountId.
+    const pageField = draft ? 'draftPreferencePage' : `preferencePage${accountId ? `(accountId: "${accountId}")` : ''}`;
     const brandFragment = `
         brand${brandId ? `(brandId: "${brandId}")` : ''} {
           settings {
@@ -190,7 +193,7 @@ export class PreferenceClient extends Client {
 
     const query = `
       query GetPreferencePage {
-        preferencePage${accountArg} {
+        ${pageField} {
           showCourierFooter
           ${brandFragment}
           channelConfigs {
@@ -240,7 +243,7 @@ export class PreferenceClient extends Client {
       },
     });
 
-    const page = response.data?.preferencePage;
+    const page = response.data?.draftPreferencePage ?? response.data?.preferencePage;
     if (!page) return null;
 
     const recipientPreferences: RecipientPreference[] =

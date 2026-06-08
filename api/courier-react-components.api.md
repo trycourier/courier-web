@@ -114,6 +114,7 @@ export interface CourierPreferencesProps {
     channelLabels?: Record<string, string>;
     // (undocumented)
     darkTheme?: CourierPreferencesTheme;
+    draft?: boolean;
     // (undocumented)
     lightTheme?: CourierPreferencesTheme;
     // (undocumented)

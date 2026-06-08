@@ -93,7 +93,6 @@ export interface DecodedParams {
   /** Render the draft preference page instead of the published one (ignored today). */
   draft: boolean;
   accountId: string;
-  apiKey: string;
   env: CourierEnv;
 }
 
@@ -104,7 +103,6 @@ export interface DecodedUnsubscribeParams {
   topicId: string;
   list: boolean;
   accountId: string;
-  apiKey: string;
   env: CourierEnv;
 }
 
@@ -112,4 +110,17 @@ export interface AuthContext {
   apiUrl: string;
   jwt: string;
   clientKey: string;
+}
+
+/**
+ * The bits of `window.courierConfig` we read back from the backend's hosted
+ * preferences page (`GET /p/{encodedId}`) — a JWT minted server-side from the
+ * workspace's stored key, plus the user/brand/tenant/draft context it embedded.
+ */
+export interface HostedPreferencesAuth {
+  jwt: string;
+  userId: string;
+  brandId?: string;
+  tenantId?: string;
+  draft: boolean;
 }

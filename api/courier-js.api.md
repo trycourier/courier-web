@@ -241,6 +241,7 @@ export interface CourierGetInboxMessageResponse {
 //
 // @public
 export interface CourierGetInboxMessagesQueryFilter {
+    accountId?: string;
     archived?: boolean;
     from?: string;
     status?: 'read' | 'unread';
@@ -531,6 +532,7 @@ export class InboxClient extends Client {
 //
 // @public (undocumented)
 export interface InboxMessage {
+    accountId?: string;
     // (undocumented)
     actions?: InboxAction[];
     // (undocumented)
@@ -631,6 +633,7 @@ export class PreferenceClient extends Client {
     getPreferencePage(props?: {
         accountId?: string;
         brandId?: string;
+        draft?: boolean;
     }): Promise<CourierPreferencePage | null>;
     getUserPreferences(props?: {
         paginationCursor?: string;

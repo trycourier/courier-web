@@ -1,21 +1,22 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { encodeBase64 } from "@/lib/token";
 
 type PageMode = "preferences" | "unsubscribe";
 
 export default function Home() {
   const [mode, setMode] = useState<PageMode>("preferences");
-  const [apiKey, setApiKey] = useState("");
   const [workspaceId, setWorkspaceId] = useState("");
   const [userId, setUserId] = useState("");
   const [brandId, setBrandId] = useState("");
   const [accountId, setAccountId] = useState("");
   const [env, setEnv] = useState<"production" | "staging" | "dev">("production");
+  const [draft, setDraft] = useState(false);
   const [topicId, setTopicId] = useState("");
   const [list, setList] = useState(false);
 
-  const baseCanSubmit = apiKey.trim() && workspaceId.trim() && userId.trim();
+  const baseCanSubmit = workspaceId.trim() && userId.trim();
   const canSubmit =
     mode === "unsubscribe"
       ? baseCanSubmit && topicId.trim()
@@ -34,25 +35,24 @@ export default function Home() {
           topicId.trim(),
           String(list),
           accountId.trim(),
-          apiKey.trim(),
           env,
         ];
-        const encoded = btoa(segments.join("#"));
+        const encoded = encodeBase64(segments.join("#"));
         window.location.href = `/u/${encodeURIComponent(encoded)}`;
       } else {
         const segments = [
           workspaceId.trim(),
           brandId.trim(),
           userId.trim(),
+          String(draft),
           accountId.trim(),
-          apiKey.trim(),
           env,
         ];
-        const encoded = btoa(segments.join("#"));
+        const encoded = encodeBase64(segments.join("#"));
         window.location.href = `/p/${encodeURIComponent(encoded)}`;
       }
     },
-    [canSubmit, mode, apiKey, workspaceId, userId, brandId, accountId, env, topicId, list]
+    [canSubmit, mode, workspaceId, userId, brandId, accountId, env, draft, topicId, list]
   );
 
   return (
@@ -73,17 +73,6 @@ export default function Home() {
               <option value="preferences">Preferences Page</option>
               <option value="unsubscribe">Unsubscribe Page</option>
             </select>
-          </Field>
-
-          <Field label="API Key" required>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="pk_prod_..."
-              required
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md outline-none focus:border-gray-400 transition-colors"
-            />
           </Field>
 
           <Field label="Workspace ID" required>
@@ -152,6 +141,17 @@ export default function Home() {
               <option value="dev">Dev</option>
             </select>
           </Field>
+
+          {mode === "preferences" && (
+            <label className="flex items-center gap-2 text-[13px]">
+              <input
+                type="checkbox"
+                checked={draft}
+                onChange={(e) => setDraft(e.target.checked)}
+              />
+              <span>Draft mode</span>
+            </label>
+          )}
 
           {mode === "unsubscribe" && (
             <label className="flex items-center gap-2 text-[13px]">

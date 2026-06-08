@@ -261,7 +261,7 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     selectedFont: {
       size: '14px',
-      weight: '500',
+      weight: '400',
       color: CourierColors.black[500],
     },
     iconColor: '#525252',
@@ -395,7 +395,7 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     selectedFont: {
       size: '14px',
-      weight: '500',
+      weight: '400',
       color: '#F9FAFB',
     },
     iconColor: '#9CA3AF',

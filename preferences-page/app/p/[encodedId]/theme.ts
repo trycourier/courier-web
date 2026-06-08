@@ -53,7 +53,7 @@ export const preferencesTheme: CourierPreferencesTheme = {
   },
   topic: {
     backgroundColor: "#FFFFFF",
-    border: "1px solid #E5E5E5",
+    border: "none",
     borderRadius: "12px",
     title: {
       family: BODY_FONT,
@@ -84,7 +84,7 @@ export const preferencesTheme: CourierPreferencesTheme = {
     selectedFont: {
       family: BODY_FONT,
       size: "14px",
-      weight: "500",
+      weight: "400",
       color: BODY_TEXT,
     },
     iconColor: "#525252",

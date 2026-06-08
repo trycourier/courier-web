@@ -1,4 +1,5 @@
 import type { CourierEnv, DecodedParams, DecodedUnsubscribeParams } from "./types";
+import { decodeBase64 } from "./token";
 
 const VALID_ENVS = new Set<CourierEnv>(["production", "staging", "dev"]);
 
@@ -10,21 +11,19 @@ function parseEnv(raw: string | undefined): CourierEnv {
 /**
  * Decodes the base64-encoded path parameter.
  *
- * Format: workspaceId#brandId#userId#draft#accountId#apiKey#env
+ * Format: workspaceId#brandId#userId#draft#accountId#env
  *
- * The leading `workspaceId#brandId#userId#draft` matches the backend's canonical
- * hosted-preferences token (see `generate-tracking-links.ts`). The trailing
- * `accountId#apiKey#env` segments are appended for this tester so the server can
- * mint a user JWT from the API key carried in the token. `draft` is parsed but
- * ignored (the component only renders published pages). Tokens without the
+ * The leading `workspaceId#brandId#userId#draft#accountId` matches the backend's
+ * canonical hosted-preferences token (see `generate-tracking-links.ts`); the
+ * backend mints the JWT from the workspace's stored key. The trailing `env`
+ * segment is appended for this tester to pick the API host. `draft` is parsed and
+ * forwarded to the client (propagated like the backend's `preferencePageDraftMode`;
+ * the CourierPreferences component does not consume it yet). Tokens without the
  * trailing segments still parse — the extra fields just come back empty.
  */
 export function decodeParams(encodedId: string): DecodedParams {
-  const decoded = Buffer.from(
-    decodeURIComponent(encodedId),
-    "base64"
-  ).toString();
-  const [workspaceId, brandId, userId, draftStr, accountId, apiKey, env] =
+  const decoded = decodeBase64(decodeURIComponent(encodedId));
+  const [workspaceId, brandId, userId, draftStr, accountId, env] =
     decoded.split("#");
 
   if (!workspaceId?.trim() || !userId?.trim()) {
@@ -37,7 +36,6 @@ export function decodeParams(encodedId: string): DecodedParams {
     userId,
     draft: draftStr === "true",
     accountId: accountId ?? "",
-    apiKey: apiKey ?? "",
     env: parseEnv(env),
   };
 }
@@ -45,14 +43,11 @@ export function decodeParams(encodedId: string): DecodedParams {
 /**
  * Decodes the base64-encoded path parameter for unsubscribe pages.
  *
- * Format: workspaceId#brandId#userId#topicId#list[#accountId][#apiKey][#env]
+ * Format: workspaceId#brandId#userId#topicId#list[#accountId][#env]
  */
 export function decodeUnsubscribeParams(encodedId: string): DecodedUnsubscribeParams {
-  const decoded = Buffer.from(
-    decodeURIComponent(encodedId),
-    "base64"
-  ).toString();
-  const [workspaceId, brandId, userId, topicId, listStr, accountId, apiKey, env] =
+  const decoded = decodeBase64(decodeURIComponent(encodedId));
+  const [workspaceId, brandId, userId, topicId, listStr, accountId, env] =
     decoded.split("#");
 
   if (!workspaceId?.trim() || !userId?.trim() || !topicId?.trim()) {
@@ -66,7 +61,6 @@ export function decodeUnsubscribeParams(encodedId: string): DecodedUnsubscribePa
     topicId,
     list: listStr === "true",
     accountId: accountId ?? "",
-    apiKey: apiKey ?? "",
     env: parseEnv(env),
   };
 }

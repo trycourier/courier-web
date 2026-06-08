@@ -109,7 +109,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
     .courier-preferences-skeleton {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 25px;
       width: 100%;
     }
     .courier-preferences-skeleton-topics {
@@ -121,11 +121,16 @@ function getStyles(theme: CourierPreferencesTheme): string {
       background: ${topic?.backgroundColor || '#FFFFFF'};
       border: ${topic?.border || 'none'};
       border-radius: ${topic?.borderRadius || '12px'};
-      padding: 26px 0;
+      /* Match the running topic's height: 20px vertical padding (see
+         courier-preferences-topic .courier-pref-topic) around a control row. */
+      padding: 20px 0;
       box-sizing: border-box;
     }
     .courier-preferences-skeleton-card-header {
+      /* Left/right padding matches the topic header; the control-row height
+         (24px, the toggle) vertically centers the shimmer bar within it. */
       padding: 0 24px;
+      min-height: 24px;
       display: flex;
       align-items: center;
     }
@@ -215,7 +220,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'title', 'subtitle'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'draft', 'title', 'subtitle'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -226,10 +231,15 @@ export class CourierPreferences extends CourierBaseElement {
   private _error?: Error;
   private _channelLabels: Record<string, string> = {};
   private _brandId?: string;
+  private _draft = false;
   private _brand?: CourierBrand;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   private _title?: string;
   private _subtitle?: string;
+  /** Raw, pre-merge user themes (undefined when none supplied). Kept so the
+   *  brand primary can be injected only into control slots the user left unset. */
+  private _userLightTheme?: CourierPreferencesTheme;
+  private _userDarkTheme?: CourierPreferencesTheme;
 
   protected onComponentMounted(): void {
     this._title = this.getAttribute('title') || undefined;
@@ -257,12 +267,12 @@ export class CourierPreferences extends CourierBaseElement {
     switch (name) {
       case 'light-theme':
         if (newValue) {
-          try { this._themeManager.setLightTheme(JSON.parse(newValue)); } catch { /* skip */ }
+          try { this._userLightTheme = JSON.parse(newValue); this._applyEffectiveThemes(); } catch { /* skip */ }
         }
         break;
       case 'dark-theme':
         if (newValue) {
-          try { this._themeManager.setDarkTheme(JSON.parse(newValue)); } catch { /* skip */ }
+          try { this._userDarkTheme = JSON.parse(newValue); this._applyEffectiveThemes(); } catch { /* skip */ }
         }
         break;
       case 'mode':
@@ -274,6 +284,12 @@ export class CourierPreferences extends CourierBaseElement {
         break;
       case 'brand-id':
         this._brandId = newValue || undefined;
+        if (Courier.shared.client?.options.userId) {
+          this._refresh();
+        }
+        break;
+      case 'draft':
+        this._draft = newValue === 'true';
         if (Courier.shared.client?.options.userId) {
           this._refresh();
         }
@@ -290,11 +306,13 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   public setLightTheme(theme: CourierPreferencesTheme) {
-    this._themeManager.setLightTheme(theme);
+    this._userLightTheme = theme;
+    this._applyEffectiveThemes();
   }
 
   public setDarkTheme(theme: CourierPreferencesTheme) {
-    this._themeManager.setDarkTheme(theme);
+    this._userDarkTheme = theme;
+    this._applyEffectiveThemes();
   }
 
   public setMode(mode: CourierComponentThemeMode) {
@@ -309,18 +327,71 @@ export class CourierPreferences extends CourierBaseElement {
   private _readInitialThemeAttributes() {
     const lightTheme = this.getAttribute('light-theme');
     if (lightTheme) {
-      try { this._themeManager.setLightTheme(JSON.parse(lightTheme)); } catch { /* skip */ }
+      try { this._userLightTheme = JSON.parse(lightTheme); } catch { /* skip */ }
     }
 
     const darkTheme = this.getAttribute('dark-theme');
     if (darkTheme) {
-      try { this._themeManager.setDarkTheme(JSON.parse(darkTheme)); } catch { /* skip */ }
+      try { this._userDarkTheme = JSON.parse(darkTheme); } catch { /* skip */ }
     }
+
+    this._applyEffectiveThemes();
 
     const mode = this.getAttribute('mode');
     if (mode) {
       this._themeManager.setMode(mode as CourierComponentThemeMode);
     }
+  }
+
+  /** Brand primary color, if a brand with a primary color is loaded. */
+  private _brandPrimary(): string | undefined {
+    return this._brand?.settings?.colors?.primary || undefined;
+  }
+
+  /**
+   * Inject the brand primary into the toggle / radio / checkbox color slots
+   * (and top-level primaryColor) wherever the user theme left them unset.
+   * Returns the theme unchanged when there is no brand primary, so behavior
+   * without a brand is identical to before.
+   */
+  private _withBrandColors(userTheme: CourierPreferencesTheme): CourierPreferencesTheme {
+    const brand = this._brandPrimary();
+    if (!brand) return userTheme;
+    return {
+      ...userTheme,
+      primaryColor: userTheme.primaryColor ?? brand,
+      topic: {
+        ...userTheme.topic,
+        toggle: {
+          ...userTheme.topic?.toggle,
+          trackActiveColor: userTheme.topic?.toggle?.trackActiveColor ?? brand,
+        },
+      },
+      digest: {
+        ...userTheme.digest,
+        radio: {
+          ...userTheme.digest?.radio,
+          checkedColor: userTheme.digest?.radio?.checkedColor ?? brand,
+        },
+      },
+      channelChip: {
+        ...userTheme.channelChip,
+        checkbox: {
+          ...userTheme.channelChip?.checkbox,
+          checkedColor: userTheme.channelChip?.checkbox?.checkedColor ?? brand,
+        },
+      },
+    };
+  }
+
+  /**
+   * Push the brand-aware "effective" themes into the theme manager. Passing the
+   * raw user theme (or an empty object) — not the default theme — lets mergeTheme fill the
+   * untouched slots with defaults while keeping the injected brand colors.
+   */
+  private _applyEffectiveThemes() {
+    this._themeManager.setLightTheme(this._withBrandColors(this._userLightTheme ?? {}));
+    this._themeManager.setDarkTheme(this._withBrandColors(this._userDarkTheme ?? {}));
   }
 
   private _setupThemeSubscription() {
@@ -349,11 +420,14 @@ export class CourierPreferences extends CourierBaseElement {
     this._render();
 
     try {
-      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId });
+      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId, draft: this._draft });
 
       if (pageData) {
         this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);
         this._brand = pageData.brand as CourierBrand | undefined;
+        // Re-apply themes now that the brand is known so its primary color flows
+        // into the toggle / radio / checkbox; also refreshes _primaryColor.
+        this._applyEffectiveThemes();
         this._resolvePrimaryColor();
       }
     } catch (error: unknown) {

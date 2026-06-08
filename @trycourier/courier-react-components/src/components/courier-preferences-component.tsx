@@ -15,6 +15,8 @@ export interface CourierPreferencesProps {
   title?: string;
   subtitle?: string;
   brandId?: string;
+  /** Render the draft (unpublished) preference page instead of the published one. */
+  draft?: boolean;
   channelLabels?: Record<string, string>;
   onError?: (error: Error) => void;
 }
@@ -62,6 +64,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
       title={props.title}
       subtitle={props.subtitle}
       brand-id={props.brandId}
+      draft={props.draft ? "true" : undefined}
     />
   );
 

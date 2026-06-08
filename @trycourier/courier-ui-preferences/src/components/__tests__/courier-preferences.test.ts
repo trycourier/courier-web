@@ -1,4 +1,5 @@
 import { CourierPreferences } from "../courier-preferences";
+import { defaultLightTheme } from "../../types/courier-preferences-theme";
 
 describe("courier-preferences header", () => {
   afterEach(() => {
@@ -51,5 +52,66 @@ describe("courier-preferences header", () => {
 
     el.removeAttribute("title");
     expect(title()).toBeNull();
+  });
+});
+
+describe("courier-preferences brand colors", () => {
+  const BRAND_PRIMARY = "#ff0000";
+
+  afterEach(() => {
+    while (document.body.firstChild) {
+      document.body.firstChild.remove();
+    }
+  });
+
+  function mountWithBrand(primary: string | undefined): CourierPreferences {
+    const el = new CourierPreferences();
+    document.body.appendChild(el);
+    el.setMode("light");
+    // Simulate a loaded brand, then re-apply the effective themes the way
+    // _refresh() does once the brand has been fetched.
+    (el as unknown as { _brand: unknown })._brand = primary
+      ? { settings: { colors: { primary } } }
+      : undefined;
+    (el as unknown as { _applyEffectiveThemes: () => void })._applyEffectiveThemes();
+    return el;
+  }
+
+  function mergedTheme(el: CourierPreferences) {
+    return (el as unknown as { _themeManager: { getTheme: () => any } })._themeManager.getTheme();
+  }
+
+  it("applies the brand primary to toggle, radio, and checkbox colors", () => {
+    const theme = mergedTheme(mountWithBrand(BRAND_PRIMARY));
+
+    expect(theme.primaryColor).toBe(BRAND_PRIMARY);
+    expect(theme.topic?.toggle?.trackActiveColor).toBe(BRAND_PRIMARY);
+    expect(theme.digest?.radio?.checkedColor).toBe(BRAND_PRIMARY);
+    expect(theme.channelChip?.checkbox?.checkedColor).toBe(BRAND_PRIMARY);
+  });
+
+  it("lets an explicit theme control color override the brand color", () => {
+    const el = new CourierPreferences();
+    document.body.appendChild(el);
+    el.setMode("light");
+    el.setLightTheme({ topic: { toggle: { trackActiveColor: "#00ff00" } } });
+
+    (el as unknown as { _brand: unknown })._brand = { settings: { colors: { primary: BRAND_PRIMARY } } };
+    (el as unknown as { _applyEffectiveThemes: () => void })._applyEffectiveThemes();
+
+    const theme = mergedTheme(el);
+    // Explicit value wins; the unset slots still take the brand color.
+    expect(theme.topic?.toggle?.trackActiveColor).toBe("#00ff00");
+    expect(theme.digest?.radio?.checkedColor).toBe(BRAND_PRIMARY);
+    expect(theme.channelChip?.checkbox?.checkedColor).toBe(BRAND_PRIMARY);
+  });
+
+  it("falls back to default control colors when there is no brand", () => {
+    const theme = mergedTheme(mountWithBrand(undefined));
+
+    // Defaults (blue) remain; nothing is forced to the brand color.
+    expect(theme.topic?.toggle?.trackActiveColor).toBe(defaultLightTheme.topic?.toggle?.trackActiveColor);
+    expect(theme.digest?.radio?.checkedColor).toBe(defaultLightTheme.digest?.radio?.checkedColor);
+    expect(theme.channelChip?.checkbox?.checkedColor).toBe(defaultLightTheme.channelChip?.checkbox?.checkedColor);
   });
 });

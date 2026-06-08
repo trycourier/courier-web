@@ -16,6 +16,12 @@ interface PreferencesClientProps {
   tenantId?: string;
   /** Brand to render the preference page for (optional). */
   brandId?: string;
+  /**
+   * Render the draft preference page instead of the published one. Propagated
+   * from the token (matches the backend's `preferencePageDraftMode`) and forwarded
+   * to CourierPreferences, which queries `draftPreferencePage` when set.
+   */
+  draft?: boolean;
 }
 
 const TITLE = "Notifications Preferences";
@@ -33,6 +39,7 @@ export function PreferencesClient({
   apiUrls,
   tenantId,
   brandId,
+  draft,
 }: PreferencesClientProps) {
   const courier = useCourier();
   const [ready, setReady] = useState(false);
@@ -49,7 +56,10 @@ export function PreferencesClient({
   }, [userId, jwt, tenantId]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-10 px-4 sm:py-14 sm:px-6">
+    <div
+      className="min-h-screen flex flex-col items-center py-10 px-4 sm:py-14 sm:px-6"
+      data-preference-page-draft-mode={draft ? "true" : undefined}
+    >
       <div className="w-full max-w-[640px]">
         {ready && (
           <CourierPreferences
@@ -58,6 +68,7 @@ export function PreferencesClient({
             title={TITLE}
             subtitle={SUBTITLE}
             brandId={brandId}
+            draft={draft}
           />
         )}
       </div>
