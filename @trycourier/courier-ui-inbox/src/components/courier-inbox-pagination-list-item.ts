@@ -9,7 +9,7 @@ export class CourierInboxPaginationListItem extends CourierBaseElement {
   }
 
   // State
-  private _theme: CourierInboxTheme;
+  private _theme!: CourierInboxTheme;
 
   // Components
   private _style?: HTMLStyleElement;
@@ -18,10 +18,18 @@ export class CourierInboxPaginationListItem extends CourierBaseElement {
   private _customItem?: HTMLElement;
 
   // Handlers
-  private _onPaginationTrigger: () => void;
+  private _onPaginationTrigger!: () => void;
 
-  constructor(props: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
+  constructor(props?: { theme: CourierInboxTheme, customItem?: HTMLElement, onPaginationTrigger: () => void }) {
     super();
+
+    // Custom Elements may be constructed without arguments (e.g. the browser invokes
+    // the parameterless constructor during `cloneNode()`). Guard against a missing
+    // `props` so we don't throw an unhandled TypeError. See GitHub issue #150.
+    if (!props) {
+      return;
+    }
+
     this._theme = props.theme;
     this._customItem = props.customItem;
     this._onPaginationTrigger = props.onPaginationTrigger;
