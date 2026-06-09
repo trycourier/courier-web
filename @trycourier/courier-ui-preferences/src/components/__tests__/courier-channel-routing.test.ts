@@ -103,4 +103,14 @@ describe("courier-channel-routing", () => {
     const labels = chips().map((c) => c.querySelector(".courier-channel-chip-label")?.textContent);
     expect(labels).toEqual(["E-mail", "Push"]);
   });
+
+  it("renders a white checkmark by default in the light theme", () => {
+    mountRouting((r) => {
+      r.routingOptions = ["email"];
+      r.selectedChannels = ["email"];
+    });
+
+    const mark = document.querySelector(".courier-checkbox-mark path");
+    expect(mark?.getAttribute("fill")?.toUpperCase()).toBe("#FFFFFF");
+  });
 });

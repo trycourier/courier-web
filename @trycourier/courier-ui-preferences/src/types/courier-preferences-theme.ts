@@ -34,6 +34,8 @@ export type CourierPreferencesRadioTheme = {
 export type CourierPreferencesCheckboxTheme = {
   /** Color used for border and fill when checked. */
   checkedColor?: string;
+  /** Color of the checkmark (tick) when checked. Defaults to white. */
+  checkmarkColor?: string;
   /** Font for the checkbox label. */
   font?: CourierPreferencesFontTheme;
   /** Font for the checkbox label when selected. */
@@ -284,6 +286,7 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     divider: '1px solid #E5E5E5',
     checkbox: {
       checkedColor: CourierColors.blue[500],
+      checkmarkColor: CourierColors.white[500],
     },
   },
 };
@@ -418,6 +421,7 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     divider: `1px solid ${CourierColors.gray[400]}`,
     checkbox: {
       checkedColor: CourierColors.blue[400],
+      checkmarkColor: CourierColors.white[500],
     },
   },
 };

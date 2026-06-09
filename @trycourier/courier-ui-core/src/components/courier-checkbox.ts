@@ -72,6 +72,7 @@ export class CourierCheckbox extends CourierBaseElement {
   private _checked = false;
   private _disabled = false;
   private _checkedColor = DEFAULT_CHECKED_COLOR;
+  private _checkmarkColor?: string;
 
   private _rootEl?: HTMLSpanElement;
   private _markPathEl?: SVGPathElement;
@@ -93,6 +94,15 @@ export class CourierCheckbox extends CourierBaseElement {
 
   set checkedColor(val: string) {
     this._checkedColor = val || DEFAULT_CHECKED_COLOR;
+    this._applyState();
+  }
+
+  /**
+   * Color of the checkmark (tick) when checked. When unset, the mark color is
+   * derived from the checked color's contrast (white on dark, dark on light).
+   */
+  set checkmarkColor(val: string | undefined) {
+    this._checkmarkColor = val || undefined;
     this._applyState();
   }
 
@@ -139,7 +149,8 @@ export class CourierCheckbox extends CourierBaseElement {
     this._rootEl.setAttribute('aria-disabled', String(this._disabled));
     this._rootEl.style.borderColor = this._checked ? this._checkedColor : DEFAULT_BORDER_COLOR;
     this._rootEl.style.backgroundColor = this._checked ? this._checkedColor : 'transparent';
-    this._markPathEl.setAttribute('fill', isDarkColor(this._checkedColor) ? DEFAULT_CHECKMARK_COLOR : '#171717');
+    const markColor = this._checkmarkColor ?? (isDarkColor(this._checkedColor) ? DEFAULT_CHECKMARK_COLOR : '#171717');
+    this._markPathEl.setAttribute('fill', markColor);
   }
 }
 

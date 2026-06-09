@@ -233,6 +233,10 @@ export class CourierPreferences extends CourierBaseElement {
   private _brandId?: string;
   private _draft = false;
   private _brand?: CourierBrand;
+  /** Coalesces the burst of mount + attribute-change triggers into one fetch. */
+  private _refreshScheduled = false;
+  /** Bumped per refresh so a stale (out-of-order) response can't paint. */
+  private _refreshGeneration = 0;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   private _title?: string;
   private _subtitle?: string;
@@ -244,16 +248,18 @@ export class CourierPreferences extends CourierBaseElement {
   protected onComponentMounted(): void {
     this._title = this.getAttribute('title') || undefined;
     this._subtitle = this.getAttribute('subtitle') || undefined;
+    this._brandId = this.getAttribute('brand-id') || undefined;
+    this._draft = this.getAttribute('draft') === 'true';
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
 
     this._authListener = Courier.shared.addAuthenticationListener(() => {
-      this._refresh();
+      this._scheduleRefresh();
     });
 
     if (Courier.shared.client?.options.userId) {
-      this._refresh();
+      this._scheduleRefresh();
     }
   }
 
@@ -285,13 +291,13 @@ export class CourierPreferences extends CourierBaseElement {
       case 'brand-id':
         this._brandId = newValue || undefined;
         if (Courier.shared.client?.options.userId) {
-          this._refresh();
+          this._scheduleRefresh();
         }
         break;
       case 'draft':
         this._draft = newValue === 'true';
         if (Courier.shared.client?.options.userId) {
-          this._refresh();
+          this._scheduleRefresh();
         }
         break;
       case 'title':
@@ -349,10 +355,12 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   /**
-   * Inject the brand primary into the toggle / radio / checkbox color slots
-   * (and top-level primaryColor) wherever the user theme left them unset.
-   * Returns the theme unchanged when there is no brand primary, so behavior
-   * without a brand is identical to before.
+   * Apply the brand primary to the toggle / radio / checkbox control colors.
+   * When a brand is set, it overrides those three slots even if the user theme
+   * sets them (precedence for these slots: brand > theme > default). The
+   * top-level primaryColor only falls back to the brand when unset. Returns the
+   * theme unchanged when there is no brand primary, so behavior without a brand
+   * is identical to before.
    */
   private _withBrandColors(userTheme: CourierPreferencesTheme): CourierPreferencesTheme {
     const brand = this._brandPrimary();
@@ -364,21 +372,21 @@ export class CourierPreferences extends CourierBaseElement {
         ...userTheme.topic,
         toggle: {
           ...userTheme.topic?.toggle,
-          trackActiveColor: userTheme.topic?.toggle?.trackActiveColor ?? brand,
+          trackActiveColor: brand,
         },
       },
       digest: {
         ...userTheme.digest,
         radio: {
           ...userTheme.digest?.radio,
-          checkedColor: userTheme.digest?.radio?.checkedColor ?? brand,
+          checkedColor: brand,
         },
       },
       channelChip: {
         ...userTheme.channelChip,
         checkbox: {
           ...userTheme.channelChip?.checkbox,
-          checkedColor: userTheme.channelChip?.checkbox?.checkedColor ?? brand,
+          checkedColor: brand,
         },
       },
     };
@@ -411,16 +419,42 @@ export class CourierPreferences extends CourierBaseElement {
     });
   }
 
+  /**
+   * Coalesce the burst of mount + attribute-change triggers (brand-id, draft,
+   * auth) that fire within a single synchronous React commit into one fetch.
+   * The microtask runs after the commit settles, so `_refresh()` reads the
+   * final brandId/draft values and issues exactly one getPreferencePage call.
+   */
+  private _scheduleRefresh() {
+    if (this._refreshScheduled) return;
+    this._refreshScheduled = true;
+    queueMicrotask(() => {
+      this._refreshScheduled = false;
+      this._refresh();
+    });
+  }
+
   private async _refresh() {
     const client = Courier.shared.client;
     if (!client) return;
 
+    const generation = ++this._refreshGeneration;
+
     this._isLoading = true;
     this._error = undefined;
-    this._render();
+    // Only paint up front when there's nothing on screen yet (skeleton). When
+    // content already exists, keep it visible until the new data arrives so a
+    // re-refresh costs a single content paint instead of two.
+    if (this._sections.length === 0) {
+      this._render();
+    }
 
     try {
       const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId, draft: this._draft });
+
+      // A newer refresh superseded this one while it was in flight — drop the
+      // stale response so it can't paint over fresher data.
+      if (generation !== this._refreshGeneration) return;
 
       if (pageData) {
         this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);
@@ -431,10 +465,13 @@ export class CourierPreferences extends CourierBaseElement {
         this._resolvePrimaryColor();
       }
     } catch (error: unknown) {
+      if (generation !== this._refreshGeneration) return;
       this._error = error as Error;
     } finally {
-      this._isLoading = false;
-      this._render();
+      if (generation === this._refreshGeneration) {
+        this._isLoading = false;
+        this._render();
+      }
     }
   }
 

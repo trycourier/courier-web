@@ -241,6 +241,7 @@ export class CourierChannelRouting extends CourierBaseElement {
     const selectedFontFamily = checkboxSelectedFont?.family ?? selectedFont?.family ?? fontFamily;
 
     const checkedColor = checkbox?.checkedColor || theme.container?.font?.color || '#171717';
+    const checkmarkColor = checkbox?.checkmarkColor || '#FFFFFF';
 
     const divider = chip?.divider;
 
@@ -250,6 +251,7 @@ export class CourierChannelRouting extends CourierBaseElement {
       unselectedWeight, selectedWeight,
       fontFamily, selectedFontFamily,
       checkedColor,
+      checkmarkColor,
       divider,
     };
   }
@@ -264,6 +266,7 @@ export class CourierChannelRouting extends CourierBaseElement {
 
     for (const chip of this._chips) {
       chip.checkbox.checkedColor = colors.checkedColor;
+      chip.checkbox.checkmarkColor = colors.checkmarkColor;
     }
 
     this._applySelection();

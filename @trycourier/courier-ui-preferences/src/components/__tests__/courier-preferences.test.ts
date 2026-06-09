@@ -90,18 +90,22 @@ describe("courier-preferences brand colors", () => {
     expect(theme.channelChip?.checkbox?.checkedColor).toBe(BRAND_PRIMARY);
   });
 
-  it("lets an explicit theme control color override the brand color", () => {
+  it("overrides explicit theme control colors with the brand color", () => {
     const el = new CourierPreferences();
     document.body.appendChild(el);
     el.setMode("light");
-    el.setLightTheme({ topic: { toggle: { trackActiveColor: "#00ff00" } } });
+    el.setLightTheme({
+      topic: { toggle: { trackActiveColor: "#00ff00" } },
+      digest: { radio: { checkedColor: "#00ff00" } },
+      channelChip: { checkbox: { checkedColor: "#00ff00" } },
+    });
 
     (el as unknown as { _brand: unknown })._brand = { settings: { colors: { primary: BRAND_PRIMARY } } };
     (el as unknown as { _applyEffectiveThemes: () => void })._applyEffectiveThemes();
 
     const theme = mergedTheme(el);
-    // Explicit value wins; the unset slots still take the brand color.
-    expect(theme.topic?.toggle?.trackActiveColor).toBe("#00ff00");
+    // Brand wins over explicit theme values for the three control slots.
+    expect(theme.topic?.toggle?.trackActiveColor).toBe(BRAND_PRIMARY);
     expect(theme.digest?.radio?.checkedColor).toBe(BRAND_PRIMARY);
     expect(theme.channelChip?.checkbox?.checkedColor).toBe(BRAND_PRIMARY);
   });
