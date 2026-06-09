@@ -123,6 +123,7 @@ export type CourierPreferencesChannelChipTheme = {
 // @public (undocumented)
 export type CourierPreferencesCheckboxTheme = {
     checkedColor?: string;
+    checkmarkColor?: string;
     font?: CourierPreferencesFontTheme;
     selectedFont?: CourierPreferencesFontTheme;
 };

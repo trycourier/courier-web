@@ -131,6 +131,7 @@ export class CourierCheckbox extends CourierBaseElement {
     get checked(): boolean;
     // (undocumented)
     set checkedColor(val: string);
+    set checkmarkColor(val: string | undefined);
     // (undocumented)
     set disabled(val: boolean);
     // (undocumented)
