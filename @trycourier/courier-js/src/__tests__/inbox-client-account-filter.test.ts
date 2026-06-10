@@ -60,6 +60,8 @@ describe('InboxClient accountId / tenant filter', () => {
 
     await makeClient().inbox.getMessages();
 
-    expect(lastQuery()).not.toContain('accountId');
+    // No `accountId: "..."` filter argument — `accountId` is still a selected
+    // field on each node, so assert on the argument form (with the colon).
+    expect(lastQuery()).not.toContain('accountId:');
   });
 });
