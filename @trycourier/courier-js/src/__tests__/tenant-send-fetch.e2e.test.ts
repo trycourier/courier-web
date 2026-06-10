@@ -13,12 +13,12 @@ import { CourierClient } from '../client/courier-client';
 // `accountId` filter) returns it.
 
 const API_BASE = 'https://api.courier.com';
-const INBOX_GRAPHQL = 'https://inbox.courier.com/q';
-// Server API key for the live calls — provide via env, never hardcode/commit it.
+// Server API key + an inbox-enabled template id in that key's workspace — provide
+// via env, never hardcode/commit them.
 const COURIER_API_KEY = process.env.COURIER_E2E_API_KEY ?? '';
-// The suite hits production; only run when a key is supplied (skipped in CI).
-const describeLive = COURIER_API_KEY ? describe : describe.skip;
-const TEMPLATE_ID = 'nt_01ktc9s2gtf6bv471bjp2af1r4';
+const TEMPLATE_ID = process.env.COURIER_E2E_TEMPLATE_ID ?? '';
+// The suite hits production; only run when both are supplied (skipped in CI).
+const describeLive = COURIER_API_KEY && TEMPLATE_ID ? describe : describe.skip;
 const EMAIL = 'mike@courier.com';
 
 const SAMPLE_USER_ID = 'sample-user';
