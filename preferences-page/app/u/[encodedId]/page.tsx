@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { decodeUnsubscribeParams } from "@/lib/decode-params";
-import { buildAuthContext } from "@/lib/auth";
+import { buildAuthContextFromEnv } from "@/lib/auth";
 import { encodeBase64 } from "@/lib/token";
 import {
   fetchPreferencePage,
@@ -82,7 +82,7 @@ export default async function UnsubscribePage({ params }: PageProps) {
 
   let auth: AuthContext;
   try {
-    auth = await buildAuthContext(workspaceId, brandId, userId, accountId, env);
+    auth = buildAuthContextFromEnv();
   } catch {
     return <ErrorPage />;
   }
@@ -122,7 +122,7 @@ export default async function UnsubscribePage({ params }: PageProps) {
   if (!topic) {
     return (
       <PageShell logo={logo} showCourierFooter={page.showCourierFooter} brand={brand}>
-        <main className="flex-1 bg-white rounded-xl border border-gray-200 p-5 sm:p-8">
+        <main className="flex-1 bg-white rounded-xl p-5 sm:p-8">
           <p className="text-sm text-gray-500 mb-6">You have been unsubscribed.</p>
           <div className="border-t border-gray-100 pt-4">
             <p className="text-sm text-gray-500">
@@ -165,7 +165,7 @@ export default async function UnsubscribePage({ params }: PageProps) {
 
   return (
     <PageShell logo={logo} showCourierFooter={page.showCourierFooter} brand={brand}>
-      <main className="flex-1 bg-white rounded-xl border border-gray-200 p-5 sm:p-8">
+      <main className="flex-1 bg-white rounded-xl p-5 sm:p-8">
         {list && (
           <p className="text-sm font-semibold mb-1">
             You&apos;ve been unsubscribed from this list.

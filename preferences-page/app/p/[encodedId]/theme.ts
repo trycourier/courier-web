@@ -14,8 +14,9 @@ import type { CourierPreferencesTheme } from "@trycourier/courier-react";
  *   --font-heading:    "Inter"          (subtitle only)
  */
 const BODY_FONT = '"TWK Lausanne", system-ui, -apple-system, sans-serif';
-// Inter, loaded via next/font in app/layout.tsx and exposed as --font-heading.
-const SUBTITLE_FONT = "var(--font-heading)";
+// Concrete stack (not the Next `--font-heading` CSS var) so the theme is portable
+// into the embed bundle, where that var isn't defined.
+const SUBTITLE_FONT = '"Inter", system-ui, -apple-system, sans-serif';
 
 const PRIMARY = "#10B981";
 const BODY_TEXT = "#171717";

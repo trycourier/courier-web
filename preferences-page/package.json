@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:embed": "node scripts/build-embed.mjs",
+    "sync:backend": "node scripts/sync-backend-bundle.mjs"
   },
   "dependencies": {
     "@trycourier/courier-js": "file:../@trycourier/courier-js",

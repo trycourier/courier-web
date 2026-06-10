@@ -1,77 +1,45 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  CourierPreferences,
-  useCourier,
-  type CourierApiUrls,
-} from "@trycourier/courier-react";
-import { preferencesTheme } from "./theme";
+import type { CourierConfig } from "@/lib/types";
+import { resolveClientConfig } from "@/lib/config";
+import { PreferencesUI } from "./preferences-ui";
 
 interface PreferencesClientProps {
-  userId: string;
-  jwt: string;
-  apiUrls: CourierApiUrls;
-  /** Courier account / tenant id (optional). Supplied via signIn, not the component. */
-  tenantId?: string;
-  /** Brand to render the preference page for (optional). */
-  brandId?: string;
   /**
-   * Render the draft preference page instead of the published one. Propagated
-   * from the token (matches the backend's `preferencePageDraftMode`) and forwarded
-   * to CourierPreferences, which queries `draftPreferencePage` when set.
+   * Env-derived config from the server component (local dev). Null in production,
+   * where auth comes from `window.courierConfig` instead.
    */
-  draft?: boolean;
+  fallbackConfig: CourierConfig | null;
 }
 
-const TITLE = "Notifications Preferences";
-const SUBTITLE =
-  "For the categories listed below, you can choose how you'd like to be reached.";
+type State = "loading" | "ready" | "error";
 
 /**
- * Signs the user into Courier (so the `<courier-preferences>` web component can
- * read `Courier.shared.client`) and renders the real CourierPreferences
- * component, themed to match the legacy hosted page.
+ * Resolves the auth config — `window.courierConfig` (production) or the
+ * env-derived `fallbackConfig` (local dev) — then hands it to `PreferencesUI`.
+ *
+ * The resolve runs in an effect (post-mount) so the first client render matches
+ * the server render (which only ever has `fallbackConfig`), avoiding a hydration
+ * mismatch when `window.courierConfig` is present.
  */
-export function PreferencesClient({
-  userId,
-  jwt,
-  apiUrls,
-  tenantId,
-  brandId,
-  draft,
-}: PreferencesClientProps) {
-  const courier = useCourier();
-  const [ready, setReady] = useState(false);
+export function PreferencesClient({ fallbackConfig }: PreferencesClientProps) {
+  const [config, setConfig] = useState<CourierConfig | null>(fallbackConfig);
+  const [state, setState] = useState<State>(fallbackConfig ? "ready" : "loading");
 
   useEffect(() => {
-    courier.shared.signIn({
-      userId,
-      jwt,
-      apiUrls,
-      ...(tenantId ? { tenantId } : {}),
-    });
-    setReady(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, jwt, tenantId]);
+    const resolved = resolveClientConfig(fallbackConfig);
+    setConfig(resolved);
+    setState(resolved ? "ready" : "error");
+  }, [fallbackConfig]);
 
-  return (
-    <div
-      className="min-h-screen flex flex-col items-center py-10 px-4 sm:py-14 sm:px-6"
-      data-preference-page-draft-mode={draft ? "true" : undefined}
-    >
-      <div className="w-full max-w-[640px]">
-        {ready && (
-          <CourierPreferences
-            mode="light"
-            lightTheme={preferencesTheme}
-            title={TITLE}
-            subtitle={SUBTITLE}
-            brandId={brandId}
-            draft={draft}
-          />
-        )}
+  if (state === "error" || !config) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Internal Server Error, please contact your administrator.</p>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <PreferencesUI config={config} />;
 }

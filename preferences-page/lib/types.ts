@@ -113,14 +113,33 @@ export interface AuthContext {
 }
 
 /**
- * The bits of `window.courierConfig` we read back from the backend's hosted
- * preferences page (`GET /p/{encodedId}`) — a JWT minted server-side from the
- * workspace's stored key, plus the user/brand/tenant/draft context it embedded.
+ * The config object the hosted preferences page authenticates from. This is the
+ * exact shape the backend injects as `window.courierConfig`
+ * (`backend/client-routes/hosted-preferences.ts` → `getBody()`): the backend
+ * decodes the `/p/{base64}` token, mints a user-scoped JWT from the workspace's
+ * stored key, and writes these fields. The page never mints — it only reads this.
+ *
+ * Two sources produce it (see `lib/config.ts` and `lib/dev-config.ts`):
+ *   1. production: `window.courierConfig`, set by the backend HTML.
+ *   2. local dev:  built from `.env.local` (`COURIER_JWT`, …).
  */
-export interface HostedPreferencesAuth {
-  jwt: string;
+export interface CourierConfig {
+  /** User-scoped client JWT (the `Authorization: Bearer` token). */
+  authorization: string;
   userId: string;
-  brandId?: string;
-  tenantId?: string;
-  draft: boolean;
+  /** Optional brand id; empty string when unset. */
+  brandId: string;
+  /** `base64(workspaceId)`, sent as `x-courier-client-key`. */
+  clientKey: string;
+  /** GraphQL endpoint, e.g. `https://api.courier.com/client/q`. */
+  apiUrl: string;
+  /** Multi-tenant account id passed to `signIn`; empty string when unset. */
+  tenantId: string;
+  preferencePageDraftMode: boolean;
+}
+
+declare global {
+  interface Window {
+    courierConfig?: CourierConfig;
+  }
 }
