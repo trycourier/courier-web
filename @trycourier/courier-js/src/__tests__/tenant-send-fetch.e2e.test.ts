@@ -3,18 +3,21 @@ import { CourierClient } from '../client/courier-client';
 // Live end-to-end test against the Courier production API, exercising the multi-tenant
 // inbox flow with the LOCAL courier-js build.
 //
-// ⚠️ Uses a hardcoded server API key — DO NOT COMMIT. Run locally only.
+// Requires a server API key in `COURIER_E2E_API_KEY`; the suite is SKIPPED when it's unset,
+// so it never runs in CI and never needs a committed key. Run it locally:
+//   COURIER_E2E_API_KEY=pk_... npx jest tenant-send-fetch.e2e
 //
-// FINDING (verified by this test): a templated Send with `context.tenant_id` DOES deliver
-// to the inbox (it shows up in an unscoped getMessages), but the inbox stores `accountId: null`
-// — the tenant context is NOT propagated to the inbox record. So a tenantId-scoped read
-// (the SDK's `tenantId` → inbox `accountId` filter) does NOT return it. The only thing that
-// sets the inbox `accountId` is the inbox ingest API. The SDK filter works correctly; the
-// gap is in the Send → inbox pipeline (backend/product), not in courier-js.
+// VERIFIED: a templated Send with `context.tenant_id` delivers to the inbox AND the inbox
+// record carries `accountId = tenant_id` — the Send → inbox pipeline propagates the tenant
+// context (backend fix, mid-2026). So a tenantId-scoped read (the SDK's `tenantId` → inbox
+// `accountId` filter) returns it.
 
 const API_BASE = 'https://api.courier.com';
 const INBOX_GRAPHQL = 'https://inbox.courier.com/q';
-const COURIER_API_KEY = 'pk_CRRRYD4XM9MV6MM8VCG66FXJNDH0';
+// Server API key for the live calls — provide via env, never hardcode/commit it.
+const COURIER_API_KEY = process.env.COURIER_E2E_API_KEY ?? '';
+// The suite hits production; only run when a key is supplied (skipped in CI).
+const describeLive = COURIER_API_KEY ? describe : describe.skip;
 const TEMPLATE_ID = 'nt_01ktc9s2gtf6bv471bjp2af1r4';
 const EMAIL = 'mike@courier.com';
 
@@ -100,7 +103,7 @@ async function waitForCount(userId: string, tenantId: string | undefined, target
 
 const summarize = (nodes: any[]) => nodes.map((n) => ({ id: n.messageId, accountId: n.accountId, title: n.title }));
 
-describe('multi-tenant inbox send → fetch (live)', () => {
+describeLive('multi-tenant inbox send → fetch (live)', () => {
   it('reports how many messages the sample user/tenant currently has', async () => {
     const scoped = await getInbox(SAMPLE_USER_ID, SAMPLE_TENANT_ID);
     // eslint-disable-next-line no-console
@@ -112,7 +115,7 @@ describe('multi-tenant inbox send → fetch (live)', () => {
     for (const n of scoped) expect(n.accountId).toBe(SAMPLE_TENANT_ID);
   }, 60000);
 
-  it('a template send with context.tenant_id reaches the inbox but with accountId=null (x3 fresh tenants)', async () => {
+  it('a template send with context.tenant_id reaches the inbox carrying the tenant accountId (x3 fresh tenants)', async () => {
     const stamp = Date.now();
 
     for (let i = 0; i < 3; i++) {
@@ -137,14 +140,14 @@ describe('multi-tenant inbox send → fetch (live)', () => {
       console.log(`[${i}] 📥 unscoped: ${unscoped.length} — ${JSON.stringify(summarize(unscoped))}`);
       expect(unscoped.length).toBeGreaterThanOrEqual(1);
 
-      // ...but the inbox record's accountId is null — the tenant context did NOT propagate.
-      expect(unscoped[0].accountId).toBeNull();
+      // ...and the inbox record carries the tenant accountId — the tenant context propagated.
+      expect(unscoped[0].accountId).toBe(tenantId);
 
-      // ...so the tenant-scoped read (SDK tenantId → accountId filter) still finds nothing.
-      const scoped = await getInbox(userId, tenantId);
+      // ...so the tenant-scoped read (SDK tenantId → accountId filter) returns it too.
+      const scoped = await waitForCount(userId, tenantId, 1);
       // eslint-disable-next-line no-console
-      console.log(`[${i}] 🔒 scoped(${tenantId}): ${scoped.length} (expected 0 — backend gap)`);
-      expect(scoped.length).toBe(0);
+      console.log(`[${i}] 🔒 scoped(${tenantId}): ${scoped.length}`);
+      expect(scoped.length).toBeGreaterThanOrEqual(1);
     }
   }, 300000);
 
