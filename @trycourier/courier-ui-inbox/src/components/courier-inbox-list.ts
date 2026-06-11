@@ -19,7 +19,7 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   // Theme
-  private _themeSubscription: CourierInboxThemeSubscription;
+  private _themeSubscription!: CourierInboxThemeSubscription;
 
   // State
   private _messages: InboxMessage[] = [];
@@ -35,7 +35,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _onMessageClick: ((message: InboxMessage, index: number) => void) | null = null;
   private _onMessageActionClick: ((message: InboxMessage, action: InboxAction, index: number) => void) | null = null;
   private _onMessageLongPress: ((message: InboxMessage, index: number) => void) | null = null;
-  private _onRefresh: () => void;
+  private _onRefresh!: () => void;
 
   // Factories
   private _onPaginationTrigger?: (feedId: string) => void;
@@ -61,7 +61,7 @@ export class CourierInboxList extends CourierBaseElement {
   private _errorContainer?: CourierInfoState;
   private _emptyContainer?: CourierInfoState;
 
-  constructor(props: {
+  constructor(props?: {
     themeManager: CourierInboxThemeManager,
     listItemActions?: CourierInboxListItemAction[],
     canClickListItems: boolean,
@@ -73,6 +73,13 @@ export class CourierInboxList extends CourierBaseElement {
     onMessageLongPress: (message: InboxMessage, index: number) => void
   }) {
     super();
+
+    // Custom Elements may be constructed without arguments (e.g. the browser invokes
+    // the parameterless constructor during `cloneNode()`). Guard against a missing
+    // `props` so we don't throw an unhandled TypeError. See GitHub issue #150.
+    if (!props) {
+      return;
+    }
 
     // Initialize the callbacks
     this._onRefresh = props.onRefresh;
