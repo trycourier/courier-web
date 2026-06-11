@@ -42,6 +42,10 @@ export { CourierBrand }
 export class CourierChannelRouting extends CourierBaseElement {
     // (undocumented)
     set channelLabels(val: Record<string, string>);
+    set customizeActiveLabel(val: string);
+    set customizeEnabled(val: boolean);
+    // (undocumented)
+    set customizeLabel(val: string);
     // (undocumented)
     static get id(): string;
     // (undocumented)
@@ -50,6 +54,8 @@ export class CourierChannelRouting extends CourierBaseElement {
     protected onComponentMounted(): void;
     // (undocumented)
     protected onComponentUnmounted(): void;
+    // (undocumented)
+    set onCustomizeChange(fn: (enabled: boolean) => void);
     // (undocumented)
     set onRoutingChange(fn: (channels: CourierUserPreferencesChannel[]) => void);
     // (undocumented)
@@ -195,6 +201,8 @@ export class CourierPreferencesSection extends CourierBaseElement {
     // (undocumented)
     protected onComponentUnmounted(): void;
     // (undocumented)
+    set onCustomizeChange(fn: (topicId: string, enabled: boolean) => void);
+    // (undocumented)
     set onDigestChange(fn: (topicId: string, scheduleId: string) => void);
     // (undocumented)
     set onRoutingChange(fn: (topicId: string, channels: CourierUserPreferencesChannel[]) => void);
@@ -277,6 +285,8 @@ export class CourierPreferencesTopic extends CourierBaseElement {
     protected onComponentMounted(): void;
     // (undocumented)
     protected onComponentUnmounted(): void;
+    // (undocumented)
+    set onCustomizeChange(fn: (topicId: string, enabled: boolean) => void);
     // (undocumented)
     set onDigestChange(fn: (topicId: string, scheduleId: string) => void);
     // (undocumented)
@@ -383,6 +393,12 @@ export function formatDigest(schedule: DigestSchedule): string;
 export { getCourierApiUrls }
 
 export { getCourierApiUrlsForRegion }
+
+// @public
+export function isInstantSchedule(schedule: {
+    period?: string;
+    recurrence?: string;
+}): boolean;
 
 // @public
 export const mergeTheme: (mode: SystemThemeMode, theme: CourierPreferencesTheme) => CourierPreferencesTheme;

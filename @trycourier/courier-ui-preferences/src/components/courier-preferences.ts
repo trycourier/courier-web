@@ -455,7 +455,7 @@ export class CourierPreferences extends CourierBaseElement {
     if (!topic) return;
 
     topic.customRouting = channels;
-    topic.hasCustomRouting = channels.length > 0;
+    topic.hasCustomRouting = true;
     this._updateTopicInPlace(topic);
 
     try {
@@ -464,6 +464,34 @@ export class CourierPreferences extends CourierBaseElement {
         status: topic.status,
         hasCustomRouting: topic.hasCustomRouting,
         customRouting: channels,
+        digestSchedule: topic.digestSchedule,
+      });
+    } catch (error: unknown) {
+      this._restoreSnapshot(snapshot);
+      this._error = error as Error;
+      this._render();
+    }
+  }
+
+  private async _updateCustomizeEnabled(topicId: string, enabled: boolean): Promise<void> {
+    const { topic, snapshot } = this._findTopicAndSnapshot(topicId);
+    if (!topic) return;
+
+    topic.hasCustomRouting = enabled;
+    // When the user first enables customization, seed the selection with every
+    // routing option so nothing is silently dropped.
+    if (enabled && topic.customRouting.length === 0) {
+      const section = this._sections.find(s => s.topics.some(t => t.topicId === topicId));
+      if (section) topic.customRouting = [...section.routingOptions];
+    }
+    this._updateTopicInPlace(topic);
+
+    try {
+      await Courier.shared.client!.preferences.putUserPreferenceTopic({
+        topicId,
+        status: topic.status,
+        hasCustomRouting: enabled,
+        customRouting: topic.customRouting,
         digestSchedule: topic.digestSchedule,
       });
     } catch (error: unknown) {
@@ -562,6 +590,9 @@ export class CourierPreferences extends CourierBaseElement {
       };
       sectionEl.onRoutingChange = (topicId: string, channels: CourierUserPreferencesChannel[]) => {
         this._updateChannelRouting(topicId, channels);
+      };
+      sectionEl.onCustomizeChange = (topicId: string, enabled: boolean) => {
+        this._updateCustomizeEnabled(topicId, enabled);
       };
       sectionsContainer.appendChild(sectionEl);
     }

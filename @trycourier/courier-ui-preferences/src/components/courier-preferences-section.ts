@@ -49,6 +49,7 @@ export class CourierPreferencesSection extends CourierBaseElement {
   private _onStatusChange?: (topicId: string, status: CourierUserPreferencesStatus) => void;
   private _onDigestChange?: (topicId: string, scheduleId: string) => void;
   private _onRoutingChange?: (topicId: string, channels: CourierUserPreferencesChannel[]) => void;
+  private _onCustomizeChange?: (topicId: string, enabled: boolean) => void;
 
   set section(val: PreferencesSection) {
     this._section = val;
@@ -81,6 +82,10 @@ export class CourierPreferencesSection extends CourierBaseElement {
 
   set onRoutingChange(fn: (topicId: string, channels: CourierUserPreferencesChannel[]) => void) {
     this._onRoutingChange = fn;
+  }
+
+  set onCustomizeChange(fn: (topicId: string, enabled: boolean) => void) {
+    this._onCustomizeChange = fn;
   }
 
   protected onComponentMounted(): void {
@@ -138,6 +143,7 @@ export class CourierPreferencesSection extends CourierBaseElement {
       topicEl.onStatusChange = (topicId, status) => this._onStatusChange?.(topicId, status);
       topicEl.onDigestChange = (topicId, scheduleId) => this._onDigestChange?.(topicId, scheduleId);
       topicEl.onRoutingChange = (topicId, channels) => this._onRoutingChange?.(topicId, channels);
+      topicEl.onCustomizeChange = (topicId, enabled) => this._onCustomizeChange?.(topicId, enabled);
       topicsList.appendChild(topicEl);
     }
 
