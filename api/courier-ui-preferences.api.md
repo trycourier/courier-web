@@ -42,6 +42,7 @@ export { CourierBrand }
 export class CourierChannelRouting extends CourierBaseElement {
     // (undocumented)
     set channelLabels(val: Record<string, string>);
+    set customizeActiveLabel(val: string);
     set customizeEnabled(val: boolean);
     // (undocumented)
     set customizeLabel(val: string);

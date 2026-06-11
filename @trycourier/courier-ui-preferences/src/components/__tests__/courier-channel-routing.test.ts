@@ -32,6 +32,10 @@ describe("courier-channel-routing", () => {
     return document.querySelector<HTMLElement>(".courier-channel-routing");
   }
 
+  function customizeLabelText(): string | null | undefined {
+    return customizeButton()?.querySelector(".courier-channel-customize-label")?.textContent;
+  }
+
   it("renders a chip per routing option with default labels", () => {
     mountRouting((r) => { r.routingOptions = ["email", "push"]; });
 
@@ -109,7 +113,8 @@ describe("courier-channel-routing", () => {
     expect(btn).not.toBeNull();
     expect(btn!.getAttribute("aria-expanded")).toBe("false");
     expect(btn!.querySelector(".courier-channel-customize-arrow")).not.toBeNull();
-    // Collapsed: chips are hidden.
+    // Collapsed: default copy, chips hidden.
+    expect(customizeLabelText()).toBe("Customize channels");
     expect(chipContainer()!.style.display).toBe("none");
   });
 
@@ -126,6 +131,19 @@ describe("courier-channel-routing", () => {
     expect(handler).toHaveBeenCalledWith(true);
     expect(customizeButton()!.getAttribute("aria-expanded")).toBe("true");
     expect(chipContainer()!.style.display).toBe("flex");
+    // Active label defaults to the same copy as collapsed.
+    expect(customizeLabelText()).toBe("Customize channels");
+  });
+
+  it("uses customizeActiveLabel for the expanded state when provided", () => {
+    mountRouting((r) => {
+      r.routingOptions = ["email", "push"];
+      r.customizeActiveLabel = "Always receive";
+    });
+
+    expect(customizeLabelText()).toBe("Customize channels");
+    customizeButton()!.click();
+    expect(customizeLabelText()).toBe("Always receive");
   });
 
   it("starts expanded when customizeEnabled is set, and collapses on click", () => {

@@ -115,6 +115,9 @@ export class CourierChannelRouting extends CourierBaseElement {
   private _isRequired = false;
   private _customizeEnabled = false;
   private _customizeLabel = 'Customize channels';
+  // Label when expanded/active. Defaults to the collapsed `customizeLabel`
+  // (i.e. the text doesn't change on expand unless explicitly overridden).
+  private _customizeActiveLabel?: string;
   private _themeManager?: CourierPreferencesThemeManager;
   private _themeSubscription?: CourierPreferencesThemeSubscription;
   private _onRoutingChange?: (channels: CourierUserPreferencesChannel[]) => void;
@@ -124,6 +127,7 @@ export class CourierChannelRouting extends CourierBaseElement {
   private _dividerEl?: HTMLHRElement;
   private _customizeRowEl?: HTMLDivElement;
   private _customizeButtonEl?: HTMLButtonElement;
+  private _customizeLabelEl?: HTMLSpanElement;
   private _containerEl?: HTMLDivElement;
   private _chips: ChipEntry[] = [];
   private _mounted = false;
@@ -167,10 +171,13 @@ export class CourierChannelRouting extends CourierBaseElement {
 
   set customizeLabel(val: string) {
     this._customizeLabel = val;
-    if (this._mounted && this._customizeButtonEl) {
-      const label = this._customizeButtonEl.querySelector<HTMLElement>('.courier-channel-customize-label');
-      if (label) label.textContent = this._customizeLabel;
-    }
+    if (this._mounted) this._applyCustomizeState();
+  }
+
+  /** Optional label for the expanded/active state; defaults to `customizeLabel`. */
+  set customizeActiveLabel(val: string) {
+    this._customizeActiveLabel = val;
+    if (this._mounted) this._applyCustomizeState();
   }
 
   set themeManager(val: CourierPreferencesThemeManager) {
@@ -205,6 +212,7 @@ export class CourierChannelRouting extends CourierBaseElement {
     this._dividerEl = undefined;
     this._customizeRowEl = undefined;
     this._customizeButtonEl = undefined;
+    this._customizeLabelEl = undefined;
     this._containerEl = undefined;
     this._chips = [];
   }
@@ -238,6 +246,7 @@ export class CourierChannelRouting extends CourierBaseElement {
       this._wrapperEl = undefined;
       this._customizeRowEl = undefined;
       this._customizeButtonEl = undefined;
+      this._customizeLabelEl = undefined;
       this._containerEl = undefined;
       return;
     }
@@ -296,6 +305,7 @@ export class CourierChannelRouting extends CourierBaseElement {
     row.appendChild(btn);
     this._customizeRowEl = row;
     this._customizeButtonEl = btn;
+    this._customizeLabelEl = label;
     return row;
   }
 
@@ -403,6 +413,11 @@ export class CourierChannelRouting extends CourierBaseElement {
   }
 
   private _applyCustomizeState() {
+    if (this._customizeLabelEl) {
+      this._customizeLabelEl.textContent = this._customizeEnabled
+        ? (this._customizeActiveLabel ?? this._customizeLabel)
+        : this._customizeLabel;
+    }
     if (this._customizeButtonEl) {
       const colors = this._resolvedColors();
       this._customizeButtonEl.setAttribute('aria-expanded', String(this._customizeEnabled));
