@@ -414,6 +414,11 @@ export function registerElement(element: CustomElementConstructor & {
     id: string;
 }): void;
 
+// Warning: (ae-missing-release-tag) "sanitizeUrl" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function sanitizeUrl(url: string | null | undefined): string | null;
+
 // Warning: (ae-missing-release-tag) "SystemThemeMode" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
