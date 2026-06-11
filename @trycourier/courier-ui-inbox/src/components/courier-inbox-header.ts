@@ -17,7 +17,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
   }
 
   // Theme
-  private _themeSubscription: CourierInboxThemeSubscription;
+  private _themeSubscription!: CourierInboxThemeSubscription;
 
   // State
   private _feeds: CourierInboxFeed[] = [];
@@ -34,10 +34,10 @@ export class CourierInboxHeader extends CourierFactoryElement {
   private _feedButtonClickHandler?: (event: Event) => void;
 
   // Callbacks
-  private _onFeedChange: (feed: CourierInboxFeed) => void;
-  private _onFeedReselected: (feed: CourierInboxFeed) => void;
-  private _onTabChange: (tab: CourierInboxTab) => void;
-  private _onTabReselected: (tab: CourierInboxTab) => void;
+  private _onFeedChange!: (feed: CourierInboxFeed) => void;
+  private _onFeedReselected!: (feed: CourierInboxFeed) => void;
+  private _onTabChange!: (tab: CourierInboxTab) => void;
+  private _onTabReselected!: (tab: CourierInboxTab) => void;
 
   private get theme(): CourierInboxTheme {
     return this._themeSubscription.manager.getTheme();
@@ -49,7 +49,7 @@ export class CourierInboxHeader extends CourierFactoryElement {
     return (currentFeed?.tabs?.length ?? 0) > 1;
   }
 
-  constructor(props: {
+  constructor(props?: {
     themeManager: CourierInboxThemeManager,
     actions?: CourierInboxHeaderAction[],
     onFeedChange: (feed: CourierInboxFeed) => void,
@@ -58,6 +58,13 @@ export class CourierInboxHeader extends CourierFactoryElement {
     onTabReselected: (tab: CourierInboxTab) => void
   }) {
     super();
+
+    // Custom Elements may be constructed without arguments (e.g. the browser invokes
+    // the parameterless constructor during `cloneNode()`). Guard against a missing
+    // `props` so we don't throw an unhandled TypeError. See GitHub issue #150.
+    if (!props) {
+      return;
+    }
 
     // Subscribe to the theme bus
     this._themeSubscription = props.themeManager.subscribe((_) => {

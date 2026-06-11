@@ -258,7 +258,7 @@ export type CourierInboxFontTheme = CourierFontTheme;
 //
 // @public (undocumented)
 export class CourierInboxHeader extends CourierFactoryElement {
-    constructor(props: {
+    constructor(props?: {
         themeManager: CourierInboxThemeManager;
         actions?: CourierInboxHeaderAction[];
         onFeedChange: (feed: CourierInboxFeed) => void;
