@@ -1,5 +1,12 @@
 # @trycourier/courier-react-components
 
+## 2.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`2d4b14c`](https://github.com/trycourier/courier-web/commit/2d4b14cc3efe92698a612a0d1b5ed75952f1f54e)]:
+  - @trycourier/courier-ui-preferences@1.1.0
+
 ## 2.2.1
 
 ### Patch Changes
