@@ -6,6 +6,7 @@ import { PreferencesTopic } from "../types/preferences";
 import { CourierPreferenceToggle } from "./courier-preference-toggle";
 import { CourierDigestSchedule } from "./courier-digest-schedule";
 import { CourierChannelRouting } from "./courier-channel-routing";
+import { isInstantSchedule } from "../utils/format-digest";
 
 const STYLE_ID = 'courier-preferences-topic';
 
@@ -81,6 +82,7 @@ export class CourierPreferencesTopic extends CourierBaseElement {
   private _onStatusChange?: (topicId: string, status: CourierUserPreferencesStatus) => void;
   private _onDigestChange?: (topicId: string, scheduleId: string) => void;
   private _onRoutingChange?: (topicId: string, channels: CourierUserPreferencesChannel[]) => void;
+  private _onCustomizeChange?: (topicId: string, enabled: boolean) => void;
 
   private _cardEl?: HTMLDivElement;
   private _headerEl?: HTMLDivElement;
@@ -131,6 +133,10 @@ export class CourierPreferencesTopic extends CourierBaseElement {
 
   set onRoutingChange(fn: (topicId: string, channels: CourierUserPreferencesChannel[]) => void) {
     this._onRoutingChange = fn;
+  }
+
+  set onCustomizeChange(fn: (topicId: string, enabled: boolean) => void) {
+    this._onCustomizeChange = fn;
   }
 
   protected onComponentMounted(): void {
@@ -267,7 +273,8 @@ export class CourierPreferencesTopic extends CourierBaseElement {
     const isRequired = this._topic.defaultStatus === 'REQUIRED';
     const isOptedIn = this._topic.status === 'OPTED_IN' || isRequired;
 
-    const hasDigest = isOptedIn && this._digestSchedules.length > 0;
+    const onlyInstant = this._digestSchedules.length > 0 && this._digestSchedules.every(isInstantSchedule);
+    const hasDigest = isOptedIn && this._digestSchedules.length > 0 && !onlyInstant;
     const hasRouting = isOptedIn && this._hasCustomRouting && this._routingOptions.length > 0;
 
     if (hasDigest) {
@@ -300,8 +307,12 @@ export class CourierPreferencesTopic extends CourierBaseElement {
         routing.channelLabels = this._channelLabels;
         routing.routingOptions = this._routingOptions;
         routing.selectedChannels = this._topic.customRouting;
+        routing.customizeEnabled = this._topic.hasCustomRouting;
         routing.onRoutingChange = (channels: CourierUserPreferencesChannel[]) => {
           this._onRoutingChange?.(this._topic.topicId, channels);
+        };
+        routing.onCustomizeChange = (enabled: boolean) => {
+          this._onCustomizeChange?.(this._topic.topicId, enabled);
         };
         this._cardEl.appendChild(routing);
         this._routingEl = routing;
@@ -309,6 +320,7 @@ export class CourierPreferencesTopic extends CourierBaseElement {
         this._routingEl.isRequired = isRequired;
         this._routingEl.routingOptions = this._routingOptions;
         this._routingEl.selectedChannels = this._topic.customRouting;
+        this._routingEl.customizeEnabled = this._topic.hasCustomRouting;
       }
     } else if (this._routingEl) {
       this._routingEl.remove();

@@ -79,6 +79,18 @@ function getScheduleString(schedule: DigestSchedule): string {
 }
 
 /**
+ * Returns true if a schedule represents instant (non-digested) delivery.
+ * Instant schedules carry no real choice for the recipient, so when one is the
+ * only option on a topic the picker is hidden entirely.
+ * @public
+ */
+export function isInstantSchedule(
+  schedule: { period?: string; recurrence?: string }
+): boolean {
+  return schedule.period === "Instant" || schedule.recurrence === "instant";
+}
+
+/**
  * Format a digest schedule into a human-readable string.
  * @public
  */

@@ -24,6 +24,14 @@ describe("courier-channel-routing", () => {
     return Array.from(document.querySelectorAll<HTMLButtonElement>(".courier-channel-chip"));
   }
 
+  function customizeButton(): HTMLButtonElement | null {
+    return document.querySelector<HTMLButtonElement>(".courier-channel-customize-button");
+  }
+
+  function chipContainer(): HTMLElement | null {
+    return document.querySelector<HTMLElement>(".courier-channel-routing");
+  }
+
   it("renders a chip per routing option with default labels", () => {
     mountRouting((r) => { r.routingOptions = ["email", "push"]; });
 
@@ -92,6 +100,50 @@ describe("courier-channel-routing", () => {
 
     expect(handler).not.toHaveBeenCalled();
     expect(email.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("renders a collapsed customize disclosure with an arrow by default", () => {
+    mountRouting((r) => { r.routingOptions = ["email", "push"]; });
+
+    const btn = customizeButton();
+    expect(btn).not.toBeNull();
+    expect(btn!.getAttribute("aria-expanded")).toBe("false");
+    expect(btn!.querySelector(".courier-channel-customize-arrow")).not.toBeNull();
+    // Collapsed: chips are hidden.
+    expect(chipContainer()!.style.display).toBe("none");
+  });
+
+  it("expands to reveal chips and fires onCustomizeChange(true) on click", () => {
+    const handler = jest.fn();
+    mountRouting((r) => {
+      r.routingOptions = ["email", "push"];
+      r.onCustomizeChange = handler;
+    });
+
+    customizeButton()!.click();
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith(true);
+    expect(customizeButton()!.getAttribute("aria-expanded")).toBe("true");
+    expect(chipContainer()!.style.display).toBe("flex");
+  });
+
+  it("starts expanded when customizeEnabled is set, and collapses on click", () => {
+    const handler = jest.fn();
+    mountRouting((r) => {
+      r.routingOptions = ["email", "push"];
+      r.customizeEnabled = true;
+      r.onCustomizeChange = handler;
+    });
+
+    expect(customizeButton()!.getAttribute("aria-expanded")).toBe("true");
+    expect(chipContainer()!.style.display).toBe("flex");
+
+    customizeButton()!.click();
+
+    expect(handler).toHaveBeenCalledWith(false);
+    expect(customizeButton()!.getAttribute("aria-expanded")).toBe("false");
+    expect(chipContainer()!.style.display).toBe("none");
   });
 
   it("uses custom channel labels when provided", () => {
