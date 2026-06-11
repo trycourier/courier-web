@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "../utils/sanitize-url";
 import { theme } from "../utils/theme";
 import { CourierBaseElement } from "./courier-base-element";
 
@@ -128,8 +129,11 @@ export class CourierLink extends CourierBaseElement {
 
   private updateHref() {
     const href = this.getAttribute('href');
-    if (href) {
-      this.link.href = href;
+    const safeHref = sanitizeUrl(href);
+    if (safeHref) {
+      this.link.href = safeHref;
+    } else {
+      this.link.removeAttribute('href');
     }
   }
 

@@ -6,7 +6,7 @@ import {
   CourierPreferencePage,
   RecipientPreference,
 } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierComponentThemeMode, registerElement, injectGlobalStyle, CourierInfoState } from "@trycourier/courier-ui-core";
+import { CourierBaseElement, CourierComponentThemeMode, registerElement, injectGlobalStyle, CourierInfoState, sanitizeUrl } from "@trycourier/courier-ui-core";
 import { CourierPreferencesTheme, defaultLightTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager } from "../types/courier-preferences-theme-manager";
 import { PreferencesSection, PreferencesTopic } from "../types/preferences";
@@ -500,9 +500,10 @@ export class CourierPreferences extends CourierBaseElement {
       const logoContainer = document.createElement('div');
       logoContainer.className = 'courier-preferences-logo';
 
-      if (this._brand.logo.href) {
+      const safeHref = sanitizeUrl(this._brand.logo.href);
+      if (safeHref) {
         const logoLink = document.createElement('a');
-        logoLink.href = this._brand.logo.href;
+        logoLink.href = safeHref;
         logoLink.target = '_blank';
         logoLink.rel = 'noopener noreferrer';
         const logoImg = document.createElement('img');

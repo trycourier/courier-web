@@ -24,6 +24,7 @@ export * from './utils/system-theme-mode';
 export * from './utils/theme';
 export * from './utils/courier-colors';
 export * from './utils/registeration';
+export * from './utils/sanitize-url';
 
 // Export theme management
 export * from './managers/courier-theme-manager';
