@@ -15,7 +15,7 @@ export class ListClient extends Client {
   public async putSubscription(props: { listId: string; clientKey: string; }): Promise<void> {
     this.options.logger.warn('Courier Warning: The clientKey parameter in putSubscription is deprecated and will be removed in a future release.');
     return await http({
-      url: `${this.options.apiUrls.courier.rest}/client/lists/${props.listId}/subscribe/${this.options.userId}`,
+      url: `${this.options.apiUrls.courier.rest}/client/lists/${encodeURIComponent(props.listId)}/subscribe/${encodeURIComponent(this.options.userId)}`,
       options: this.options,
       method: 'PUT',
       headers: {
@@ -37,7 +37,7 @@ export class ListClient extends Client {
   public async deleteSubscription(props: { listId: string; clientKey: string; }): Promise<void> {
     this.options.logger.warn('Courier Warning: The clientKey parameter in deleteSubscription is deprecated and will be removed in a future release.');
     return await http({
-      url: `${this.options.apiUrls.courier.rest}/client/lists/${props.listId}/unsubscribe/${this.options.userId}`,
+      url: `${this.options.apiUrls.courier.rest}/client/lists/${encodeURIComponent(props.listId)}/unsubscribe/${encodeURIComponent(this.options.userId)}`,
       options: this.options,
       method: 'DELETE',
       headers: {
