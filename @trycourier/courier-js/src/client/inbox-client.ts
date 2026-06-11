@@ -33,8 +33,8 @@ export class InboxClient extends Client {
       query GetInboxMessages(
         $params: FilterParamsInput = ${filterParams}
         $unreadCountParams: FilterParamsInput = ${unreadCountFilterParams}
-        $limit: Int = ${props?.paginationLimit ?? 24}
-        $after: String ${props?.startCursor ? `= "${props.startCursor}"` : ''}
+        $limit: Int = ${Number(props?.paginationLimit ?? 24)}
+        $after: String ${props?.startCursor ? `= "${escapeGraphQLString(props.startCursor)}"` : ''}
       ) {
         count: count(params: $params)
         unreadCount: count(params: $unreadCountParams)
