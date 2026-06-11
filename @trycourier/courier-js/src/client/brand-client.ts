@@ -1,4 +1,5 @@
 import { CourierBrand } from '../types/brands';
+import { escapeGraphQLString } from '../utils/graphql';
 import { graphql } from '../utils/request';
 import { Client } from './client';
 
@@ -12,7 +13,7 @@ export class BrandClient extends Client {
   public async getBrand(props: { brandId: string }): Promise<CourierBrand> {
     const query = `
       query GetBrand {
-        brand(brandId: "${props.brandId}") {
+        brand(brandId: "${escapeGraphQLString(props.brandId)}") {
           settings {
             colors {
               primary
@@ -42,7 +43,6 @@ export class BrandClient extends Client {
         'Authorization': `Bearer ${this.options.accessToken}`
       },
       query,
-      variables: { brandId: props.brandId }
     });
 
     return json.data.brand as CourierBrand;

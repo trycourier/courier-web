@@ -10,6 +10,7 @@ import {
   RecipientPreference,
 } from '../types/preference';
 import { decode, encode } from '../utils/coding';
+import { assertSafeGraphQLEnumValue, escapeGraphQLString } from '../utils/graphql';
 import { graphql } from '../utils/request';
 import { Client } from './client';
 
@@ -22,7 +23,7 @@ export class PreferenceClient extends Client {
   public async getUserPreferences(props?: { paginationCursor?: string; }): Promise<CourierUserPreferences> {
     const query = `
       query GetRecipientPreferences {
-        recipientPreferences${this.options.tenantId ? `(accountId: "${this.options.tenantId}")` : ''} {
+        recipientPreferences${this.options.tenantId ? `(accountId: "${escapeGraphQLString(this.options.tenantId)}")` : ''} {
           nodes {
             templateId
             templateName
@@ -68,7 +69,7 @@ export class PreferenceClient extends Client {
   public async getUserPreferenceTopic(props: { topicId: string; }): Promise<CourierUserPreferencesTopic> {
     const query = `
       query GetRecipientPreferenceTopic {
-        recipientPreference(templateId: "${props.topicId}"${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}) {
+        recipientPreference(templateId: "${escapeGraphQLString(props.topicId)}"${this.options.tenantId ? `, accountId: "${escapeGraphQLString(this.options.tenantId)}"` : ''}) {
           templateId
           templateName
           status
@@ -111,23 +112,27 @@ export class PreferenceClient extends Client {
    * @returns Promise resolving to the updated topic preferences
    */
   public async putUserPreferenceTopic(props: { topicId: string; status: CourierUserPreferencesStatus; hasCustomRouting: boolean; customRouting: CourierUserPreferencesChannel[]; digestSchedule?: string; }): Promise<CourierUserPreferencesTopic> {
+    // Channel values and status are GraphQL enum values (unquoted), so they
+    // cannot be escaped like strings — validate they are plain GraphQL names.
     const routingPreferences = props.customRouting.length > 0
-      ? `[${props.customRouting.join(', ')}]`
+      ? `[${props.customRouting.map(channel => assertSafeGraphQLEnumValue(channel, 'channel')).join(', ')}]`
       : '[]';
 
+    const status = assertSafeGraphQLEnumValue(props.status, 'status');
+
     const digestScheduleLine = props.digestSchedule != null
-      ? `\n            digestSchedule: "${props.digestSchedule}"`
+      ? `\n            digestSchedule: "${escapeGraphQLString(props.digestSchedule)}"`
       : '';
 
     const query = `
       mutation UpdateRecipientPreferenceV2 {
         updatePreferenceV2(
-          templateId: "${props.topicId}",
+          templateId: "${escapeGraphQLString(props.topicId)}",
           preferences: {
-            status: ${props.status},
-            hasCustomRouting: ${props.hasCustomRouting},
+            status: ${status},
+            hasCustomRouting: ${props.hasCustomRouting ? 'true' : 'false'},
             routingPreferences: ${routingPreferences}${digestScheduleLine}
-          }${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''}
+          }${this.options.tenantId ? `, accountId: "${escapeGraphQLString(this.options.tenantId)}"` : ''}
         ) {
           templateId
           templateName
@@ -173,9 +178,9 @@ export class PreferenceClient extends Client {
     const accountId = props?.accountId ?? this.options.tenantId;
     const brandId = props?.brandId;
 
-    const accountArg = accountId ? `(accountId: "${accountId}")` : '';
+    const accountArg = accountId ? `(accountId: "${escapeGraphQLString(accountId)}")` : '';
     const brandFragment = `
-        brand${brandId ? `(brandId: "${brandId}")` : ''} {
+        brand${brandId ? `(brandId: "${escapeGraphQLString(brandId)}")` : ''} {
           settings {
             colors {
               primary
@@ -217,7 +222,7 @@ export class PreferenceClient extends Client {
             }
           }
         }
-        recipientPreferences${accountId ? `(accountId: "${accountId}")` : ''} {
+        recipientPreferences${accountId ? `(accountId: "${escapeGraphQLString(accountId)}")` : ''} {
           nodes {
             templateId
             status
@@ -257,7 +262,7 @@ export class PreferenceClient extends Client {
   public async getDigestSchedules(props: { topicId: string }): Promise<CourierDigestScheduleOption[]> {
     const query = `
       query GetDigestSchedulesForTopic {
-        digestSchedulesForTopic(templateId: "${props.topicId}") {
+        digestSchedulesForTopic(templateId: "${escapeGraphQLString(props.topicId)}") {
           scheduleId
           period
           recurrence

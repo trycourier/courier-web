@@ -1,5 +1,6 @@
 import { CourierInboxSocket } from '../socket/courier-inbox-socket';
 import { CourierGetInboxMessagesQueryFilter, CourierGetInboxMessagesResponse } from '../types/inbox';
+import { escapeGraphQLString } from '../utils/graphql';
 import { graphql } from '../utils/request';
 import { Client } from './client';
 import { CourierClientOptions } from './courier-client';
@@ -179,7 +180,7 @@ export class InboxClient extends Client {
   public async getUnreadMessageCount(): Promise<number> {
     const query = `
       query GetMessages {
-        count(params: { status: "unread" ${this.options.tenantId ? `, accountId: "${this.options.tenantId}"` : ''} })
+        count(params: { status: "unread" ${this.options.tenantId ? `, accountId: "${escapeGraphQLString(this.options.tenantId)}"` : ''} })
       }
     `;
 
@@ -205,7 +206,7 @@ export class InboxClient extends Client {
   public async click(props: { messageId: string, trackingId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        clicked(messageId: "${props.messageId}", trackingId: "${props.trackingId}")
+        clicked(messageId: "${escapeGraphQLString(props.messageId)}", trackingId: "${escapeGraphQLString(props.trackingId)}")
       }
     `;
 
@@ -234,7 +235,7 @@ export class InboxClient extends Client {
   public async read(props: { messageId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        read(messageId: "${props.messageId}")
+        read(messageId: "${escapeGraphQLString(props.messageId)}")
       }
     `;
 
@@ -263,7 +264,7 @@ export class InboxClient extends Client {
   public async unread(props: { messageId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        unread(messageId: "${props.messageId}")
+        unread(messageId: "${escapeGraphQLString(props.messageId)}")
       }
     `;
 
@@ -292,7 +293,7 @@ export class InboxClient extends Client {
   public async open(props: { messageId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        opened(messageId: "${props.messageId}")
+        opened(messageId: "${escapeGraphQLString(props.messageId)}")
       }
     `;
 
@@ -326,7 +327,7 @@ export class InboxClient extends Client {
     }
 
     const mutations = messageIds.map((id, index) =>
-      `open_${index}: opened(messageId: "${id}")`
+      `open_${index}: opened(messageId: "${escapeGraphQLString(id)}")`
     );
 
     const query = `
@@ -360,7 +361,7 @@ export class InboxClient extends Client {
   public async archive(props: { messageId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        archive(messageId: "${props.messageId}")
+        archive(messageId: "${escapeGraphQLString(props.messageId)}")
       }
     `;
 
@@ -389,7 +390,7 @@ export class InboxClient extends Client {
   public async unarchive(props: { messageId: string }): Promise<void> {
     const query = `
       mutation TrackEvent {
-        unarchive(messageId: "${props.messageId}")
+        unarchive(messageId: "${escapeGraphQLString(props.messageId)}")
       }
     `;
 
@@ -504,23 +505,23 @@ export class InboxClient extends Client {
     // Tenant scope lives only on the client (`tenantId`) and is applied to every inbox request,
     // so a dev sets it once and all reads/counts are scoped to that tenant's account.
     if (this.options.tenantId) {
-      parts.push(`accountId: "${this.options.tenantId}"`);
+      parts.push(`accountId: "${escapeGraphQLString(this.options.tenantId)}"`);
     }
 
     if (filter.tags) {
-      parts.push(`tags: [${filter.tags.map(tag => `"${tag}"`).join(',')}]`);
+      parts.push(`tags: [${filter.tags.map(tag => `"${escapeGraphQLString(tag)}"`).join(',')}]`);
     }
 
     if (filter.status) {
-      parts.push(`status: "${filter.status}"`);
+      parts.push(`status: "${escapeGraphQLString(filter.status)}"`);
     }
 
     if (filter.archived) {
-      parts.push(`archived: ${filter.archived}`);
+      parts.push(`archived: ${filter.archived ? 'true' : 'false'}`);
     }
 
     if (filter.from) {
-      parts.push(`from: "${filter.from}"`);
+      parts.push(`from: "${escapeGraphQLString(filter.from)}"`);
     }
 
     return `{ ${parts.join(',')} }`;
