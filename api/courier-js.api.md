@@ -531,6 +531,7 @@ export class InboxClient extends Client {
 //
 // @public (undocumented)
 export interface InboxMessage {
+    accountId?: string;
     // (undocumented)
     actions?: InboxAction[];
     // (undocumented)
