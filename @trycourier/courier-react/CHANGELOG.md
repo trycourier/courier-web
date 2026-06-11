@@ -1,5 +1,13 @@
 # @trycourier/courier-react
 
+## 9.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`7978149`](https://github.com/trycourier/courier-web/commit/797814948d77779eb95ff28f78c439019ad15fc3)]:
+  - @trycourier/courier-ui-inbox@2.4.7
+  - @trycourier/courier-react-components@2.2.1
+
 ## 9.2.0
 
 ### Minor Changes
