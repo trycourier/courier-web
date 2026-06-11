@@ -1,5 +1,13 @@
 # @trycourier/courier-ui-inbox
 
+## 2.4.7
+
+### Patch Changes
+
+- [#185](https://github.com/trycourier/courier-web/pull/185) [`7978149`](https://github.com/trycourier/courier-web/commit/797814948d77779eb95ff28f78c439019ad15fc3) Thanks [@mikemilla](https://github.com/mikemilla)! - Guard inbox Custom Element constructors against being invoked without props.
+
+  `CourierInboxList`, `CourierInboxHeader`, and `CourierInboxPaginationListItem` are registered as Custom Elements, so the browser can construct them with no arguments (e.g. during `cloneNode()` from DOM snapshot libraries like `dom-to-image`). The constructors previously destructured `props` unconditionally and threw an unhandled `TypeError`. They now return early when `props` is undefined. Fixes #150.
+
 ## 2.4.6
 
 ### Patch Changes
