@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js — banner popup</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+  </style>
+
+  <button id="show-popup-button">Show announcement popup</button>
+
+  <!-- The `popup` layout renders an overlay card, anchored via `position`. -->
+  <courier-banner id="my-banner" layout="popup" position="center"></courier-banner>
+
+  <script type="module">
+    import { Courier, CourierBannerDatastore } from '@trycourier/courier-ui-banner';
+
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+    });
+
+    const banner = document.getElementById("my-banner");
+    const button = document.getElementById("show-popup-button");
+
+    banner.onBannerItemActionClick(({ message, action }) => {
+      console.log("Action clicked:", action.content, "on", message.messageId);
+    });
+
+    button.addEventListener("click", () => {
+      CourierBannerDatastore.shared.addMessage({
+        messageId: "popup-1",
+        title: "👋 Meet the new Notetaker",
+        body: "Automatically capture meeting recaps, action items, and searchable notes.",
+        actions: [
+          { content: "Set it up" },
+          { content: "Maybe later" }
+        ]
+      });
+    });
+  </script>
+
+</body>
+
+</html>

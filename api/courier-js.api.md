@@ -542,10 +542,12 @@ export interface InboxMessage {
     created?: string;
     // (undocumented)
     data?: Record<string, any>;
+    expiresAt?: number;
     // (undocumented)
     messageId: string;
     // (undocumented)
     opened?: string;
+    pinned?: boolean;
     // (undocumented)
     preview?: string;
     // (undocumented)

@@ -6,6 +6,7 @@
     "@trycourier/courier-ui-core",
     "@trycourier/courier-ui-inbox",
     "@trycourier/courier-ui-toast",
+    "@trycourier/courier-ui-banner",
     "@trycourier/courier-ui-preferences",
     "@trycourier/courier-react-components",
     "@trycourier/courier-react",

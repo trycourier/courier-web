@@ -58,6 +58,20 @@ export interface InboxMessage {
   archived?: string;
   read?: string;
   opened?: string;
+  /**
+   * Epoch milliseconds after which this message should no longer be shown.
+   *
+   * The Courier backend already excludes expired messages from the inbox feed, so this
+   * is primarily useful for messages received in real time over the WebSocket: a client
+   * can stop displaying a message once `expiresAt` has passed without re-fetching.
+   *
+   * Note: the inbox GraphQL read API does not currently return this field, so when an
+   * expiry needs to survive a feed reload, send it inside {@link InboxMessage.data} (e.g.
+   * `data.expiresAt`) as well, since `data` is round-tripped by the read API.
+   */
+  expiresAt?: number;
+  /** Whether this message is pinned. */
+  pinned?: boolean;
   tags?: string[];
   trackingIds?: {
     archiveTrackingId?: string;
