@@ -9,6 +9,17 @@ import { clickMessage } from '@trycourier/courier-ui-inbox';
 import { CourierActionMenuTheme } from '@trycourier/courier-ui-inbox';
 import { CourierApiRegion } from '@trycourier/courier-js';
 import { CourierApiUrls } from '@trycourier/courier-js';
+import { CourierBannerDismissButtonOption } from '@trycourier/courier-ui-banner';
+import { CourierBanner as CourierBannerElement } from '@trycourier/courier-ui-banner';
+import { CourierBannerFontTheme } from '@trycourier/courier-ui-banner';
+import { CourierBannerIconTheme } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemClickEvent } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemFactoryProps } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemTheme } from '@trycourier/courier-ui-banner';
+import { CourierBannerLayout } from '@trycourier/courier-ui-banner';
+import { CourierBannerPosition } from '@trycourier/courier-ui-banner';
+import { CourierBannerProps } from '@trycourier/courier-react-components';
+import { CourierBannerTheme } from '@trycourier/courier-ui-banner';
 import { CourierBrand } from '@trycourier/courier-js';
 import { CourierClientOptions } from '@trycourier/courier-js';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
@@ -72,6 +83,8 @@ import { CourierUserPreferencesTopic } from '@trycourier/courier-js';
 import { CourierUserPreferencesTopicResponse } from '@trycourier/courier-js';
 import { DEFAULT_COURIER_API_URLS } from '@trycourier/courier-js';
 import { defaultActions } from '@trycourier/courier-ui-inbox';
+import { defaultDarkTheme as defaultBannerDarkTheme } from '@trycourier/courier-ui-banner';
+import { defaultLightTheme as defaultBannerLightTheme } from '@trycourier/courier-ui-banner';
 import { defaultDarkTheme } from '@trycourier/courier-ui-inbox';
 import { defaultFeeds } from '@trycourier/courier-ui-inbox';
 import { defaultLightTheme } from '@trycourier/courier-ui-inbox';
@@ -89,6 +102,7 @@ import { InboxMessage } from '@trycourier/courier-js';
 import { InboxMessageEventEnvelope } from '@trycourier/courier-js';
 import { markAsRead } from '@trycourier/courier-ui-inbox';
 import { markAsUnread } from '@trycourier/courier-ui-inbox';
+import { mergeTheme as mergeBannerTheme } from '@trycourier/courier-ui-banner';
 import { mergeTheme as mergePreferencesTheme } from '@trycourier/courier-ui-preferences';
 import { mergeTheme } from '@trycourier/courier-ui-inbox';
 import { mergeTheme as mergeToastTheme } from '@trycourier/courier-ui-toast';
@@ -105,6 +119,33 @@ export { CourierActionMenuTheme }
 export { CourierApiRegion }
 
 export { CourierApiUrls }
+
+// Warning: (ae-missing-release-tag) "CourierBanner" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const CourierBanner: ForwardRefExoticComponent<CourierBannerProps & RefAttributes<CourierBannerElement>>;
+
+export { CourierBannerDismissButtonOption }
+
+export { CourierBannerElement }
+
+export { CourierBannerFontTheme }
+
+export { CourierBannerIconTheme }
+
+export { CourierBannerItemClickEvent }
+
+export { CourierBannerItemFactoryProps }
+
+export { CourierBannerItemTheme }
+
+export { CourierBannerLayout }
+
+export { CourierBannerPosition }
+
+export { CourierBannerProps }
+
+export { CourierBannerTheme }
 
 export { CourierBrand }
 
@@ -252,6 +293,10 @@ export { DEFAULT_COURIER_API_URLS }
 
 export { defaultActions }
 
+export { defaultBannerDarkTheme }
+
+export { defaultBannerLightTheme }
+
 export { defaultDarkTheme }
 
 export { defaultFeeds }
@@ -283,6 +328,8 @@ export { InboxMessageEventEnvelope }
 export { markAsRead }
 
 export { markAsUnread }
+
+export { mergeBannerTheme }
 
 export { mergePreferencesTheme }
 

@@ -2,6 +2,7 @@
 import '@trycourier/courier-js';
 import '@trycourier/courier-ui-inbox';
 import '@trycourier/courier-ui-toast';
+import '@trycourier/courier-ui-banner';
 import '@trycourier/courier-ui-preferences';
 
 // Export local hooks
@@ -11,6 +12,7 @@ export { useCourier } from './hooks/use-courier';
 export { CourierInboxComponent } from './components/courier-inbox-component';
 export { CourierInboxPopupMenuComponent } from './components/courier-inbox-popup-menu-component';
 export { CourierToastComponent } from './components/courier-toast-component';
+export { CourierBannerComponent } from './components/courier-banner-component';
 export { CourierPreferencesComponent } from './components/courier-preferences-component';
 
 export type {
@@ -24,6 +26,10 @@ export type {
 export type {
   CourierToastProps,
 } from './components/courier-toast-component';
+
+export type {
+  CourierBannerProps,
+} from './components/courier-banner-component';
 
 export type {
   CourierPreferencesProps,

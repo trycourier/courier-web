@@ -6,6 +6,7 @@ Courier.shared.courierUserAgentVersion = __PACKAGE_VERSION__;
 export { CourierInbox } from './components/courier-inbox';
 export { CourierInboxPopupMenu } from './components/courier-inbox-popup-menu';
 export { CourierToast } from './components/courier-toast';
+export { CourierBanner } from './components/courier-banner';
 export { CourierPreferences } from './components/courier-preferences';
 
 export { useCourier } from '@trycourier/courier-react-components';
@@ -14,6 +15,7 @@ export type {
   CourierInboxProps,
   CourierInboxPopupMenuProps,
   CourierToastProps,
+  CourierBannerProps,
   CourierPreferencesProps,
 } from '@trycourier/courier-react-components';
 
@@ -110,6 +112,9 @@ export type { CourierInboxPopupMenu as CourierInboxPopupMenuElement } from '@try
 // Re-export element types from courier-ui-toast
 export type { CourierToast as CourierToastElement } from '@trycourier/courier-ui-toast';
 
+// Re-export element types from courier-ui-banner
+export type { CourierBanner as CourierBannerElement } from '@trycourier/courier-ui-banner';
+
 // Re-export toast types from courier-ui-toast
 export type {
   CourierToastTheme,
@@ -127,6 +132,26 @@ export {
   defaultDarkTheme as defaultToastDarkTheme,
   mergeTheme as mergeToastTheme
 } from '@trycourier/courier-ui-toast';
+
+// Re-export banner types from courier-ui-banner
+export type {
+  CourierBannerTheme,
+  CourierBannerFontTheme,
+  CourierBannerIconTheme,
+  CourierBannerItemTheme,
+  CourierBannerItemFactoryProps,
+  CourierBannerItemClickEvent,
+  CourierBannerDismissButtonOption,
+  CourierBannerLayout,
+  CourierBannerPosition
+} from '@trycourier/courier-ui-banner';
+
+// Re-export banner theme utilities from courier-ui-banner
+export {
+  defaultLightTheme as defaultBannerLightTheme,
+  defaultDarkTheme as defaultBannerDarkTheme,
+  mergeTheme as mergeBannerTheme
+} from '@trycourier/courier-ui-banner';
 
 // Re-export element types from courier-ui-preferences
 export type { CourierPreferences as CourierPreferencesElement } from '@trycourier/courier-ui-preferences';

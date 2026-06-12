@@ -15,6 +15,7 @@
   "dependencies": {
     "@trycourier/courier-ui-inbox": "file:../../@trycourier/courier-ui-inbox",
     "@trycourier/courier-ui-toast": "file:../../@trycourier/courier-ui-toast",
+    "@trycourier/courier-ui-banner": "file:../../@trycourier/courier-ui-banner",
     "@trycourier/courier-ui-preferences": "file:../../@trycourier/courier-ui-preferences"
   },
   "devDependencies": {

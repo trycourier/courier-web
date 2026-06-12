@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js — banner expiry</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: white;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .page { padding: 40px; }
+    .hint { color: #666; font-size: 14px; margin-top: 12px; max-width: 520px; }
+    code { background: #f1f1f4; padding: 2px 5px; border-radius: 4px; }
+  </style>
+
+  <courier-banner id="my-banner"></courier-banner>
+
+  <div class="page">
+    <button id="show-expiring-button">Show banner that expires in 6s</button>
+    <button id="show-already-expired-button">Try an already-expired banner</button>
+    <p class="hint">
+      Banners honor <code>expiresAt</code> (epoch millis), read from the message's top-level
+      field or <code>data.expiresAt</code>. An expiring banner is auto-removed at its expiry; an
+      already-expired banner is never shown. This matches the backend, which excludes expired
+      messages from the inbox feed.
+    </p>
+  </div>
+
+  <script type="module">
+    import { Courier, CourierBannerDatastore } from '@trycourier/courier-ui-banner';
+
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT,
+    });
+
+    document.getElementById("show-expiring-button").addEventListener("click", () => {
+      CourierBannerDatastore.shared.addMessage({
+        messageId: "expiring-" + Date.now(),
+        title: "⏳ Limited-time notice",
+        body: "This banner will disappear automatically in 6 seconds.",
+        // Also valid: data: { expiresAt: Date.now() + 6000 }
+        expiresAt: Date.now() + 6000,
+      });
+    });
+
+    document.getElementById("show-already-expired-button").addEventListener("click", () => {
+      CourierBannerDatastore.shared.addMessage({
+        messageId: "expired-" + Date.now(),
+        title: "You should never see this",
+        body: "Its expiresAt is in the past, so the datastore drops it.",
+        expiresAt: Date.now() - 1000,
+      });
+      console.log("Added an already-expired banner — it should not render.");
+    });
+  </script>
+
+</body>
+
+</html>

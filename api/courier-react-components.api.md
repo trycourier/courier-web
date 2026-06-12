@@ -6,6 +6,14 @@
 
 import { Context } from 'react';
 import { Courier } from '@trycourier/courier-js';
+import { CourierBanner } from '@trycourier/courier-ui-banner';
+import { CourierBannerDismissButtonOption } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemActionClickEvent } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemClickEvent } from '@trycourier/courier-ui-banner';
+import { CourierBannerItemFactoryProps } from '@trycourier/courier-ui-banner';
+import { CourierBannerLayout } from '@trycourier/courier-ui-banner';
+import { CourierBannerPosition } from '@trycourier/courier-ui-banner';
+import { CourierBannerTheme } from '@trycourier/courier-ui-banner';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierDigestScheduleOption } from '@trycourier/courier-js';
 import { CourierInbox } from '@trycourier/courier-ui-inbox';
@@ -40,6 +48,34 @@ import { InboxDataSet } from '@trycourier/courier-ui-inbox';
 import { InboxMessage } from '@trycourier/courier-js';
 import { ReactNode } from 'react';
 import { RefAttributes } from 'react';
+
+// Warning: (ae-missing-release-tag) "CourierBannerComponent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const CourierBannerComponent: ForwardRefExoticComponent<CourierBannerProps & RefAttributes<CourierBanner>>;
+
+// Warning: (ae-missing-release-tag) "CourierBannerProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierBannerProps {
+    autoDismiss?: boolean;
+    autoDismissTimeoutMs?: number;
+    darkTheme?: CourierBannerTheme;
+    dismissButton?: CourierBannerDismissButtonOption;
+    dismissible?: boolean;
+    layout?: CourierBannerLayout;
+    lightTheme?: CourierBannerTheme;
+    maxVisible?: number;
+    mode?: CourierComponentThemeMode;
+    onBannerItemActionClick?: (props: CourierBannerItemActionClickEvent) => void;
+    onBannerItemClick?: (props: CourierBannerItemClickEvent) => void;
+    onReady?: (ready: boolean) => void;
+    position?: CourierBannerPosition;
+    renderBannerItem?: (props: CourierBannerItemFactoryProps) => ReactNode;
+    renderBannerItemContent?: (props: CourierBannerItemFactoryProps) => ReactNode;
+    requireAction?: boolean;
+    style?: CSSProperties;
+}
 
 // Warning: (ae-missing-release-tag) "CourierInboxComponent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
