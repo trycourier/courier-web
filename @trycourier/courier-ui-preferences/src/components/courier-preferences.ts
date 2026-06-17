@@ -189,7 +189,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -202,8 +202,11 @@ export class CourierPreferences extends CourierBaseElement {
   private _brandId?: string;
   private _brand?: CourierBrand;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
+  /** When true, render injected preview data and skip all network fetches. */
+  private _isPreview = false;
 
   protected onComponentMounted(): void {
+    this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
@@ -248,7 +251,29 @@ export class CourierPreferences extends CourierBaseElement {
           this._refresh();
         }
         break;
+      case 'preview':
+        this._isPreview = newValue != null && newValue !== 'false';
+        break;
     }
+  }
+
+  /**
+   * Render injected "dummy" preference data and skip all network fetches. Pass a
+   * full {@link CourierPreferencePage} (same shape `getPreferencePage()` returns);
+   * it is merged through the normal pipeline. Pass `null` to clear preview mode.
+   */
+  public setPreviewData(page: CourierPreferencePage | null) {
+    this._isPreview = Boolean(page);
+    if (page) {
+      this._sections = this._mergePageWithPreferences(page, page.recipientPreferences);
+      this._brand = page.brand as CourierBrand | undefined;
+      this._isLoading = false;
+      this._error = undefined;
+      this._resolvePrimaryColor();
+    } else {
+      this._sections = [];
+    }
+    this._render();
   }
 
   public setLightTheme(theme: CourierPreferencesTheme) {
@@ -303,6 +328,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   private async _refresh() {
+    if (this._isPreview) return;
     const client = Courier.shared.client;
     if (!client) return;
 
@@ -412,6 +438,7 @@ export class CourierPreferences extends CourierBaseElement {
 
     topic.status = status;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -434,6 +461,7 @@ export class CourierPreferences extends CourierBaseElement {
 
     topic.digestSchedule = scheduleId;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -457,6 +485,7 @@ export class CourierPreferences extends CourierBaseElement {
     topic.customRouting = channels;
     topic.hasCustomRouting = true;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -485,6 +514,7 @@ export class CourierPreferences extends CourierBaseElement {
       if (section) topic.customRouting = [...section.routingOptions];
     }
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({

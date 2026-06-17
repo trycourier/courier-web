@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, forwardRef, ReactNode, useContext, useState } from "react";
 import { CourierInboxListItemActionFactoryProps, CourierInboxListItemFactoryProps, CourierInboxTheme, CourierInbox as CourierInboxElement, CourierInboxHeaderFactoryProps, CourierInboxStateEmptyFactoryProps, CourierInboxStateLoadingFactoryProps, CourierInboxStateErrorFactoryProps, CourierInboxPaginationItemFactoryProps, CourierInboxFeed } from "@trycourier/courier-ui-inbox";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
+import { InboxMessage } from "@trycourier/courier-js";
 import { CourierClientComponent } from "./courier-client-component";
 import { CourierRenderContext } from "../context/render-context";
 
@@ -49,6 +50,15 @@ export interface CourierInboxProps {
 
   /** Allows you to pass a custom component as the pagination list item. */
   renderPaginationItem?: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => ReactNode;
+
+  /**
+   * Render injected "dummy" inbox messages instead of fetching from the API.
+   * No sign-in / network is required, and the live (shared) inbox is unaffected.
+   */
+  previewMessages?: InboxMessage[];
+
+  /** Optional unread-count override for the preview (defaults to unread messages). */
+  previewUnreadCount?: number;
 }
 
 export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInboxProps>((props, ref) => {
@@ -110,6 +120,15 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
     if (!inbox) return;
     inbox.onMessageLongPress(props.onMessageLongPress);
   }, [props.onMessageLongPress, elementReady]);
+
+  // Inject preview/dummy data (skips fetch + the shared datastore)
+  useEffect(() => {
+    const inbox = getEl();
+    if (!inbox) return;
+    inbox.setPreviewData(props.previewMessages ?? null, {
+      unreadCount: props.previewUnreadCount,
+    });
+  }, [props.previewMessages, props.previewUnreadCount, elementReady]);
 
   // Render header
   useEffect(() => {
@@ -197,6 +216,7 @@ export const CourierInboxComponent = forwardRef<CourierInboxElement, CourierInbo
       dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
       mode={props.mode}
       feeds={feedsAttr as any}
+      {...({ preview: props.previewMessages ? "true" : undefined } as any)}
     />
   );
 

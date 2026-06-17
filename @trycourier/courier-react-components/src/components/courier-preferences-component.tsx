@@ -4,6 +4,7 @@ import {
   CourierPreferences as CourierPreferencesElement,
 } from "@trycourier/courier-ui-preferences";
 import { CourierComponentThemeMode } from "@trycourier/courier-ui-core";
+import { CourierPreferencePage } from "@trycourier/courier-js";
 import { CourierClientComponent } from "./courier-client-component";
 
 /** Props for the CourierPreferences React component. */
@@ -16,6 +17,11 @@ export interface CourierPreferencesProps {
   subtitle?: string;
   brandId?: string;
   channelLabels?: Record<string, string>;
+  /**
+   * Render injected "dummy" preference data instead of fetching from the API.
+   * Pass a full {@link CourierPreferencePage}; no sign-in / network is required.
+   */
+  previewData?: CourierPreferencePage;
   onError?: (error: Error) => void;
 }
 
@@ -42,6 +48,12 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
     }
   }, [props.channelLabels]);
 
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    el.setPreviewData(props.previewData ?? null);
+  }, [props.previewData]);
+
   // When themes change, the web component's setDarkTheme/setLightTheme only calls
   // updateTheme() when _systemMode matches — it ignores an explicit _userMode override.
   // Re-calling setMode() always triggers updateTheme(), picking up the new theme values.
@@ -62,6 +74,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
       title={props.title}
       subtitle={props.subtitle}
       brand-id={props.brandId}
+      preview={props.previewData ? "true" : undefined}
     />
   );
 
