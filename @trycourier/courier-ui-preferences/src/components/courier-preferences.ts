@@ -189,7 +189,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview', 'title', 'subtitle'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -204,9 +204,14 @@ export class CourierPreferences extends CourierBaseElement {
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   /** When true, render injected preview data and skip all network fetches. */
   private _isPreview = false;
+  /** Optional header shown above the sections. */
+  private _title?: string;
+  private _subtitle?: string;
 
   protected onComponentMounted(): void {
     this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
+    this._title = this.getAttribute('title') ?? undefined;
+    this._subtitle = this.getAttribute('subtitle') ?? undefined;
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
@@ -253,6 +258,14 @@ export class CourierPreferences extends CourierBaseElement {
         break;
       case 'preview':
         this._isPreview = newValue != null && newValue !== 'false';
+        break;
+      case 'title':
+        this._title = newValue ?? undefined;
+        this._render();
+        break;
+      case 'subtitle':
+        this._subtitle = newValue ?? undefined;
+        this._render();
         break;
     }
   }
@@ -600,6 +613,34 @@ export class CourierPreferences extends CourierBaseElement {
       root.appendChild(inner);
       this.appendChild(root);
       return;
+    }
+
+    // Header (optional title / subtitle above the sections)
+    if (this._title || this._subtitle) {
+      const header = document.createElement('div');
+      header.className = 'courier-preferences-header';
+      header.style.marginBottom = '16px';
+      if (this._title) {
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'courier-preferences-header-title';
+        titleEl.textContent = this._title;
+        titleEl.style.margin = '0';
+        titleEl.style.fontSize = '20px';
+        titleEl.style.fontWeight = '600';
+        titleEl.style.lineHeight = '1.3';
+        header.appendChild(titleEl);
+      }
+      if (this._subtitle) {
+        const subtitleEl = document.createElement('p');
+        subtitleEl.className = 'courier-preferences-header-subtitle';
+        subtitleEl.textContent = this._subtitle;
+        subtitleEl.style.margin = this._title ? '4px 0 0' : '0';
+        subtitleEl.style.fontSize = '14px';
+        subtitleEl.style.lineHeight = '1.5';
+        subtitleEl.style.opacity = '0.7';
+        header.appendChild(subtitleEl);
+      }
+      inner.appendChild(header);
     }
 
     // Sections
