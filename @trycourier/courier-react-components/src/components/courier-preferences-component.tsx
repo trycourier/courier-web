@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, CSSProperties } from "react";
+import { useRef, useEffect, useState, forwardRef, CSSProperties } from "react";
 import {
   CourierPreferencesTheme,
   CourierPreferences as CourierPreferencesElement,
@@ -27,6 +27,10 @@ export interface CourierPreferencesProps {
 
 export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement, CourierPreferencesProps>((props, ref) => {
   const elRef = useRef<CourierPreferencesElement | null>(null);
+  // The element renders behind CourierClientComponent (client-only), so it can
+  // mount AFTER these effects first run. Track readiness and include it in the
+  // deps so imperative setters fire once the element exists.
+  const [elementReady, setElementReady] = useState(false);
 
   function handleRef(el: CourierPreferencesElement | null) {
     if (ref) {
@@ -38,6 +42,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
       }
     }
     elRef.current = el;
+    setElementReady(!!el);
   }
 
   useEffect(() => {
@@ -46,13 +51,13 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
     if (props.channelLabels) {
       el.setChannelLabels(props.channelLabels);
     }
-  }, [props.channelLabels]);
+  }, [props.channelLabels, elementReady]);
 
   useEffect(() => {
     const el = elRef.current;
     if (!el) return;
     el.setPreviewData(props.previewData ?? null);
-  }, [props.previewData]);
+  }, [props.previewData, elementReady]);
 
   // When themes change, the web component's setDarkTheme/setLightTheme only calls
   // updateTheme() when _systemMode matches — it ignores an explicit _userMode override.
@@ -61,7 +66,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
     const el = elRef.current;
     if (!el || !props.mode) return;
     el.setMode(props.mode);
-  }, [props.lightTheme, props.darkTheme, props.mode]);
+  }, [props.lightTheme, props.darkTheme, props.mode, elementReady]);
 
   const children = (
     /* @ts-ignore */
