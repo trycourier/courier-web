@@ -1,1 +1,0 @@
-../../../.agents/skills/changesets/SKILL.md

@@ -42,4 +42,4 @@ Then:
 
 - Run from the repo root. Package manager is `yarn@1` (classic).
 - Reports live at `api/*.api.md`; per-package config is each package's `api-extractor.json`. Scripts: `scripts/generate-api-docs` (update) and `scripts/build-packages-ci` (build + check, used by CI's `build-packages.yml`).
-- This skill lives at `.agents/skills/api-reports/SKILL.md` (the cross-tool Agent Skills standard path). Cursor and Codex discover it there natively; Claude Code reads it via a file symlink at `.claude/skills/api-reports/SKILL.md`.
+- This skill lives at `.agents/skills/api-reports/SKILL.md` (the cross-tool Agent Skills standard path). Cursor and Codex discover it there natively; Claude Code discovers it via the `.claude/skills` → `../.agents/skills` directory symlink.

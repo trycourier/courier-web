@@ -62,8 +62,14 @@ export class CourierInfoState extends CourierFactoryElement {
 
   private getStyles(props: CourierInfoStateProps): string {
 
+    // NOTE: These styles are injected into the light DOM (this component does not use
+    // Shadow DOM), so every selector must be scoped to this element's tag name. A bare
+    // `.container` selector would leak globally and clobber host-app styles. `:host` does
+    // not match anything outside of a shadow root, so the element itself is targeted by tag.
+    const id = CourierInfoState.id;
+
     return `
-      :host {
+      ${id} {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -71,7 +77,7 @@ export class CourierInfoState extends CourierFactoryElement {
         width: 100%;
       }
 
-      .container {
+      ${id} .container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -84,7 +90,7 @@ export class CourierInfoState extends CourierFactoryElement {
         height: 100%;
       }
 
-      .container h2 {
+      ${id} .container h2 {
         margin: 0;
         color: ${props.title?.textColor ?? 'red'};
         font-size: ${props.title?.fontSize ?? '16px'};

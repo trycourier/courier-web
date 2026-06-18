@@ -14,7 +14,7 @@ const STYLES = `
     height: 16px;
     line-height: 0;
   }
-  .courier-radio {
+  courier-radio .courier-radio {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -24,13 +24,13 @@ const STYLES = `
     line-height: 0;
     transition: all 150ms ease;
   }
-  .courier-radio svg {
+  courier-radio .courier-radio svg {
     display: block;
   }
-  .courier-radio-ring {
+  courier-radio .courier-radio-ring {
     transition: stroke 150ms ease;
   }
-  .courier-radio-dot {
+  courier-radio .courier-radio-dot {
     opacity: 0;
     transform: scale(0.5);
     transform-origin: center;
@@ -39,7 +39,7 @@ const STYLES = `
       opacity 200ms cubic-bezier(0.2, 0, 0.13, 1.5),
       transform 200ms cubic-bezier(0.2, 0, 0.13, 1.5);
   }
-  .courier-radio[aria-checked="true"] .courier-radio-dot {
+  courier-radio .courier-radio[aria-checked="true"] .courier-radio-dot {
     opacity: 1;
     transform: scale(1);
   }

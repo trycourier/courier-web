@@ -8,14 +8,14 @@ import { formatDigest } from "../utils/format-digest";
 const STYLE_ID = 'courier-digest-schedule';
 
 const STYLES = `
-  .courier-digest-container {
+  courier-digest-schedule .courier-digest-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
     margin-top: 20px;
     padding: 0 24px;
   }
-  .courier-digest-label {
+  courier-digest-schedule .courier-digest-label {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -23,7 +23,7 @@ const STYLES = `
     font-weight: 400;
     line-height: 1.2;
   }
-  .courier-digest-option {
+  courier-digest-schedule .courier-digest-option {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -38,15 +38,15 @@ const STYLES = `
     transition: opacity 150ms ease;
     align-self: flex-start;
   }
-  .courier-digest-option:hover {
+  courier-digest-schedule .courier-digest-option:hover {
     opacity: 0.8;
   }
-  .courier-digest-option-label {
+  courier-digest-schedule .courier-digest-option-label {
     display: inline-flex;
     align-items: center;
     gap: 8px;
   }
-  .courier-digest-calendar {
+  courier-digest-schedule .courier-digest-calendar {
     display: inline-flex;
     flex-shrink: 0;
     line-height: 0;
