@@ -26,5 +26,6 @@
     "enableI18nLegacyMessageIdFormat": false,
     "compilationMode": "partial"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/__tests__/**", "src/**/__mocks__/**", "src/jest.setup.ts"]
 }
