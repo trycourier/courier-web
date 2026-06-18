@@ -3521,10 +3521,10 @@
   version "1.0.0"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-ui-core" "2.2.0"
-    "@trycourier/courier-ui-inbox" "2.4.7"
-    "@trycourier/courier-ui-preferences" "1.1.0"
-    "@trycourier/courier-ui-toast" "2.1.6"
+    "@trycourier/courier-ui-core" "2.2.1"
+    "@trycourier/courier-ui-inbox" "2.4.8"
+    "@trycourier/courier-ui-preferences" "1.1.1"
+    "@trycourier/courier-ui-toast" "2.1.7"
     tslib "^2.8.1"
 
 "@trycourier/courier-react-17@file:@trycourier/courier-react-17":
@@ -3557,46 +3557,17 @@
     "@trycourier/courier-ui-preferences" "1.1.1"
     "@trycourier/courier-ui-toast" "2.1.7"
 
-"@trycourier/courier-ui-core@2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-core/-/courier-ui-core-2.2.0.tgz#82c19453f8df3af1802f6d164c8b64f696898308"
-  integrity sha512-EPejn9kt+AP1CJKbveg1neh8X8XwD/jSagcoO/wF491wlpXJ2PZoIP90s6pTV503wSU6WPz18yx/P4XagQ4PfA==
-
-"@trycourier/courier-ui-inbox@2.4.7":
-  version "2.4.7"
-  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-inbox/-/courier-ui-inbox-2.4.7.tgz#314c005c26d5a9a24ecb83c823cd34529c86ef43"
-  integrity sha512-8CxR5i+ICr7BiMQmtl9FNC6W0cPrn3jx5xlkWS7sZ0NktyDKEuZA2PkLQSBybk45wU5JkhEmpOvvVTDqZBUDsA==
-  dependencies:
-    "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-ui-core" "2.2.0"
-
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
   version "2.4.8"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.1"
 
-"@trycourier/courier-ui-preferences@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-preferences/-/courier-ui-preferences-1.1.0.tgz#684845d012039f8cd119c557d15175102dff29ba"
-  integrity sha512-6zySrQCZbrLEeLTtsiquD16OIpnVU0QkmLxYFiox3FTfAEXz/lK1SZIWQW4jxQ5jIYe+UEdGsWQJmiQT87zO+w==
-  dependencies:
-    "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-ui-core" "2.2.0"
-
 "@trycourier/courier-ui-preferences@file:@trycourier/courier-ui-preferences":
   version "1.1.1"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.1"
-
-"@trycourier/courier-ui-toast@2.1.6":
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-toast/-/courier-ui-toast-2.1.6.tgz#df0a5ef94650917317f712421d102a5cf4e115e9"
-  integrity sha512-5IpuxAhWN6edKM9qcf+NGsGI7kO9pSzzTazjcXfhW9UR2vdGVKQcNjLDeJE6mjeVgttBiN2hUkpg6J77wu9JCg==
-  dependencies:
-    "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-ui-core" "2.2.0"
 
 "@trycourier/courier-ui-toast@file:@trycourier/courier-ui-toast":
   version "2.1.7"
@@ -3608,10 +3579,10 @@
   version "1.0.0"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-ui-core" "2.2.0"
-    "@trycourier/courier-ui-inbox" "2.4.7"
-    "@trycourier/courier-ui-preferences" "1.1.0"
-    "@trycourier/courier-ui-toast" "2.1.6"
+    "@trycourier/courier-ui-core" "2.2.1"
+    "@trycourier/courier-ui-inbox" "2.4.8"
+    "@trycourier/courier-ui-preferences" "1.1.1"
+    "@trycourier/courier-ui-toast" "2.1.7"
 
 "@trycourier/courier@^7.3.0":
   version "7.3.0"
