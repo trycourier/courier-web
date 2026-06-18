@@ -46,7 +46,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
   const errorButtonHoverBg = errorButton?.hoverBackgroundColor || errorButtonBg;
 
   return `
-    .courier-preferences-root {
+    courier-preferences .courier-preferences-root {
       background: transparent;
       border: none;
       border-radius: 0;
@@ -59,51 +59,51 @@ function getStyles(theme: CourierPreferencesTheme): string {
       align-items: center;
       padding: 0;
     }
-    .courier-preferences-inner {
+    courier-preferences .courier-preferences-inner {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: 24px;
     }
-    .courier-preferences-logo {
+    courier-preferences .courier-preferences-logo {
       display: flex;
       justify-content: flex-start;
     }
-    .courier-preferences-logo img {
+    courier-preferences .courier-preferences-logo img {
       max-height: 40px;
       object-fit: contain;
     }
-    .courier-preferences-sections {
+    courier-preferences .courier-preferences-sections {
       display: flex;
       flex-direction: column;
       gap: 32px;
     }
 
     /* Skeleton loading */
-    .courier-preferences-skeleton {
+    courier-preferences .courier-preferences-skeleton {
       display: flex;
       flex-direction: column;
       gap: 20px;
       width: 100%;
     }
-    .courier-preferences-skeleton-topics {
+    courier-preferences .courier-preferences-skeleton-topics {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-    .courier-preferences-skeleton-card {
+    courier-preferences .courier-preferences-skeleton-card {
       background: ${topic?.backgroundColor || '#FFFFFF'};
       border: ${topic?.border || 'none'};
       border-radius: ${topic?.borderRadius || '12px'};
       padding: 26px 0;
       box-sizing: border-box;
     }
-    .courier-preferences-skeleton-card-header {
+    courier-preferences .courier-preferences-skeleton-card-header {
       padding: 0 24px;
       display: flex;
       align-items: center;
     }
-    .courier-preferences-skeleton-bar {
+    courier-preferences .courier-preferences-skeleton-bar {
       border-radius: ${barRadius};
       background: linear-gradient(
         90deg,
@@ -114,11 +114,11 @@ function getStyles(theme: CourierPreferencesTheme): string {
       background-size: 200% 100%;
       animation: courier-preferences-shimmer ${shimmerDuration} ease-in-out infinite;
     }
-    .courier-preferences-skeleton-bar--section-title {
+    courier-preferences .courier-preferences-skeleton-bar--section-title {
       width: 25%;
       height: 18px;
     }
-    .courier-preferences-skeleton-bar--topic {
+    courier-preferences .courier-preferences-skeleton-bar--topic {
       width: 35%;
       height: ${barHeight};
     }
@@ -128,7 +128,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
     }
 
     /* Info state (error / empty) */
-    .courier-preferences-info-state {
+    courier-preferences .courier-preferences-info-state {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -139,25 +139,25 @@ function getStyles(theme: CourierPreferencesTheme): string {
       width: 100%;
       box-sizing: border-box;
     }
-    .courier-preferences-info-state-title {
+    courier-preferences .courier-preferences-info-state-title {
       margin: 0;
     }
-    .courier-preferences-info-state-button {
+    courier-preferences .courier-preferences-info-state-button {
       cursor: pointer;
       padding: 10px 20px;
       transition: background-color 150ms ease, opacity 150ms ease;
     }
-    .courier-preferences-info-state-button:focus {
+    courier-preferences .courier-preferences-info-state-button:focus {
       outline: none;
     }
 
-    .courier-preferences-error-title {
+    courier-preferences .courier-preferences-error-title {
       color: ${errorTitle?.color || '#171717'};
       font-size: ${errorTitle?.size || '16px'};
       font-weight: ${errorTitle?.weight || '500'};
       font-family: ${errorTitle?.family || 'inherit'};
     }
-    .courier-preferences-error-button {
+    courier-preferences .courier-preferences-error-button {
       background-color: ${errorButtonBg};
       color: ${errorButtonFont?.color || '#FFFFFF'};
       font-size: ${errorButtonFont?.size || '14px'};
@@ -166,7 +166,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
       border: ${errorButton?.border || 'none'};
       border-radius: ${errorButton?.borderRadius || '8px'};
     }
-    .courier-preferences-error-button:hover {
+    courier-preferences .courier-preferences-error-button:hover {
       background-color: ${errorButtonHoverBg};
     }
 

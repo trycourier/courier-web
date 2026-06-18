@@ -10,13 +10,13 @@ const STYLE_ID = 'courier-preferences-section';
 function getStyles(theme: CourierPreferencesTheme): string {
   const s = theme.section;
   return `
-    .courier-pref-section {
+    courier-preferences-section .courier-pref-section {
       display: flex;
       flex-direction: column;
       gap: 16px;
       background: ${s?.backgroundColor || 'transparent'};
     }
-    .courier-pref-section-title {
+    courier-preferences-section .courier-pref-section-title {
       font-size: ${s?.title?.size || '18px'};
       font-weight: ${s?.title?.weight || '600'};
       color: ${s?.title?.color || '#171717'};
@@ -24,7 +24,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
       padding: 0;
       margin: 0;
     }
-    .courier-pref-section-topics {
+    courier-preferences-section .courier-pref-section-topics {
       display: flex;
       flex-direction: column;
       gap: 16px;

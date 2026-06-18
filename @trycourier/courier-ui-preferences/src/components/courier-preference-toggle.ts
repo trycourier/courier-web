@@ -9,7 +9,7 @@ const STYLES = `
     display: inline-flex;
     line-height: 0;
   }
-  .courier-pref-toggle {
+  courier-preference-toggle .courier-pref-toggle {
     position: relative;
     display: inline-flex;
     width: 44px;
@@ -22,11 +22,11 @@ const STYLES = `
     transition: background-color 200ms ease;
     outline: none;
   }
-  .courier-pref-toggle[aria-disabled="true"] {
+  courier-preference-toggle .courier-pref-toggle[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  .courier-pref-toggle-thumb {
+  courier-preference-toggle .courier-pref-toggle-thumb {
     position: absolute;
     top: 2px;
     left: 2px;
@@ -37,7 +37,7 @@ const STYLES = `
     transition: transform 200ms ease;
     pointer-events: none;
   }
-  .courier-pref-toggle[aria-checked="true"] .courier-pref-toggle-thumb {
+  courier-preference-toggle .courier-pref-toggle[aria-checked="true"] .courier-pref-toggle-thumb {
     transform: translateX(20px);
   }
 `;
