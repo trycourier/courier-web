@@ -1,23 +1,55 @@
-# Courier + Angular (Web Components)
+# Courier + Angular (native Angular SDK)
 
-A minimal [Angular](https://angular.dev/) + [Vite](https://vite.dev/) app
+An [Angular 19](https://angular.dev/) + [Vite](https://vite.dev/) showcase
 (via [`@analogjs/vite-plugin-angular`](https://analogjs.org/docs/packages/vite-plugin-angular/overview))
-that embeds Courier's [Web Components inbox](../../@trycourier/courier-ui-inbox/)
-— the same setup you'd use to drop the inbox into an Angular app.
+built on the native Angular SDK [`@trycourier/courier-angular`](../../@trycourier/courier-angular/).
 
-Like the [`vue`](../vue/) example, the page simply renders `<courier-inbox>` on
-its own, mirroring the default React example.
+It ports the full Courier example showcase — the same set of demo routes as the
+[`react-latest`](../react-latest/) and [`vue`](../vue/) examples — to Angular:
+inbox, popup menu, custom feeds/tabs, theming, custom renderers (header, list
+item, states, markdown), toast (basic / themed / custom), service-only usage,
+and preferences (default / styled).
 
-## How Angular uses the Web Components
+## How Angular uses the SDK
 
-Two things make the native custom elements work in Angular:
+`@trycourier/courier-angular` exposes standalone components whose host element
+**is** the underlying Courier custom element:
 
-1. The standalone `AppComponent` declares `schemas: [CUSTOM_ELEMENTS_SCHEMA]`, so
-   Angular renders `courier-*` tags as native custom elements instead of failing
-   to resolve them as Angular components.
-2. Importing `@trycourier/courier-ui-inbox` registers the `<courier-inbox>`
-   element. We grab it with a template `#inbox` ref / `@ViewChild` to call its
-   imperative API (`onMessageClick`, etc.).
+- `CourierInboxComponent` (`<courier-inbox>`), `CourierInboxPopupMenuComponent`
+  (`<courier-inbox-popup-menu>`), `CourierToastComponent` (`<courier-toast>`),
+  `CourierPreferencesComponent` (`<courier-preferences>`).
+- Inputs are camelCase (`[lightTheme]`, `[feeds]`, `[height]`, …), outputs are
+  events (`(messageClick)`, `(toastItemClick)`, …).
+- Custom render slots are provided as named `<ng-template>` children
+  (`#header`, `#listItem`, `#emptyState`, `#toastItem`, …); the implicit context
+  is the factory props (`let-props`).
+- `CourierService` (injectable) provides auth/inbox/toast state as RxJS
+  observables (`auth$`, `inbox$`, `toast$`) plus imperative actions
+  (`signIn`, `load`, `registerFeeds`, `getUserPreferences`, …).
+
+Each demo page under `src/app/pages/` is a standalone component; routes live in
+`src/app/routes.ts`.
+
+## How this example consumes `@trycourier/courier-angular`
+
+Unlike the React/Vue showcases (whose SDKs are plain TypeScript aliased to
+`/src`), `courier-angular` is *Angular* source. Analog's compiler deliberately
+skips transforming `@trycourier/*` (see `transformFilter` in `vite.config.ts`),
+so we cannot alias it to `/src` — its decorators would never be compiled.
+
+Instead we consume the **built** package: `ng-packagr` emits a partial-Ivy
+fesm2022 bundle, which Angular's linker (run by Analog) recompiles at dev/build
+time. `vite.config.ts` aliases `@trycourier/courier-angular` to its `dist/` so
+Vite always picks up the freshly built output, and `optimizeDeps.exclude`s it so
+esbuild does not pre-bundle the partial-Ivy code. Its plain-TS peer packages
+(`courier-ui-inbox|toast|preferences`, `courier-js`, `courier-ui-core`) are
+aliased to `/src` exactly like the Vue example.
+
+**You must build the SDK before running this example** (or after changing it):
+
+```sh
+yarn workspace @trycourier/courier-angular run build
+```
 
 ## Development
 
@@ -29,30 +61,31 @@ From the `courier-web` project root:
     yarn install
     ```
 
-2. (Optional) To show live messages, set credentials in the shared
+2. Build the Angular SDK (see above):
+
+    ```sh
+    yarn workspace @trycourier/courier-angular run build
+    ```
+
+3. (Optional) To show live messages, set credentials in the shared
    [`examples/web-js/.env`](../web-js) file — this example reads its `.env` from
    there (via `envDir` in `vite.config.ts`), so the web-component examples share
-   one set of credentials. Without them, the inbox renders its empty / signed-out
-   state — which is the exact UI this example is testing.
+   one set of credentials. Without them, the inbox renders its empty /
+   signed-out state.
 
     ```sh
     VITE_USER_ID={YOUR_USER_ID}
     VITE_JWT={YOUR_JWT}
     ```
 
-3. Run the example app
+4. Run the example app
 
     ```sh
     yarn workspace angular run dev
     ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## What "working" looks like
-
-The page header, sidebar, inbox card and footer stay laid out in their grid even
-while the inbox shows its empty state. If you see the layout collapse (everything
-centered/stacked), the global-style leak has regressed.
+5. Open the printed `http://localhost:<port>` in your browser. Start at `/` for
+   the default inbox, or `/examples` for the full demo index.
 
 > Changes made to `@trycourier` modules are _not_ hot-reloaded. Restart the
-> server to pick up changes.
+> server (and rebuild `courier-angular` if you changed it) to pick up changes.

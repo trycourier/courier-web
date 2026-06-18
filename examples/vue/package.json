@@ -5,19 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Vue + Courier Web Components example",
+  "description": "Vue + Courier (native Vue SDK) example",
   "dependencies": {
-    "@trycourier/courier-ui-inbox": "file:../../@trycourier/courier-ui-inbox",
-    "vue": "^3.5.13"
+    "@trycourier/courier-vue": "file:../../@trycourier/courier-vue",
+    "marked": "^15.0.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.2.4"
+    "typescript": "~5.8.3",
+    "vite": "6.2.6",
+    "vue-tsc": "^2.2.0"
   }
 }
