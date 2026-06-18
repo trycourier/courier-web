@@ -1,0 +1,55 @@
+{
+  "name": "@trycourier/courier-vue",
+  "version": "1.0.0",
+  "description": "The Vue components for the Courier web UI",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "cross-env NODE_ENV=production tsc && vite build --mode production",
+    "build:ci": "yarn build && yarn generate-api-doc",
+    "watch": "vite build --watch",
+    "preview": "vite preview",
+    "prepare": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate-api-doc": "api-extractor run"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "courier",
+    "ui",
+    "vue",
+    "typescript",
+    "browser"
+  ],
+  "author": "Courier",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/trycourier/courier-web"
+  },
+  "homepage": "https://www.courier.com",
+  "dependencies": {
+    "@trycourier/courier-js": "3.4.0",
+    "@trycourier/courier-ui-core": "2.2.0",
+    "@trycourier/courier-ui-inbox": "2.4.7",
+    "@trycourier/courier-ui-toast": "2.1.6",
+    "@trycourier/courier-ui-preferences": "1.1.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "cross-env": "^7.0.3",
+    "jsdom": "^25.0.1",
+    "vite": "6.2.6",
+    "vite-plugin-dts": "4.5.3",
+    "vitest": "^2.1.9",
+    "vue": "^3.5.13"
+  }
+}
