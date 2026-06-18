@@ -60,7 +60,7 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 ### Architecture
 
 ```mermaid
-graph TD
+graph BT
     subgraph foundation["Foundation"]
         js["courier-js<br/><i>API client</i>"]
         core["courier-ui-core<br/><i>base web components</i>"]
@@ -83,16 +83,12 @@ graph TD
         ng["courier-angular<br/><i>Angular 17+</i>"]
     end
 
-    inbox --> js & core
-    toast --> js & core
-    prefs --> js & core
+    js & core --> inbox & toast & prefs
 
-    rc --> inbox & toast & prefs
-    r18 --> rc
-    r17 --> rc
+    inbox & toast & prefs --> rc
+    rc --> r18 & r17
 
-    vue --> inbox & toast & prefs
-    ng --> inbox & toast & prefs
+    inbox & toast & prefs --> vue & ng
 ```
 
 The `courier-js` API client and `courier-ui-core` web components form the foundation. The `courier-ui-*` packages build the framework-agnostic web component UI on top of them. Framework SDKs wrap those web components: the React SDKs share logic through `courier-react-components`, while `courier-vue` and `courier-angular` wrap the web components directly.
