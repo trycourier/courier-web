@@ -3486,52 +3486,90 @@
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
 "@trycourier/courier-react-17@file:@trycourier/courier-react-17":
-  version "9.2.2"
+  version "9.2.3"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-react-components" "2.2.2"
-    "@trycourier/courier-ui-core" "2.2.0"
-    "@trycourier/courier-ui-inbox" "2.4.7"
-    "@trycourier/courier-ui-preferences" "1.1.0"
-    "@trycourier/courier-ui-toast" "2.1.6"
+    "@trycourier/courier-react-components" "2.2.3"
+    "@trycourier/courier-ui-core" "2.2.1"
+    "@trycourier/courier-ui-inbox" "2.4.8"
+    "@trycourier/courier-ui-preferences" "1.1.1"
+    "@trycourier/courier-ui-toast" "2.1.7"
 
 "@trycourier/courier-react@file:@trycourier/courier-react":
-  version "9.2.2"
+  version "9.2.3"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-react-components" "2.2.2"
-    "@trycourier/courier-ui-core" "2.2.0"
-    "@trycourier/courier-ui-inbox" "2.4.7"
-    "@trycourier/courier-ui-preferences" "1.1.0"
-    "@trycourier/courier-ui-toast" "2.1.6"
+    "@trycourier/courier-react-components" "2.2.3"
+    "@trycourier/courier-ui-core" "2.2.1"
+    "@trycourier/courier-ui-inbox" "2.4.8"
+    "@trycourier/courier-ui-preferences" "1.1.1"
+    "@trycourier/courier-ui-toast" "2.1.7"
 
 "@trycourier/courier-react@file:@trycourier/courier-react-17":
-  version "9.2.2"
+  version "9.2.3"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
-    "@trycourier/courier-react-components" "2.2.2"
+    "@trycourier/courier-react-components" "2.2.3"
+    "@trycourier/courier-ui-core" "2.2.1"
+    "@trycourier/courier-ui-inbox" "2.4.8"
+    "@trycourier/courier-ui-preferences" "1.1.1"
+    "@trycourier/courier-ui-toast" "2.1.7"
+
+"@trycourier/courier-ui-core@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-core/-/courier-ui-core-2.2.0.tgz#82c19453f8df3af1802f6d164c8b64f696898308"
+  integrity sha512-EPejn9kt+AP1CJKbveg1neh8X8XwD/jSagcoO/wF491wlpXJ2PZoIP90s6pTV503wSU6WPz18yx/P4XagQ4PfA==
+
+"@trycourier/courier-ui-inbox@2.4.7":
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-inbox/-/courier-ui-inbox-2.4.7.tgz#314c005c26d5a9a24ecb83c823cd34529c86ef43"
+  integrity sha512-8CxR5i+ICr7BiMQmtl9FNC6W0cPrn3jx5xlkWS7sZ0NktyDKEuZA2PkLQSBybk45wU5JkhEmpOvvVTDqZBUDsA==
+  dependencies:
+    "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.0"
-    "@trycourier/courier-ui-inbox" "2.4.7"
-    "@trycourier/courier-ui-preferences" "1.1.0"
-    "@trycourier/courier-ui-toast" "2.1.6"
 
 "@trycourier/courier-ui-inbox@file:@trycourier/courier-ui-inbox":
-  version "2.4.7"
+  version "2.4.8"
+  dependencies:
+    "@trycourier/courier-js" "3.4.0"
+    "@trycourier/courier-ui-core" "2.2.1"
+
+"@trycourier/courier-ui-preferences@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-preferences/-/courier-ui-preferences-1.1.0.tgz#684845d012039f8cd119c557d15175102dff29ba"
+  integrity sha512-6zySrQCZbrLEeLTtsiquD16OIpnVU0QkmLxYFiox3FTfAEXz/lK1SZIWQW4jxQ5jIYe+UEdGsWQJmiQT87zO+w==
   dependencies:
     "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.0"
 
 "@trycourier/courier-ui-preferences@file:@trycourier/courier-ui-preferences":
-  version "1.1.0"
+  version "1.1.1"
+  dependencies:
+    "@trycourier/courier-js" "3.4.0"
+    "@trycourier/courier-ui-core" "2.2.1"
+
+"@trycourier/courier-ui-toast@2.1.6":
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/@trycourier/courier-ui-toast/-/courier-ui-toast-2.1.6.tgz#df0a5ef94650917317f712421d102a5cf4e115e9"
+  integrity sha512-5IpuxAhWN6edKM9qcf+NGsGI7kO9pSzzTazjcXfhW9UR2vdGVKQcNjLDeJE6mjeVgttBiN2hUkpg6J77wu9JCg==
   dependencies:
     "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.0"
 
 "@trycourier/courier-ui-toast@file:@trycourier/courier-ui-toast":
-  version "2.1.6"
+  version "2.1.7"
+  dependencies:
+    "@trycourier/courier-js" "3.4.0"
+    "@trycourier/courier-ui-core" "2.2.1"
+
+"@trycourier/courier-vue@file:@trycourier/courier-vue":
+  version "1.0.0"
   dependencies:
     "@trycourier/courier-js" "3.4.0"
     "@trycourier/courier-ui-core" "2.2.0"
+    "@trycourier/courier-ui-inbox" "2.4.7"
+    "@trycourier/courier-ui-preferences" "1.1.0"
+    "@trycourier/courier-ui-toast" "2.1.6"
 
 "@trycourier/courier@^7.3.0":
   version "7.3.0"
@@ -4122,6 +4160,13 @@
     loupe "^3.1.2"
     tinyrainbow "^1.2.0"
 
+"@volar/language-core@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@volar/language-core/-/language-core-2.4.15.tgz#759d04cb4eab9920560b8bcfa4515d5b08a1b7ce"
+  integrity sha512-3VHw+QZU0ZG9IuQmzT68IyN4hZNd9GchGPhbD9+pa8CVv7rnoOZwo7T8weIbrRmihqy3ATpdfXFnqRrfPVK6CA==
+  dependencies:
+    "@volar/source-map" "2.4.15"
+
 "@volar/language-core@2.4.19", "@volar/language-core@~2.4.11":
   version "2.4.19"
   resolved "https://registry.npmjs.org/@volar/language-core/-/language-core-2.4.19.tgz"
@@ -4129,10 +4174,24 @@
   dependencies:
     "@volar/source-map" "2.4.19"
 
+"@volar/source-map@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-2.4.15.tgz#18aba09994c0268e59a418f9d738e4a85302781d"
+  integrity sha512-CPbMWlUN6hVZJYGcU/GSoHu4EnCHiLaXI9n8c9la6RaI9W5JHX+NqG+GSQcB0JdC2FIBLdZJwGsfKyBB71VlTg==
+
 "@volar/source-map@2.4.19":
   version "2.4.19"
   resolved "https://registry.npmjs.org/@volar/source-map/-/source-map-2.4.19.tgz"
   integrity sha512-ttWmO/Ld7r3ebIPPAYvAuSLrlJ96ZALPka44mD4sWA8bw2n9u7TGnMcaTUkiF0GLG8bq/K09beWmEAB1mqMy/A==
+
+"@volar/typescript@2.4.15":
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/@volar/typescript/-/typescript-2.4.15.tgz#1445d23f8e4f9ad821b6bfa58cf4a2b980dc5f97"
+  integrity sha512-2aZ8i0cqPGjXb4BhkMsPYDkkuc2ZQ6yOpqwAuNwUoncELqoy5fRgOQtLR9gB0g902iS0NAkvpIzs27geVyVdPg==
+  dependencies:
+    "@volar/language-core" "2.4.15"
+    path-browserify "^1.0.1"
+    vscode-uri "^3.0.8"
 
 "@volar/typescript@^2.4.11":
   version "2.4.19"
@@ -4212,6 +4271,11 @@
     de-indent "^1.0.2"
     he "^1.2.0"
 
+"@vue/devtools-api@^6.6.4":
+  version "6.6.4"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.6.4.tgz#cbe97fe0162b365edc1dba80e173f90492535343"
+  integrity sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==
+
 "@vue/language-core@2.2.0":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@vue/language-core/-/language-core-2.2.0.tgz"
@@ -4222,6 +4286,20 @@
     "@vue/compiler-vue2" "^2.7.16"
     "@vue/shared" "^3.5.0"
     alien-signals "^0.4.9"
+    minimatch "^9.0.3"
+    muggle-string "^0.4.1"
+    path-browserify "^1.0.1"
+
+"@vue/language-core@2.2.12":
+  version "2.2.12"
+  resolved "https://registry.yarnpkg.com/@vue/language-core/-/language-core-2.2.12.tgz#d01f7e865f593f968cb65c12a13d8337e65641f0"
+  integrity sha512-IsGljWbKGU1MZpBPN+BvPAdr55YPkj2nB/TBNGNC32Vy2qLG25DYu/NBN2vNtZqdRbTRjaoYrahLrToim2NanA==
+  dependencies:
+    "@volar/language-core" "2.4.15"
+    "@vue/compiler-dom" "^3.5.0"
+    "@vue/compiler-vue2" "^2.7.16"
+    "@vue/shared" "^3.5.0"
+    alien-signals "^1.0.3"
     minimatch "^9.0.3"
     muggle-string "^0.4.1"
     path-browserify "^1.0.1"
@@ -4370,6 +4448,11 @@ alien-signals@^0.4.9:
   version "0.4.14"
   resolved "https://registry.npmjs.org/alien-signals/-/alien-signals-0.4.14.tgz"
   integrity sha512-itUAVzhczTmP2U5yX67xVpsbbOiquusbWVyA9N+sy6+r6YVbFkahXvNCeEPWEOMhwDYwbVbGHFkVL03N9I5g+Q==
+
+alien-signals@^1.0.3:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/alien-signals/-/alien-signals-1.0.13.tgz#8d6db73462f742ee6b89671fbd8c37d0b1727a7e"
+  integrity sha512-OGj9yyTnJEttvzhTUWuscOvtqxq5vrhF7vL9oS0xJ2mK0ItPYP1/y+vCFebfxoEyAz0++1AIwJ5CMr+Fk3nDmg==
 
 ansi-colors@^4.1.1, ansi-colors@^4.1.3:
   version "4.1.3"
@@ -7885,6 +7968,11 @@ markdown-to-jsx@^7.7.13:
   resolved "https://registry.npmjs.org/markdown-to-jsx/-/markdown-to-jsx-7.7.17.tgz"
   integrity sha512-7mG/1feQ0TX5I7YyMZVDgCC/y2I3CiEhIRQIhyov9nGBP5eoVrOXXHuL5ZP8GRfxVZKRiXWJgwXkb9It+nQZfQ==
 
+marked@^15.0.0:
+  version "15.0.12"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-15.0.12.tgz#30722c7346e12d0a2d0207ab9b0c4f0102d86c4e"
+  integrity sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==
+
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz"
@@ -10240,6 +10328,21 @@ vue-component-type-helpers@^3.0.0:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-3.3.5.tgz#1761c8edb0f79888d593c3675adc46ad2a45d1c7"
   integrity sha512-Fe1jyPJoUGpJOYKOri44jduR7My4yYINOMJISuMAbmrs+L5LbIDUc8NTWZYY3EJLK0yPLuCmcd5zoCsE4k2/KA==
+
+vue-router@^4.4.5:
+  version "4.6.4"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-4.6.4.tgz#a0a9cb9ef811a106d249e4bb9313d286718020d8"
+  integrity sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==
+  dependencies:
+    "@vue/devtools-api" "^6.6.4"
+
+vue-tsc@^2.2.0:
+  version "2.2.12"
+  resolved "https://registry.yarnpkg.com/vue-tsc/-/vue-tsc-2.2.12.tgz#5f719b08ef7390a763c1a20169ca5c9d09d55688"
+  integrity sha512-P7OP77b2h/Pmk+lZdJ0YWs+5tJ6J2+uOQPo7tlBnY44QqQSPYvS0qVT4wqDJgwrZaLe47etJLLQRFia71GYITw==
+  dependencies:
+    "@volar/typescript" "2.4.15"
+    "@vue/language-core" "2.2.12"
 
 vue@^3.5.13:
   version "3.5.38"
