@@ -1,1 +1,0 @@
-../../../.agents/skills/run-example-app/SKILL.md

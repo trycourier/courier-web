@@ -104,4 +104,4 @@ yarn changeset version
 - Run from the repo root. Package manager is `yarn@1` (classic).
 - `yarn changeset status` is read-only. `yarn changeset version` mutates files but does not publish. Publishing only happens via `yarn release` / `changeset publish`.
 - Config: `.changeset/config.json` (`baseBranch: main`, `updateInternalDependencies: patch`, `access: public`).
-- This skill lives at `.agents/skills/changesets/SKILL.md` (the cross-tool Agent Skills standard path). Cursor and Codex discover it there natively; Claude Code reads it via a file symlink at `.claude/skills/changesets/SKILL.md`.
+- This skill lives at `.agents/skills/changesets/SKILL.md` (the cross-tool Agent Skills standard path). Cursor and Codex discover it there natively; Claude Code discovers it via the `.claude/skills` → `../.agents/skills` directory symlink.

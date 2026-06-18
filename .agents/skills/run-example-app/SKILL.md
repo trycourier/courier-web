@@ -13,6 +13,7 @@ The repo ships runnable example apps under `examples/*` (plus `designer`) that e
 | -------------- | -------------------------------------- | ----- |
 | `web-js`       | Vanilla JS + Vite, Web Components       | Many sub-examples under `examples/web-js/examples/*.html` |
 | `vue`          | Vue 3 + Vite, Web Components            | Embeds `<courier-inbox>` as a custom element |
+| `angular`      | Angular + Vite (Analog), Web Components | Embeds `<courier-inbox>` via `CUSTOM_ELEMENTS_SCHEMA` |
 | `next-latest`  | Next.js (latest) + React SDK            | |
 | `next-12`      | Next.js 12 + React SDK                  | |
 | `react-latest` | React (18+) + React SDK                 | |

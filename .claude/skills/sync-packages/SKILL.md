@@ -1,1 +1,0 @@
-../../../.agents/skills/sync-packages/SKILL.md

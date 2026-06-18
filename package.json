@@ -1,18 +1,27 @@
 {
   "name": "courier-web-workspace",
   "private": true,
-  "workspaces": [
-    "@trycourier/courier-js",
-    "@trycourier/courier-ui-core",
-    "@trycourier/courier-ui-inbox",
-    "@trycourier/courier-ui-toast",
-    "@trycourier/courier-ui-preferences",
-    "@trycourier/courier-react-components",
-    "@trycourier/courier-react",
-    "@trycourier/courier-react-17",
-    "examples/*",
-    "designer"
-  ],
+  "workspaces": {
+    "packages": [
+      "@trycourier/courier-js",
+      "@trycourier/courier-ui-core",
+      "@trycourier/courier-ui-inbox",
+      "@trycourier/courier-ui-toast",
+      "@trycourier/courier-ui-preferences",
+      "@trycourier/courier-react-components",
+      "@trycourier/courier-react",
+      "@trycourier/courier-react-17",
+      "examples/*",
+      "designer"
+    ],
+    "nohoist": [
+      "angular/@angular/**",
+      "angular/@analogjs/**",
+      "angular/typescript",
+      "angular/zone.js",
+      "angular/rxjs"
+    ]
+  },
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
