@@ -12,6 +12,7 @@
       "@trycourier/courier-react",
       "@trycourier/courier-react-17",
       "@trycourier/courier-vue",
+      "@trycourier/courier-angular",
       "examples/*",
       "designer"
     ],
@@ -20,7 +21,13 @@
       "angular/@analogjs/**",
       "angular/typescript",
       "angular/zone.js",
-      "angular/rxjs"
+      "angular/rxjs",
+      "@trycourier/courier-angular/@angular/**",
+      "@trycourier/courier-angular/@angular-devkit/**",
+      "@trycourier/courier-angular/ng-packagr",
+      "@trycourier/courier-angular/typescript",
+      "@trycourier/courier-angular/zone.js",
+      "@trycourier/courier-angular/rxjs"
     ]
   },
   "repository": {

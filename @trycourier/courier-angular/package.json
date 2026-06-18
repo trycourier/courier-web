@@ -1,0 +1,47 @@
+{
+  "name": "@trycourier/courier-angular",
+  "version": "1.0.0",
+  "description": "The Angular components for the Courier web UI",
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json",
+    "build:ci": "yarn build && yarn generate-api-doc",
+    "test": "echo \"@trycourier/courier-angular has no tests\"",
+    "generate-api-doc": "api-extractor run"
+  },
+  "keywords": [
+    "courier",
+    "ui",
+    "angular",
+    "typescript",
+    "browser"
+  ],
+  "author": "Courier",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/trycourier/courier-web"
+  },
+  "homepage": "https://www.courier.com",
+  "dependencies": {
+    "@trycourier/courier-js": "3.4.0",
+    "@trycourier/courier-ui-core": "2.2.0",
+    "@trycourier/courier-ui-inbox": "2.4.7",
+    "@trycourier/courier-ui-toast": "2.1.6",
+    "@trycourier/courier-ui-preferences": "1.1.0",
+    "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=17.0.0",
+    "@angular/core": ">=17.0.0",
+    "rxjs": ">=7.0.0"
+  },
+  "devDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/compiler": "^19.2.0",
+    "@angular/compiler-cli": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "ng-packagr": "^19.2.0",
+    "rxjs": "^7.8.1",
+    "typescript": "~5.8.3",
+    "zone.js": "^0.15.0"
+  }
+}

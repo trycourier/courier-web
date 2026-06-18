@@ -1,0 +1,15 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "dist",
+  "allowedNonPeerDependencies": [
+    "@trycourier/courier-js",
+    "@trycourier/courier-ui-core",
+    "@trycourier/courier-ui-inbox",
+    "@trycourier/courier-ui-toast",
+    "@trycourier/courier-ui-preferences",
+    "tslib"
+  ],
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}

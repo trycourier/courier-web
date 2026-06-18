@@ -17,7 +17,18 @@
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    // Mirror the Vite `resolve.alias` for the Angular compiler (ngtsc). Vite's
+    // runtime alias points `@trycourier/courier-angular` at its built `dist/`,
+    // but ngtsc resolves imports with TypeScript module resolution, which does
+    // not see Vite aliases. The `file:`-linked package root ships no
+    // `types`/`exports` for dist, so without this path mapping ngtsc cannot
+    // resolve the SDK's component/service types — it then fails to AOT-compile
+    // any example component that imports from the SDK and silently falls back
+    // to JIT (which crashes at runtime since `@angular/compiler` isn't loaded).
+    "paths": {
+      "@trycourier/courier-angular": ["../../@trycourier/courier-angular/dist"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
