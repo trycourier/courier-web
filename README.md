@@ -60,6 +60,7 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 ### Architecture
 
 ```mermaid
+%%{init: {'flowchart': {'curve': 'linear'}}}%%
 graph BT
     subgraph foundation["Foundation"]
         js["courier-js<br/><i>API client</i>"]
