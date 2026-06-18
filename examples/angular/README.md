@@ -5,11 +5,8 @@ A minimal [Angular](https://angular.dev/) + [Vite](https://vite.dev/) app
 that embeds Courier's [Web Components inbox](../../@trycourier/courier-ui-inbox/)
 — the same setup you'd use to drop the inbox into an Angular app.
 
-Like the [`vue`](../vue/) example, it also serves as a regression test for
-[C-18926](https://linear.app/trycourier): the inbox empty-state used to inject a
-**global** `.container` style that clobbered any host-app `.container` class and
-broke page layouts. This app builds its layout on a `.container` class so the
-conflict is obvious if it ever regresses.
+Like the [`vue`](../vue/) example, the page simply renders `<courier-inbox>` on
+its own, mirroring the default React example.
 
 ## How Angular uses the Web Components
 

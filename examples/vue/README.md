@@ -4,11 +4,8 @@ A minimal [Vue 3](https://vuejs.org/) + [Vite](https://vite.dev/) app that embed
 Courier's [Web Components inbox](../../@trycourier/courier-ui-inbox/) — the same
 setup you'd use to drop the inbox into a Vue app.
 
-This example also serves as a regression test for
-[C-18926](https://linear.app/trycourier): the inbox empty-state used to inject a
-**global** `.container` style into `<head>`, which clobbered any host-app
-`.container` class and broke page layouts. This app intentionally builds its
-layout on a `.container` class so the conflict is obvious if it ever regresses.
+The page simply renders `<courier-inbox>` on its own, mirroring the default
+React example.
 
 ## How Vue uses the Web Components
 
