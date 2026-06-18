@@ -1,5 +1,12 @@
 # @trycourier/courier-ui-inbox
 
+## 2.4.8
+
+### Patch Changes
+
+- Updated dependencies [[`0fbf096`](https://github.com/trycourier/courier-web/commit/0fbf0962f961dd135e94d87be9177994315b5979)]:
+  - @trycourier/courier-ui-core@2.2.1
+
 ## 2.4.7
 
 ### Patch Changes
