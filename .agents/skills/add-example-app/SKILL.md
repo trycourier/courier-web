@@ -38,8 +38,9 @@ When scaffolding `examples/<name>`:
 2. **`.vscode/launch.json`** — add `<name>` to the `exampleApp` options (above). **This is the step most easily forgotten.**
 3. **Depend on the SDK packages** via `file:` references, e.g. `"@trycourier/courier-ui-inbox": "file:../../@trycourier/courier-ui-inbox"`.
 4. **Vite apps:** alias the `@trycourier/*` packages to their `src/` and add a `server.watch` allow-list, so the example tracks package source. Copy the pattern from `examples/web-js/vite.config.ts` or `examples/vue/vite.config.ts`.
-5. **`README.md`** — document credentials (`VITE_USER_ID` / `VITE_JWT` in a gitignored `.env`) and the run command, matching the other examples.
-6. **Run `yarn install`** from the repo root so the new workspace is linked.
+5. **Credentials** — examples authenticate with `VITE_USER_ID` / `VITE_JWT`. Each `.env` is gitignored. To avoid re-entering credentials per example, the web-component examples (`vue`, `angular`) share one set by pointing Vite's `envDir` at `examples/web-js` — do the same for new web-component examples rather than adding a separate `.env`.
+6. **`README.md`** — document where credentials come from and the run command, matching the other examples.
+7. **Run `yarn install`** from the repo root so the new workspace is linked.
 
 ## Verify
 

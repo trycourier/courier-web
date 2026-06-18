@@ -14,6 +14,10 @@ export default defineConfig({
       }
     })
   ],
+  // Share the same credentials as the web-js example: load `.env` (VITE_USER_ID /
+  // VITE_JWT) from examples/web-js instead of this directory, so you only configure
+  // them once for the web-component examples.
+  envDir: path.resolve(__dirname, '../web-js'),
   define: {
     // __PACKAGE_VERSION__ is inlined from packages' respective package.json at build time.
     // We define it here for the example, since we depend on src (rather than the built dist).

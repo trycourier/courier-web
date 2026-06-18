@@ -32,8 +32,10 @@ From the `courier-web` project root:
     yarn install
     ```
 
-2. (Optional) Create an `.env` file in this directory with real credentials to
-   show live messages. Without them, the inbox renders its empty / signed-out
+2. (Optional) To show live messages, set credentials in the shared
+   [`examples/web-js/.env`](../web-js) file — this example reads its `.env` from
+   there (via `envDir` in `vite.config.ts`), so the web-component examples share
+   one set of credentials. Without them, the inbox renders its empty / signed-out
    state — which is the exact UI this example is testing.
 
     ```sh
