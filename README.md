@@ -50,9 +50,52 @@ The Courier Web monorepo uses [Yarn workspaces](https://classic.yarnpkg.com/blog
 | [`courier-ui-core`](./@trycourier/courier-ui-core) | Web components used in UI level packages |
 | [`courier-ui-inbox`](./@trycourier/courier-ui-inbox) | Web components for Courier Inbox |
 | [`courier-ui-toast`](./@trycourier/courier-ui-toast) | Web components for Courier Toast |
+| [`courier-ui-preferences`](./@trycourier/courier-ui-preferences) | Web components for Courier Preferences |
 | [`courier-react-components`](./@trycourier/courier-react-components/) | Shared package of React components for `courier-react` and `courier-react-17` |
 | [`courier-react`](./@trycourier/courier-react) | React 18+ components for Courier Inbox |
 | [`courier-react-17`](./@trycourier/courier-react-17/) | React 17 components for Courier Inbox |
+| [`courier-vue`](./@trycourier/courier-vue) | Vue 3 components for Courier Inbox |
+| [`courier-angular`](./@trycourier/courier-angular) | Angular 17+ components for Courier Inbox |
+
+### Architecture
+
+```mermaid
+graph TD
+    subgraph foundation["Foundation"]
+        js["courier-js<br/><i>API client</i>"]
+        core["courier-ui-core<br/><i>base web components</i>"]
+    end
+
+    subgraph webcomponents["Web Component UI"]
+        inbox["courier-ui-inbox"]
+        toast["courier-ui-toast"]
+        prefs["courier-ui-preferences"]
+    end
+
+    subgraph reactsdks["React SDKs"]
+        rc["courier-react-components<br/><i>shared</i>"]
+        r18["courier-react<br/><i>React 18+</i>"]
+        r17["courier-react-17<br/><i>React 17</i>"]
+    end
+
+    subgraph nativesdks["Native Framework SDKs"]
+        vue["courier-vue<br/><i>Vue 3</i>"]
+        ng["courier-angular<br/><i>Angular 17+</i>"]
+    end
+
+    inbox --> js & core
+    toast --> js & core
+    prefs --> js & core
+
+    rc --> inbox & toast & prefs
+    r18 --> rc
+    r17 --> rc
+
+    vue --> inbox & toast & prefs
+    ng --> inbox & toast & prefs
+```
+
+The `courier-js` API client and `courier-ui-core` web components form the foundation. The `courier-ui-*` packages build the framework-agnostic web component UI on top of them. Framework SDKs wrap those web components: the React SDKs share logic through `courier-react-components`, while `courier-vue` and `courier-angular` wrap the web components directly.
 
 ## API Extractor
 
