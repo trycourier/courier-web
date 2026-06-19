@@ -1,4 +1,5 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+
 # Courier Angular SDK
 
 The Courier Angular SDK provides ready-made standalone components and an injectable service for building notification experiences in Angular applications. It includes a full-featured inbox, popup menu, toast notifications, and a service for custom UIs.
