@@ -1,4 +1,5 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+
 # Courier Vue SDK
 
 The Courier Vue SDK provides ready-made components and a programmatic composable for building notification experiences in Vue 3 applications. It includes a full-featured inbox, popup menu, toast notifications, and a composable for custom UIs.
