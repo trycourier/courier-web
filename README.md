@@ -84,12 +84,10 @@ graph BT
         ng["courier-angular<br/><i>Angular 17+</i>"]
     end
 
-    js & core --> inbox & toast & prefs
-
-    inbox & toast & prefs --> rc
+    foundation --> webcomponents
+    webcomponents --> reactsdks
+    webcomponents --> nativesdks
     rc --> r18 & r17
-
-    inbox & toast & prefs --> vue & ng
 ```
 
 The `courier-js` API client and `courier-ui-core` web components form the foundation. The `courier-ui-*` packages build the framework-agnostic web component UI on top of them. Framework SDKs wrap those web components: the React SDKs share logic through `courier-react-components`, while `courier-vue` and `courier-angular` wrap the web components directly.
