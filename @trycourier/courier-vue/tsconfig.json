@@ -16,7 +16,8 @@
   "exclude": [
     "vite.config.ts",
     "vitest.config.ts",
-    "src/**/*.test.ts",
+    "src/__tests__",
+    "src/test-setup.ts",
     "node_modules",
     "dist"
   ]
