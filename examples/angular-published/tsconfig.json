@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022", "dom"],
+    "types": ["vite/client"],
+    // Mirror the Vite `resolve.alias` for the Angular compiler (ngtsc). Vite's
+    // runtime alias points `@trycourier/courier-angular` at its built `dist/`
+    // (the published artifact), but ngtsc resolves imports with TypeScript
+    // module resolution, which does not see Vite aliases. The workspace root
+    // ships no `types`/`exports`, so without this mapping ngtsc cannot resolve
+    // the SDK's component/service types.
+    "paths": {
+      "@trycourier/courier-angular": ["../../@trycourier/courier-angular/dist"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "include": ["src/**/*.ts"]
+}

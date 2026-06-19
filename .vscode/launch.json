@@ -74,7 +74,9 @@
       "options": [
         "web-js",
         "vue",
+        "vue-published",
         "angular",
+        "angular-published",
         "next-latest",
         "next-12",
         "react-latest",
