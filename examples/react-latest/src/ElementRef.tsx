@@ -24,9 +24,7 @@ export default function App() {
   }, [inboxRef.current]);
 
   return (
-    <div style={{ padding: '24px' }}>
-      <CourierInbox ref={inboxRef} />
-    </div>
+    <CourierInbox ref={inboxRef} />
   );
 
 }

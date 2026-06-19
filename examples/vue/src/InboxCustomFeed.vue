@@ -49,7 +49,5 @@ const feeds: CourierInboxFeed[] = [
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox :feeds="feeds" />
-  </div>
+  <CourierInbox :feeds="feeds" />
 </template>

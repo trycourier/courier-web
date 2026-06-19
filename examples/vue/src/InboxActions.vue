@@ -34,11 +34,9 @@ const handleMessageLongPress = ({ message, index }: CourierInboxListItemFactoryP
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox
-      :on-message-click="handleMessageClick"
-      :on-message-action-click="handleMessageActionClick"
-      :on-message-long-press="handleMessageLongPress"
-    />
-  </div>
+  <CourierInbox
+    :on-message-click="handleMessageClick"
+    :on-message-action-click="handleMessageActionClick"
+    :on-message-long-press="handleMessageLongPress"
+  />
 </template>

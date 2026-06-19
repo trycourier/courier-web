@@ -29,7 +29,5 @@ const renderListItem = (props: CourierInboxListItemFactoryProps | null | undefin
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox :render-list-item="renderListItem" />
-  </div>
+  <CourierInbox :render-list-item="renderListItem" />
 </template>

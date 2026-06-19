@@ -162,7 +162,5 @@ const theme: CourierInboxTheme = {
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox :light-theme="theme" :dark-theme="theme" mode="light" />
-  </div>
+  <CourierInbox :light-theme="theme" :dark-theme="theme" mode="light" />
 </template>
