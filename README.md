@@ -85,7 +85,7 @@ graph BT
     end
 
     foundation --> webcomponents
-    webcomponents --> reactsdks
+    webcomponents --> rc
     webcomponents --> nativesdks
     rc --> r18 & r17
 ```
