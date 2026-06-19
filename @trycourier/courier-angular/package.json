@@ -2,6 +2,10 @@
   "name": "@trycourier/courier-angular",
   "version": "1.0.0",
   "description": "The Angular components for the Courier web UI",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
     "build:ci": "yarn build && yarn generate-api-doc",
