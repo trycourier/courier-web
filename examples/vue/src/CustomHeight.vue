@@ -13,7 +13,5 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox height="50vh" />
-  </div>
+  <CourierInbox height="50vh" />
 </template>

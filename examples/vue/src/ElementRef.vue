@@ -18,7 +18,5 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :style="{ padding: '24px' }">
-    <CourierInbox ref="inboxComp" />
-  </div>
+  <CourierInbox ref="inboxComp" />
 </template>
