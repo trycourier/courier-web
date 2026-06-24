@@ -16,11 +16,24 @@ function getStyles(theme: CourierPreferencesTheme): string {
       gap: 16px;
       background: ${s?.backgroundColor || 'transparent'};
     }
+    .courier-pref-section-head {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
     .courier-pref-section-title {
       font-size: ${s?.title?.size || '18px'};
       font-weight: ${s?.title?.weight || '600'};
       color: ${s?.title?.color || '#171717'};
       font-family: ${s?.title?.family || 'inherit'};
+      padding: 0;
+      margin: 0;
+    }
+    .courier-pref-section-description {
+      font-size: ${s?.description?.size || '14px'};
+      font-weight: ${s?.description?.weight || '400'};
+      color: ${s?.description?.color || '#737373'};
+      font-family: ${s?.description?.family || 'inherit'};
       padding: 0;
       margin: 0;
     }
@@ -121,11 +134,27 @@ export class CourierPreferencesSection extends CourierBaseElement {
     const container = document.createElement('div');
     container.className = 'courier-pref-section';
 
-    if (this._section.sectionName) {
-      const title = document.createElement('h2');
-      title.className = 'courier-pref-section-title';
-      title.textContent = this._section.sectionName;
-      container.appendChild(title);
+    // Title + optional description grouped tightly (small gap) so the section's
+    // 16px gap separates the heading block from the topics below it.
+    if (this._section.sectionName || this._section.description) {
+      const head = document.createElement('div');
+      head.className = 'courier-pref-section-head';
+
+      if (this._section.sectionName) {
+        const title = document.createElement('h2');
+        title.className = 'courier-pref-section-title';
+        title.textContent = this._section.sectionName;
+        head.appendChild(title);
+      }
+
+      if (this._section.description) {
+        const description = document.createElement('p');
+        description.className = 'courier-pref-section-description';
+        description.textContent = this._section.description;
+        head.appendChild(description);
+      }
+
+      container.appendChild(head);
     }
 
     const topicsList = document.createElement('div');

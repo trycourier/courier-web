@@ -303,7 +303,17 @@ export class CourierPreferences extends CourierBaseElement {
   public setPreviewData(page: CourierPreferencePage | null) {
     this._isPreview = Boolean(page);
     if (page) {
-      this._sections = this._mergePageWithPreferences(page, page.recipientPreferences);
+      const merged = this._mergePageWithPreferences(page, page.recipientPreferences);
+      // Carry the recipient's transient, in-preview routing choices (whether
+      // they expanded "Customize channels" and which channels they ticked) over
+      // to the rebuilt sections. The host (the preferences editor) recreates the
+      // injected page on every edit — a channel toggle, or even a keystroke in
+      // the heading — so without this each rebuild would reset
+      // `hasCustomRouting` back to its default and collapse the expanded
+      // section. Matched by topic id; only meaningful in preview, where there
+      // are no server-side recipient preferences to be the source of truth.
+      this._preserveRecipientRoutingState(merged, this._sections);
+      this._sections = merged;
       this._brand = page.brand as CourierBrand | undefined;
       this._applyChannelLabelsFromPage(page);
       this._applyHeaderFromPage(page);
@@ -314,6 +324,36 @@ export class CourierPreferences extends CourierBaseElement {
       this._sections = [];
     }
     this._render();
+  }
+
+  /**
+   * Copy the recipient's transient routing state — `hasCustomRouting` (the
+   * "Customize channels" expand) and `customRouting` (the ticked channels) —
+   * from the previous sections onto the freshly-merged ones, matched by topic
+   * id. Used by {@link setPreviewData} so re-rendering the injected preview
+   * (which happens on every editor edit) doesn't discard what the recipient
+   * toggled in the live preview. Channel/topic/section *definitions* still come
+   * from the new page; only the per-topic recipient selections are preserved.
+   */
+  private _preserveRecipientRoutingState(
+    next: PreferencesSection[],
+    prev: PreferencesSection[]
+  ): void {
+    if (prev.length === 0) return;
+    const prevTopicById = new Map<string, PreferencesTopic>();
+    for (const section of prev) {
+      for (const topic of section.topics) {
+        prevTopicById.set(topic.topicId, topic);
+      }
+    }
+    for (const section of next) {
+      for (const topic of section.topics) {
+        const prevTopic = prevTopicById.get(topic.topicId);
+        if (!prevTopic) continue;
+        topic.hasCustomRouting = prevTopic.hasCustomRouting;
+        topic.customRouting = prevTopic.customRouting;
+      }
+    }
   }
 
   public setLightTheme(theme: CourierPreferencesTheme) {
@@ -480,6 +520,7 @@ export class CourierPreferences extends CourierBaseElement {
     return page.sections.map(section => ({
       sectionId: section.sectionId,
       sectionName: section.name,
+      description: section.description,
       hasCustomRouting: section.hasCustomRouting,
       routingOptions: section.routingOptions,
       topics: section.topics.map(topic => {
@@ -500,6 +541,7 @@ export class CourierPreferences extends CourierBaseElement {
         return {
           topicId: topic.templateId,
           topicName: topic.templateName,
+          description: topic.description,
           status,
           defaultStatus: topic.defaultStatus,
           hasCustomRouting: userPref?.hasCustomRouting ?? false,

@@ -4,6 +4,8 @@ import { CourierUserPreferencesStatus, CourierUserPreferencesChannel, CourierDig
 export interface PreferencesSection {
   sectionId: string;
   sectionName: string;
+  /** Optional workspace-configured description, shown under the section title. */
+  description?: string;
   hasCustomRouting: boolean;
   routingOptions: CourierUserPreferencesChannel[];
   topics: PreferencesTopic[];
@@ -13,6 +15,8 @@ export interface PreferencesSection {
 export interface PreferencesTopic {
   topicId: string;
   topicName: string;
+  /** Optional workspace-configured description, shown under the topic name. */
+  description?: string;
   status: CourierUserPreferencesStatus;
   defaultStatus: CourierUserPreferencesStatus;
   hasCustomRouting: boolean;

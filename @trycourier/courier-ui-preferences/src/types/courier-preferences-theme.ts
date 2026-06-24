@@ -43,6 +43,8 @@ export type CourierPreferencesCheckboxTheme = {
 /** @public */
 export type CourierPreferencesSectionTheme = {
   title?: CourierPreferencesFontTheme;
+  /** Font for the section's optional description, shown under the title. */
+  description?: CourierPreferencesFontTheme;
   backgroundColor?: string;
 }
 
@@ -52,6 +54,8 @@ export type CourierPreferencesTopicTheme = {
   border?: string;
   borderRadius?: string;
   title?: CourierPreferencesFontTheme;
+  /** Font for the topic's optional description, shown under the name. */
+  description?: CourierPreferencesFontTheme;
   statusLabel?: CourierPreferencesFontTheme;
   toggle?: CourierPreferencesToggleTheme;
 }
@@ -230,6 +234,11 @@ export const defaultLightTheme: CourierPreferencesTheme = {
       weight: '600',
       color: CourierColors.black[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[600],
+    },
     backgroundColor: 'transparent',
   },
   topic: {
@@ -240,6 +249,11 @@ export const defaultLightTheme: CourierPreferencesTheme = {
       size: '16px',
       weight: '400',
       color: CourierColors.black[500],
+    },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[600],
     },
     statusLabel: {
       size: '14px',
@@ -369,6 +383,11 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
       weight: '600',
       color: CourierColors.white[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[500],
+    },
     backgroundColor: 'transparent',
   },
   topic: {
@@ -379,6 +398,11 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
       size: '16px',
       weight: '400',
       color: CourierColors.white[500],
+    },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[500],
     },
     statusLabel: {
       size: '14px',
@@ -482,11 +506,13 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierPreferencesTheme
       ...defaultTheme.section,
       ...theme.section,
       title: { ...defaultTheme.section?.title, ...theme.section?.title },
+      description: { ...defaultTheme.section?.description, ...theme.section?.description },
     },
     topic: {
       ...defaultTheme.topic,
       ...theme.topic,
       title: { ...defaultTheme.topic?.title, ...theme.topic?.title },
+      description: { ...defaultTheme.topic?.description, ...theme.topic?.description },
       statusLabel: { ...defaultTheme.topic?.statusLabel, ...theme.topic?.statusLabel },
       toggle: { ...defaultTheme.topic?.toggle, ...theme.topic?.toggle },
     },

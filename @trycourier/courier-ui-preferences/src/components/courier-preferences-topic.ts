@@ -46,6 +46,15 @@ function getStyles(theme: CourierPreferencesTheme): string {
       margin: 0;
       display: block;
     }
+    .courier-pref-topic-description {
+      font-size: ${t?.description?.size || '14px'};
+      font-weight: ${t?.description?.weight || '400'};
+      color: ${t?.description?.color || '#737373'};
+      font-family: ${t?.description?.family || 'inherit'};
+      /* Match the page header's title→subtitle gap (4px). */
+      margin: 4px 0 0;
+      padding: 0;
+    }
     .courier-pref-topic-controls {
       display: flex;
       align-items: center;
@@ -196,6 +205,13 @@ export class CourierPreferencesTopic extends CourierBaseElement {
     name.className = 'courier-pref-topic-name';
     name.textContent = this._topic.topicName;
     info.appendChild(name);
+
+    if (this._topic.description) {
+      const description = document.createElement('p');
+      description.className = 'courier-pref-topic-description';
+      description.textContent = this._topic.description;
+      info.appendChild(description);
+    }
 
     header.appendChild(info);
 
