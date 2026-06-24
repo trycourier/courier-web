@@ -51,7 +51,8 @@ function getStyles(theme: CourierPreferencesTheme): string {
       font-weight: ${t?.description?.weight || '400'};
       color: ${t?.description?.color || '#737373'};
       font-family: ${t?.description?.family || 'inherit'};
-      /* Match the page header's title→subtitle gap (4px). */
+      /* Match the page header's description: line-height + the 4px title gap. */
+      line-height: 1.5;
       margin: 4px 0 0;
       padding: 0;
     }

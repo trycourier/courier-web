@@ -34,6 +34,8 @@ function getStyles(theme: CourierPreferencesTheme): string {
       font-weight: ${s?.description?.weight || '400'};
       color: ${s?.description?.color || '#737373'};
       font-family: ${s?.description?.family || 'inherit'};
+      /* Match the page header's description line-height. */
+      line-height: 1.5;
       padding: 0;
       margin: 0;
     }
