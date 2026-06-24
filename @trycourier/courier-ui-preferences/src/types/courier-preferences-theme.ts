@@ -248,7 +248,12 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     toggle: {
       trackColor: '#D4D4D4',
-      trackActiveColor: CourierColors.blue[500],
+      // No default `trackActiveColor`: leaving it unset lets the active track
+      // fall back to the component's resolved primary color (brand > theme
+      // `primaryColor` > `DEFAULT_PREFERENCES_PRIMARY_COLOR`, which is this same
+      // blue), so a brand/theme color drives the toggle. Themes can still set
+      // `trackActiveColor` to override. (mergeTheme spreads this default, so a
+      // value here would always win over the resolved primary.)
       thumbColor: CourierColors.white[500],
       borderRadius: '12px',
     },
@@ -382,7 +387,9 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     toggle: {
       trackColor: '#4B5563',
-      trackActiveColor: CourierColors.blue[500],
+      // No default `trackActiveColor` — see the light theme above: omitting it
+      // lets the resolved primary (brand > theme primary > default) drive the
+      // toggle, while still allowing an explicit per-theme override.
       thumbColor: CourierColors.white[500],
       borderRadius: '12px',
     },

@@ -22,6 +22,17 @@ export interface CourierPreferencesProps {
    * Pass a full {@link CourierPreferencePage}; no sign-in / network is required.
    */
   previewData?: CourierPreferencePage;
+  /**
+   * Force the component's loading skeleton on/off. Useful while the host fetches
+   * data it will inject via `previewData` (e.g. a brand) and wants the
+   * component's own loading state shown in the meantime.
+   */
+  isLoading?: boolean;
+  /**
+   * Render the unpublished working draft instead of the published page (fetches
+   * `draftPreferencePage`). Used by the hosted draft preview.
+   */
+  draft?: boolean;
   onError?: (error: Error) => void;
 }
 
@@ -59,6 +70,12 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
     el.setPreviewData(props.previewData ?? null);
   }, [props.previewData, elementReady]);
 
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    el.setLoading(Boolean(props.isLoading));
+  }, [props.isLoading, elementReady]);
+
   // When themes change, the web component's setDarkTheme/setLightTheme only calls
   // updateTheme() when _systemMode matches — it ignores an explicit _userMode override.
   // Re-calling setMode() always triggers updateTheme(), picking up the new theme values.
@@ -80,6 +97,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
       subtitle={props.subtitle}
       brand-id={props.brandId}
       preview={props.previewData ? "true" : undefined}
+      draft={props.draft ? "true" : undefined}
     />
   );
 

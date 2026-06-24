@@ -189,7 +189,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview', 'title', 'subtitle'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview', 'title', 'subtitle', 'draft'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -197,6 +197,13 @@ export class CourierPreferences extends CourierBaseElement {
   private _authListener?: { remove: () => void };
   private _sections: PreferencesSection[] = [];
   private _isLoading = false;
+  /**
+   * Externally-forced loading state (via {@link setLoading}). Independent of the
+   * network-fetch `_isLoading` so a host can show the loading skeleton on demand
+   * — e.g. while it swaps the injected preview/brand data — even when sections
+   * are already present.
+   */
+  private _forceLoading = false;
   private _error?: Error;
   private _channelLabels: Record<string, string> = {};
   private _brandId?: string;
@@ -204,12 +211,24 @@ export class CourierPreferences extends CourierBaseElement {
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   /** When true, render injected preview data and skip all network fetches. */
   private _isPreview = false;
+  /** When true, fetch the unpublished working draft instead of the published page. */
+  private _draft = false;
+  /** Guards {@link _scheduleRefresh} so a burst of attribute writes coalesces into one fetch. */
+  private _refreshScheduled = false;
   /** Optional header shown above the sections. */
   private _title?: string;
   private _subtitle?: string;
+  /**
+   * Workspace-configured page heading/description from the fetched page. Used as
+   * a fallback for the header when the host hasn't set the `title`/`subtitle`
+   * attributes (which take precedence).
+   */
+  private _pageHeading?: string;
+  private _pageDescription?: string;
 
   protected onComponentMounted(): void {
     this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
+    this._draft = this.hasAttribute('draft') && this.getAttribute('draft') !== 'false';
     this._title = this.getAttribute('title') ?? undefined;
     this._subtitle = this.getAttribute('subtitle') ?? undefined;
     this._readInitialThemeAttributes();
@@ -217,11 +236,11 @@ export class CourierPreferences extends CourierBaseElement {
     this._setupThemeSubscription();
 
     this._authListener = Courier.shared.addAuthenticationListener(() => {
-      this._refresh();
+      this._scheduleRefresh();
     });
 
     if (Courier.shared.client?.options.userId) {
-      this._refresh();
+      this._scheduleRefresh();
     }
   }
 
@@ -253,11 +272,17 @@ export class CourierPreferences extends CourierBaseElement {
       case 'brand-id':
         this._brandId = newValue || undefined;
         if (Courier.shared.client?.options.userId) {
-          this._refresh();
+          this._scheduleRefresh();
         }
         break;
       case 'preview':
         this._isPreview = newValue != null && newValue !== 'false';
+        break;
+      case 'draft':
+        this._draft = newValue != null && newValue !== 'false';
+        if (Courier.shared.client?.options.userId) {
+          this._scheduleRefresh();
+        }
         break;
       case 'title':
         this._title = newValue ?? undefined;
@@ -280,6 +305,8 @@ export class CourierPreferences extends CourierBaseElement {
     if (page) {
       this._sections = this._mergePageWithPreferences(page, page.recipientPreferences);
       this._brand = page.brand as CourierBrand | undefined;
+      this._applyChannelLabelsFromPage(page);
+      this._applyHeaderFromPage(page);
       this._isLoading = false;
       this._error = undefined;
       this._resolvePrimaryColor();
@@ -303,6 +330,18 @@ export class CourierPreferences extends CourierBaseElement {
 
   public setChannelLabels(labels: Record<string, string>) {
     this._channelLabels = labels;
+    this._render();
+  }
+
+  /**
+   * Force the loading skeleton on or off, regardless of preview/fetch state.
+   * Useful when the host is fetching data it will inject via
+   * {@link setPreviewData} (e.g. a brand) and wants the component's own loading
+   * state shown in the meantime.
+   */
+  public setLoading(loading: boolean) {
+    if (this._forceLoading === loading) return;
+    this._forceLoading = loading;
     this._render();
   }
 
@@ -340,6 +379,25 @@ export class CourierPreferences extends CourierBaseElement {
     });
   }
 
+  /**
+   * Coalesce refresh requests into a single microtask. A host framework (e.g.
+   * React) sets the element's attributes one at a time on mount — `brand-id`
+   * before `draft` — and each observed-attribute change would otherwise trigger
+   * its own {@link _refresh}. The first (brand-id) would fetch with `_draft`
+   * still `false` (the published page) and the second (`draft`) would fetch the
+   * draft, so the published content flashes before the draft replaces it.
+   * Deferring to a microtask lets all synchronous attribute writes settle, then
+   * fetches once with the final `_brandId`/`_draft`.
+   */
+  private _scheduleRefresh() {
+    if (this._refreshScheduled) return;
+    this._refreshScheduled = true;
+    void Promise.resolve().then(() => {
+      this._refreshScheduled = false;
+      void this._refresh();
+    });
+  }
+
   private async _refresh() {
     if (this._isPreview) return;
     const client = Courier.shared.client;
@@ -350,11 +408,13 @@ export class CourierPreferences extends CourierBaseElement {
     this._render();
 
     try {
-      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId });
+      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId, draft: this._draft });
 
       if (pageData) {
         this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);
         this._brand = pageData.brand as CourierBrand | undefined;
+        this._applyChannelLabelsFromPage(pageData);
+        this._applyHeaderFromPage(pageData);
         this._resolvePrimaryColor();
       }
     } catch (error: unknown) {
@@ -366,7 +426,34 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   /**
-   * Precedence: user theme primaryColor > brand primaryColor > default
+   * Populate the channel-label lookup the routing chips read from, using the
+   * page's `channelConfigs`. Lets a workspace rename channels (e.g. "Email" ->
+   * "Product updates"); an empty name is skipped so the chip falls back to the
+   * channel's default label. A missing `channelConfigs` leaves any labels set
+   * imperatively via {@link setChannelLabels} untouched.
+   */
+  private _applyChannelLabelsFromPage(page: CourierPreferencePage) {
+    const labels = page.channelConfigs?.channelLabels;
+    if (!labels) return;
+    this._channelLabels = labels.reduce<Record<string, string>>((acc, { channel, name }) => {
+      if (name) acc[channel] = name;
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Capture the workspace-configured page heading/description so the header can
+   * fall back to them when the host hasn't set `title`/`subtitle` attributes.
+   */
+  private _applyHeaderFromPage(page: CourierPreferencePage) {
+    this._pageHeading = page.heading || undefined;
+    this._pageDescription = page.description || undefined;
+  }
+
+  /**
+   * Precedence: brand primaryColor > user theme primaryColor > default.
+   * The selected brand wins so it colors the controls (e.g. the toggle track)
+   * even when the host passes a themed primary as its unbranded fallback.
    */
   private _resolvePrimaryColor() {
     const theme = this._themeManager.getTheme();
@@ -374,9 +461,7 @@ export class CourierPreferences extends CourierBaseElement {
     const themePrimary = theme.primaryColor;
     const defaultPrimary = DEFAULT_PREFERENCES_PRIMARY_COLOR;
 
-    if (themePrimary && themePrimary !== defaultPrimary) {
-      this._primaryColor = themePrimary;
-    } else if (brandPrimary) {
+    if (brandPrimary) {
       this._primaryColor = brandPrimary;
     } else {
       this._primaryColor = themePrimary || defaultPrimary;
@@ -599,8 +684,8 @@ export class CourierPreferences extends CourierBaseElement {
       return;
     }
 
-    // Loading
-    if (this._isLoading && this._sections.length === 0) {
+    // Loading (forced via setLoading, or the network fetch with no data yet)
+    if (this._forceLoading || (this._isLoading && this._sections.length === 0)) {
       inner.appendChild(this._buildSkeleton());
       root.appendChild(inner);
       this.appendChild(root);
@@ -615,26 +700,30 @@ export class CourierPreferences extends CourierBaseElement {
       return;
     }
 
-    // Header (optional title / subtitle above the sections)
-    if (this._title || this._subtitle) {
+    // Header (optional title / subtitle above the sections). The `title` /
+    // `subtitle` attributes set by the host take precedence; otherwise fall back
+    // to the workspace-configured page heading / description.
+    const headerTitle = this._title ?? this._pageHeading;
+    const headerSubtitle = this._subtitle ?? this._pageDescription;
+    if (headerTitle || headerSubtitle) {
       const header = document.createElement('div');
       header.className = 'courier-preferences-header';
       header.style.marginBottom = '16px';
-      if (this._title) {
+      if (headerTitle) {
         const titleEl = document.createElement('h2');
         titleEl.className = 'courier-preferences-header-title';
-        titleEl.textContent = this._title;
+        titleEl.textContent = headerTitle;
         titleEl.style.margin = '0';
         titleEl.style.fontSize = '20px';
         titleEl.style.fontWeight = '600';
         titleEl.style.lineHeight = '1.3';
         header.appendChild(titleEl);
       }
-      if (this._subtitle) {
+      if (headerSubtitle) {
         const subtitleEl = document.createElement('p');
         subtitleEl.className = 'courier-preferences-header-subtitle';
-        subtitleEl.textContent = this._subtitle;
-        subtitleEl.style.margin = this._title ? '4px 0 0' : '0';
+        subtitleEl.textContent = headerSubtitle;
+        subtitleEl.style.margin = headerTitle ? '4px 0 0' : '0';
         subtitleEl.style.fontSize = '14px';
         subtitleEl.style.lineHeight = '1.5';
         subtitleEl.style.opacity = '0.7';
