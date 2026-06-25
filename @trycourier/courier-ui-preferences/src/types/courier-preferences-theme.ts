@@ -286,7 +286,10 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     iconColor: '#525252',
     radio: {
       ringColor: '#D4D4D4',
-      checkedColor: CourierColors.blue[500],
+      // No default `checkedColor`: like the toggle's `trackActiveColor`, leaving
+      // it unset lets the selected radio fall back to the resolved primary
+      // (brand > theme `primaryColor` > default). mergeTheme spreads this
+      // default, so a value here would always win over the resolved primary.
     },
   },
   channelChip: {
@@ -302,7 +305,9 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     divider: '1px solid #E5E5E5',
     checkbox: {
-      checkedColor: CourierColors.blue[500],
+      // No default `checkedColor` — see the radio note above: omitting it lets
+      // the checked box follow the resolved primary (the brand color) so the
+      // channel checkboxes match the page's accent.
     },
   },
 };
@@ -432,7 +437,8 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     iconColor: '#9CA3AF',
     radio: {
       ringColor: '#4B5563',
-      checkedColor: CourierColors.blue[400],
+      // No default `checkedColor` — see the light theme: omitting it lets the
+      // selected radio fall back to the resolved primary (the brand color).
     },
   },
   channelChip: {
@@ -448,7 +454,8 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     divider: `1px solid ${CourierColors.gray[400]}`,
     checkbox: {
-      checkedColor: CourierColors.blue[400],
+      // No default `checkedColor` — see the light theme: omitting it lets the
+      // checked box follow the resolved primary (the brand color).
     },
   },
 };
