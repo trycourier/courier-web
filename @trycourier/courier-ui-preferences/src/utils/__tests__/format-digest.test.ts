@@ -32,6 +32,12 @@ describe("format-digest", () => {
       it('returns an empty string when there is no period', () => {
         expect(formatDigest(baseSchedule())).toBe("");
       });
+
+      it('returns "Instant" for an instant recurrence (editor shape: no period/start)', () => {
+        expect(formatDigest(baseSchedule({ recurrence: "instant" }))).toBe(
+          "Instant"
+        );
+      });
     });
 
     it('returns "Instant" for an instant recurrence with a start time', () => {
