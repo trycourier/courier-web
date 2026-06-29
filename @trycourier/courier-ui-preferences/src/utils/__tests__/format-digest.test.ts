@@ -15,13 +15,13 @@ function baseSchedule(overrides: Partial<DigestSchedule> = {}): DigestSchedule {
 
 describe("format-digest", () => {
   describe("formatDigest", () => {
-    it('returns "Instant" when the period is "Instant"', () => {
-      expect(formatDigest(baseSchedule({ period: "Instant" }))).toBe("Instant");
+    it('returns "Instantly" when the period is "Instant"', () => {
+      expect(formatDigest(baseSchedule({ period: "Instant" }))).toBe("Instantly");
     });
 
     it('takes precedence over an existing start when the period is "Instant"', () => {
       const schedule = baseSchedule({ period: "Instant", start: "2024-01-01T09:00:00Z", recurrence: "daily" });
-      expect(formatDigest(schedule)).toBe("Instant");
+      expect(formatDigest(schedule)).toBe("Instantly");
     });
 
     describe("when there is no start time", () => {
@@ -33,16 +33,16 @@ describe("format-digest", () => {
         expect(formatDigest(baseSchedule())).toBe("");
       });
 
-      it('returns "Instant" for an instant recurrence (editor shape: no period/start)', () => {
+      it('returns "Instantly" for an instant recurrence (editor shape: no period/start)', () => {
         expect(formatDigest(baseSchedule({ recurrence: "instant" }))).toBe(
-          "Instant"
+          "Instantly"
         );
       });
     });
 
-    it('returns "Instant" for an instant recurrence with a start time', () => {
+    it('returns "Instantly" for an instant recurrence with a start time', () => {
       const schedule = baseSchedule({ recurrence: "instant", start: "2024-01-01T09:00:00Z" });
-      expect(formatDigest(schedule)).toBe("Instant");
+      expect(formatDigest(schedule)).toBe("Instantly");
     });
 
     describe("custom recurrence", () => {

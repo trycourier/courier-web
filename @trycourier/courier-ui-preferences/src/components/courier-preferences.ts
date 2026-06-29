@@ -768,7 +768,12 @@ export class CourierPreferences extends CourierBaseElement {
         subtitleEl.style.margin = headerTitle ? '4px 0 0' : '0';
         subtitleEl.style.fontSize = '14px';
         subtitleEl.style.lineHeight = '1.5';
-        subtitleEl.style.opacity = '0.7';
+        // Page-header description color comes from the `subtitle` theme token
+        // (rather than a flat opacity). Its default is set to the section
+        // description color, so the header description and section descriptions
+        // read as the same gray unless a theme overrides `subtitle`.
+        subtitleEl.style.color =
+          this._themeManager.getTheme().subtitle?.color || '#737373';
         header.appendChild(subtitleEl);
       }
       inner.appendChild(header);

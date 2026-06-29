@@ -15,6 +15,11 @@ const STYLES = `
     margin-top: 20px;
     padding: 0 24px;
   }
+  .courier-digest-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
   .courier-digest-label {
     display: inline-flex;
     align-items: center;
@@ -171,6 +176,11 @@ export class CourierDigestSchedule extends CourierBaseElement {
     const container = document.createElement('div');
     container.className = 'courier-digest-container';
 
+    const title = document.createElement('div');
+    title.className = 'courier-digest-title';
+    title.textContent = 'Receive Notifications';
+    container.appendChild(title);
+
     if (this._schedules.length === 1) {
       container.appendChild(this._buildSingleLabel(this._schedules[0]));
     } else {
@@ -268,6 +278,20 @@ export class CourierDigestSchedule extends CourierBaseElement {
     const ringColor = digest?.radio?.ringColor || '#D4D4D4';
     const checkedColor = digest?.radio?.checkedColor || this._primaryColor || selectedFont?.color || '#171717';
     const calendarColor = digest?.iconColor || '#A3A3A3';
+
+    // Title above the schedules; matches the selected schedule's weight and color
+    // so it reads as a heading without being heavier than the chosen option.
+    const titleEl = this._container.querySelector<HTMLElement>('.courier-digest-title');
+    if (titleEl) {
+      const fonts = this._resolvedFonts();
+      titleEl.style.color = fonts.selectedColor;
+      titleEl.style.fontWeight = fonts.selectedWeight;
+      if (fonts.selectedFamily) {
+        titleEl.style.fontFamily = fonts.selectedFamily;
+      } else {
+        titleEl.style.removeProperty('font-family');
+      }
+    }
 
     // Single-schedule label shares the unselected font.
     const labelEl = this._container.querySelector<HTMLElement>('.courier-digest-label');

@@ -169,7 +169,9 @@ export const defaultLightTheme: CourierPreferencesTheme = {
   subtitle: {
     size: '14px',
     weight: '400',
-    color: '#404040',
+    // Matches the section description color (gray[600]) so the page-header
+    // description and section descriptions read as the same gray by default.
+    color: CourierColors.gray[600],
   },
   container: {
     font: {
@@ -323,7 +325,9 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
   subtitle: {
     size: '14px',
     weight: '400',
-    color: '#A3A3A3',
+    // Matches the dark section description color (gray[500]) — see the light
+    // theme: the page-header description and section descriptions share a gray.
+    color: CourierColors.gray[500],
   },
   container: {
     font: {

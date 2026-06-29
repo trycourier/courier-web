@@ -71,7 +71,7 @@ function getScheduleString(schedule: DigestSchedule): string {
   }
 
   if (schedule.recurrence === "instant") {
-    return "Instant";
+    return "Instantly";
   }
 
   const time = formatTimeBrowserTimezone(schedule.start);
@@ -97,7 +97,7 @@ export function isInstantSchedule(
 export function formatDigest(schedule: DigestSchedule): string {
   // Instant schedules can arrive either as `period: "Instant"` (legacy) or
   // `recurrence: "instant"` (editor) — label both, or they render blank.
-  if (isInstantSchedule(schedule)) return "Instant";
+  if (isInstantSchedule(schedule)) return "Instantly";
 
   if (!schedule.start) {
     if (!schedule.period) return "";

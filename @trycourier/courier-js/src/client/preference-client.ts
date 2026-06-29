@@ -178,8 +178,15 @@ export class PreferenceClient extends Client {
     // In draft mode, read the unpublished working draft (`draftPreferencePage`,
     // which takes no account arg) instead of the published `preferencePage`.
     const pageField = draft ? 'draftPreferencePage' : `preferencePage${accountArg}`;
-    const brandFragment = `
-        brand${brandId ? `(brandId: "${brandId}")` : ''} {
+    // Only request the brand when a brand id is provided. An absent/empty id
+    // means "no brand" (the page's brand setting is "none"): querying `brand`
+    // with no id makes the API fall back to the workspace default brand, which
+    // would wrongly re-apply the default brand after the user removed it. The
+    // "default" setting is resolved to a concrete brand id upstream, so it still
+    // arrives here as an id and is requested normally.
+    const brandFragment = brandId
+      ? `
+        brand(brandId: "${brandId}") {
           settings {
             colors {
               primary
@@ -190,7 +197,8 @@ export class PreferenceClient extends Client {
             href
             image
           }
-        }`;
+        }`
+      : '';
 
     const query = `
       query GetPreferencePage {
