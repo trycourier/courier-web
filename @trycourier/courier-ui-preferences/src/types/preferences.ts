@@ -39,4 +39,10 @@ export interface DigestSchedule {
   scheduleId: string;
   start: string;
   end?: number | string;
+  /**
+   * IANA timezone (e.g. "America/New_York") the schedule's time is expressed in.
+   * When present, the time is rendered in this zone (DST-aware, matching the
+   * editor + backend); when absent, `start` is treated as a UTC time-of-day.
+   */
+  timezone?: string;
 }

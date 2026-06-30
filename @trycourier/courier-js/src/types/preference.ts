@@ -36,6 +36,12 @@ export interface CourierDigestScheduleOption {
   repetition?: string;
   start?: string;
   default?: boolean;
+  /**
+   * IANA timezone (e.g. "America/New_York") the schedule's time is expressed in.
+   * When present, the rendered time is shown in this zone (DST-aware); when
+   * absent, `start` is treated as a UTC time-of-day shown in the viewer's zone.
+   */
+  timezone?: string;
 }
 
 /**
