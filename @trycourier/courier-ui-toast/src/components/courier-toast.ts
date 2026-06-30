@@ -560,7 +560,7 @@ export class CourierToast extends CourierBaseElement {
         width: 100%;
         height: 5px;
         background-color: ${item?.autoDismissBarColor};
-        animation: auto-dismiss ${this._autoDismissTimeoutMs}ms ease-in-out forwards;
+        animation: auto-dismiss ${this._autoDismissTimeoutMs}ms linear forwards;
       }
 
       @keyframes auto-dismiss {
