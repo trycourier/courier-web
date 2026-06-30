@@ -465,7 +465,7 @@ export class CourierToast extends CourierBaseElement {
 
         opacity: 0;
         transform: translate(0, -10px) scaleX(var(--scale, 1));
-        animation: show 0.3s ease-in-out forwards;
+        animation: courier-toast-show 0.3s ease-in-out forwards;
       }
 
       ${CourierToastItem.id} > .overflow-hidden-container {
@@ -476,10 +476,10 @@ export class CourierToast extends CourierBaseElement {
       }
 
       ${CourierToastItem.id}.dismissing {
-        animation: hide 0.3s ease-in-out forwards;
+        animation: courier-toast-hide 0.3s ease-in-out forwards;
       }
 
-      @keyframes show {
+      @keyframes courier-toast-show {
         0% {
           opacity: 0;
         }
@@ -490,7 +490,7 @@ export class CourierToast extends CourierBaseElement {
         }
       }
 
-      @keyframes hide {
+      @keyframes courier-toast-hide {
         0% {
           opacity: 1;
           transform: scaleX(var(--scale, 1));
@@ -560,10 +560,10 @@ export class CourierToast extends CourierBaseElement {
         width: 100%;
         height: 5px;
         background-color: ${item?.autoDismissBarColor};
-        animation: auto-dismiss ${this._autoDismissTimeoutMs}ms linear forwards;
+        animation: courier-toast-auto-dismiss ${this._autoDismissTimeoutMs}ms linear forwards;
       }
 
-      @keyframes auto-dismiss {
+      @keyframes courier-toast-auto-dismiss {
         100% {
           width: 0px;
         }

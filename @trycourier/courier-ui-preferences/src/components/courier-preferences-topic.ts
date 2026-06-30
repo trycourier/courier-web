@@ -13,17 +13,17 @@ const STYLE_ID = 'courier-preferences-topic';
 function getStyles(theme: CourierPreferencesTheme): string {
   const t = theme.topic;
   return `
-    .courier-pref-topic {
+    courier-preferences-topic .courier-pref-topic {
       background: ${t?.backgroundColor || '#FFFFFF'};
       border: ${t?.border || 'none'};
       border-radius: ${t?.borderRadius || '12px'};
       padding: 20px 0;
       overflow: hidden;
     }
-    .courier-pref-topic--has-routing {
+    courier-preferences-topic .courier-pref-topic--has-routing {
       padding-bottom: 0;
     }
-    .courier-pref-topic-header {
+    courier-preferences-topic .courier-pref-topic-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -31,11 +31,11 @@ function getStyles(theme: CourierPreferencesTheme): string {
       padding: 0 24px;
       min-width: 0;
     }
-    .courier-pref-topic-info {
+    courier-preferences-topic .courier-pref-topic-info {
       flex: 1;
       min-width: 0;
     }
-    .courier-pref-topic-name {
+    courier-preferences-topic .courier-pref-topic-name {
       font-size: ${t?.title?.size || '16px'};
       font-weight: ${t?.title?.weight || '400'};
       color: ${t?.title?.color || '#171717'};
@@ -46,7 +46,7 @@ function getStyles(theme: CourierPreferencesTheme): string {
       margin: 0;
       display: block;
     }
-    .courier-pref-topic-description {
+    courier-preferences-topic .courier-pref-topic-description {
       font-size: ${t?.description?.size || '14px'};
       font-weight: ${t?.description?.weight || '400'};
       color: ${t?.description?.color || '#737373'};
@@ -56,13 +56,13 @@ function getStyles(theme: CourierPreferencesTheme): string {
       margin: 4px 0 0;
       padding: 0;
     }
-    .courier-pref-topic-controls {
+    courier-preferences-topic .courier-pref-topic-controls {
       display: flex;
       align-items: center;
       gap: 12px;
       flex-shrink: 0;
     }
-    .courier-pref-topic-status {
+    courier-preferences-topic .courier-pref-topic-status {
       font-size: ${t?.statusLabel?.size || '14px'};
       font-weight: ${t?.statusLabel?.weight || '300'};
       color: ${t?.statusLabel?.color || '#737373'};

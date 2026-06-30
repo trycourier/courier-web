@@ -23,19 +23,19 @@ const DEFAULT_CHANNEL_LABELS: Record<string, string> = {
 const CHEVRON_SVG = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const STYLES = `
-  .courier-channel-routing-wrapper {
+  courier-channel-routing .courier-channel-routing-wrapper {
     margin-top: 20px;
   }
-  .courier-channel-routing-divider {
+  courier-channel-routing .courier-channel-routing-divider {
     border: none;
     border-top: 1px solid #E5E5E5;
     margin: 0 24px;
   }
-  .courier-channel-customize {
+  courier-channel-routing .courier-channel-customize {
     margin-top: 8px;
     padding: 0 12px;
   }
-  .courier-channel-customize-button {
+  courier-channel-routing .courier-channel-customize-button {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -53,10 +53,10 @@ const STYLES = `
     white-space: nowrap;
     transition: opacity 150ms ease, background-color 150ms ease;
   }
-  .courier-channel-customize-button:hover {
+  courier-channel-routing .courier-channel-customize-button:hover {
     opacity: 0.8;
   }
-  .courier-channel-customize-arrow {
+  courier-channel-routing .courier-channel-customize-arrow {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -65,16 +65,16 @@ const STYLES = `
     flex-shrink: 0;
     line-height: 0;
   }
-  .courier-channel-customize-button[aria-expanded="true"] .courier-channel-customize-arrow {
+  courier-channel-routing .courier-channel-customize-button[aria-expanded="true"] .courier-channel-customize-arrow {
     transform: rotate(90deg);
   }
-  .courier-channel-routing {
+  courier-channel-routing .courier-channel-routing {
     display: flex;
     flex-wrap: wrap;
     margin-top: 0;
     padding: 0 12px 8px;
   }
-  .courier-channel-chip {
+  courier-channel-routing .courier-channel-chip {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -92,7 +92,7 @@ const STYLES = `
     white-space: nowrap;
     transition: opacity 150ms ease, background-color 150ms ease;
   }
-  .courier-channel-chip:hover {
+  courier-channel-routing .courier-channel-chip:hover {
     opacity: 0.8;
   }
 `;

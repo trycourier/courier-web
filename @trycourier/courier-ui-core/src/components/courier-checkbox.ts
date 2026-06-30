@@ -14,7 +14,7 @@ const STYLES = `
     height: 16px;
     line-height: 0;
   }
-  .courier-checkbox {
+  courier-checkbox .courier-checkbox {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -28,11 +28,11 @@ const STYLES = `
     box-sizing: border-box;
     transition: background-color 150ms ease, border-color 150ms ease;
   }
-  .courier-checkbox[aria-disabled="true"] {
+  courier-checkbox .courier-checkbox[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  .courier-checkbox-mark {
+  courier-checkbox .courier-checkbox-mark {
     display: block;
     width: 10px;
     height: 10px;
@@ -44,7 +44,7 @@ const STYLES = `
       opacity 200ms cubic-bezier(0.2, 0, 0.13, 1.5),
       transform 200ms cubic-bezier(0.2, 0, 0.13, 1.5);
   }
-  .courier-checkbox[aria-checked="true"] .courier-checkbox-mark {
+  courier-checkbox .courier-checkbox[aria-checked="true"] .courier-checkbox-mark {
     opacity: 1;
     transform: scale(1);
   }

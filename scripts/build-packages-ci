@@ -30,3 +30,9 @@ yarn workspace @trycourier/courier-react-17 run build:ci || exit $?
 
 echo "Building @trycourier/courier-react..."
 yarn workspace @trycourier/courier-react run build:ci || exit $?
+
+echo "Building @trycourier/courier-vue..."
+yarn workspace @trycourier/courier-vue run build:ci || exit $?
+
+echo "Building @trycourier/courier-angular..."
+yarn workspace @trycourier/courier-angular run build:ci || exit $?

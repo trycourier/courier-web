@@ -73,6 +73,8 @@
       "description": "Select example app to run",
       "options": [
         "web-js",
+        "vue",
+        "angular",
         "next-latest",
         "next-12",
         "react-latest",

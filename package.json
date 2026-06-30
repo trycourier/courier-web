@@ -1,18 +1,35 @@
 {
   "name": "courier-web-workspace",
   "private": true,
-  "workspaces": [
-    "@trycourier/courier-js",
-    "@trycourier/courier-ui-core",
-    "@trycourier/courier-ui-inbox",
-    "@trycourier/courier-ui-toast",
-    "@trycourier/courier-ui-preferences",
-    "@trycourier/courier-react-components",
-    "@trycourier/courier-react",
-    "@trycourier/courier-react-17",
-    "examples/*",
-    "designer"
-  ],
+  "workspaces": {
+    "packages": [
+      "@trycourier/courier-js",
+      "@trycourier/courier-ui-core",
+      "@trycourier/courier-ui-inbox",
+      "@trycourier/courier-ui-toast",
+      "@trycourier/courier-ui-preferences",
+      "@trycourier/courier-react-components",
+      "@trycourier/courier-react",
+      "@trycourier/courier-react-17",
+      "@trycourier/courier-vue",
+      "@trycourier/courier-angular",
+      "examples/*",
+      "designer"
+    ],
+    "nohoist": [
+      "angular/@angular/**",
+      "angular/@analogjs/**",
+      "angular/typescript",
+      "angular/zone.js",
+      "angular/rxjs",
+      "@trycourier/courier-angular/@angular/**",
+      "@trycourier/courier-angular/@angular-devkit/**",
+      "@trycourier/courier-angular/ng-packagr",
+      "@trycourier/courier-angular/typescript",
+      "@trycourier/courier-angular/zone.js",
+      "@trycourier/courier-angular/rxjs"
+    ]
+  },
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
@@ -23,7 +40,7 @@
     "release": "yarn build-packages:ci && yarn changeset publish",
     "ipqr": "sh ./scripts/ipqr.sh",
     "generate-api-docs": "yarn exec ./scripts/generate-api-docs",
-    "test:all": "concurrently -n \"js,inbox,react,react17,toast,prefs\" -c \"blue,green,yellow,cyan,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\""
+    "test:all": "concurrently -n \"js,inbox,react,react17,vue,toast,prefs\" -c \"blue,green,yellow,cyan,red,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-vue run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\""
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
