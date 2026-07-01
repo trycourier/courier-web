@@ -147,6 +147,9 @@ export class CourierInbox extends CourierBaseElement {
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setMode(mode: CourierComponentThemeMode): void;
     setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void;
+    setPreviewData(messages: InboxMessage[] | null, options?: {
+        unreadCount?: number;
+    }): void;
     get theme(): CourierInboxTheme;
 }
 
@@ -566,6 +569,9 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     setPaginationItem(factory: (props: CourierInboxPaginationItemFactoryProps | undefined | null) => HTMLElement): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setPosition(position: CourierInboxPopupAlignment): void;
+    setPreviewData(messages: InboxMessage[] | null, options?: {
+        unreadCount?: number;
+    }): void;
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     setSize(width: string, height: string): void;
@@ -863,7 +869,7 @@ export function openMessage(message: InboxMessage): void;
 
 // Warnings were encountered during analysis:
 //
-// dist/components/courier-inbox-popup-menu.d.ts:81:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// dist/components/courier-inbox-popup-menu.d.ts:93:8 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 

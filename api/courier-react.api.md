@@ -44,6 +44,12 @@ import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadCountIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierInboxUnreadDotIndicatorTheme } from '@trycourier/courier-ui-inbox';
 import { CourierMenuItemTheme } from '@trycourier/courier-ui-inbox';
+import { CourierPreferencePage } from '@trycourier/courier-js';
+import { CourierPreferencePageBrand } from '@trycourier/courier-js';
+import { CourierPreferencePageChannelConfigs } from '@trycourier/courier-js';
+import { CourierPreferencePageChannelLabel } from '@trycourier/courier-js';
+import { CourierPreferencePageSection } from '@trycourier/courier-js';
+import { CourierPreferencePageTopic } from '@trycourier/courier-js';
 import { CourierPreferencesChannelChipTheme } from '@trycourier/courier-ui-preferences';
 import { CourierPreferencesDigestTheme } from '@trycourier/courier-ui-preferences';
 import { CourierPreferences as CourierPreferencesElement } from '@trycourier/courier-ui-preferences';
@@ -93,6 +99,7 @@ import { mergeTheme as mergePreferencesTheme } from '@trycourier/courier-ui-pref
 import { mergeTheme } from '@trycourier/courier-ui-inbox';
 import { mergeTheme as mergeToastTheme } from '@trycourier/courier-ui-toast';
 import { openMessage } from '@trycourier/courier-ui-inbox';
+import { RecipientPreference } from '@trycourier/courier-js';
 import { RefAttributes } from 'react';
 import { useCourier } from '@trycourier/courier-react-components';
 
@@ -185,6 +192,18 @@ export { CourierInboxUnreadCountIndicatorTheme }
 export { CourierInboxUnreadDotIndicatorTheme }
 
 export { CourierMenuItemTheme }
+
+export { CourierPreferencePage }
+
+export { CourierPreferencePageBrand }
+
+export { CourierPreferencePageChannelConfigs }
+
+export { CourierPreferencePageChannelLabel }
+
+export { CourierPreferencePageSection }
+
+export { CourierPreferencePageTopic }
 
 // Warning: (ae-missing-release-tag) "CourierPreferences" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -291,6 +310,8 @@ export { mergeTheme }
 export { mergeToastTheme }
 
 export { openMessage }
+
+export { RecipientPreference }
 
 export { useCourier }
 

@@ -14,6 +14,7 @@ import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
 import { CourierDevice } from '@trycourier/courier-js';
 import { CourierDigestScheduleOption } from '@trycourier/courier-js';
 import { CourierFontTheme } from '@trycourier/courier-ui-core';
+import { CourierPreferencePage } from '@trycourier/courier-js';
 import { CourierProps } from '@trycourier/courier-js';
 import { CourierThemeManager } from '@trycourier/courier-ui-core';
 import { CourierThemeSubscription } from '@trycourier/courier-ui-core';
@@ -59,7 +60,7 @@ export class CourierChannelRouting extends CourierBaseElement {
     // (undocumented)
     set onRoutingChange(fn: (channels: CourierUserPreferencesChannel[]) => void);
     // (undocumented)
-    set primaryColor(_val: string);
+    set primaryColor(val: string);
     // (undocumented)
     set routingOptions(val: CourierUserPreferencesChannel[]);
     // (undocumented)
@@ -85,7 +86,7 @@ export class CourierDigestSchedule extends CourierBaseElement {
     // (undocumented)
     set onScheduleChange(fn: (scheduleId: string) => void);
     // (undocumented)
-    set primaryColor(_val: string);
+    set primaryColor(val: string);
     // (undocumented)
     set schedules(val: CourierDigestScheduleOption[]);
     // (undocumented)
@@ -114,8 +115,10 @@ export class CourierPreferences extends CourierBaseElement {
     setDarkTheme(theme: CourierPreferencesTheme): void;
     // (undocumented)
     setLightTheme(theme: CourierPreferencesTheme): void;
+    setLoading(loading: boolean): void;
     // (undocumented)
     setMode(mode: CourierComponentThemeMode): void;
+    setPreviewData(page: CourierPreferencePage | null): void;
 }
 
 // @public (undocumented)
@@ -219,6 +222,7 @@ export class CourierPreferencesSection extends CourierBaseElement {
 // @public (undocumented)
 export type CourierPreferencesSectionTheme = {
     title?: CourierPreferencesFontTheme;
+    description?: CourierPreferencesFontTheme;
     backgroundColor?: string;
 };
 
@@ -309,6 +313,7 @@ export type CourierPreferencesTopicTheme = {
     border?: string;
     borderRadius?: string;
     title?: CourierPreferencesFontTheme;
+    description?: CourierPreferencesFontTheme;
     statusLabel?: CourierPreferencesFontTheme;
     toggle?: CourierPreferencesToggleTheme;
 };
@@ -383,6 +388,7 @@ export interface DigestSchedule {
     scheduleId: string;
     // (undocumented)
     start: string;
+    timezone?: string;
 }
 
 export { EU_COURIER_API_URLS }
@@ -405,6 +411,7 @@ export const mergeTheme: (mode: SystemThemeMode, theme: CourierPreferencesTheme)
 
 // @public (undocumented)
 export interface PreferencesSection {
+    description?: string;
     // (undocumented)
     hasCustomRouting: boolean;
     // (undocumented)
@@ -423,6 +430,7 @@ export interface PreferencesTopic {
     customRouting: CourierUserPreferencesChannel[];
     // (undocumented)
     defaultStatus: CourierUserPreferencesStatus;
+    description?: string;
     // (undocumented)
     digestSchedule?: string;
     // (undocumented)
