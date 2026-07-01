@@ -227,6 +227,7 @@ export interface CourierDigestScheduleOption {
     scheduleId: string;
     // (undocumented)
     start?: string;
+    timezone?: string;
 }
 
 // Warning: (ae-missing-release-tag) "CourierGetInboxMessageResponse" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -273,6 +274,8 @@ export interface CourierPreferencePage {
     brand?: CourierPreferencePageBrand | null;
     // (undocumented)
     channelConfigs?: CourierPreferencePageChannelConfigs | null;
+    description: string;
+    heading: string;
     // Warning: (ae-incompatible-release-tags) The symbol "recipientPreferences" is marked as @public, but its signature references "RecipientPreference" which is marked as @internal
     //
     // (undocumented)
@@ -324,6 +327,7 @@ export interface CourierPreferencePageChannelLabel {
 //
 // @public
 export interface CourierPreferencePageSection {
+    description?: string;
     // (undocumented)
     hasCustomRouting: boolean;
     // (undocumented)
@@ -344,6 +348,7 @@ export interface CourierPreferencePageTopic {
     data?: unknown;
     // (undocumented)
     defaultStatus: CourierUserPreferencesStatus;
+    description?: string;
     // (undocumented)
     digestSchedules?: CourierDigestScheduleOption[];
     // (undocumented)
@@ -632,6 +637,7 @@ export class PreferenceClient extends Client {
     getPreferencePage(props?: {
         accountId?: string;
         brandId?: string;
+        draft?: boolean;
     }): Promise<CourierPreferencePage | null>;
     getUserPreferences(props?: {
         paginationCursor?: string;

@@ -4,11 +4,25 @@ function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function formatTimeBrowserTimezone(utcDateStr: string): string {
+function formatScheduleTime(utcDateStr: string, timezone?: string): string {
   const date = new Date(utcDateStr);
+
+  // When the schedule carries its own timezone, render the stored instant in
+  // that zone. This is DST-aware and matches both the studio editor and the
+  // backend (which fires the cron in this zone via ScheduleExpressionTimezone),
+  // so e.g. "9:00 AM" picked in America/Los_Angeles renders as 9:00 AM here too.
+  if (timezone) {
+    return new Intl.DateTimeFormat(undefined, {
+      timeZone: timezone,
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(date);
+  }
+
+  // Legacy (no timezone): `start` is a bare UTC time-of-day. Re-pin its UTC hour
+  // to today's date and render in the viewer's local zone so it reflects "now".
   const hoursUTC = date.getUTCHours();
   const minutesUTC = date.getUTCMinutes();
-
   const today = new Date();
   const simulated = new Date(
     Date.UTC(
@@ -71,10 +85,10 @@ function getScheduleString(schedule: DigestSchedule): string {
   }
 
   if (schedule.recurrence === "instant") {
-    return "Instant";
+    return "Instantly";
   }
 
-  const time = formatTimeBrowserTimezone(schedule.start);
+  const time = formatScheduleTime(schedule.start, schedule.timezone);
   return `${schedule.recurrence} at ${time}`;
 }
 
@@ -95,7 +109,9 @@ export function isInstantSchedule(
  * @public
  */
 export function formatDigest(schedule: DigestSchedule): string {
-  if (schedule.period === "Instant") return "Instant";
+  // Instant schedules can arrive either as `period: "Instant"` (legacy) or
+  // `recurrence: "instant"` (editor) — label both, or they render blank.
+  if (isInstantSchedule(schedule)) return "Instantly";
 
   if (!schedule.start) {
     if (!schedule.period) return "";

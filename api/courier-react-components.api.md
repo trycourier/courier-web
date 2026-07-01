@@ -21,6 +21,7 @@ import { CourierInboxStateEmptyFactoryProps } from '@trycourier/courier-ui-inbox
 import { CourierInboxStateErrorFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxStateLoadingFactoryProps } from '@trycourier/courier-ui-inbox';
 import { CourierInboxTheme } from '@trycourier/courier-ui-inbox';
+import { CourierPreferencePage } from '@trycourier/courier-js';
 import { CourierPreferences } from '@trycourier/courier-ui-preferences';
 import { CourierPreferencesTheme } from '@trycourier/courier-ui-preferences';
 import { CourierProps } from '@trycourier/courier-js';
@@ -67,6 +68,8 @@ export interface CourierInboxPopupMenuProps {
     popupAlignment?: CourierInboxPopupAlignment;
     popupHeight?: string;
     popupWidth?: string;
+    previewMessages?: InboxMessage[];
+    previewUnreadCount?: number;
     renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => ReactNode;
     renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => ReactNode;
     renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => ReactNode;
@@ -91,6 +94,8 @@ export interface CourierInboxProps {
     onMessageActionClick?: (props: CourierInboxListItemActionFactoryProps) => void;
     onMessageClick?: (props: CourierInboxListItemFactoryProps) => void;
     onMessageLongPress?: (props: CourierInboxListItemFactoryProps) => void;
+    previewMessages?: InboxMessage[];
+    previewUnreadCount?: number;
     renderEmptyState?: (props: CourierInboxStateEmptyFactoryProps | undefined | null) => ReactNode;
     renderErrorState?: (props: CourierInboxStateErrorFactoryProps | undefined | null) => ReactNode;
     renderHeader?: (props: CourierInboxHeaderFactoryProps | undefined | null) => ReactNode;
@@ -114,12 +119,15 @@ export interface CourierPreferencesProps {
     channelLabels?: Record<string, string>;
     // (undocumented)
     darkTheme?: CourierPreferencesTheme;
+    draft?: boolean;
+    isLoading?: boolean;
     // (undocumented)
     lightTheme?: CourierPreferencesTheme;
     // (undocumented)
     mode?: CourierComponentThemeMode;
     // (undocumented)
     onError?: (error: Error) => void;
+    previewData?: CourierPreferencePage;
     // (undocumented)
     style?: CSSProperties;
     // (undocumented)

@@ -1,6 +1,6 @@
 import { CourierBaseElement, registerElement, injectGlobalStyle, CourierCheckbox } from "@trycourier/courier-ui-core";
 import { CourierUserPreferencesChannel } from "@trycourier/courier-js";
-import { CourierPreferencesTheme } from "../types/courier-preferences-theme";
+import { CourierPreferencesTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager, CourierPreferencesThemeSubscription } from "../types/courier-preferences-theme-manager";
 
 const STYLE_ID = 'courier-channel-routing';
@@ -113,6 +113,7 @@ export class CourierChannelRouting extends CourierBaseElement {
   private _selectedChannels: CourierUserPreferencesChannel[] = [];
   private _channelLabels: Record<string, string> = {};
   private _isRequired = false;
+  private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   private _customizeEnabled = false;
   private _customizeLabel = 'Customize channels';
   // Label when expanded/active. Defaults to the collapsed `customizeLabel`
@@ -185,8 +186,13 @@ export class CourierChannelRouting extends CourierBaseElement {
     if (this._mounted) this._setupThemeSubscription();
   }
 
-  set primaryColor(_val: string) {
-    // Reserved for future use
+  set primaryColor(val: string) {
+    this._primaryColor = val || DEFAULT_PREFERENCES_PRIMARY_COLOR;
+    // The checked color falls back to the primary, so re-apply when it changes
+    // (e.g. once the brand resolves) so the checkboxes pick up the brand color.
+    if (this._mounted) {
+      this._applyTheme();
+    }
   }
 
   set onRoutingChange(fn: (channels: CourierUserPreferencesChannel[]) => void) {
@@ -363,7 +369,10 @@ export class CourierChannelRouting extends CourierBaseElement {
     const fontFamily = checkboxFont?.family ?? font?.family ?? theme.container?.font?.family;
     const selectedFontFamily = checkboxSelectedFont?.family ?? selectedFont?.family ?? fontFamily;
 
-    const checkedColor = checkbox?.checkedColor || theme.container?.font?.color || '#171717';
+    // Like the toggle's track, the checked color follows the resolved primary
+    // (the selected brand's color, or the theme default) unless the theme pins
+    // an explicit `checkbox.checkedColor`.
+    const checkedColor = checkbox?.checkedColor || this._primaryColor || theme.container?.font?.color || '#171717';
 
     const divider = chip?.divider;
 

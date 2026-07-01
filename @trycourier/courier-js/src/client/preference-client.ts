@@ -169,13 +169,24 @@ export class PreferenceClient extends Client {
    * @param brandId - Optional brand ID to resolve brand colors/logo/links inline.
    * @returns The published preference page, or `null` if none is published.
    */
-  public async getPreferencePage(props?: { accountId?: string; brandId?: string }): Promise<CourierPreferencePage | null> {
+  public async getPreferencePage(props?: { accountId?: string; brandId?: string; draft?: boolean }): Promise<CourierPreferencePage | null> {
     const accountId = props?.accountId ?? this.options.tenantId;
     const brandId = props?.brandId;
+    const draft = props?.draft ?? false;
 
     const accountArg = accountId ? `(accountId: "${accountId}")` : '';
-    const brandFragment = `
-        brand${brandId ? `(brandId: "${brandId}")` : ''} {
+    // In draft mode, read the unpublished working draft (`draftPreferencePage`,
+    // which takes no account arg) instead of the published `preferencePage`.
+    const pageField = draft ? 'draftPreferencePage' : `preferencePage${accountArg}`;
+    // Only request the brand when a brand id is provided. An absent/empty id
+    // means "no brand" (the page's brand setting is "none"): querying `brand`
+    // with no id makes the API fall back to the workspace default brand, which
+    // would wrongly re-apply the default brand after the user removed it. The
+    // "default" setting is resolved to a concrete brand id upstream, so it still
+    // arrives here as an id and is requested normally.
+    const brandFragment = brandId
+      ? `
+        brand(brandId: "${brandId}") {
           settings {
             colors {
               primary
@@ -186,12 +197,15 @@ export class PreferenceClient extends Client {
             href
             image
           }
-        }`;
+        }`
+      : '';
 
     const query = `
       query GetPreferencePage {
-        preferencePage${accountArg} {
+        ${pageField} {
           showCourierFooter
+          heading
+          description
           ${brandFragment}
           channelConfigs {
             channelLabels {
@@ -202,6 +216,7 @@ export class PreferenceClient extends Client {
           sections {
             nodes {
               name
+              description
               sectionId
               routingOptions
               hasCustomRouting
@@ -209,6 +224,7 @@ export class PreferenceClient extends Client {
                 nodes {
                   data
                   defaultStatus
+                  description
                   templateName
                   templateId
                   digestSchedules
@@ -240,7 +256,7 @@ export class PreferenceClient extends Client {
       },
     });
 
-    const page = response.data?.preferencePage;
+    const page = draft ? response.data?.draftPreferencePage : response.data?.preferencePage;
     if (!page) return null;
 
     const recipientPreferences: RecipientPreference[] =
@@ -327,12 +343,14 @@ export class PreferenceClient extends Client {
         templateId: topic.templateId,
         templateName: topic.templateName ?? '',
         defaultStatus: (topic.defaultStatus as CourierUserPreferencesStatus) ?? 'UNKNOWN',
+        description: topic.description ?? undefined,
         data: topic.data,
         digestSchedules: (topic.digestSchedules ?? undefined) as CourierDigestScheduleOption[] | undefined,
       }));
       return {
         sectionId: section.sectionId,
         name: section.name ?? '',
+        description: section.description ?? undefined,
         hasCustomRouting: Boolean(section.hasCustomRouting),
         routingOptions: (section.routingOptions ?? []) as CourierUserPreferencesChannel[],
         topics,
@@ -341,6 +359,8 @@ export class PreferenceClient extends Client {
 
     return {
       showCourierFooter: Boolean(page?.showCourierFooter),
+      heading: page?.heading ?? '',
+      description: page?.description ?? '',
       brand: page?.brand ?? null,
       channelConfigs: page?.channelConfigs ?? null,
       sections,

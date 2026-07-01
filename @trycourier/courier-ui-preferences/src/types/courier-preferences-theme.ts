@@ -43,6 +43,8 @@ export type CourierPreferencesCheckboxTheme = {
 /** @public */
 export type CourierPreferencesSectionTheme = {
   title?: CourierPreferencesFontTheme;
+  /** Font for the section's optional description, shown under the title. */
+  description?: CourierPreferencesFontTheme;
   backgroundColor?: string;
 }
 
@@ -52,6 +54,8 @@ export type CourierPreferencesTopicTheme = {
   border?: string;
   borderRadius?: string;
   title?: CourierPreferencesFontTheme;
+  /** Font for the topic's optional description, shown under the name. */
+  description?: CourierPreferencesFontTheme;
   statusLabel?: CourierPreferencesFontTheme;
   toggle?: CourierPreferencesToggleTheme;
 }
@@ -165,7 +169,9 @@ export const defaultLightTheme: CourierPreferencesTheme = {
   subtitle: {
     size: '14px',
     weight: '400',
-    color: '#404040',
+    // Matches the section description color (gray[600]) so the page-header
+    // description and section descriptions read as the same gray by default.
+    color: CourierColors.gray[600],
   },
   container: {
     font: {
@@ -230,6 +236,11 @@ export const defaultLightTheme: CourierPreferencesTheme = {
       weight: '600',
       color: CourierColors.black[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[600],
+    },
     backgroundColor: 'transparent',
   },
   topic: {
@@ -241,6 +252,11 @@ export const defaultLightTheme: CourierPreferencesTheme = {
       weight: '400',
       color: CourierColors.black[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[600],
+    },
     statusLabel: {
       size: '14px',
       weight: '300',
@@ -248,7 +264,12 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     toggle: {
       trackColor: '#D4D4D4',
-      trackActiveColor: CourierColors.blue[500],
+      // No default `trackActiveColor`: leaving it unset lets the active track
+      // fall back to the component's resolved primary color (brand > theme
+      // `primaryColor` > `DEFAULT_PREFERENCES_PRIMARY_COLOR`, which is this same
+      // blue), so a brand/theme color drives the toggle. Themes can still set
+      // `trackActiveColor` to override. (mergeTheme spreads this default, so a
+      // value here would always win over the resolved primary.)
       thumbColor: CourierColors.white[500],
       borderRadius: '12px',
     },
@@ -267,7 +288,10 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     iconColor: '#525252',
     radio: {
       ringColor: '#D4D4D4',
-      checkedColor: CourierColors.blue[500],
+      // No default `checkedColor`: like the toggle's `trackActiveColor`, leaving
+      // it unset lets the selected radio fall back to the resolved primary
+      // (brand > theme `primaryColor` > default). mergeTheme spreads this
+      // default, so a value here would always win over the resolved primary.
     },
   },
   channelChip: {
@@ -283,7 +307,9 @@ export const defaultLightTheme: CourierPreferencesTheme = {
     },
     divider: '1px solid #E5E5E5',
     checkbox: {
-      checkedColor: CourierColors.blue[500],
+      // No default `checkedColor` — see the radio note above: omitting it lets
+      // the checked box follow the resolved primary (the brand color) so the
+      // channel checkboxes match the page's accent.
     },
   },
 };
@@ -299,7 +325,9 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
   subtitle: {
     size: '14px',
     weight: '400',
-    color: '#A3A3A3',
+    // Matches the dark section description color (gray[500]) — see the light
+    // theme: the page-header description and section descriptions share a gray.
+    color: CourierColors.gray[500],
   },
   container: {
     font: {
@@ -364,6 +392,11 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
       weight: '600',
       color: CourierColors.white[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[500],
+    },
     backgroundColor: 'transparent',
   },
   topic: {
@@ -375,6 +408,11 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
       weight: '400',
       color: CourierColors.white[500],
     },
+    description: {
+      size: '14px',
+      weight: '400',
+      color: CourierColors.gray[500],
+    },
     statusLabel: {
       size: '14px',
       weight: '300',
@@ -382,7 +420,9 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     toggle: {
       trackColor: '#4B5563',
-      trackActiveColor: CourierColors.blue[500],
+      // No default `trackActiveColor` — see the light theme above: omitting it
+      // lets the resolved primary (brand > theme primary > default) drive the
+      // toggle, while still allowing an explicit per-theme override.
       thumbColor: CourierColors.white[500],
       borderRadius: '12px',
     },
@@ -401,7 +441,8 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     iconColor: '#9CA3AF',
     radio: {
       ringColor: '#4B5563',
-      checkedColor: CourierColors.blue[400],
+      // No default `checkedColor` — see the light theme: omitting it lets the
+      // selected radio fall back to the resolved primary (the brand color).
     },
   },
   channelChip: {
@@ -417,7 +458,8 @@ export const defaultDarkTheme: CourierPreferencesTheme = {
     },
     divider: `1px solid ${CourierColors.gray[400]}`,
     checkbox: {
-      checkedColor: CourierColors.blue[400],
+      // No default `checkedColor` — see the light theme: omitting it lets the
+      // checked box follow the resolved primary (the brand color).
     },
   },
 };
@@ -475,11 +517,13 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierPreferencesTheme
       ...defaultTheme.section,
       ...theme.section,
       title: { ...defaultTheme.section?.title, ...theme.section?.title },
+      description: { ...defaultTheme.section?.description, ...theme.section?.description },
     },
     topic: {
       ...defaultTheme.topic,
       ...theme.topic,
       title: { ...defaultTheme.topic?.title, ...theme.topic?.title },
+      description: { ...defaultTheme.topic?.description, ...theme.topic?.description },
       statusLabel: { ...defaultTheme.topic?.statusLabel, ...theme.topic?.statusLabel },
       toggle: { ...defaultTheme.topic?.toggle, ...theme.topic?.toggle },
     },
