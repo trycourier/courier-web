@@ -19,7 +19,7 @@ export interface CourierPreferencesProps {
   channelLabels?: Record<string, string>;
   /**
    * Render injected "dummy" preference data instead of fetching from the API.
-   * Pass a full {@link CourierPreferencePage}; no sign-in / network is required.
+   * Pass a full `CourierPreferencePage`; no sign-in / network is required.
    */
   previewData?: CourierPreferencePage;
   /**

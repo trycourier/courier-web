@@ -198,7 +198,7 @@ export class CourierPreferences extends CourierBaseElement {
   private _sections: PreferencesSection[] = [];
   private _isLoading = false;
   /**
-   * Externally-forced loading state (via {@link setLoading}). Independent of the
+   * Externally-forced loading state (via `setLoading`). Independent of the
    * network-fetch `_isLoading` so a host can show the loading skeleton on demand
    * — e.g. while it swaps the injected preview/brand data — even when sections
    * are already present.
@@ -213,7 +213,7 @@ export class CourierPreferences extends CourierBaseElement {
   private _isPreview = false;
   /** When true, fetch the unpublished working draft instead of the published page. */
   private _draft = false;
-  /** Guards {@link _scheduleRefresh} so a burst of attribute writes coalesces into one fetch. */
+  /** Guards `_scheduleRefresh` so a burst of attribute writes coalesces into one fetch. */
   private _refreshScheduled = false;
   /** Optional header shown above the sections. */
   private _title?: string;
@@ -297,7 +297,7 @@ export class CourierPreferences extends CourierBaseElement {
 
   /**
    * Render injected "dummy" preference data and skip all network fetches. Pass a
-   * full {@link CourierPreferencePage} (same shape `getPreferencePage()` returns);
+   * full `CourierPreferencePage` (same shape `getPreferencePage()` returns);
    * it is merged through the normal pipeline. Pass `null` to clear preview mode.
    */
   public setPreviewData(page: CourierPreferencePage | null) {
@@ -330,7 +330,7 @@ export class CourierPreferences extends CourierBaseElement {
    * Copy the recipient's transient routing state — `hasCustomRouting` (the
    * "Customize channels" expand) and `customRouting` (the ticked channels) —
    * from the previous sections onto the freshly-merged ones, matched by topic
-   * id. Used by {@link setPreviewData} so re-rendering the injected preview
+   * id. Used by `setPreviewData` so re-rendering the injected preview
    * (which happens on every editor edit) doesn't discard what the recipient
    * toggled in the live preview. Channel/topic/section *definitions* still come
    * from the new page; only the per-topic recipient selections are preserved.
@@ -376,7 +376,7 @@ export class CourierPreferences extends CourierBaseElement {
   /**
    * Force the loading skeleton on or off, regardless of preview/fetch state.
    * Useful when the host is fetching data it will inject via
-   * {@link setPreviewData} (e.g. a brand) and wants the component's own loading
+   * `setPreviewData` (e.g. a brand) and wants the component's own loading
    * state shown in the meantime.
    */
   public setLoading(loading: boolean) {
@@ -423,7 +423,7 @@ export class CourierPreferences extends CourierBaseElement {
    * Coalesce refresh requests into a single microtask. A host framework (e.g.
    * React) sets the element's attributes one at a time on mount — `brand-id`
    * before `draft` — and each observed-attribute change would otherwise trigger
-   * its own {@link _refresh}. The first (brand-id) would fetch with `_draft`
+   * its own `_refresh`. The first (brand-id) would fetch with `_draft`
    * still `false` (the published page) and the second (`draft`) would fetch the
    * draft, so the published content flashes before the draft replaces it.
    * Deferring to a microtask lets all synchronous attribute writes settle, then
@@ -470,7 +470,7 @@ export class CourierPreferences extends CourierBaseElement {
    * page's `channelConfigs`. Lets a workspace rename channels (e.g. "Email" ->
    * "Product updates"); an empty name is skipped so the chip falls back to the
    * channel's default label. A missing `channelConfigs` leaves any labels set
-   * imperatively via {@link setChannelLabels} untouched.
+   * imperatively via `setChannelLabels` untouched.
    */
   private _applyChannelLabelsFromPage(page: CourierPreferencePage) {
     const labels = page.channelConfigs?.channelLabels;
