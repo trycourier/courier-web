@@ -189,7 +189,7 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   static get observedAttributes() {
-    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id'];
+    return ['light-theme', 'dark-theme', 'mode', 'tenant-id', 'brand-id', 'preview', 'title', 'subtitle', 'draft'];
   }
 
   private _themeManager = new CourierPreferencesThemeManager(defaultLightTheme);
@@ -197,23 +197,50 @@ export class CourierPreferences extends CourierBaseElement {
   private _authListener?: { remove: () => void };
   private _sections: PreferencesSection[] = [];
   private _isLoading = false;
+  /**
+   * Externally-forced loading state (via `setLoading`). Independent of the
+   * network-fetch `_isLoading` so a host can show the loading skeleton on demand
+   * — e.g. while it swaps the injected preview/brand data — even when sections
+   * are already present.
+   */
+  private _forceLoading = false;
   private _error?: Error;
   private _channelLabels: Record<string, string> = {};
   private _brandId?: string;
   private _brand?: CourierBrand;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
+  /** When true, render injected preview data and skip all network fetches. */
+  private _isPreview = false;
+  /** When true, fetch the unpublished working draft instead of the published page. */
+  private _draft = false;
+  /** Guards `_scheduleRefresh` so a burst of attribute writes coalesces into one fetch. */
+  private _refreshScheduled = false;
+  /** Optional header shown above the sections. */
+  private _title?: string;
+  private _subtitle?: string;
+  /**
+   * Workspace-configured page heading/description from the fetched page. Used as
+   * a fallback for the header when the host hasn't set the `title`/`subtitle`
+   * attributes (which take precedence).
+   */
+  private _pageHeading?: string;
+  private _pageDescription?: string;
 
   protected onComponentMounted(): void {
+    this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
+    this._draft = this.hasAttribute('draft') && this.getAttribute('draft') !== 'false';
+    this._title = this.getAttribute('title') ?? undefined;
+    this._subtitle = this.getAttribute('subtitle') ?? undefined;
     this._readInitialThemeAttributes();
     this._styleEl = injectGlobalStyle(STYLE_ID, getStyles(this._themeManager.getTheme()));
     this._setupThemeSubscription();
 
     this._authListener = Courier.shared.addAuthenticationListener(() => {
-      this._refresh();
+      this._scheduleRefresh();
     });
 
     if (Courier.shared.client?.options.userId) {
-      this._refresh();
+      this._scheduleRefresh();
     }
   }
 
@@ -245,9 +272,87 @@ export class CourierPreferences extends CourierBaseElement {
       case 'brand-id':
         this._brandId = newValue || undefined;
         if (Courier.shared.client?.options.userId) {
-          this._refresh();
+          this._scheduleRefresh();
         }
         break;
+      case 'preview':
+        this._isPreview = newValue != null && newValue !== 'false';
+        break;
+      case 'draft':
+        this._draft = newValue != null && newValue !== 'false';
+        if (Courier.shared.client?.options.userId) {
+          this._scheduleRefresh();
+        }
+        break;
+      case 'title':
+        this._title = newValue ?? undefined;
+        this._render();
+        break;
+      case 'subtitle':
+        this._subtitle = newValue ?? undefined;
+        this._render();
+        break;
+    }
+  }
+
+  /**
+   * Render injected "dummy" preference data and skip all network fetches. Pass a
+   * full `CourierPreferencePage` (same shape `getPreferencePage()` returns);
+   * it is merged through the normal pipeline. Pass `null` to clear preview mode.
+   */
+  public setPreviewData(page: CourierPreferencePage | null) {
+    this._isPreview = Boolean(page);
+    if (page) {
+      const merged = this._mergePageWithPreferences(page, page.recipientPreferences);
+      // Carry the recipient's transient, in-preview routing choices (whether
+      // they expanded "Customize channels" and which channels they ticked) over
+      // to the rebuilt sections. The host (the preferences editor) recreates the
+      // injected page on every edit — a channel toggle, or even a keystroke in
+      // the heading — so without this each rebuild would reset
+      // `hasCustomRouting` back to its default and collapse the expanded
+      // section. Matched by topic id; only meaningful in preview, where there
+      // are no server-side recipient preferences to be the source of truth.
+      this._preserveRecipientRoutingState(merged, this._sections);
+      this._sections = merged;
+      this._brand = page.brand as CourierBrand | undefined;
+      this._applyChannelLabelsFromPage(page);
+      this._applyHeaderFromPage(page);
+      this._isLoading = false;
+      this._error = undefined;
+      this._resolvePrimaryColor();
+    } else {
+      this._sections = [];
+    }
+    this._render();
+  }
+
+  /**
+   * Copy the recipient's transient routing state — `hasCustomRouting` (the
+   * "Customize channels" expand) and `customRouting` (the ticked channels) —
+   * from the previous sections onto the freshly-merged ones, matched by topic
+   * id. Used by `setPreviewData` so re-rendering the injected preview
+   * (which happens on every editor edit) doesn't discard what the recipient
+   * toggled in the live preview. Channel/topic/section *definitions* still come
+   * from the new page; only the per-topic recipient selections are preserved.
+   */
+  private _preserveRecipientRoutingState(
+    next: PreferencesSection[],
+    prev: PreferencesSection[]
+  ): void {
+    if (prev.length === 0) return;
+    const prevTopicById = new Map<string, PreferencesTopic>();
+    for (const section of prev) {
+      for (const topic of section.topics) {
+        prevTopicById.set(topic.topicId, topic);
+      }
+    }
+    for (const section of next) {
+      for (const topic of section.topics) {
+        const prevTopic = prevTopicById.get(topic.topicId);
+        if (!prevTopic) continue;
+        topic.hasCustomRouting = prevTopic.hasCustomRouting;
+        topic.customRouting = prevTopic.customRouting;
+      }
     }
   }
 
@@ -265,6 +370,18 @@ export class CourierPreferences extends CourierBaseElement {
 
   public setChannelLabels(labels: Record<string, string>) {
     this._channelLabels = labels;
+    this._render();
+  }
+
+  /**
+   * Force the loading skeleton on or off, regardless of preview/fetch state.
+   * Useful when the host is fetching data it will inject via
+   * `setPreviewData` (e.g. a brand) and wants the component's own loading
+   * state shown in the meantime.
+   */
+  public setLoading(loading: boolean) {
+    if (this._forceLoading === loading) return;
+    this._forceLoading = loading;
     this._render();
   }
 
@@ -302,7 +419,27 @@ export class CourierPreferences extends CourierBaseElement {
     });
   }
 
+  /**
+   * Coalesce refresh requests into a single microtask. A host framework (e.g.
+   * React) sets the element's attributes one at a time on mount — `brand-id`
+   * before `draft` — and each observed-attribute change would otherwise trigger
+   * its own `_refresh`. The first (brand-id) would fetch with `_draft`
+   * still `false` (the published page) and the second (`draft`) would fetch the
+   * draft, so the published content flashes before the draft replaces it.
+   * Deferring to a microtask lets all synchronous attribute writes settle, then
+   * fetches once with the final `_brandId`/`_draft`.
+   */
+  private _scheduleRefresh() {
+    if (this._refreshScheduled) return;
+    this._refreshScheduled = true;
+    void Promise.resolve().then(() => {
+      this._refreshScheduled = false;
+      void this._refresh();
+    });
+  }
+
   private async _refresh() {
+    if (this._isPreview) return;
     const client = Courier.shared.client;
     if (!client) return;
 
@@ -311,11 +448,13 @@ export class CourierPreferences extends CourierBaseElement {
     this._render();
 
     try {
-      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId });
+      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId, draft: this._draft });
 
       if (pageData) {
         this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);
         this._brand = pageData.brand as CourierBrand | undefined;
+        this._applyChannelLabelsFromPage(pageData);
+        this._applyHeaderFromPage(pageData);
         this._resolvePrimaryColor();
       }
     } catch (error: unknown) {
@@ -327,7 +466,34 @@ export class CourierPreferences extends CourierBaseElement {
   }
 
   /**
-   * Precedence: user theme primaryColor > brand primaryColor > default
+   * Populate the channel-label lookup the routing chips read from, using the
+   * page's `channelConfigs`. Lets a workspace rename channels (e.g. "Email" ->
+   * "Product updates"); an empty name is skipped so the chip falls back to the
+   * channel's default label. A missing `channelConfigs` leaves any labels set
+   * imperatively via `setChannelLabels` untouched.
+   */
+  private _applyChannelLabelsFromPage(page: CourierPreferencePage) {
+    const labels = page.channelConfigs?.channelLabels;
+    if (!labels) return;
+    this._channelLabels = labels.reduce<Record<string, string>>((acc, { channel, name }) => {
+      if (name) acc[channel] = name;
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Capture the workspace-configured page heading/description so the header can
+   * fall back to them when the host hasn't set `title`/`subtitle` attributes.
+   */
+  private _applyHeaderFromPage(page: CourierPreferencePage) {
+    this._pageHeading = page.heading || undefined;
+    this._pageDescription = page.description || undefined;
+  }
+
+  /**
+   * Precedence: brand primaryColor > user theme primaryColor > default.
+   * The selected brand wins so it colors the controls (e.g. the toggle track)
+   * even when the host passes a themed primary as its unbranded fallback.
    */
   private _resolvePrimaryColor() {
     const theme = this._themeManager.getTheme();
@@ -335,9 +501,7 @@ export class CourierPreferences extends CourierBaseElement {
     const themePrimary = theme.primaryColor;
     const defaultPrimary = DEFAULT_PREFERENCES_PRIMARY_COLOR;
 
-    if (themePrimary && themePrimary !== defaultPrimary) {
-      this._primaryColor = themePrimary;
-    } else if (brandPrimary) {
+    if (brandPrimary) {
       this._primaryColor = brandPrimary;
     } else {
       this._primaryColor = themePrimary || defaultPrimary;
@@ -356,6 +520,7 @@ export class CourierPreferences extends CourierBaseElement {
     return page.sections.map(section => ({
       sectionId: section.sectionId,
       sectionName: section.name,
+      description: section.description,
       hasCustomRouting: section.hasCustomRouting,
       routingOptions: section.routingOptions,
       topics: section.topics.map(topic => {
@@ -376,6 +541,7 @@ export class CourierPreferences extends CourierBaseElement {
         return {
           topicId: topic.templateId,
           topicName: topic.templateName,
+          description: topic.description,
           status,
           defaultStatus: topic.defaultStatus,
           hasCustomRouting: userPref?.hasCustomRouting ?? false,
@@ -412,6 +578,7 @@ export class CourierPreferences extends CourierBaseElement {
 
     topic.status = status;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -434,6 +601,7 @@ export class CourierPreferences extends CourierBaseElement {
 
     topic.digestSchedule = scheduleId;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -457,6 +625,7 @@ export class CourierPreferences extends CourierBaseElement {
     topic.customRouting = channels;
     topic.hasCustomRouting = true;
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -485,6 +654,7 @@ export class CourierPreferences extends CourierBaseElement {
       if (section) topic.customRouting = [...section.routingOptions];
     }
     this._updateTopicInPlace(topic);
+    if (this._isPreview) return;
 
     try {
       await Courier.shared.client!.preferences.putUserPreferenceTopic({
@@ -556,8 +726,8 @@ export class CourierPreferences extends CourierBaseElement {
       return;
     }
 
-    // Loading
-    if (this._isLoading && this._sections.length === 0) {
+    // Loading (forced via setLoading, or the network fetch with no data yet)
+    if (this._forceLoading || (this._isLoading && this._sections.length === 0)) {
       inner.appendChild(this._buildSkeleton());
       root.appendChild(inner);
       this.appendChild(root);
@@ -570,6 +740,43 @@ export class CourierPreferences extends CourierBaseElement {
       root.appendChild(inner);
       this.appendChild(root);
       return;
+    }
+
+    // Header (optional title / subtitle above the sections). The `title` /
+    // `subtitle` attributes set by the host take precedence; otherwise fall back
+    // to the workspace-configured page heading / description.
+    const headerTitle = this._title ?? this._pageHeading;
+    const headerSubtitle = this._subtitle ?? this._pageDescription;
+    if (headerTitle || headerSubtitle) {
+      const header = document.createElement('div');
+      header.className = 'courier-preferences-header';
+      header.style.marginBottom = '16px';
+      if (headerTitle) {
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'courier-preferences-header-title';
+        titleEl.textContent = headerTitle;
+        titleEl.style.margin = '0';
+        titleEl.style.fontSize = '20px';
+        titleEl.style.fontWeight = '600';
+        titleEl.style.lineHeight = '1.3';
+        header.appendChild(titleEl);
+      }
+      if (headerSubtitle) {
+        const subtitleEl = document.createElement('p');
+        subtitleEl.className = 'courier-preferences-header-subtitle';
+        subtitleEl.textContent = headerSubtitle;
+        subtitleEl.style.margin = headerTitle ? '4px 0 0' : '0';
+        subtitleEl.style.fontSize = '14px';
+        subtitleEl.style.lineHeight = '1.5';
+        // Page-header description color comes from the `subtitle` theme token
+        // (rather than a flat opacity). Its default is set to the section
+        // description color, so the header description and section descriptions
+        // read as the same gray unless a theme overrides `subtitle`.
+        subtitleEl.style.color =
+          this._themeManager.getTheme().subtitle?.color || '#737373';
+        header.appendChild(subtitleEl);
+      }
+      inner.appendChild(header);
     }
 
     // Sections
