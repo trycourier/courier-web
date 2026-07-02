@@ -651,6 +651,7 @@ export class PreferenceClient extends Client {
         hasCustomRouting: boolean;
         customRouting: CourierUserPreferencesChannel[];
         digestSchedule?: string;
+        accountId?: string;
     }): Promise<CourierUserPreferencesTopic>;
 }
 
