@@ -36,6 +36,12 @@ export interface CourierDigestScheduleOption {
   repetition?: string;
   start?: string;
   default?: boolean;
+  /**
+   * IANA timezone (e.g. "America/New_York") the schedule's time is expressed in.
+   * When present, the rendered time is shown in this zone (DST-aware); when
+   * absent, `start` is treated as a UTC time-of-day shown in the viewer's zone.
+   */
+  timezone?: string;
 }
 
 /**
@@ -75,6 +81,8 @@ export interface CourierPreferencePageTopic {
   templateId: string;
   templateName: string;
   defaultStatus: CourierUserPreferencesStatus;
+  /** Optional workspace-configured description for the topic. */
+  description?: string;
   data?: unknown;
   digestSchedules?: CourierDigestScheduleOption[];
 }
@@ -86,6 +94,8 @@ export interface CourierPreferencePageTopic {
 export interface CourierPreferencePageSection {
   sectionId: string;
   name: string;
+  /** Optional workspace-configured description for the section. */
+  description?: string;
   hasCustomRouting: boolean;
   routingOptions: CourierUserPreferencesChannel[];
   topics: CourierPreferencePageTopic[];
@@ -115,6 +125,10 @@ export interface CourierPreferencePageBrand {
  */
 export interface CourierPreferencePage {
   showCourierFooter: boolean;
+  /** Workspace-configured page heading (defaulted server-side). */
+  heading: string;
+  /** Workspace-configured page description (defaulted server-side). */
+  description: string;
   brand?: CourierPreferencePageBrand | null;
   channelConfigs?: CourierPreferencePageChannelConfigs | null;
   sections: CourierPreferencePageSection[];

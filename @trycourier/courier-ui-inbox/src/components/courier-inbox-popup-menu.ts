@@ -9,7 +9,7 @@ import { defaultLightTheme } from "../types/courier-inbox-theme";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
 import { CourierComponentThemeMode, injectGlobalStyle } from "@trycourier/courier-ui-core";
-import { Courier } from "@trycourier/courier-js";
+import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { CourierBaseElement, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxHeaderAction, CourierInboxListItemAction } from "../types/inbox-defaults";
 
@@ -76,12 +76,16 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
 
   // Feeds (stored from attribute before inner inbox is created)
   private _feeds?: CourierInboxFeed[];
+  /** Preview mode: forward injected messages to the inner inbox; never touch the shared datastore. */
+  private _isPreview = false;
+  private _previewMessages?: InboxMessage[];
+  private _previewUnreadCount?: number;
 
   // Factories
   private _popupMenuButtonFactory?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => HTMLElement;
 
   static get observedAttributes() {
-    return ['popup-alignment', 'feeds', 'message-click', 'message-action-click', 'message-long-press', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode'];
+    return ['popup-alignment', 'feeds', 'message-click', 'message-action-click', 'message-long-press', 'popup-width', 'popup-height', 'top', 'right', 'bottom', 'left', 'light-theme', 'dark-theme', 'mode', 'preview'];
   }
 
   constructor() {
@@ -95,6 +99,8 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
   }
 
   onComponentMounted() {
+    this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
+
     // Read initial theme attributes
     this.readInitialThemeAttributes();
 
@@ -111,6 +117,10 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Create content container
     this._inbox = new CourierInbox(this._themeManager);
     this._inbox.setAttribute('height', '100%');
+    if (this._isPreview) {
+      // Isolate the inner inbox before it mounts so it skips fetch + datastore.
+      this._inbox.setAttribute('preview', 'true');
+    }
     if (this._feeds) {
       this._inbox.setAttribute('feeds', JSON.stringify(this._feeds));
     }
@@ -128,9 +138,14 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
     // Initialize popup position
     this.updatePopupPosition();
 
-    // Attach the datastore listener
-    this._datastoreListener = new CourierInboxDataStoreListener(this);
-    CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+    // Attach the datastore listener (skip in preview — the badge is driven by injected data)
+    if (!this._isPreview) {
+      this._datastoreListener = new CourierInboxDataStoreListener(this);
+      CourierInboxDatastore.shared.addDataStoreListener(this._datastoreListener);
+    } else if (this._previewMessages) {
+      this._inbox.setPreviewData(this._previewMessages, { unreadCount: this._previewUnreadCount });
+      this._totalUnreadCount = this._previewUnreadCount ?? this._previewMessages.filter(m => !m.read).length;
+    }
 
     // Initial render so any pre-configured factories (like setMenuButton) are applied
     this.render();
@@ -274,7 +289,35 @@ export class CourierInboxPopupMenu extends CourierBaseElement implements Courier
       case 'mode':
         this._themeManager.setMode(newValue as CourierComponentThemeMode);
         break;
+      case 'preview':
+        this._isPreview = newValue != null && newValue !== 'false';
+        break;
     }
+  }
+
+  /**
+   * Render injected "dummy" inbox messages in the popup and skip all
+   * network/realtime + the shared datastore. Pass `null` to clear preview mode.
+   */
+  public setPreviewData(messages: InboxMessage[] | null, options?: { unreadCount?: number }): void {
+    this._isPreview = Boolean(messages);
+    this._previewMessages = messages ?? undefined;
+    this._previewUnreadCount = options?.unreadCount;
+
+    if (messages) {
+      // Stop the popup's own datastore listener so the live feed can't drive the badge.
+      if (this._datastoreListener) {
+        CourierInboxDatastore.shared.removeDataStoreListener(this._datastoreListener);
+        this._datastoreListener = undefined;
+      }
+      this._totalUnreadCount = options?.unreadCount ?? messages.filter(m => !m.read).length;
+    }
+
+    if (this._inbox) {
+      if (messages) this._inbox.setAttribute('preview', 'true');
+      this._inbox.setPreviewData(messages, options);
+    }
+    this.render();
   }
 
   /**

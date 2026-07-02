@@ -14,6 +14,7 @@ import {
   CourierInboxFeed,
 } from '@trycourier/courier-ui-inbox';
 import { CourierComponentThemeMode } from '@trycourier/courier-ui-core';
+import { InboxMessage } from '@trycourier/courier-js';
 import { CourierClientComponent } from './courier-client-component';
 import { CourierRenderContext } from '../context/render-context';
 
@@ -80,6 +81,15 @@ export interface CourierInboxPopupMenuProps {
 
   /** Allows you to pass a custom component as the menu button. */
   renderMenuButton?: (props: CourierInboxMenuButtonFactoryProps | undefined | null) => ReactNode;
+
+  /**
+   * Render injected "dummy" inbox messages instead of fetching from the API.
+   * No sign-in / network is required, and the live (shared) inbox is unaffected.
+   */
+  previewMessages?: InboxMessage[];
+
+  /** Optional unread-count override for the preview (defaults to unread messages). */
+  previewUnreadCount?: number;
 }
 
 export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuElement, CourierInboxPopupMenuProps>(
@@ -139,6 +149,15 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
       if (!menu) return;
       menu.onMessageLongPress(props.onMessageLongPress);
     }, [props.onMessageLongPress, elementReady]);
+
+    // Inject preview/dummy data (skips fetch + the shared datastore)
+    useEffect(() => {
+      const menu = getEl();
+      if (!menu) return;
+      menu.setPreviewData(props.previewMessages ?? null, {
+        unreadCount: props.previewUnreadCount,
+      });
+    }, [props.previewMessages, props.previewUnreadCount, elementReady]);
 
     // Render header
     useEffect(() => {
@@ -244,6 +263,7 @@ export const CourierInboxPopupMenuComponent = forwardRef<CourierInboxPopupMenuEl
         dark-theme={props.darkTheme ? JSON.stringify(props.darkTheme) : undefined}
         mode={props.mode}
         feeds={feedsAttr as any}
+        {...({ preview: props.previewMessages ? "true" : undefined } as any)}
       />
     );
 

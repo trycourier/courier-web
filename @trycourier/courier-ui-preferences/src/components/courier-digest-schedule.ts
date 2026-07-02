@@ -1,6 +1,6 @@
 import { CourierBaseElement, registerElement, injectGlobalStyle, CourierRadio } from "@trycourier/courier-ui-core";
 import { CourierDigestScheduleOption } from "@trycourier/courier-js";
-import { CourierPreferencesTheme } from "../types/courier-preferences-theme";
+import { CourierPreferencesTheme, DEFAULT_PREFERENCES_PRIMARY_COLOR } from "../types/courier-preferences-theme";
 import { CourierPreferencesThemeManager, CourierPreferencesThemeSubscription } from "../types/courier-preferences-theme-manager";
 import { DigestSchedule } from "../types/preferences";
 import { formatDigest } from "../utils/format-digest";
@@ -14,6 +14,11 @@ const STYLES = `
     gap: 16px;
     margin-top: 20px;
     padding: 0 24px;
+  }
+  courier-digest-schedule .courier-digest-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
   }
   courier-digest-schedule .courier-digest-label {
     display: inline-flex;
@@ -75,6 +80,7 @@ export class CourierDigestSchedule extends CourierBaseElement {
 
   private _container?: HTMLDivElement;
   private _options: OptionEntry[] = [];
+  private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
   private _mounted = false;
 
   set schedules(val: CourierDigestScheduleOption[]) {
@@ -99,8 +105,13 @@ export class CourierDigestSchedule extends CourierBaseElement {
     if (this._mounted) this._setupThemeSubscription();
   }
 
-  set primaryColor(_val: string) {
-    // Reserved for future use
+  set primaryColor(val: string) {
+    this._primaryColor = val || DEFAULT_PREFERENCES_PRIMARY_COLOR;
+    // The selected radio follows the primary, so re-apply when it changes (e.g.
+    // once the brand resolves) to pick up the brand color.
+    if (this._mounted) {
+      this._applyTheme();
+    }
   }
 
   set onScheduleChange(fn: (scheduleId: string) => void) {
@@ -164,6 +175,11 @@ export class CourierDigestSchedule extends CourierBaseElement {
 
     const container = document.createElement('div');
     container.className = 'courier-digest-container';
+
+    const title = document.createElement('div');
+    title.className = 'courier-digest-title';
+    title.textContent = 'Receive Notifications';
+    container.appendChild(title);
 
     if (this._schedules.length === 1) {
       container.appendChild(this._buildSingleLabel(this._schedules[0]));
@@ -260,8 +276,22 @@ export class CourierDigestSchedule extends CourierBaseElement {
     }
 
     const ringColor = digest?.radio?.ringColor || '#D4D4D4';
-    const checkedColor = digest?.radio?.checkedColor || selectedFont?.color || '#171717';
+    const checkedColor = digest?.radio?.checkedColor || this._primaryColor || selectedFont?.color || '#171717';
     const calendarColor = digest?.iconColor || '#A3A3A3';
+
+    // Title above the schedules; matches the selected schedule's weight and color
+    // so it reads as a heading without being heavier than the chosen option.
+    const titleEl = this._container.querySelector<HTMLElement>('.courier-digest-title');
+    if (titleEl) {
+      const fonts = this._resolvedFonts();
+      titleEl.style.color = fonts.selectedColor;
+      titleEl.style.fontWeight = fonts.selectedWeight;
+      if (fonts.selectedFamily) {
+        titleEl.style.fontFamily = fonts.selectedFamily;
+      } else {
+        titleEl.style.removeProperty('font-family');
+      }
+    }
 
     // Single-schedule label shares the unselected font.
     const labelEl = this._container.querySelector<HTMLElement>('.courier-digest-label');

@@ -146,6 +146,9 @@ export class CourierInbox extends CourierBaseElement {
   private _datastoreListener: CourierInboxDataStoreListener | undefined;
   private _authListener: AuthenticationListener | undefined;
   private _feeds: CourierInboxFeed[] = defaultFeeds();
+  /** When true, render injected preview messages and skip all network/realtime + the shared datastore. */
+  private _isPreview = false;
+  private _previewDataSet?: InboxDataSet;
 
   // Header
   private _header?: CourierInboxHeader;
@@ -164,7 +167,7 @@ export class CourierInbox extends CourierBaseElement {
   };
 
   static get observedAttributes() {
-    return ['height', 'light-theme', 'dark-theme', 'mode', 'feeds', 'message-click', 'message-action-click', 'message-long-press'];
+    return ['height', 'light-theme', 'dark-theme', 'mode', 'feeds', 'message-click', 'message-action-click', 'message-long-press', 'preview'];
   }
 
   constructor(themeManager?: CourierInboxThemeManager) {
@@ -194,6 +197,7 @@ export class CourierInbox extends CourierBaseElement {
   }
 
   onComponentMounted() {
+    this._isPreview = this.hasAttribute('preview') && this.getAttribute('preview') !== 'false';
     this.readInitialThemeAttributes();
     this.attachElements();
     this.setupThemeSubscription();
@@ -239,6 +243,7 @@ export class CourierInbox extends CourierBaseElement {
 
   private setupAuthListener() {
     this._authListener = Courier.shared.addAuthenticationListener(({ userId }) => {
+      if (this._isPreview) return;
       if (userId) {
         this.refresh().catch((err) => {
           // Inbox fetch can fail (e.g. network). Handle to avoid unhandled rejection.
@@ -252,6 +257,13 @@ export class CourierInbox extends CourierBaseElement {
 
     // Reset the initial feed and tab
     this.resetInitialFeedAndTab();
+
+    // Preview mode: render injected data only. Do NOT touch the shared datastore
+    // (its singleton is shared with the live inbox) or fetch from the network.
+    if (this._isPreview) {
+      this.renderPreview();
+      return;
+    }
 
     // Create the datasets from the feeds
     CourierInboxDatastore.shared.registerFeeds(this._feeds);
@@ -521,6 +533,12 @@ export class CourierInbox extends CourierBaseElement {
   private async reloadListForTab() {
     this._list?.selectDataset(this._currentTabId);
 
+    // Preview mode: re-render injected data for the selected tab; never hit the datastore.
+    if (this._isPreview) {
+      this.renderPreview();
+      return;
+    }
+
     // Load data for the tab
     await CourierInboxDatastore.shared.load({
       canUseCache: true,
@@ -622,8 +640,10 @@ export class CourierInbox extends CourierBaseElement {
     // Reset the initial feed and tab
     this.resetInitialFeedAndTab();
 
-    // Create datasets from the feeds
-    CourierInboxDatastore.shared.registerFeeds(this._feeds);
+    // Create datasets from the feeds (skip in preview — never touch the shared datastore)
+    if (!this._isPreview) {
+      CourierInboxDatastore.shared.registerFeeds(this._feeds);
+    }
 
     // Update the header with new feeds
     this._header?.setFeeds(this._feeds);
@@ -638,8 +658,12 @@ export class CourierInbox extends CourierBaseElement {
     this._list?.selectDataset(this._currentTabId);
     this._list?.scrollToTop(false);
 
-    // Refresh the inbox data
-    this.refresh();
+    // Preview mode renders injected data; otherwise fetch.
+    if (this._isPreview) {
+      this.renderPreview();
+    } else {
+      this.refresh();
+    }
   }
 
   /** Get the current set of feeds. */
@@ -713,6 +737,9 @@ export class CourierInbox extends CourierBaseElement {
    */
   public async refresh() {
 
+    // Preview mode renders injected data only — never fetch.
+    if (this._isPreview) return;
+
     // Refresh the inbox if the user is already signed in
     if (!Courier.shared.client?.options.userId) {
       Courier.shared.client?.options.logger.error('No user signed in. Please call Courier.shared.signIn(...) to load the inbox.')
@@ -724,6 +751,45 @@ export class CourierInbox extends CourierBaseElement {
       canUseCache: false
     });
 
+  }
+
+  /**
+   * Render injected "dummy" inbox messages and skip all network/realtime + the
+   * shared datastore (so a live inbox elsewhere is unaffected). Pass `null` to
+   * clear preview mode.
+   */
+  public setPreviewData(messages: InboxMessage[] | null, options?: { unreadCount?: number }): void {
+    this._isPreview = Boolean(messages);
+
+    if (!messages) {
+      this._previewDataSet = undefined;
+      return;
+    }
+
+    // Detach from the shared datastore so live updates can't overwrite the preview.
+    if (this._datastoreListener) {
+      CourierInboxDatastore.shared.removeDataStoreListener(this._datastoreListener);
+      this._datastoreListener = undefined;
+    }
+
+    const unreadCount = options?.unreadCount ?? messages.filter(m => !m.read).length;
+    this._previewDataSet = {
+      id: this._currentTabId,
+      messages,
+      unreadCount,
+      canPaginate: false,
+      paginationCursor: null
+    };
+    this.renderPreview();
+  }
+
+  /** Render the current preview dataset into the list + header (preview mode only). */
+  private renderPreview(): void {
+    if (!this._previewDataSet) return;
+    const dataSet: InboxDataSet = { ...this._previewDataSet, id: this._currentTabId };
+    this._list?.setDataSet(dataSet);
+    this._header?.tabs?.updateTabUnreadCount(this._currentTabId, dataSet.unreadCount);
+    this.updateHeader();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -792,6 +858,9 @@ export class CourierInbox extends CourierBaseElement {
         break;
       case 'mode':
         this._themeManager.setMode(newValue as CourierComponentThemeMode);
+        break;
+      case 'preview':
+        this._isPreview = newValue != null && newValue !== 'false';
         break;
     }
   }
