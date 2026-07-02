@@ -280,9 +280,10 @@ export class CourierPreferencesComponent implements AfterViewInit, OnChanges {
     // (undocumented)
     ngOnChanges(): void;
     subtitle?: string;
+    tenantId?: string;
     title?: string;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<CourierPreferencesComponent, "courier-preferences", never, { "lightTheme": { "alias": "lightTheme"; "required": false; }; "darkTheme": { "alias": "darkTheme"; "required": false; }; "mode": { "alias": "mode"; "required": false; }; "title": { "alias": "title"; "required": false; }; "subtitle": { "alias": "subtitle"; "required": false; }; "brandId": { "alias": "brandId"; "required": false; }; "channelLabels": { "alias": "channelLabels"; "required": false; }; }, { "error": "error"; }, never, ["*"], true, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CourierPreferencesComponent, "courier-preferences", never, { "lightTheme": { "alias": "lightTheme"; "required": false; }; "darkTheme": { "alias": "darkTheme"; "required": false; }; "mode": { "alias": "mode"; "required": false; }; "title": { "alias": "title"; "required": false; }; "subtitle": { "alias": "subtitle"; "required": false; }; "brandId": { "alias": "brandId"; "required": false; }; "tenantId": { "alias": "tenantId"; "required": false; }; "channelLabels": { "alias": "channelLabels"; "required": false; }; }, { "error": "error"; }, never, ["*"], true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CourierPreferencesComponent, never>;
 }

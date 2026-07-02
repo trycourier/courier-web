@@ -566,6 +566,10 @@ brandId: {
 type: StringConstructor;
 default: undefined;
 };
+tenantId: {
+type: StringConstructor;
+default: undefined;
+};
 channelLabels: {
 type: PropType<Record<string, string>>;
 default: undefined;
@@ -605,6 +609,10 @@ brandId: {
 type: StringConstructor;
 default: undefined;
 };
+tenantId: {
+type: StringConstructor;
+default: undefined;
+};
 channelLabels: {
 type: PropType<Record<string, string>>;
 default: undefined;
@@ -622,6 +630,7 @@ mode: CourierComponentThemeMode;
 onError: (error: Error) => void;
 subtitle: string;
 brandId: string;
+tenantId: string;
 channelLabels: Record<string, string>;
 }, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 

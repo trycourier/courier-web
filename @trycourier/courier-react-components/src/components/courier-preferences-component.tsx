@@ -15,6 +15,12 @@ export interface CourierPreferencesProps {
   title?: string;
   subtitle?: string;
   brandId?: string;
+  /**
+   * Scope preferences to a specific tenant/account. Overrides the tenant set at
+   * `signIn` for this component only. When omitted, falls back to the signed-in
+   * client's `tenantId`.
+   */
+  tenantId?: string;
   channelLabels?: Record<string, string>;
   onError?: (error: Error) => void;
 }
@@ -62,6 +68,7 @@ export const CourierPreferencesComponent = forwardRef<CourierPreferencesElement,
       title={props.title}
       subtitle={props.subtitle}
       brand-id={props.brandId}
+      tenant-id={props.tenantId}
     />
   );
 

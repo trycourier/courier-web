@@ -27,6 +27,11 @@ export const CourierPreferences = defineComponent({
     subtitle: { type: String, default: undefined },
     /** Brand id used to theme the preferences. */
     brandId: { type: String, default: undefined },
+    /**
+     * Scope preferences to a specific tenant/account. Overrides the tenant set
+     * at `signIn` for this component only. Falls back to the client's `tenantId`.
+     */
+    tenantId: { type: String, default: undefined },
     /** Map of channel keys to display labels. */
     channelLabels: { type: Object as PropType<Record<string, string>>, default: undefined },
     /** Callback invoked when the component encounters an error. */
@@ -72,6 +77,7 @@ export const CourierPreferences = defineComponent({
         title: props.title,
         subtitle: props.subtitle,
         "brand-id": props.brandId,
+        "tenant-id": props.tenantId,
       });
   },
 });

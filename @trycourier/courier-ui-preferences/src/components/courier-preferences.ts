@@ -200,6 +200,7 @@ export class CourierPreferences extends CourierBaseElement {
   private _error?: Error;
   private _channelLabels: Record<string, string> = {};
   private _brandId?: string;
+  private _tenantId?: string;
   private _brand?: CourierBrand;
   private _primaryColor = DEFAULT_PREFERENCES_PRIMARY_COLOR;
 
@@ -241,6 +242,10 @@ export class CourierPreferences extends CourierBaseElement {
         }
         break;
       case 'tenant-id':
+        this._tenantId = newValue || undefined;
+        if (Courier.shared.client?.options.userId) {
+          this._refresh();
+        }
         break;
       case 'brand-id':
         this._brandId = newValue || undefined;
@@ -311,7 +316,7 @@ export class CourierPreferences extends CourierBaseElement {
     this._render();
 
     try {
-      const pageData = await client.preferences.getPreferencePage({ brandId: this._brandId });
+      const pageData = await client.preferences.getPreferencePage({ accountId: this._tenantId, brandId: this._brandId });
 
       if (pageData) {
         this._sections = this._mergePageWithPreferences(pageData, pageData.recipientPreferences);

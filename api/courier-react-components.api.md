@@ -124,6 +124,7 @@ export interface CourierPreferencesProps {
     style?: CSSProperties;
     // (undocumented)
     subtitle?: string;
+    tenantId?: string;
     // (undocumented)
     title?: string;
 }

@@ -44,6 +44,11 @@ export class CourierPreferencesComponent implements AfterViewInit, OnChanges {
   @Input() subtitle?: string;
   /** Brand id used to theme the preferences. */
   @Input() brandId?: string;
+  /**
+   * Scope preferences to a specific tenant/account. Overrides the tenant set at
+   * `signIn` for this component only. Falls back to the client's `tenantId`.
+   */
+  @Input() tenantId?: string;
   /** Map of channel keys to display labels. */
   @Input() channelLabels?: Record<string, string>;
 
@@ -67,6 +72,7 @@ export class CourierPreferencesComponent implements AfterViewInit, OnChanges {
     setAttr(this.el, "title", this.title);
     setAttr(this.el, "subtitle", this.subtitle);
     setAttr(this.el, "brand-id", this.brandId);
+    setAttr(this.el, "tenant-id", this.tenantId);
 
     if (this.channelLabels) {
       this.el.setChannelLabels(this.channelLabels);
