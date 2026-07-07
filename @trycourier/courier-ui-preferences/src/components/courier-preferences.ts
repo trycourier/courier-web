@@ -734,17 +734,11 @@ export class CourierPreferences extends CourierBaseElement {
       return;
     }
 
-    // Empty (loading complete, no error, no sections)
-    if (!this._isLoading && !this._error && this._sections.length === 0) {
-      inner.appendChild(this._buildEmptyState());
-      root.appendChild(inner);
-      this.appendChild(root);
-      return;
-    }
-
     // Header (optional title / subtitle above the sections). The `title` /
     // `subtitle` attributes set by the host take precedence; otherwise fall back
-    // to the workspace-configured page heading / description.
+    // to the workspace-configured page heading / description. Rendered before the
+    // empty-state check (but after error/loading, which still return early) so a
+    // configured heading/description still shows when there are no topics yet.
     const headerTitle = this._title ?? this._pageHeading;
     const headerSubtitle = this._subtitle ?? this._pageDescription;
     if (headerTitle || headerSubtitle) {
@@ -777,6 +771,15 @@ export class CourierPreferences extends CourierBaseElement {
         header.appendChild(subtitleEl);
       }
       inner.appendChild(header);
+    }
+
+    // Empty (loading complete, no error, no sections). The header above still
+    // renders, so the page keeps its heading/description with an empty body.
+    if (!this._isLoading && !this._error && this._sections.length === 0) {
+      inner.appendChild(this._buildEmptyState());
+      root.appendChild(inner);
+      this.appendChild(root);
+      return;
     }
 
     // Sections
