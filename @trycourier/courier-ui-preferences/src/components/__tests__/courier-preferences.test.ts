@@ -87,6 +87,50 @@ describe("courier-preferences channel labels", () => {
   });
 });
 
+describe("courier-preferences header with no topics", () => {
+  afterEach(() => {
+    while (document.body.firstChild) {
+      document.body.firstChild.remove();
+    }
+  });
+
+  function mount(): CourierPreferences {
+    const el = new CourierPreferences();
+    document.body.appendChild(el);
+    return el;
+  }
+
+  /** An empty page (no sections) that still carries a heading + description. */
+  function emptyPageWithHeader(): CourierPreferencePage {
+    return {
+      showCourierFooter: false,
+      heading: "Notification Preferences",
+      description: "Choose how you'd like to be notified.",
+      sections: [],
+      recipientPreferences: [],
+    } as unknown as CourierPreferencePage;
+  }
+
+  it("still renders the heading and description when there are no topics", () => {
+    const el = mount();
+    el.setPreviewData(emptyPageWithHeader());
+
+    const title = document.querySelector<HTMLElement>(
+      ".courier-preferences-header-title"
+    );
+    const subtitle = document.querySelector<HTMLElement>(
+      ".courier-preferences-header-subtitle"
+    );
+    expect(title?.textContent).toBe("Notification Preferences");
+    expect(subtitle?.textContent).toBe(
+      "Choose how you'd like to be notified."
+    );
+
+    // The empty state renders alongside the header (not in place of it).
+    expect(document.body.textContent).toContain("No preferences available");
+  });
+});
+
 describe("courier-preferences preview state preservation", () => {
   // jsdom doesn't implement CSS.escape, which the in-place topic update uses to
   // build a selector. A minimal pass-through keeps the topic ids in this suite
