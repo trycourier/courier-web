@@ -1,0 +1,13 @@
+# @trycourier/courier-angular
+
+## 1.0.1
+
+### Patch Changes
+
+- [#210](https://github.com/trycourier/courier-web/pull/210) [`2f1c0ea`](https://github.com/trycourier/courier-web/commit/2f1c0ea69744e5b94475a12704c0a69b63232343) Thanks [@mikemilla](https://github.com/mikemilla)! - Republish with corrected packaging: publish the ng-packagr dist output via `publishConfig.directory` (angular) and keep test files out of the published package (vue). The 1.0.0 release predated these fixes.
+
+- Updated dependencies [[`2f1c0ea`](https://github.com/trycourier/courier-web/commit/2f1c0ea69744e5b94475a12704c0a69b63232343)]:
+  - @trycourier/courier-js@3.5.0
+  - @trycourier/courier-ui-preferences@1.2.0
+  - @trycourier/courier-ui-inbox@2.4.9
+  - @trycourier/courier-ui-toast@2.1.8

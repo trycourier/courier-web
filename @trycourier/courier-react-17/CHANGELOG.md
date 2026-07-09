@@ -1,5 +1,16 @@
 # @trycourier/courier-react-17
 
+## 9.2.4
+
+### Patch Changes
+
+- Updated dependencies [[`2f1c0ea`](https://github.com/trycourier/courier-web/commit/2f1c0ea69744e5b94475a12704c0a69b63232343)]:
+  - @trycourier/courier-js@3.5.0
+  - @trycourier/courier-ui-preferences@1.2.0
+  - @trycourier/courier-ui-inbox@2.4.9
+  - @trycourier/courier-react-components@2.2.4
+  - @trycourier/courier-ui-toast@2.1.8
+
 ## 9.2.3
 
 ### Patch Changes
