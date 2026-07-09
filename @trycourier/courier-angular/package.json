@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-angular",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Angular components for the Courier web UI",
   "publishConfig": {
     "access": "public",
@@ -27,11 +27,11 @@
   },
   "homepage": "https://www.courier.com",
   "dependencies": {
-    "@trycourier/courier-js": "3.4.0",
+    "@trycourier/courier-js": "3.5.0",
     "@trycourier/courier-ui-core": "2.2.1",
-    "@trycourier/courier-ui-inbox": "2.4.8",
-    "@trycourier/courier-ui-toast": "2.1.7",
-    "@trycourier/courier-ui-preferences": "1.1.1",
+    "@trycourier/courier-ui-inbox": "2.4.9",
+    "@trycourier/courier-ui-toast": "2.1.8",
+    "@trycourier/courier-ui-preferences": "1.2.0",
     "tslib": "^2.8.1"
   },
   "peerDependencies": {
