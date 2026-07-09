@@ -16,7 +16,7 @@ const DEFAULT_CHANNEL_LABELS: Record<string, string> = {
   push: 'Push',
   sms: 'SMS',
   webhook: 'Webhook',
-  inbox: 'Inbox',
+  inbox: 'In-App',
 };
 
 // Right-pointing chevron; rotated 90deg (via CSS) when the section is expanded.

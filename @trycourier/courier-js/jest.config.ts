@@ -13,6 +13,11 @@ export default /** @type {import('ts-jest').JestConfigWithTsJest} */ ({
   transformIgnorePatterns: ['/node_modules/(?!@trycourier/)'],
   moduleNameMapper: { '^(\\.{1,2}/.*)\\.js$': '$1' },
 
+  // These suites exercise live Courier APIs over the network, so the default
+  // 5s per-test timeout is too tight and flakes on latency spikes (e.g. a slow
+  // brands query). Give integration calls generous headroom.
+  testTimeout: 30000,
+
   roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*(spec|test).ts?(x)',

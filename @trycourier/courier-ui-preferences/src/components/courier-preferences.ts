@@ -350,6 +350,13 @@ export class CourierPreferences extends CourierBaseElement {
       for (const topic of section.topics) {
         const prevTopic = prevTopicById.get(topic.topicId);
         if (!prevTopic) continue;
+        // Only carry over the recipient's selection when they actually
+        // customized (expanded "Customize channels"). When they haven't, let the
+        // freshly-merged default stand so an editor change to the section's
+        // available channels (routingOptions) is reflected — otherwise a stale
+        // selection from before the change (e.g. an empty routing, or a single
+        // channel) would persist and show the wrong channels ticked.
+        if (!prevTopic.hasCustomRouting) continue;
         topic.hasCustomRouting = prevTopic.hasCustomRouting;
         topic.customRouting = prevTopic.customRouting;
       }
