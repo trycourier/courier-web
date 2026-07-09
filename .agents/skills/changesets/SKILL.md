@@ -51,7 +51,7 @@ Add getUnreadCounts API and expose it through useCourier hook
 
 ### Valid package names
 
-`@trycourier/courier-js` · `@trycourier/courier-react` · `@trycourier/courier-react-17` · `@trycourier/courier-react-components` · `@trycourier/courier-ui-core` · `@trycourier/courier-ui-inbox` · `@trycourier/courier-ui-toast` · `@trycourier/courier-ui-preferences`
+`@trycourier/courier-js` · `@trycourier/courier-react` · `@trycourier/courier-react-17` · `@trycourier/courier-react-components` · `@trycourier/courier-ui-core` · `@trycourier/courier-ui-inbox` · `@trycourier/courier-ui-toast` · `@trycourier/courier-ui-preferences` · `@trycourier/courier-vue` · `@trycourier/courier-angular`
 
 Internal dependents are bumped automatically at release time (`updateInternalDependencies: patch`), so only list packages whose own source you changed.
 
