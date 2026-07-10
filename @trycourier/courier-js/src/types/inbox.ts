@@ -56,6 +56,8 @@ export interface InboxMessage {
   data?: Record<string, any>;
   created?: string;
   archived?: string;
+  /** ISO timestamp at which the message was deleted. Deleted messages are excluded from every view; cleared on restore. */
+  deleted?: string;
   read?: string;
   opened?: string;
   tags?: string[];

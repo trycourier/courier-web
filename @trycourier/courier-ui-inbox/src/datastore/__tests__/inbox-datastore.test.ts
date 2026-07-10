@@ -9,6 +9,8 @@ const mockGetUnreadMessageCount = jest.fn();
 const mockArchiveRead = jest.fn();
 const mockArchiveAll = jest.fn();
 const mockArchive = jest.fn();
+const mockDelete = jest.fn();
+const mockRestore = jest.fn();
 const mockOpen = jest.fn();
 const mockBatchOpen = jest.fn();
 const mockRead = jest.fn();
@@ -35,6 +37,8 @@ jest.mock("@trycourier/courier-js", () => ({
           archiveRead: () => mockArchiveRead(),
           archiveAll: () => mockArchiveAll(),
           archive: () => mockArchive(),
+          delete: () => mockDelete(),
+          restore: () => mockRestore(),
           open: () => mockOpen(),
           batchOpen: (ids: string[]) => mockBatchOpen(ids),
           read: () => mockRead(),
@@ -713,6 +717,55 @@ describe("CourierInboxDatastore", () => {
       const inboxAfter = datastore.getDatasetById('inbox');
       expect(inboxAfter?.messages).toHaveLength(1);
       expect(inboxAfter?.messages[0].archived).toBeUndefined();
+    });
+
+    it("should optimistically delete a message, removing it from all datasets", async () => {
+      const messageToDelete = getMessage();
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 1,
+          unreadCount: 1,
+          messages: { nodes: [messageToDelete] },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+      mockDelete.mockResolvedValue(undefined);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+
+      await datastore.deleteMessage({ message: messageToDelete });
+
+      // Deleted message qualifies for no dataset — removed from inbox entirely
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(0);
+      expect(mockDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it("should rollback a delete when the API call fails", async () => {
+      const messageToDelete = getMessage();
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 1,
+          unreadCount: 1,
+          messages: { nodes: [messageToDelete] },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+      mockDelete.mockRejectedValue(new Error("Delete API call failed"));
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+      expect(datastore.getDatasetById('inbox')?.messages).toHaveLength(1);
+
+      await datastore.deleteMessage({ message: messageToDelete });
+
+      // Rollback - message reappears in inbox and is not marked deleted
+      const inboxAfter = datastore.getDatasetById('inbox');
+      expect(inboxAfter?.messages).toHaveLength(1);
+      expect(inboxAfter?.messages[0].deleted).toBeUndefined();
     });
 
     it("should call onError listener when rollback occurs", async () => {

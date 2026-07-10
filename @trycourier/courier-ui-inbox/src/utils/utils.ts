@@ -76,6 +76,9 @@ export function mutableInboxMessageFieldsEqual(message1: InboxMessage, message2:
   if (message1.archived !== message2.archived) {
     return false;
   }
+  if (message1.deleted !== message2.deleted) {
+    return false;
+  }
   if (message1.read !== message2.read) {
     return false;
   }

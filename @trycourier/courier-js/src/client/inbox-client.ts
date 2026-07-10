@@ -411,6 +411,64 @@ export class InboxClient extends Client {
   }
 
   /**
+   * Delete a message
+   * @param messageId - ID of the message to delete
+   * @returns Promise resolving when message is deleted
+   */
+  public async delete(props: { messageId: string }): Promise<void> {
+    const query = `
+      mutation TrackEvent {
+        delete(messageId: "${props.messageId}")
+      }
+    `;
+
+    const headers: Record<string, string> = {
+      'x-courier-user-id': this.options.userId,
+      'Authorization': `Bearer ${this.options.accessToken}`
+    };
+
+    if (this.options.connectionId) {
+      headers['x-courier-client-source-id'] = this.options.connectionId;
+    }
+
+    await graphql({
+      options: this.options,
+      query,
+      headers,
+      url: this.options.apiUrls.inbox.graphql,
+    });
+  }
+
+  /**
+   * Restore a previously deleted message
+   * @param messageId - ID of the message to restore
+   * @returns Promise resolving when message is restored
+   */
+  public async restore(props: { messageId: string }): Promise<void> {
+    const query = `
+      mutation TrackEvent {
+        restore(messageId: "${props.messageId}")
+      }
+    `;
+
+    const headers: Record<string, string> = {
+      'x-courier-user-id': this.options.userId,
+      'Authorization': `Bearer ${this.options.accessToken}`
+    };
+
+    if (this.options.connectionId) {
+      headers['x-courier-client-source-id'] = this.options.connectionId;
+    }
+
+    await graphql({
+      options: this.options,
+      query,
+      headers,
+      url: this.options.apiUrls.inbox.graphql,
+    });
+  }
+
+  /**
    * Mark all messages as read
    * @returns Promise resolving when all messages are marked as read
    */

@@ -397,6 +397,11 @@ export class CourierInboxDataset {
   }
 
   private messageQualifiesForDataset(message: InboxMessage): boolean {
+    // Deleted messages never qualify for any dataset — they are excluded from every view.
+    if (message.deleted) {
+      return false;
+    }
+
     // Is the message archived state compatible with the dataset?
     if (message.archived && !this._filter.archived ||
       !message.archived && this._filter.archived) {
