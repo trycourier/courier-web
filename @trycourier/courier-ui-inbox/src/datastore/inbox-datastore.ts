@@ -395,6 +395,65 @@ export class CourierInboxDatastore {
   }
 
   /**
+   * Delete a message. Deleted messages are removed from every view (unlike archive,
+   * which keeps them in the archived feed). Reversible via {@link restoreMessage}.
+   * @param message - The message to delete
+   */
+  public async deleteMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't delete if already deleted
+    if (message.deleted) {
+      return;
+    }
+
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
+    await this.executeWithRollback(async () => {
+      // Mutate in global store
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.deleted = CourierInboxDatastore.getISONow();
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets (deleted messages qualify for no dataset, so this removes it everywhere)
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
+
+      // Apply the delete to the server
+      await Courier.shared.client?.inbox.delete({ messageId: message.messageId });
+    });
+  }
+
+  /**
+   * Restore a previously deleted message.
+   * @param message - The message to restore
+   */
+  public async restoreMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // Don't restore if not deleted
+    if (!message.deleted) {
+      return;
+    }
+
+    const beforeMessage = this._globalMessages.get(message.messageId);
+    if (!beforeMessage) {
+      return;
+    }
+
+    await this.executeWithRollback(async () => {
+      // Mutate in global store
+      const afterMessage = copyMessage(beforeMessage);
+      afterMessage.deleted = undefined;
+      this._globalMessages.set(message.messageId, afterMessage);
+
+      // Update all datasets (restored message re-qualifies and reappears)
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
+
+      // Apply the restore to the server
+      await Courier.shared.client?.inbox.restore({ messageId: message.messageId });
+    });
+  }
+
+  /**
    * Track a click event for a message.
    * @param message - The message that was clicked
    */

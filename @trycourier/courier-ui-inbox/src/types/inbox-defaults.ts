@@ -9,7 +9,7 @@ export type CourierInboxHeaderActionId = 'readAll' | 'archiveRead' | 'archiveAll
 /**
  * List item action ID types.
  */
-export type CourierInboxListItemActionId = 'read_unread' | 'archive_unarchive';
+export type CourierInboxListItemActionId = 'read_unread' | 'archive_unarchive' | 'delete_restore';
 
 /**
  * Configuration for a header action.
@@ -29,6 +29,8 @@ export type CourierInboxListItemAction = {
   unreadIconSVG?: string;
   archiveIconSVG?: string;
   unarchiveIconSVG?: string;
+  deleteIconSVG?: string;
+  restoreIconSVG?: string;
 };
 
 /**
@@ -82,7 +84,8 @@ export function defaultActions(): CourierInboxHeaderAction[] {
 export function defaultListItemActions(): CourierInboxListItemAction[] {
   return [
     { id: 'read_unread' },
-    { id: 'archive_unarchive' }
+    { id: 'archive_unarchive' },
+    { id: 'delete_restore' }
   ];
 }
 

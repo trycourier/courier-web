@@ -449,6 +449,28 @@ export class CourierInboxListItem extends CourierBaseElement {
             },
           });
           break;
+        case 'delete_restore': {
+          const isDeleted = !!this._message?.deleted;
+          options.push({
+            id: isDeleted ? 'restore' : 'delete',
+            icon: {
+              svg: isDeleted
+                ? (action.restoreIconSVG ?? menuTheme?.unarchive?.svg ?? CourierIconSVGs.unarchive)
+                : (action.deleteIconSVG ?? CourierIconSVGs.trash),
+              color: isDeleted ? menuTheme?.unarchive?.color : menuTheme?.archive?.color ?? 'red',
+            },
+            onClick: () => {
+              if (this._message) {
+                if (isDeleted) {
+                  CourierInboxDatastore.shared.restoreMessage({ message: this._message });
+                } else {
+                  CourierInboxDatastore.shared.deleteMessage({ message: this._message });
+                }
+              }
+            },
+          });
+          break;
+        }
       }
     }
 

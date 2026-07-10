@@ -124,6 +124,18 @@ describe('InboxClient', () => {
     await expect(courierClient.inbox.archiveRead()).resolves.not.toThrow();
   });
 
+  it('should delete message', async () => {
+    await expect(courierClient.inbox.delete({
+      messageId: env('MESSAGE_ID'),
+    })).resolves.not.toThrow();
+  });
+
+  it('should restore message', async () => {
+    await expect(courierClient.inbox.restore({
+      messageId: env('MESSAGE_ID'),
+    })).resolves.not.toThrow();
+  });
+
   it('should archive unread messages', async () => {
     await expect(courierClient.inbox.unarchive({
       messageId: env('MESSAGE_ID'),
