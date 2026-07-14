@@ -1,5 +1,14 @@
 # @trycourier/courier-ui-toast
 
+## 2.1.9
+
+### Patch Changes
+
+- [#215](https://github.com/trycourier/courier-web/pull/215) [`1a895bb`](https://github.com/trycourier/courier-web/commit/1a895bbb472b9b71ab26f69c1d36e3d2d0c44e3f) Thanks [@mikemilla](https://github.com/mikemilla)! - Toast items now render a visible subtle border in dark mode (the previous default matched the background color, so no border appeared), and the dark-mode hover/active backgrounds are softer, matching the inbox list item's effective hover colors. Adds opaque dark-surface shades `gray[700]`/`gray[800]` to `CourierColors`.
+
+- Updated dependencies [[`1a895bb`](https://github.com/trycourier/courier-web/commit/1a895bbb472b9b71ab26f69c1d36e3d2d0c44e3f)]:
+  - @trycourier/courier-ui-core@2.3.0
+
 ## 2.1.8
 
 ### Patch Changes
