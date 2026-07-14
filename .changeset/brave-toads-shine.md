@@ -1,5 +1,6 @@
 ---
+"@trycourier/courier-ui-core": minor
 "@trycourier/courier-ui-toast": patch
 ---
 
-Give toast items a visible subtle border in dark mode. The default dark theme border color was the same as the toast background, so no border was rendered; it now uses the same subtle gray as other Courier components.
+Toast items now render a visible subtle border in dark mode (the previous default matched the background color, so no border appeared), and the dark-mode hover/active backgrounds are softer, matching the inbox list item's effective hover colors. Adds opaque dark-surface shades `gray[700]`/`gray[800]` to `CourierColors`.

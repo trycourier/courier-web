@@ -22,6 +22,11 @@ export const CourierColors = {
     400: '#3A3A3A',
     500: '#E5E5E5',
     600: '#737373',
+    // Opaque equivalents of white[500_20]/white[500_10] over black[500], for
+    // hover/active states on floating surfaces where a translucent overlay
+    // would let page content bleed through (e.g. toasts).
+    700: '#454545',
+    800: '#2E2E2E',
   },
   white: {
     500: '#FFFFFF',

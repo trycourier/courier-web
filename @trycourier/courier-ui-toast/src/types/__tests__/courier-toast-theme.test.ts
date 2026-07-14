@@ -10,6 +10,11 @@ describe("default toast themes", () => {
     expect(defaultDarkTheme.item?.border).toBe(`1px solid ${CourierColors.gray[400]}`);
   });
 
+  it("dark theme hover and active states are subtle opaque grays", () => {
+    expect(defaultDarkTheme.item?.hoverBackgroundColor).toBe(CourierColors.gray[800]);
+    expect(defaultDarkTheme.item?.activeBackgroundColor).toBe(CourierColors.gray[700]);
+  });
+
   it("borders are visible against the toast item background", () => {
     for (const theme of [defaultLightTheme, defaultDarkTheme]) {
       expect(theme.item?.border).not.toContain(theme.item?.backgroundColor as string);
