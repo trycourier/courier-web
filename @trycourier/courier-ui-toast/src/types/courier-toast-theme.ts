@@ -87,7 +87,7 @@ export const defaultDarkTheme: CourierToastTheme = {
     hoverBackgroundColor: CourierColors.gray[400],
     activeBackgroundColor: CourierColors.gray[600],
     shadow: `0px 4px 8px -2px ${CourierColors.gray[400]}`,
-    border: `1px solid ${CourierColors.black[500]}`,
+    border: `1px solid ${CourierColors.gray[400]}`,
     borderRadius: '8px',
     title: {
       size: '11pt',
