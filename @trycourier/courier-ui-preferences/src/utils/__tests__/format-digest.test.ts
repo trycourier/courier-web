@@ -56,7 +56,7 @@ describe("format-digest", () => {
             on: { friday: true, monday: true, wednesday: true },
           },
         });
-        expect(formatDigest(schedule)).toBe("Every 1 week(s) on Monday, Wednesday, Friday");
+        expect(formatDigest(schedule)).toBe("Every week on Monday, Wednesday, Friday");
       });
 
       it("uses a string day-of-week when `on` is a string", () => {
@@ -65,7 +65,7 @@ describe("format-digest", () => {
           recurrence: "custom",
           repeat: { frequency: 2, interval: "week", on: "Tuesday" },
         });
-        expect(formatDigest(schedule)).toBe("Every 2 week(s) on Tuesday");
+        expect(formatDigest(schedule)).toBe("Every 2 weeks on Tuesday");
       });
 
       it("describes a monthly day-of-month", () => {
@@ -74,7 +74,7 @@ describe("format-digest", () => {
           recurrence: "custom",
           repeat: { frequency: 1, interval: "month", on: "1st" },
         });
-        expect(formatDigest(schedule)).toBe("Every 1 month(s) on 1st of the month");
+        expect(formatDigest(schedule)).toBe("Every month on 1st of the month");
       });
 
       it("appends a numeric occurrence count from `end`", () => {
@@ -84,7 +84,7 @@ describe("format-digest", () => {
           end: 5,
           repeat: { frequency: 1, interval: "week", on: "Monday" },
         });
-        expect(formatDigest(schedule)).toBe("Every 1 week(s) on Monday (5 occurrences)");
+        expect(formatDigest(schedule)).toBe("Every week on Monday (5 occurrences)");
       });
 
       it("appends an end date from a string `end`", () => {
@@ -95,7 +95,7 @@ describe("format-digest", () => {
           repeat: { frequency: 1, interval: "day" },
         });
         const result = formatDigest(schedule);
-        expect(result).toContain("Every 1 day(s)");
+        expect(result).toContain("Every day");
         expect(result).toContain("(until ");
       });
 

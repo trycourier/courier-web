@@ -64,7 +64,11 @@ function getWeekdaysString(repeatOn: Record<string, boolean>): string {
 function getScheduleString(schedule: DigestSchedule): string {
   if (schedule.recurrence === "custom" && schedule.repeat) {
     const { frequency, interval, on } = schedule.repeat;
-    let str = `Every ${frequency} ${interval}(s)`;
+    // "Every week", "Every 2 weeks" — the count only reads well when > 1.
+    let str =
+      frequency === 1
+        ? `Every ${interval}`
+        : `Every ${frequency} ${interval}s`;
 
     if (interval === "week" && on && typeof on === "object") {
       str += ` on ${getWeekdaysString(on as Record<string, boolean>)}`;
