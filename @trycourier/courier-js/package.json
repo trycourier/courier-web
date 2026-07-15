@@ -12,7 +12,6 @@
     "watch": "vite build --watch",
     "preview": "vite preview",
     "test": "jest",
-    "prepare": "npm run build",
     "generate-api-doc": "api-extractor run"
   },
   "keywords": [

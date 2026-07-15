@@ -94,7 +94,7 @@ yarn changeset version
 
 - Show `git status` / `git diff --stat`.
 - If the public API surface changed, refresh the API reports (see the `api-reports` skill / `yarn generate-api-docs`).
-- The release itself runs in CI when the bump lands on `main` (`yarn release` builds and `changeset publish`es to npm).
+- The release itself runs in CI when the bump lands on `main` (`yarn release` builds and `changeset publish`es to npm). If that run fails or packages don't appear on npm, see the [npm-release-pipeline](../npm-release-pipeline/SKILL.md) skill.
 - Do **not** commit, push, or publish unless the user asks.
 
 ---
