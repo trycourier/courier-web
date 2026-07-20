@@ -1,13 +1,26 @@
-/** Returns true when the given hex color looks dark (relative luminance < 0.5). */
+/**
+ * Returns true when the given hex color looks dark (sRGB relative luminance < 0.5).
+ *
+ * Uses true (gamma-decoded) relative luminance, not the quick YIQ formula: YIQ
+ * misclassifies saturated mid-tone brand colors — e.g. emerald #10B981 scores
+ * 0.5023 on YIQ ("light" by a rounding error, giving a black checkmark on a
+ * green fill) but 0.36 in relative luminance ("dark", white checkmark), which
+ * matches how such fills are perceived and the platform convention of white
+ * glyphs on saturated accent colors.
+ */
 export function isDarkColor(color: string): boolean {
   const match = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim());
   if (!match) return true;
   let v = match[1];
   if (v.length === 3) v = v.split('').map(c => c + c).join('');
-  const r = parseInt(v.substring(0, 2), 16);
-  const g = parseInt(v.substring(2, 4), 16);
-  const b = parseInt(v.substring(4, 6), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
+  const linear = (channel: number): number => {
+    const s = channel / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const r = linear(parseInt(v.substring(0, 2), 16));
+  const g = linear(parseInt(v.substring(2, 4), 16));
+  const b = linear(parseInt(v.substring(4, 6), 16));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5;
 }
 
 export const CourierColors = {

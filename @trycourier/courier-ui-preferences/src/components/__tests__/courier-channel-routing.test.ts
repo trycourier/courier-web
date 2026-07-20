@@ -59,6 +59,22 @@ describe("courier-channel-routing", () => {
     expect(push.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("draws a white checkmark on a saturated mid-tone brand fill", () => {
+    // Regression: #10B981 (the hosted page's emerald) scored 0.5023 on the old
+    // YIQ luminance check — "light" by a rounding error — so the checked box
+    // got a dark checkmark on a green fill. With sRGB relative luminance the
+    // fill classifies as dark and the mark must be white.
+    mountRouting((r) => {
+      r.routingOptions = ["email"];
+      r.selectedChannels = ["email"];
+      r.primaryColor = "#10B981";
+    });
+
+    const mark = document.querySelector("courier-checkbox .courier-checkbox-mark path");
+    expect(mark).not.toBeNull();
+    expect(mark?.getAttribute("fill")).toBe("#FFFFFF");
+  });
+
   it("adds a channel on click and fires onRoutingChange", () => {
     const handler = jest.fn();
     mountRouting((r) => {
