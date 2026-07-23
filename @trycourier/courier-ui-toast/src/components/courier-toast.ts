@@ -357,9 +357,9 @@ export class CourierToast extends CourierBaseElement {
       item.onToastItemActionClick(this._onItemActionClick);
     }
 
-    if (this._autoDismiss) {
-      setTimeout(item.dismiss.bind(item), this._autoDismissTimeoutMs);
-    }
+    // The auto-dismiss countdown (and its hover-to-pause behavior) is owned by
+    // the CourierToastItem itself, started when it mounts — see
+    // CourierToastItem.onComponentMounted.
 
     return item;
   }
