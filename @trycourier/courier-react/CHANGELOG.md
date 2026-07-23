@@ -1,5 +1,13 @@
 # @trycourier/courier-react
 
+## 9.2.6
+
+### Patch Changes
+
+- Updated dependencies [[`70817ee`](https://github.com/trycourier/courier-web/commit/70817ee5f88ebbec3268d25e593d6214cde59fc5)]:
+  - @trycourier/courier-ui-toast@2.1.10
+  - @trycourier/courier-react-components@2.2.6
+
 ## 9.2.5
 
 ### Patch Changes

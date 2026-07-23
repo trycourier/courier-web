@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-toast
 
+## 2.1.10
+
+### Patch Changes
+
+- [#220](https://github.com/trycourier/courier-web/pull/220) [`70817ee`](https://github.com/trycourier/courier-web/commit/70817ee5f88ebbec3268d25e593d6214cde59fc5) Thanks [@mikemilla](https://github.com/mikemilla)! - Pause a toast's auto-dismiss countdown while the cursor is over it, and resume the countdown from where it left off when the cursor leaves. The visual progress bar pauses and resumes in sync.
+
 ## 2.1.9
 
 ### Patch Changes
