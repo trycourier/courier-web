@@ -205,6 +205,49 @@ describe("courier-toast", () => {
     });
   });
 
+  describe("auto-dismiss hover pause", () => {
+    it("should pause the countdown while the cursor is over the toast", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      // Hover the toast, then fast-forward well past the auto-dismiss timeout.
+      item.dispatchEvent(new MouseEvent("mouseenter"));
+      jest.advanceTimersByTime(10_000);
+
+      // Still present — the countdown is paused while hovered.
+      expect(document.body.contains(item)).toBe(true);
+
+      jest.useRealTimers();
+    });
+
+    it("should resume the countdown when the cursor leaves", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      // Pause while hovered...
+      item.dispatchEvent(new MouseEvent("mouseenter"));
+      jest.advanceTimersByTime(10_000);
+      expect(document.body.contains(item)).toBe(true);
+
+      // ...then leave: the countdown resumes and dismisses after the remaining
+      // time (plus the fade-out animation).
+      item.dispatchEvent(new MouseEvent("mouseleave"));
+      jest.advanceTimersByTime(5000 + 300);
+
+      expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
+  });
+
   describe("setLightTheme", () => {
     it("should set the light theme rendered if mode=light", () => {
       const lightTheme: CourierToastTheme = {

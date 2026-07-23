@@ -25,6 +25,16 @@ export class CourierToastItem extends CourierBaseElement {
   /** The timeout before the toast item is auto-dismissed, applicable if _autoDismiss is true. */
   private readonly _autoDismissTimeoutMs: number;
 
+  // Auto-dismiss countdown state. The countdown is paused while the cursor is
+  // over the toast and resumed (from where it left off) when the cursor leaves,
+  // so a user reading the toast is never rushed. The JS timer and the CSS
+  // progress bar are paused/resumed together to stay in sync.
+  private _autoDismissTimerId: ReturnType<typeof setTimeout> | null = null;
+  private _autoDismissRemainingMs: number;
+  private _autoDismissStartedAt = 0;
+  private _autoDismissPaused = false;
+  private _autoDismissBar: HTMLElement | null = null;
+
   // Callbacks
   private _onItemDismissedCallback: ((props: { message: InboxMessage }) => void) | null = null;
   private _onToastItemClickCallback: ((props: CourierToastItemClickEvent) => void) | null = null;
@@ -41,6 +51,7 @@ export class CourierToastItem extends CourierBaseElement {
     this._message = props.message;
     this._autoDismiss = props.autoDismiss;
     this._autoDismissTimeoutMs = props.autoDismissTimeoutMs;
+    this._autoDismissRemainingMs = props.autoDismissTimeoutMs;
 
     this._themeManager = props.themeManager;
     this._themeSubscription = this._themeManager.subscribe((_: CourierToastTheme) => {
@@ -101,6 +112,8 @@ export class CourierToastItem extends CourierBaseElement {
    * @param timeoutMs - the animation duration to fade out the toast item
    */
   public dismiss(timeoutMs: number = CourierToastItem.dismissAnimationTimeoutMs) {
+    // Stop the countdown so it can't fire again after we've started dismissing.
+    this.clearAutoDismissTimer();
     this.classList.add('dismissing');
 
     setTimeout(() => {
@@ -112,14 +125,70 @@ export class CourierToastItem extends CourierBaseElement {
     }, timeoutMs);
   }
 
+  /** Clears the pending auto-dismiss timer, if any. */
+  private clearAutoDismissTimer(): void {
+    if (this._autoDismissTimerId !== null) {
+      clearTimeout(this._autoDismissTimerId);
+      this._autoDismissTimerId = null;
+    }
+  }
+
+  /** (Re)start the auto-dismiss timer for whatever time is left on the countdown. */
+  private scheduleAutoDismiss(): void {
+    this.clearAutoDismissTimer();
+    this._autoDismissStartedAt = Date.now();
+    this._autoDismissTimerId = setTimeout(() => this.dismiss(), this._autoDismissRemainingMs);
+  }
+
+  /**
+   * Pause the countdown while the cursor is over the toast: cancel the timer,
+   * bank the time already elapsed, and freeze the progress bar.
+   */
+  private pauseAutoDismiss = (): void => {
+    if (!this._autoDismiss || this._autoDismissPaused) {
+      return;
+    }
+    this._autoDismissPaused = true;
+    this.clearAutoDismissTimer();
+    const elapsed = Date.now() - this._autoDismissStartedAt;
+    this._autoDismissRemainingMs = Math.max(0, this._autoDismissRemainingMs - elapsed);
+    if (this._autoDismissBar) {
+      this._autoDismissBar.style.animationPlayState = 'paused';
+    }
+  };
+
+  /** Resume the countdown from where it was paused once the cursor leaves. */
+  private resumeAutoDismiss = (): void => {
+    if (!this._autoDismiss || !this._autoDismissPaused) {
+      return;
+    }
+    this._autoDismissPaused = false;
+    if (this._autoDismissBar) {
+      this._autoDismissBar.style.animationPlayState = 'running';
+    }
+    this.scheduleAutoDismiss();
+  };
+
   /** @override */
   protected onComponentMounted(): void {
     this.render();
+
+    if (this._autoDismiss) {
+      // Pause on hover, resume when the cursor leaves. mouseenter/mouseleave
+      // (not mouseover/out) fire once for the toast as a whole, ignoring moves
+      // between its children.
+      this.addEventListener('mouseenter', this.pauseAutoDismiss);
+      this.addEventListener('mouseleave', this.resumeAutoDismiss);
+      this.scheduleAutoDismiss();
+    }
   }
 
   /** @override */
   protected onComponentUnmounted(): void {
     this._themeSubscription.unsubscribe();
+    this.clearAutoDismissTimer();
+    this.removeEventListener('mouseenter', this.pauseAutoDismiss);
+    this.removeEventListener('mouseleave', this.resumeAutoDismiss);
   }
 
   get theme(): CourierToastTheme {
@@ -165,7 +234,12 @@ export class CourierToastItem extends CourierBaseElement {
     if (this._autoDismiss) {
       const autoDismiss = document.createElement('div');
       autoDismiss.classList.add('auto-dismiss');
+      // Keep the bar frozen if we re-render (e.g. theme change) while paused.
+      if (this._autoDismissPaused) {
+        autoDismiss.style.animationPlayState = 'paused';
+      }
       overflowHiddenContainer.append(autoDismiss);
+      this._autoDismissBar = autoDismiss;
     }
 
     // Content
