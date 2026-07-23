@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-vue",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The Vue components for the Courier web UI",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -35,7 +35,7 @@
     "@trycourier/courier-js": "3.5.0",
     "@trycourier/courier-ui-core": "2.3.0",
     "@trycourier/courier-ui-inbox": "2.4.10",
-    "@trycourier/courier-ui-toast": "2.1.9",
+    "@trycourier/courier-ui-toast": "2.1.10",
     "@trycourier/courier-ui-preferences": "1.2.1"
   },
   "peerDependencies": {
