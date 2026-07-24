@@ -27,6 +27,12 @@ export type CourierInboxDatasetFilter = {
 
   /* Whether to limit messages to those that are read or unread. Undefined applies no state filter. */
   status?: 'read' | 'unread';
+
+  /**
+   * Lower bound on message creation time: only messages created at or after this moment are included.
+   * Pass an ISO 8601 datetime string (e.g. `new Date().toISOString()`). Undefined applies no lower bound.
+   */
+  from?: string;
 }
 
 /**
