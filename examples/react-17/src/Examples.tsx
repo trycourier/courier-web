@@ -129,6 +129,9 @@ export default function Examples() {
           <ExampleCard to="/examples/toast-custom" title="Toast — Custom">
             Toast notifications rendered with a fully custom React component.
           </ExampleCard>
+          <ExampleCard to="/examples/toast-auto-dismiss" title="Toast — Auto-dismiss">
+            Timed toasts with a countdown bar that pauses while hovered.
+          </ExampleCard>
         </div>
 
         {/* Preferences examples */}

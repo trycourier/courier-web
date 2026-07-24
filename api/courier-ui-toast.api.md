@@ -141,6 +141,8 @@ export class CourierToastItem extends CourierBaseElement {
     }) => void): void;
     onToastItemActionClick(handler: (props: CourierToastItemActionClickEvent) => void): void;
     onToastItemClick(handler: (props: CourierToastItemClickEvent) => void): void;
+    pauseAutoDismiss(): void;
+    resumeAutoDismiss(): void;
     setToastItemContent(factory?: (props: CourierToastItemFactoryProps) => HTMLElement): void;
     // (undocumented)
     get theme(): CourierToastTheme;

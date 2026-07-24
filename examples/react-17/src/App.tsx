@@ -17,6 +17,7 @@ import MarkdownListItemInbox from './MarkdownListItem';
 import ToastBasic from './ToastBasic';
 import ToastThemed from './ToastThemed';
 import ToastCustom from './ToastCustom';
+import ToastAutoDismiss from './ToastAutoDismiss';
 import Hooks from './Hooks';
 import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
@@ -76,6 +77,7 @@ function App() {
         <Route path="/examples/toast-basic" element={<ToastBasic />} />
         <Route path="/examples/toast-themed" element={<ToastThemed />} />
         <Route path="/examples/toast-custom" element={<ToastCustom />} />
+        <Route path="/examples/toast-auto-dismiss" element={<ToastAutoDismiss />} />
         <Route path="/examples/toast" element={<ToastCustom />} />
         <Route path="/examples/hooks" element={<Hooks />} />
       </Routes>

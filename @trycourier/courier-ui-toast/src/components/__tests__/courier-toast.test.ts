@@ -206,6 +206,9 @@ describe("courier-toast", () => {
   });
 
   describe("auto-dismiss hover pause", () => {
+    const hover = () => toast.dispatchEvent(new MouseEvent("mouseenter"));
+    const unhover = () => toast.dispatchEvent(new MouseEvent("mouseleave"));
+
     it("should pause the countdown while the cursor is over the toast", () => {
       jest.useFakeTimers();
 
@@ -215,7 +218,7 @@ describe("courier-toast", () => {
       const item = document.querySelector("courier-toast-item") as CourierToastItem;
 
       // Hover the toast, then fast-forward well past the auto-dismiss timeout.
-      item.dispatchEvent(new MouseEvent("mouseenter"));
+      hover();
       jest.advanceTimersByTime(10_000);
 
       // Still present — the countdown is paused while hovered.
@@ -233,15 +236,126 @@ describe("courier-toast", () => {
       const item = document.querySelector("courier-toast-item") as CourierToastItem;
 
       // Pause while hovered...
-      item.dispatchEvent(new MouseEvent("mouseenter"));
+      hover();
       jest.advanceTimersByTime(10_000);
       expect(document.body.contains(item)).toBe(true);
 
       // ...then leave: the countdown resumes and dismisses after the remaining
       // time (plus the fade-out animation).
-      item.dispatchEvent(new MouseEvent("mouseleave"));
+      unhover();
       jest.advanceTimersByTime(5000 + 300);
 
+      expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should resume the countdown from where it left off, not restart it", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      // 4s of the 5s countdown elapses, then the cursor arrives and parks for a while.
+      jest.advanceTimersByTime(4000);
+      hover();
+      jest.advanceTimersByTime(60_000);
+      expect(document.body.contains(item)).toBe(true);
+
+      // On leaving, only the banked 1s is left — not another full 5s.
+      unhover();
+      jest.advanceTimersByTime(1000 + 300);
+      expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should pause every item in the stack, not just the top one", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "1" });
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "2" });
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "3" });
+
+      // The whole stack is one hover surface: reading the top toast shouldn't
+      // silently burn down the countdowns of the ones queued behind it.
+      hover();
+      jest.advanceTimersByTime(30_000);
+
+      expect(document.querySelectorAll("courier-toast-item").length).toBe(3);
+
+      jest.useRealTimers();
+    });
+
+    it("should keep a hovered toast paused when a new toast arrives on top of it", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "1" });
+      const firstItem = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      hover();
+      jest.advanceTimersByTime(1000);
+
+      // The new toast lands under the cursor, which pushes the first item down the
+      // stack. The cursor never left the toast, so neither countdown may resume.
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "2" });
+      jest.advanceTimersByTime(30_000);
+
+      expect(document.body.contains(firstItem)).toBe(true);
+      expect(document.querySelectorAll("courier-toast-item").length).toBe(2);
+
+      jest.useRealTimers();
+    });
+
+    it("should pause a toast that arrives while the cursor is already over the stack", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+
+      // The cursor is parked where the toast is about to appear.
+      hover();
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      jest.advanceTimersByTime(30_000);
+      expect(document.body.contains(item)).toBe(true);
+
+      // The full countdown is still owed once the cursor leaves.
+      unhover();
+      jest.advanceTimersByTime(4999);
+      expect(document.body.contains(item)).toBe(true);
+      jest.advanceTimersByTime(1 + 300);
+      expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should pause the countdown of a custom toast item", () => {
+      jest.useFakeTimers();
+
+      toast.setToastItem(() => {
+        const el = document.createElement("div");
+        el.id = "custom-item";
+        return el;
+      });
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage(INBOX_MESSAGE);
+      const item = document.getElementById("custom-item") as HTMLElement;
+
+      hover();
+      jest.advanceTimersByTime(30_000);
+      expect(document.body.contains(item)).toBe(true);
+
+      unhover();
+      jest.advanceTimersByTime(5000);
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();

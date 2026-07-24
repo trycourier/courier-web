@@ -107,6 +107,7 @@ export class ExamplesComponent {
     { to: '/examples/toast-basic', title: 'Toast — Basic', description: 'Toast notifications using the default Courier Toast theme.' },
     { to: '/examples/toast-themed', title: 'Toast — Themed', description: 'Toast notifications using a Poppins-based custom theme.' },
     { to: '/examples/toast-custom', title: 'Toast — Custom', description: 'Toast notifications rendered with a fully custom Angular template.' },
+    { to: '/examples/toast-auto-dismiss', title: 'Toast — Auto-dismiss', description: 'Timed toasts with a countdown bar that pauses while hovered.' },
   ];
 
   readonly preferencesExamples: ExampleCard[] = [
