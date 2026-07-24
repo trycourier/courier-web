@@ -1,5 +1,12 @@
 # @trycourier/courier-angular
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`ad996b3`](https://github.com/trycourier/courier-web/commit/ad996b35e1498f61565c864bc5be407db48bb90e)]:
+  - @trycourier/courier-ui-toast@2.1.11
+
 ## 1.0.3
 
 ### Patch Changes
