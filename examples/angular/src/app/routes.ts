@@ -22,6 +22,7 @@ import { MarkdownListItemComponent } from './pages/markdown-list-item.component'
 import { ToastBasicComponent } from './pages/toast-basic.component';
 import { ToastThemedComponent } from './pages/toast-themed.component';
 import { ToastCustomComponent } from './pages/toast-custom.component';
+import { ToastAutoDismissComponent } from './pages/toast-auto-dismiss.component';
 import { HooksComponent } from './pages/hooks.component';
 import { PreferencesDefaultComponent } from './pages/preferences-default.component';
 import { PreferencesStyledComponent } from './pages/preferences-styled.component';
@@ -70,6 +71,7 @@ export const routes: Routes = [
   { path: 'examples/toast-basic', component: ToastBasicComponent },
   { path: 'examples/toast-themed', component: ToastThemedComponent },
   { path: 'examples/toast-custom', component: ToastCustomComponent },
+  { path: 'examples/toast-auto-dismiss', component: ToastAutoDismissComponent },
   { path: 'examples/toast', component: ToastCustomComponent },
   { path: 'examples/hooks', component: HooksComponent },
 

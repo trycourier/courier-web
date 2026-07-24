@@ -19,6 +19,7 @@ import MarkdownListItem from './MarkdownListItem.vue';
 import ToastBasic from './ToastBasic.vue';
 import ToastThemed from './ToastThemed.vue';
 import ToastCustom from './ToastCustom.vue';
+import ToastAutoDismiss from './ToastAutoDismiss.vue';
 import Hooks from './Hooks.vue';
 import InboxCustomFeed from './InboxCustomFeed.vue';
 import InboxCustomTabs from './InboxCustomTabs.vue';
@@ -72,6 +73,7 @@ export const router = createRouter({
     { path: '/examples/toast-basic', component: ToastBasic },
     { path: '/examples/toast-themed', component: ToastThemed },
     { path: '/examples/toast-custom', component: ToastCustom },
+    { path: '/examples/toast-auto-dismiss', component: ToastAutoDismiss },
     { path: '/examples/toast', component: ToastCustom },
     { path: '/examples/hooks', component: Hooks },
 

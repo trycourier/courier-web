@@ -7,6 +7,7 @@ import { CourierToastItemActionClickEvent, CourierToastItemClickEvent, CourierTo
 import { CourierToastDismissButtonOption } from "../types/toast";
 import { CourierToastDatastoreListener } from "../datastore/toast-datastore-listener";
 import { CourierToastDatastore } from "../datastore/toast-datastore";
+import { PausableTimeout } from "../utils/pausable-timeout";
 
 /** Default set of CSS properties used to layout CourierToast. */
 type CourierToastLayoutProps = {
@@ -48,6 +49,22 @@ export class CourierToast extends CourierBaseElement {
   private _toastStyle?: HTMLStyleElement;
   private _authListener?: AuthenticationListener;
   private _datastoreListener: CourierToastDatastoreListener;
+
+  /**
+   * Whether the cursor is currently over the toast stack.
+   *
+   * Hover is tracked here — on the container — rather than per item, because
+   * the stacked items are one hover surface: moving between them (or a new
+   * toast arriving under the cursor) must not resume anyone's countdown.
+   */
+  private _isHovered = false;
+
+  /**
+   * Auto-dismiss countdowns for custom toast items set via
+   * {@link CourierToast.setToastItem}. {@link CourierToastItem}s own their own
+   * countdown, so they're not tracked here.
+   */
+  private _customItemAutoDismissTimeouts = new WeakMap<HTMLElement, PausableTimeout>();
 
   // Consumer-provided options
   private _autoDismiss: boolean = false;
@@ -221,6 +238,7 @@ export class CourierToast extends CourierBaseElement {
       if (node instanceof CourierToastItem) {
         node.dismiss();
       } else {
+        this._customItemAutoDismissTimeouts.get(node as HTMLElement)?.cancel();
         node.remove();
       }
     });
@@ -232,6 +250,13 @@ export class CourierToast extends CourierBaseElement {
   protected onComponentMounted(): void {
     this._toastStyle = injectGlobalStyle(CourierToast.id, this.getStyles(this.theme));
 
+    // Pause every countdown in the stack while the cursor is over the toast, so
+    // a user reading it is never rushed. mouseenter/mouseleave (not
+    // mouseover/mouseout) fire once for the container's whole subtree, so moving
+    // between toast items and their children doesn't resume the countdown.
+    this.addEventListener('mouseenter', this.onMouseEnter);
+    this.addEventListener('mouseleave', this.onMouseLeave);
+
     CourierToastDatastore.shared.addDatastoreListener(this._datastoreListener);
     Courier.shared.addAuthenticationListener(this.authChangedCallback.bind(this));
     CourierToastDatastore.shared.listenForMessages();
@@ -241,11 +266,40 @@ export class CourierToast extends CourierBaseElement {
    * @override
    */
   protected onComponentUnmounted(): void {
+    this.removeEventListener('mouseenter', this.onMouseEnter);
+    this.removeEventListener('mouseleave', this.onMouseLeave);
+
     this._datastoreListener.remove();
     this._authListener?.remove();
     this._toastStyle?.remove();
     this._themeManager.cleanup();
     this._themeSubscription.unsubscribe();
+  }
+
+  private onMouseEnter = (): void => {
+    this._isHovered = true;
+    this.setAutoDismissPaused(true);
+  };
+
+  private onMouseLeave = (): void => {
+    this._isHovered = false;
+    this.setAutoDismissPaused(false);
+  };
+
+  /** Pause or resume the auto-dismiss countdown of every item in the stack. */
+  private setAutoDismissPaused(paused: boolean): void {
+    Array.from(this.children).forEach(child => this.setItemAutoDismissPaused(child as HTMLElement, paused));
+  }
+
+  /** Pause or resume a single item's auto-dismiss countdown. */
+  private setItemAutoDismissPaused(item: HTMLElement, paused: boolean): void {
+    if (item instanceof CourierToastItem) {
+      paused ? item.pauseAutoDismiss() : item.resumeAutoDismiss();
+      return;
+    }
+
+    const customItemTimeout = this._customItemAutoDismissTimeouts.get(item);
+    paused ? customItemTimeout?.pause() : customItemTimeout?.resume();
   }
 
   /**
@@ -309,6 +363,7 @@ export class CourierToast extends CourierBaseElement {
 
   private removeAllItems(): void {
     while (this.firstChild) {
+      this._customItemAutoDismissTimeouts.get(this.firstChild as HTMLElement)?.cancel();
       this.removeChild(this.firstChild);
     }
   }
@@ -321,6 +376,12 @@ export class CourierToast extends CourierBaseElement {
     toastItem.dataset.courierMessageId = message.messageId;
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
+
+    // A toast that arrives while the cursor is already over the stack starts out
+    // paused — it just landed under the cursor, so it hasn't been read yet.
+    if (this._isHovered) {
+      this.setItemAutoDismissPaused(toastItem, /* paused= */ true);
+    }
 
     return toastItem;
   }
@@ -376,9 +437,11 @@ export class CourierToast extends CourierBaseElement {
     });
 
     if (this._autoDismiss) {
-      setTimeout(() => {
-        this.removeChild(customItem);
-      }, this._autoDismissTimeoutMs);
+      // Custom items have no countdown of their own, so the container owns it —
+      // including pausing it while the cursor is over the toast.
+      const autoDismissTimeout = new PausableTimeout(() => customItem.remove(), this._autoDismissTimeoutMs);
+      this._customItemAutoDismissTimeouts.set(customItem, autoDismissTimeout);
+      autoDismissTimeout.start();
     }
 
     customItem.addEventListener('click', () => {
