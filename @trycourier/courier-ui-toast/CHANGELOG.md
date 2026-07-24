@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-toast
 
+## 2.1.11
+
+### Patch Changes
+
+- [#223](https://github.com/trycourier/courier-web/pull/223) [`ad996b3`](https://github.com/trycourier/courier-web/commit/ad996b35e1498f61565c864bc5be407db48bb90e) Thanks [@mikemilla](https://github.com/mikemilla)! - Toast hover-to-pause now covers the whole stack: a new toast arriving on top of a hovered one no longer resumes its countdown, toasts queued behind the top one stay frozen while it's being read, and custom toast items pause too.
+
 ## 2.1.10
 
 ### Patch Changes
