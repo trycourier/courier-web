@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-toast
 
+## 2.1.12
+
+### Patch Changes
+
+- [#225](https://github.com/trycourier/courier-web/pull/225) [`b530bee`](https://github.com/trycourier/courier-web/commit/b530bee8b7820ee3313c29e20f8238e3dbba458b) Thanks [@mikemilla](https://github.com/mikemilla)! - Auto-dismiss now counts down only the toast on top of the stack. A burst of toasts used to run every countdown in parallel and expire together, so only the newest one was ever readable — toasts behind the top one now freeze mid-countdown, progress bar included, and pick up where they left off when they surface, draining the stack one at a time. Dismissed toasts also fade out with a slight shrink instead of blinking out in place.
+
 ## 2.1.11
 
 ### Patch Changes
