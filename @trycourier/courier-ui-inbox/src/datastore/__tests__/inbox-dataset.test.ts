@@ -130,6 +130,28 @@ describe("CourierInboxDataset", () => {
       expect(dataset.toInboxDataset().messages.length).toBe(0);
     });
 
+    it("should not add message created before the dataset's `from` date", () => {
+      const dataset = new CourierInboxDataset("recent", { from: "2021-06-01T00:00:00Z" });
+
+      // UNREAD_MESSAGE is created 2021-01-01, before the `from` bound
+      const result = dataset.addMessage(UNREAD_MESSAGE);
+
+      expect(result).toBe(false);
+      expect(dataset.toInboxDataset().messages.length).toBe(0);
+      expect(dataset.totalUnreadCount).toBe(0);
+    });
+
+    it("should add message created at or after the dataset's `from` date", () => {
+      const dataset = new CourierInboxDataset("recent", { from: "2021-01-01T00:00:00Z" });
+
+      const atBoundary = { ...UNREAD_MESSAGE, messageId: "at", created: "2021-01-01T00:00:00Z" };
+      const after = { ...UNREAD_MESSAGE, messageId: "after", created: "2021-02-01T00:00:00Z" };
+
+      expect(dataset.addMessage(atBoundary)).toBe(true);
+      expect(dataset.addMessage(after)).toBe(true);
+      expect(dataset.toInboxDataset().messages.length).toBe(2);
+    });
+
     it("should insert message at default index (0) when insertIndex not specified", () => {
       const dataset = new CourierInboxDataset("test", {});
 
@@ -466,6 +488,22 @@ describe("CourierInboxDataset", () => {
 
       // Should not go negative
       expect(dataset.totalUnreadCount).toBe(0);
+    });
+  });
+
+  describe("getFilter", () => {
+    it("should forward the `from` date to the courier-js query filter", () => {
+      const dataset = new CourierInboxDataset("recent", { from: "2021-06-01T00:00:00Z" });
+
+      expect(dataset.getFilter()).toEqual(
+        expect.objectContaining({ from: "2021-06-01T00:00:00Z" })
+      );
+    });
+
+    it("should leave `from` undefined when no `from` date is set", () => {
+      const dataset = new CourierInboxDataset("inbox", {});
+
+      expect(dataset.getFilter().from).toBeUndefined();
     });
   });
 });

@@ -57,7 +57,8 @@ export class CourierInboxDataset {
     this._filter = {
       tags: filter.tags ? [...(filter.tags)] : undefined,
       archived: filter.archived || false,
-      status: filter.status
+      status: filter.status,
+      from: filter.from
     };
   }
 
@@ -92,6 +93,7 @@ export class CourierInboxDataset {
       tags: this._filter.tags,
       archived: this._filter.archived,
       status: this._filter.status,
+      from: this._filter.from,
     };
   }
 
@@ -406,6 +408,14 @@ export class CourierInboxDataset {
     // Is the message read state compatible with the dataset?
     if (message.read && this._filter.status === 'unread' ||
       !message.read && this._filter.status === 'read') {
+      return false;
+    }
+
+    // Is the message recent enough for the dataset's lower time bound?
+    // Mirrors the server-side `from` filter so real-time and optimistic
+    // messages created before `from` don't leak into the dataset locally.
+    if (this._filter.from && message.created &&
+      new Date(message.created).getTime() < new Date(this._filter.from).getTime()) {
       return false;
     }
 

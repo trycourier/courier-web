@@ -174,6 +174,7 @@ export type CourierInboxDatasetFilter = {
     tags?: string[];
     archived?: boolean;
     status?: 'read' | 'unread';
+    from?: string;
 };
 
 // @public
