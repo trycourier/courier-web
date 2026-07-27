@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-inbox
 
+## 2.5.0
+
+### Minor Changes
+
+- [#219](https://github.com/trycourier/courier-web/pull/219) [`0efd6f1`](https://github.com/trycourier/courier-web/commit/0efd6f134a768762c1496bd6baa9ec1d76172279) Thanks [@mikemilla](https://github.com/mikemilla)! - Inbox: support a `from` date filter on feed/tab filters. `CourierInboxDatasetFilter` now accepts an optional ISO 8601 `from` string, which is forwarded to the underlying `@trycourier/courier-js` query (and applied to real-time/optimistic messages) so messages created before that date are excluded from the inbox. Previously the UI component dropped `from`, so a configured "From Date" had no effect.
+
 ## 2.4.10
 
 ### Patch Changes
