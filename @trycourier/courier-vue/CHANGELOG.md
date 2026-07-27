@@ -1,5 +1,12 @@
 # @trycourier/courier-vue
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`b530bee`](https://github.com/trycourier/courier-web/commit/b530bee8b7820ee3313c29e20f8238e3dbba458b)]:
+  - @trycourier/courier-ui-toast@2.1.12
+
 ## 1.0.4
 
 ### Patch Changes
