@@ -8,6 +8,7 @@ import { CourierToastDismissButtonOption } from "../types/toast";
 import { CourierToastDatastoreListener } from "../datastore/toast-datastore-listener";
 import { CourierToastDatastore } from "../datastore/toast-datastore";
 import { PausableTimeout } from "../utils/pausable-timeout";
+import { TOAST_DISMISS_ANIMATION_MS } from "../utils/animation";
 
 /** Default set of CSS properties used to layout CourierToast. */
 type CourierToastLayoutProps = {
@@ -240,6 +241,11 @@ export class CourierToast extends CourierBaseElement {
       } else {
         this._customItemAutoDismissTimeouts.get(node as HTMLElement)?.cancel();
         node.remove();
+
+        // Custom items have no dismissed callback to hook, so resync here.
+        // CourierToastItems resync once they've finished animating out — see
+        // the onItemDismissed handler in createDefaultToastItem.
+        this.refreshAutoDismissCountdowns();
       }
     });
   }
@@ -278,17 +284,34 @@ export class CourierToast extends CourierBaseElement {
 
   private onMouseEnter = (): void => {
     this._isHovered = true;
-    this.setAutoDismissPaused(true);
+    this.refreshAutoDismissCountdowns();
   };
 
   private onMouseLeave = (): void => {
     this._isHovered = false;
-    this.setAutoDismissPaused(false);
+    this.refreshAutoDismissCountdowns();
   };
 
-  /** Pause or resume the auto-dismiss countdown of every item in the stack. */
-  private setAutoDismissPaused(paused: boolean): void {
-    Array.from(this.children).forEach(child => this.setItemAutoDismissPaused(child as HTMLElement, paused));
+  /**
+   * Bring every item's countdown in line with the current stack: only the top
+   * item counts down, and nothing counts down while the cursor is over the stack.
+   *
+   * Items behind the top one are frozen where they are and pick up the rest of
+   * their countdown once they surface. Only the top toast is legible — the ones
+   * behind it are scaled down with their content transparent — so letting them
+   * all count down at once would expire the whole stack together and the user
+   * would never get to read anything but the newest toast.
+   *
+   * Call this after anything that changes which item is on top: an item arriving,
+   * an item leaving, or hover starting/ending.
+   */
+  private refreshAutoDismissCountdowns(): void {
+    const items = Array.from(this.children) as HTMLElement[];
+    const topItem = items[items.length - 1];
+
+    items.forEach(item => {
+      this.setItemAutoDismissPaused(item, /* paused= */ this._isHovered || item !== topItem);
+    });
   }
 
   /** Pause or resume a single item's auto-dismiss countdown. */
@@ -377,11 +400,10 @@ export class CourierToast extends CourierBaseElement {
     this.appendChild(toastItem);
     this.resizeContainerToHeight(this.topStackItemHeight);
 
-    // A toast that arrives while the cursor is already over the stack starts out
-    // paused — it just landed under the cursor, so it hasn't been read yet.
-    if (this._isHovered) {
-      this.setItemAutoDismissPaused(toastItem, /* paused= */ true);
-    }
+    // This toast is now the top of the stack, which freezes the one it just
+    // covered — and freezes this one too if it landed under the cursor, since
+    // a toast that arrives beneath the cursor hasn't been read yet either.
+    this.refreshAutoDismissCountdowns();
 
     return toastItem;
   }
@@ -404,6 +426,9 @@ export class CourierToast extends CourierBaseElement {
 
     item.onItemDismissed((_) => {
       this.resizeContainerToHeight(this.topStackItemHeight);
+
+      // Whatever was behind this item is now on top, so its countdown starts.
+      this.refreshAutoDismissCountdowns();
     });
 
     if (this._customToastItemContent) {
@@ -439,7 +464,10 @@ export class CourierToast extends CourierBaseElement {
     if (this._autoDismiss) {
       // Custom items have no countdown of their own, so the container owns it —
       // including pausing it while the cursor is over the toast.
-      const autoDismissTimeout = new PausableTimeout(() => customItem.remove(), this._autoDismissTimeoutMs);
+      const autoDismissTimeout = new PausableTimeout(() => {
+        customItem.remove();
+        this.refreshAutoDismissCountdowns();
+      }, this._autoDismissTimeoutMs);
       this._customItemAutoDismissTimeouts.set(customItem, autoDismissTimeout);
       autoDismissTimeout.start();
     }
@@ -539,7 +567,7 @@ export class CourierToast extends CourierBaseElement {
       }
 
       ${CourierToastItem.id}.dismissing {
-        animation: courier-toast-hide 0.3s ease-in-out forwards;
+        animation: courier-toast-hide ${TOAST_DISMISS_ANIMATION_MS}ms ease-out forwards;
       }
 
       @keyframes courier-toast-show {
@@ -553,15 +581,25 @@ export class CourierToast extends CourierBaseElement {
         }
       }
 
+      /* Lift the toast back out the way it came in rather than blinking it out
+         in place, which reads as the toast leaving instead of vanishing. The
+         toast is anchored to the top of the viewport, so "out" is up: a full
+         translateY of its own height, eased so most of the travel happens
+         early and the tail is imperceptible. */
+      /* Shrink the toast slightly as it fades so it reads as receding rather
+         than blinking out, but keep it where it sits — moving it competes with
+         the toast underneath sliding up to take its place. The stack's own
+         horizontal scale is preserved so a toast dismissed from behind the top
+         one doesn't jump to full width on its way out. */
       @keyframes courier-toast-hide {
         0% {
           opacity: 1;
-          transform: scaleX(var(--scale, 1));
+          transform: scale(1) scaleX(var(--scale, 1));
         }
 
         100% {
           opacity: 0;
-          transform: scaleX(var(--scale, 1));
+          transform: scale(0.92) scaleX(var(--scale, 1));
         }
       }
 

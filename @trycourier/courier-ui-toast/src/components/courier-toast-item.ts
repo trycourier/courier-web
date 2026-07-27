@@ -4,6 +4,7 @@ import { CourierToastTheme } from "../types/courier-toast-theme";
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
 import { CourierToastItemActionClickEvent, CourierToastItemClickEvent, CourierToastItemFactoryProps } from "../types/toast";
 import { PausableTimeout } from "../utils/pausable-timeout";
+import { TOAST_DISMISS_ANIMATION_MS } from "../utils/animation";
 
 /**
  * Default implementation of a Toast item.
@@ -12,8 +13,8 @@ import { PausableTimeout } from "../utils/pausable-timeout";
  * @public
  */
 export class CourierToastItem extends CourierBaseElement {
-  /** The animation duration to fade out a dismissed toast before its element is removed. */
-  private static readonly dismissAnimationTimeoutMs = 300;
+  /** How long the exit animation runs before a dismissed toast's element is removed. */
+  private static readonly dismissAnimationTimeoutMs = TOAST_DISMISS_ANIMATION_MS;
 
   private _themeManager: CourierToastThemeManager;
   private _themeSubscription: CourierToastThemeSubscription;
@@ -26,11 +27,11 @@ export class CourierToastItem extends CourierBaseElement {
   /** The timeout before the toast item is auto-dismissed, applicable if _autoDismiss is true. */
   private readonly _autoDismissTimeoutMs: number;
 
-  // Auto-dismiss countdown state. The countdown is paused while the cursor is
-  // over the toast and resumed (from where it left off) when the cursor leaves,
-  // so a user reading the toast is never rushed. Hover is tracked by the
-  // containing CourierToast, which pauses/resumes every item in the stack —
-  // see CourierToast.setAutoDismissPaused.
+  // Auto-dismiss countdown state. The countdown only runs while this item is the
+  // top of the stack and the cursor is away; otherwise it's paused and resumes
+  // from where it left off, so a toast is never dismissed before it's legible.
+  // Both conditions are tracked by the containing CourierToast — see
+  // CourierToast.refreshAutoDismissCountdowns.
   private _autoDismissTimeout: PausableTimeout | null = null;
 
   /** The progress bar element, paused/resumed alongside the countdown to stay in sync. */
@@ -130,7 +131,8 @@ export class CourierToastItem extends CourierBaseElement {
    * freezing the progress bar so the two stay in sync.
    *
    * Called by the containing {@link CourierToast} while the cursor is over the
-   * toast stack. No-op if this item doesn't auto-dismiss.
+   * toast stack, or while this item sits behind the top of the stack. No-op if
+   * this item doesn't auto-dismiss.
    */
   public pauseAutoDismiss(): void {
     this._autoDismissTimeout?.pause();
@@ -141,7 +143,8 @@ export class CourierToastItem extends CourierBaseElement {
    * Resume a paused auto-dismiss countdown from where it left off.
    *
    * Called by the containing {@link CourierToast} once the cursor leaves the
-   * toast stack. No-op if this item doesn't auto-dismiss.
+   * toast stack and this item is on top of it. No-op if this item doesn't
+   * auto-dismiss.
    */
   public resumeAutoDismiss(): void {
     this._autoDismissTimeout?.resume();
