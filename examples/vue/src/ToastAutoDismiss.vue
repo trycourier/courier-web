@@ -3,6 +3,7 @@ import { onMounted } from 'vue';
 import { CourierToast, useCourier } from '@trycourier/courier-vue';
 
 const AUTO_DISMISS_TIMEOUT_MS = 6000;
+const STACK_STAGGER_MS = 400;
 
 const courier = useCourier();
 
@@ -27,9 +28,10 @@ const showToast = () => {
 };
 
 const showToastStack = () => {
+  // Space the burst out so the stack visibly builds instead of landing all at once.
   showToast();
-  showToast();
-  showToast();
+  setTimeout(showToast, STACK_STAGGER_MS);
+  setTimeout(showToast, STACK_STAGGER_MS * 2);
 };
 </script>
 
@@ -47,9 +49,10 @@ const showToastStack = () => {
     <h1 :style="{ margin: '0 0 6px', fontSize: '22px' }">Toast — Auto-dismiss timer</h1>
     <p :style="{ margin: '0 0 20px', fontSize: '13px', color: '#555555', maxWidth: '560px' }">
       Each toast dismisses itself after {{ AUTO_DISMISS_TIMEOUT_MS / 1000 }} seconds, counted
-      down by the timer bar across the top of the toast. Hover the toast to freeze the
-      countdown — every toast in the stack pauses, and they all resume from where they left
-      off once the cursor leaves.
+      down by the timer bar across the top of the toast. Only the toast on top of the stack
+      counts down — the ones behind it freeze until they surface, so a burst of toasts drains
+      one at a time instead of expiring together. Hover the stack to freeze every countdown;
+      they resume from where they left off once the cursor leaves.
     </p>
 
     <div :style="{ display: 'flex', gap: '8px' }">

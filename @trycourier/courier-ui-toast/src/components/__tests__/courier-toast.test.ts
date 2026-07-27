@@ -3,6 +3,7 @@ import { CourierToast } from "../courier-toast";
 import { CourierToastItem } from "../courier-toast-item";
 import { CourierToastTheme } from "../../types/courier-toast-theme";
 import { CourierToastDatastore } from "../../datastore/toast-datastore";
+import { TOAST_DISMISS_ANIMATION_MS } from "../../utils/animation";
 
 let toast: CourierToast;
 
@@ -243,7 +244,7 @@ describe("courier-toast", () => {
       // ...then leave: the countdown resumes and dismisses after the remaining
       // time (plus the fade-out animation).
       unhover();
-      jest.advanceTimersByTime(5000 + 300);
+      jest.advanceTimersByTime(5000 + TOAST_DISMISS_ANIMATION_MS);
 
       expect(document.body.contains(item)).toBe(false);
 
@@ -266,7 +267,7 @@ describe("courier-toast", () => {
 
       // On leaving, only the banked 1s is left — not another full 5s.
       unhover();
-      jest.advanceTimersByTime(1000 + 300);
+      jest.advanceTimersByTime(1000 + TOAST_DISMISS_ANIMATION_MS);
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();
@@ -331,7 +332,7 @@ describe("courier-toast", () => {
       unhover();
       jest.advanceTimersByTime(4999);
       expect(document.body.contains(item)).toBe(true);
-      jest.advanceTimersByTime(1 + 300);
+      jest.advanceTimersByTime(1 + TOAST_DISMISS_ANIMATION_MS);
       expect(document.body.contains(item)).toBe(false);
 
       jest.useRealTimers();
@@ -357,6 +358,154 @@ describe("courier-toast", () => {
       unhover();
       jest.advanceTimersByTime(5000);
       expect(document.body.contains(item)).toBe(false);
+
+      jest.useRealTimers();
+    });
+  });
+
+  describe("auto-dismiss stack", () => {
+    /** Time for a countdown to expire plus the exit animation before removal. */
+    const DISMISS_MS = 5000 + TOAST_DISMISS_ANIMATION_MS;
+
+    const addMessages = (count: number) => {
+      for (let i = 1; i <= count; i++) {
+        CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: `${i}`, title: `Message ${i}` });
+      }
+
+      return Array.from(document.querySelectorAll("courier-toast-item")) as CourierToastItem[];
+    };
+
+    it("should only count down the top toast, not the ones stacked behind it", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      const [first, second, third] = addMessages(3);
+
+      // Only the newest toast is legible, so only it is on the clock.
+      jest.advanceTimersByTime(DISMISS_MS);
+
+      expect(document.body.contains(third!)).toBe(false);
+      expect(document.body.contains(second!)).toBe(true);
+      expect(document.body.contains(first!)).toBe(true);
+
+      jest.useRealTimers();
+    });
+
+    it("should dismiss a stack one toast at a time, newest first", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      const [first, second, third] = addMessages(3);
+
+      jest.advanceTimersByTime(DISMISS_MS);
+      expect(document.querySelectorAll("courier-toast-item").length).toBe(2);
+
+      // The second toast surfaces and gets a countdown of its own.
+      jest.advanceTimersByTime(DISMISS_MS);
+      expect(document.body.contains(second!)).toBe(false);
+      expect(document.body.contains(first!)).toBe(true);
+
+      jest.advanceTimersByTime(DISMISS_MS);
+      expect(document.body.contains(first!)).toBe(false);
+      expect(document.body.contains(third!)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should freeze a toast's countdown where it stood when a new toast covers it", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "1" });
+      const first = document.querySelector("courier-toast-item") as CourierToastItem;
+
+      // 4s of the first toast's countdown burns down before it's covered, which
+      // banks the remaining 1s rather than restarting it.
+      jest.advanceTimersByTime(4000);
+      CourierToastDatastore.shared.addMessage({ ...INBOX_MESSAGE, messageId: "2" });
+
+      // The new toast runs its full countdown while the first sits frozen.
+      jest.advanceTimersByTime(DISMISS_MS);
+      expect(document.body.contains(first)).toBe(true);
+
+      // Back on top, the first toast owes only the banked 1s.
+      jest.advanceTimersByTime(999);
+      expect(document.body.contains(first)).toBe(true);
+      jest.advanceTimersByTime(1 + TOAST_DISMISS_ANIMATION_MS);
+      expect(document.body.contains(first)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should freeze the progress bar of a toast that isn't on top", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      const [first, second] = addMessages(2);
+
+      const barPlayState = (item: CourierToastItem) =>
+        (item.querySelector(".auto-dismiss") as HTMLElement).style.animationPlayState;
+
+      // The bar is the countdown made visible, so a frozen countdown must not
+      // leave a bar draining behind the top toast.
+      expect(barPlayState(first!)).toBe("paused");
+      expect(barPlayState(second!)).not.toBe("paused");
+
+      jest.useRealTimers();
+    });
+
+    it("should not start the next toast's countdown while the cursor is still over the stack", () => {
+      jest.useFakeTimers();
+
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      const [first, second] = addMessages(2);
+
+      // The cursor arrives, so nothing counts down...
+      toast.dispatchEvent(new MouseEvent("mouseenter"));
+      jest.advanceTimersByTime(30_000);
+      expect(document.querySelectorAll("courier-toast-item").length).toBe(2);
+
+      // ...and dismissing the top one by hand doesn't put the toast underneath
+      // on the clock while the cursor is still parked over the stack.
+      second!.dismiss(/* timeoutMs= */ 0);
+      jest.advanceTimersByTime(30_000);
+      expect(document.body.contains(first!)).toBe(true);
+
+      toast.dispatchEvent(new MouseEvent("mouseleave"));
+      jest.advanceTimersByTime(DISMISS_MS);
+      expect(document.body.contains(first!)).toBe(false);
+
+      jest.useRealTimers();
+    });
+
+    it("should only count down the top custom toast item", () => {
+      jest.useFakeTimers();
+
+      let customItemCount = 0;
+      toast.setToastItem(() => {
+        const el = document.createElement("div");
+        el.id = `custom-item-${++customItemCount}`;
+        return el;
+      });
+      toast.enableAutoDismiss();
+      toast.setAutoDismissTimeoutMs(5000);
+      addMessages(2);
+
+      const first = document.getElementById("custom-item-1") as HTMLElement;
+      const second = document.getElementById("custom-item-2") as HTMLElement;
+
+      // Custom items are removed without a fade-out.
+      jest.advanceTimersByTime(5000);
+      expect(document.body.contains(second)).toBe(false);
+      expect(document.body.contains(first)).toBe(true);
+
+      jest.advanceTimersByTime(5000);
+      expect(document.body.contains(first)).toBe(false);
 
       jest.useRealTimers();
     });
