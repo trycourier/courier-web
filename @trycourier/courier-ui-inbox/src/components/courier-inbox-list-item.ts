@@ -15,11 +15,15 @@ export class CourierInboxListItem extends CourierBaseElement {
     return 'courier-inbox-list-item';
   }
 
+  /** How much of an item must be on screen before it is reported as visible (opened). */
+  private static readonly VISIBILITY_THRESHOLD = 0.5;
+
   // State
   private _themeManager: CourierInboxThemeManager;
   private _theme: CourierInboxTheme;
   private _message: InboxMessage | null = null;
   private _isMobile: boolean = false;
+  /** Whether to show the hover / pointer affordance. Does not gate click reporting. */
   private _canClick: boolean = false;
   private _listItemActions: CourierInboxListItemAction[] = CourierInbox.defaultListItemActions();
   // private _canLongPress: boolean = false; // Unused for now. But we can use this in the future if needed.
@@ -105,7 +109,8 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._menu.addEventListener('click', cancelPropagation);
 
     this.addEventListener('click', (e) => {
-      if (!this._canClick) return;
+      // `_canClick` only drives the hover / pointer affordance. The click is always reported
+      // so click + open tracking still runs when the host app registers no click handler.
       if (this._menu && (this._menu.contains(e.target as Node) || e.composedPath().includes(this._menu))) {
         return;
       }
@@ -138,11 +143,22 @@ export class CourierInboxListItem extends CourierBaseElement {
 
     this._observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.intersectionRatio === 1 && this.onItemVisible && this._message) {
+        if (!entry.isIntersecting) return;
+
+        // An exact `intersectionRatio === 1` check misses two common cases: browsers report
+        // fractional ratios (0.9999…) for a fully visible item because of subpixel rounding,
+        // and an item taller than the scroll viewport can never reach a ratio of 1 at all.
+        // So an item counts as seen once half of it — or half of the viewport — is filled.
+        const rootHeight = entry.rootBounds?.height ?? 0;
+        const isVisibleEnough =
+          entry.intersectionRatio >= CourierInboxListItem.VISIBILITY_THRESHOLD ||
+          (rootHeight > 0 && entry.intersectionRect.height >= rootHeight * CourierInboxListItem.VISIBILITY_THRESHOLD);
+
+        if (isVisibleEnough && this.onItemVisible && this._message) {
           this.onItemVisible(this._message);
         }
       });
-    }, { threshold: 1.0 });
+    }, { threshold: [0, CourierInboxListItem.VISIBILITY_THRESHOLD] });
 
     this._observer.observe(this);
   }

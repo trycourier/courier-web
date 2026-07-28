@@ -122,11 +122,23 @@ export class CourierInboxList extends CourierBaseElement {
   }
 
   public setCanClickListItems(canClick: boolean) {
+    if (this._canClickListItems === canClick) return;
     this._canClickListItems = canClick;
+
+    // Existing items were built with the old affordance, so they need rebuilding.
+    // Handlers are often registered after the first render (e.g. a React effect).
+    if (this.isConnected) {
+      this.render();
+    }
   }
 
   public setCanLongPressListItems(canLongPress: boolean) {
+    if (this._canLongPressListItems === canLongPress) return;
     this._canLongPressListItems = canLongPress;
+
+    if (this.isConnected) {
+      this.render();
+    }
   }
 
   public setListItemActions(actions: CourierInboxListItemAction[]) {

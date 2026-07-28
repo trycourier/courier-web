@@ -802,12 +802,12 @@ export class CourierInbox extends CourierBaseElement {
       case 'message-click':
         if (newValue) {
           try {
-            this._onMessageClick = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
+            this.onMessageClick(new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void);
           } catch (error) {
             Courier.shared.client?.options.logger?.error('Failed to parse message-click handler:', error);
           }
         } else {
-          this._onMessageClick = undefined;
+          this.onMessageClick(undefined);
         }
         break;
       case 'message-action-click':
@@ -824,12 +824,12 @@ export class CourierInbox extends CourierBaseElement {
       case 'message-long-press':
         if (newValue) {
           try {
-            this._onMessageLongPress = new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void;
+            this.onMessageLongPress(new Function('props', newValue) as (props: CourierInboxListItemFactoryProps) => void);
           } catch (error) {
             Courier.shared.client?.options.logger?.error('Failed to parse message-long-press handler:', error);
           }
         } else {
-          this._onMessageLongPress = undefined;
+          this.onMessageLongPress(undefined);
         }
         break;
       case 'feeds':

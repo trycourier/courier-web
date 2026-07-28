@@ -11,6 +11,7 @@ const mockArchiveAll = jest.fn();
 const mockArchive = jest.fn();
 const mockOpen = jest.fn();
 const mockBatchOpen = jest.fn();
+const mockClick = jest.fn();
 const mockRead = jest.fn();
 const mockUnread = jest.fn();
 const mockAddMessageEventListener = jest.fn();
@@ -37,6 +38,7 @@ jest.mock("@trycourier/courier-js", () => ({
           archive: () => mockArchive(),
           open: () => mockOpen(),
           batchOpen: (ids: string[]) => mockBatchOpen(ids),
+          click: (props: { messageId: string, trackingId: string }) => mockClick(props),
           read: () => mockRead(),
           unread: () => mockUnread(),
           get socket() {
@@ -513,6 +515,41 @@ describe("CourierInboxDatastore", () => {
 
       expect(onErrorMock).toHaveBeenCalledTimes(1);
       expect(onErrorMock).toHaveBeenCalledWith(expect.any(Error));
+    });
+  });
+
+  describe("clickMessage", () => {
+    it("should track the click with the message's click tracking id", async () => {
+      const MESSAGE = { ...getMessage(), trackingIds: { clickTrackingId: "click-tracking-id" } };
+
+      await CourierInboxDatastore.shared.clickMessage({ message: MESSAGE });
+
+      expect(mockClick).toHaveBeenCalledWith({
+        messageId: MESSAGE.messageId,
+        trackingId: "click-tracking-id",
+      });
+    });
+
+    it("should not call the API for a message without a click tracking id", async () => {
+      await CourierInboxDatastore.shared.clickMessage({ message: getMessage() });
+
+      expect(mockClick).not.toHaveBeenCalled();
+    });
+
+    it("should notify listeners and swallow the error when tracking fails", async () => {
+      const MESSAGE = { ...getMessage(), trackingIds: { clickTrackingId: "click-tracking-id" } };
+      mockClick.mockRejectedValue(new Error("Network error"));
+
+      const onErrorMock = jest.fn();
+      const datastore = CourierInboxDatastore.shared;
+      const listener = new CourierInboxDataStoreListener({ onError: onErrorMock });
+      datastore.addDataStoreListener(listener);
+
+      await expect(datastore.clickMessage({ message: MESSAGE })).resolves.toBeUndefined();
+
+      expect(onErrorMock).toHaveBeenCalledWith(expect.any(Error));
+
+      datastore.removeDataStoreListener(listener);
     });
   });
 
