@@ -32,6 +32,14 @@
       color: white;
     }
 
+    .tracking-log .tenant {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #374151;
+      color: #9ca3af;
+      word-break: break-all;
+    }
+
     .tracking-log .opened {
       color: #93c5fd;
     }
@@ -50,11 +58,23 @@
 
   <aside class="tracking-log">
     <strong>Tracking events</strong>
+    <div class="tenant" id="tenant"></div>
     <div id="log">Waiting…</div>
   </aside>
 
   <script type="module">
     import { Courier } from '@trycourier/courier-ui-inbox';
+
+    // The workspace these events land in is encoded in the JWT rather than passed separately,
+    // so decode it out of the token to show where to go looking for them.
+    const decodeJwtPayload = (jwt) => {
+      const payload = jwt.split('.')[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64.padEnd(base64.length + (-base64.length % 4), '=')));
+    };
+
+    const { tenant_id: tenantId, tenant_scope: tenantScope } = decodeJwtPayload(import.meta.env.VITE_JWT);
+    document.getElementById('tenant').textContent = `${tenantId} (${tenantScope})`;
 
     // Log the tracking mutations the inbox sends, so both events are visible without devtools.
     const log = document.getElementById('log');
