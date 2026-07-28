@@ -530,8 +530,47 @@ describe("CourierInboxDatastore", () => {
       });
     });
 
+    it("should track a socket-delivered message, whose tracking ids are nested under data", async () => {
+      // The realtime payload has no top-level trackingIds; the ids only appear in data.
+      // See the iOS/Android SDKs, which read data first for the same reason.
+      const MESSAGE = {
+        ...getMessage(),
+        data: { trackingIds: { clickTrackingId: "socket-click-tracking-id" } }
+      };
+
+      await CourierInboxDatastore.shared.clickMessage({ message: MESSAGE });
+
+      expect(mockClick).toHaveBeenCalledWith({
+        messageId: MESSAGE.messageId,
+        trackingId: "socket-click-tracking-id",
+      });
+    });
+
+    it("should prefer the tracking id in data when both shapes are present", async () => {
+      const MESSAGE = {
+        ...getMessage(),
+        data: { trackingIds: { clickTrackingId: "from-data" } },
+        trackingIds: { clickTrackingId: "from-top-level" }
+      };
+
+      await CourierInboxDatastore.shared.clickMessage({ message: MESSAGE });
+
+      expect(mockClick).toHaveBeenCalledWith({
+        messageId: MESSAGE.messageId,
+        trackingId: "from-data",
+      });
+    });
+
     it("should not call the API for a message without a click tracking id", async () => {
       await CourierInboxDatastore.shared.clickMessage({ message: getMessage() });
+
+      expect(mockClick).not.toHaveBeenCalled();
+    });
+
+    it("should not call the API when data holds no tracking ids", async () => {
+      const MESSAGE = { ...getMessage(), data: { brandId: "some-brand" } };
+
+      await CourierInboxDatastore.shared.clickMessage({ message: MESSAGE });
 
       expect(mockClick).not.toHaveBeenCalled();
     });

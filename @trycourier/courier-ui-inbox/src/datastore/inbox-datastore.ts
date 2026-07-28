@@ -3,7 +3,7 @@ import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
-import { copyInboxDataSet, copyMessage } from "../utils/utils";
+import { copyInboxDataSet, copyMessage, getClickTrackingId } from "../utils/utils";
 
 /**
  * Snapshot of a single dataset's state for rollback purposes
@@ -399,12 +399,14 @@ export class CourierInboxDatastore {
    * @param message - The message that was clicked
    */
   public async clickMessage({ message }: { message: InboxMessage }): Promise<void> {
+    const clickTrackingId = getClickTrackingId(message);
+
     // Clicking a message does not mutate it locally, but we still want error handling
-    if (message.trackingIds?.clickTrackingId) {
+    if (clickTrackingId) {
       try {
         await Courier.shared.client?.inbox.click({
           messageId: message.messageId,
-          trackingId: message.trackingIds.clickTrackingId
+          trackingId: clickTrackingId
         });
       } catch (error) {
         // Log error

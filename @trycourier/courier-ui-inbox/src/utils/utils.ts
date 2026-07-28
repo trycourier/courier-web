@@ -31,6 +31,26 @@ export function copyMessage(message: InboxMessage): InboxMessage {
 }
 
 /**
+ * Resolve a message's click tracking id.
+ *
+ * The two delivery paths disagree on where tracking ids live: the messages query returns them
+ * on a top-level `trackingIds`, while the realtime socket payload only nests them under
+ * `data.trackingIds`. Checking `data` first matches the iOS and Android SDKs, so a message
+ * that arrived over the socket is still clickable.
+ *
+ * @param message - The message to read the click tracking id from
+ * @returns The click tracking id, or undefined if the message has none
+ */
+export function getClickTrackingId(message: InboxMessage): string | undefined {
+  const fromData = message.data?.['trackingIds']?.['clickTrackingId'];
+  if (typeof fromData === 'string') {
+    return fromData;
+  }
+
+  return message.trackingIds?.clickTrackingId;
+}
+
+/**
  * Copy an inbox action
  * @param action - The inbox action to copy
  * @returns A copy of the inbox action
