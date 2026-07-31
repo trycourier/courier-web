@@ -8,9 +8,10 @@ interface MessageAction {
 
 export async function POST(request: Request) {
   try {
-    // Read user_id, title, body, optional tags, optional actions, optional api_key, and courierRest from request body
+    // Read user_id and either a template id or inline title/body, plus optional
+    // data, tags, actions, api_key, and courierRest from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody, tags, actions, api_key, courierRest } = body;
+    const { user_id, title, body: messageBody, template, data, tags, actions, api_key, courierRest } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -19,53 +20,58 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!title) {
-      return NextResponse.json(
-        { error: 'title is required in request body' },
-        { status: 400 }
-      );
-    }
+    if (!template) {
+      if (!title) {
+        return NextResponse.json(
+          { error: 'title is required in request body' },
+          { status: 400 }
+        );
+      }
 
-    if (!messageBody) {
-      return NextResponse.json(
-        { error: 'body is required in request body' },
-        { status: 400 }
-      );
+      if (!messageBody) {
+        return NextResponse.json(
+          { error: 'body is required in request body' },
+          { status: 400 }
+        );
+      }
     }
 
     // Use provided api_key or fall back to environment default
     const courier = getCourierClient(courierRest, api_key);
 
-    // Build the content - use Elemental format if actions are provided
+    // Prefer a template id over inline content when provided
     let content: any;
-    if (actions && Array.isArray(actions) && actions.length > 0) {
-      // Use Elemental content format to include actions
-      const elements: any[] = [
-        { type: 'meta', title: title },
-        { type: 'text', content: messageBody },
-      ];
+    if (!template) {
+      // Build the content - use Elemental format if actions are provided
+      if (actions && Array.isArray(actions) && actions.length > 0) {
+        // Use Elemental content format to include actions
+        const elements: any[] = [
+          { type: 'meta', title: title },
+          { type: 'text', content: messageBody },
+        ];
 
-      // Add action elements
-      actions.forEach((action: MessageAction) => {
-        if (action.content && action.href) {
-          elements.push({
-            type: 'action',
-            content: action.content,
-            href: action.href,
-          });
-        }
-      });
+        // Add action elements
+        actions.forEach((action: MessageAction) => {
+          if (action.content && action.href) {
+            elements.push({
+              type: 'action',
+              content: action.content,
+              href: action.href,
+            });
+          }
+        });
 
-      content = {
-        version: '2022-01-01',
-        elements,
-      };
-    } else {
-      // Use simple title/body format when no actions
-      content = {
-        title: title,
-        body: messageBody,
-      };
+        content = {
+          version: '2022-01-01',
+          elements,
+        };
+      } else {
+        // Use simple title/body format when no actions
+        content = {
+          title: title,
+          body: messageBody,
+        };
+      }
     }
 
     // Send inbox message to the user
@@ -74,7 +80,8 @@ export async function POST(request: Request) {
         to: {
           user_id: user_id,
         },
-        content,
+        ...(template ? { template } : { content }),
+        ...(data && Object.keys(data).length > 0 && { data }),
         metadata: {
           tags: tags,
         },

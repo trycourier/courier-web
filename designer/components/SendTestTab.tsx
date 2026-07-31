@@ -3,17 +3,39 @@
 import { SendMessageForm } from './SendMessageForm';
 import { TabFooter } from './TabFooter';
 
+type SendMode = 'content' | 'template';
+
 interface SendTestTabProps {
   userId: string;
   apiKey?: string;
   courierRest?: string;
+  sendMode?: SendMode;
+  templateId?: string;
+  onSendModeChange?: (mode: SendMode) => void;
+  onTemplateIdChange?: (templateId: string) => void;
 }
 
-export function SendTestTab({ userId, apiKey, courierRest }: SendTestTabProps) {
+export function SendTestTab({
+  userId,
+  apiKey,
+  courierRest,
+  sendMode,
+  templateId,
+  onSendModeChange,
+  onTemplateIdChange,
+}: SendTestTabProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto min-h-0">
-        <SendMessageForm userId={userId} apiKey={apiKey} courierRest={courierRest} />
+        <SendMessageForm
+          userId={userId}
+          apiKey={apiKey}
+          courierRest={courierRest}
+          sendMode={sendMode}
+          templateId={templateId}
+          onSendModeChange={onSendModeChange}
+          onTemplateIdChange={onTemplateIdChange}
+        />
       </div>
       <div className="flex-shrink-0 border-t border-border p-4">
         <TabFooter

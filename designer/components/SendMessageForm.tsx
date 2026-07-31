@@ -12,11 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SendMessageFormProps {
   userId: string;
   apiKey?: string;
   courierRest?: string;
+  /** Initial send mode, from the `sendMode` query param. */
+  sendMode?: SendMode;
+  /** Initial template id, from the `template` query param. */
+  templateId?: string;
+  /** Persist the active send mode to the URL. */
+  onSendModeChange?: (mode: SendMode) => void;
+  /** Persist the template id to the URL. */
+  onTemplateIdChange?: (templateId: string) => void;
 }
 
 interface ActionField {
@@ -31,20 +40,47 @@ interface VariableField {
   value: string;
 }
 
+type SendMode = 'content' | 'template';
+
 interface HistoryItem {
+  mode: SendMode;
   title: string;
   body: string;
+  templateId: string;
   tags: string;
   actions: { content: string; href: string }[];
   variables: { key: string; value: string }[];
 }
 
-export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageFormProps) {
+export function SendMessageForm({
+  userId,
+  apiKey,
+  courierRest,
+  sendMode,
+  templateId: initialTemplateId,
+  onSendModeChange,
+  onTemplateIdChange,
+}: SendMessageFormProps) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [sendMessageError, setSendMessageError] = useState<string | null>(null);
+  const [mode, setMode] = useState<SendMode>(sendMode ?? 'content');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [templateId, setTemplateId] = useState(initialTemplateId ?? '');
   const [tags, setTags] = useState('');
+
+  // `sendMode`/`initialTemplateId` seed the initial state from the URL on mount.
+  // After that, local state is the source of truth (so the input stays
+  // responsive); changes are mirrored back to the URL via the callbacks below.
+  const changeMode = (next: SendMode) => {
+    setMode(next);
+    onSendModeChange?.(next);
+  };
+
+  const changeTemplateId = (next: string) => {
+    setTemplateId(next);
+    onTemplateIdChange?.(next);
+  };
   const [actions, setActions] = useState<ActionField[]>([]);
   const [variables, setVariables] = useState<VariableField[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -53,8 +89,10 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
   const MAX_HISTORY = 20;
 
   const applyHistoryItem = (item: HistoryItem) => {
+    changeMode(item.mode);
     setTitle(item.title);
     setBody(item.body);
+    changeTemplateId(item.templateId);
     setTags(item.tags);
     setActions(
       item.actions.map((a) => ({
@@ -115,31 +153,44 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
         .filter(v => v.key.trim() !== '')
         .forEach(v => { varsRecord[v.key.trim()] = v.value; });
 
-      let resolvedTitle = substituteVariables(title.trim(), varsRecord);
-      let resolvedBody = substituteVariables(body.trim(), varsRecord);
-      resolvedBody = markdownLinksToHtml(resolvedBody);
+      if (mode === 'template') {
+        await repo.sendMessage({
+          userId,
+          templateId: templateId.trim(),
+          data: varsRecord,
+          tags: tagsArray.length > 0 ? tagsArray : undefined,
+          apiKey,
+          courierRest,
+        });
+      } else {
+        let resolvedTitle = substituteVariables(title.trim(), varsRecord);
+        let resolvedBody = substituteVariables(body.trim(), varsRecord);
+        resolvedBody = markdownLinksToHtml(resolvedBody);
 
-      const validActions: MessageAction[] = actions
-        .filter(action => action.content.trim() && action.href.trim())
-        .map(action => ({
-          content: substituteVariables(action.content.trim(), varsRecord),
-          href: substituteVariablesRaw(action.href.trim(), varsRecord),
-        }));
+        const validActions: MessageAction[] = actions
+          .filter(action => action.content.trim() && action.href.trim())
+          .map(action => ({
+            content: substituteVariables(action.content.trim(), varsRecord),
+            href: substituteVariablesRaw(action.href.trim(), varsRecord),
+          }));
 
-      await repo.sendMessage(
-        userId,
-        resolvedTitle,
-        resolvedBody,
-        tagsArray.length > 0 ? tagsArray : undefined,
-        validActions.length > 0 ? validActions : undefined,
-        apiKey,
-        courierRest
-      );
+        await repo.sendMessage({
+          userId,
+          title: resolvedTitle,
+          body: resolvedBody,
+          tags: tagsArray.length > 0 ? tagsArray : undefined,
+          actions: validActions.length > 0 ? validActions : undefined,
+          apiKey,
+          courierRest,
+        });
+      }
       setHistory((prev) => {
         const next = [
           {
+            mode,
             title: title.trim(),
             body: body.trim(),
+            templateId: templateId.trim(),
             tags,
             actions: actions.map((a) => ({ content: a.content, href: a.href })),
             variables: variables.map((v) => ({ key: v.key, value: v.value })),
@@ -150,6 +201,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
       });
       setTitle('');
       setBody('');
+      changeTemplateId('');
       setTags('');
       setActions([]);
       setVariables([]);
@@ -165,36 +217,62 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
   return (
     <div className="p-4 h-full overflow-y-auto">
       <form onSubmit={handleSendMessage} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Textarea
-            id="title"
-            value={title}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTitle(e.target.value)}
-            required
-            rows={2}
-            placeholder="Enter message title"
-            className="font-mono"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="body">Body</Label>
-          <Textarea
-            id="body"
-            value={body}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)}
-            required
-            rows={3}
-            placeholder="Enter message body"
-            className="font-mono"
-          />
-          <p className="text-xs text-muted-foreground">
-            Links: <code className="bg-muted px-1 rounded">[text](https://example.com)</code>
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Variables: <code className="bg-muted px-1 rounded">{'{{name}}'}</code>
-          </p>
-        </div>
+        <Tabs value={mode} onValueChange={(v: string) => changeMode(v as SendMode)}>
+          <TabsList className="w-full">
+            <TabsTrigger value="content" className="flex-1">Content</TabsTrigger>
+            <TabsTrigger value="template" className="flex-1">Template</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        {mode === 'content' ? (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Textarea
+                id="title"
+                value={title}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTitle(e.target.value)}
+                required
+                rows={2}
+                placeholder="Enter message title"
+                className="font-mono"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="body">Body</Label>
+              <Textarea
+                id="body"
+                value={body}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)}
+                required
+                rows={3}
+                placeholder="Enter message body"
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                Links: <code className="bg-muted px-1 rounded">[text](https://example.com)</code>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Variables: <code className="bg-muted px-1 rounded">{'{{name}}'}</code>
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-2">
+            <Label htmlFor="templateId">Template ID</Label>
+            <Input
+              id="templateId"
+              type="text"
+              value={templateId}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => changeTemplateId(e.target.value)}
+              required
+              placeholder="e.g., WELCOME_INBOX or a notification id"
+              className="font-mono"
+            />
+            <p className="text-xs text-muted-foreground">
+              Sends a saved template instead of inline content. Variables below are passed as the message <code className="bg-muted px-1 rounded">data</code>.
+            </p>
+          </div>
+        )}
         <hr className="border-border my-4" />
         <div className="space-y-2">
           <Label htmlFor="tags">
@@ -251,6 +329,7 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             </div>
           ))}
         </div>
+        {mode === 'content' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label>
@@ -299,11 +378,17 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
             </div>
           ))}
         </div>
+        )}
         <hr className="border-border my-4" />
         <div>
           <Button
             type="submit"
-            disabled={isSendingMessage || !title.trim() || !body.trim()}
+            disabled={
+              isSendingMessage ||
+              (mode === 'template'
+                ? !templateId.trim()
+                : !title.trim() || !body.trim())
+            }
           >
             {isSendingMessage ? 'Sending...' : 'Send'}
           </Button>
@@ -329,12 +414,25 @@ export function SendMessageForm({ userId, apiKey, courierRest }: SendMessageForm
                     type="button"
                     onClick={() => applyHistoryItem(item)}
                     className="w-full text-left px-3 py-2 rounded-md border border-border bg-muted/20 hover:bg-muted/40 text-sm font-mono transition-colors space-y-0.5"
-                    title={item.body || item.title || '(empty)'}
+                    title={
+                      item.mode === 'template'
+                        ? item.templateId || '(no template)'
+                        : item.body || item.title || '(empty)'
+                    }
                   >
-                    <div className="font-medium truncate">{item.title || '(no title)'}</div>
-                    <div className="text-muted-foreground text-xs line-clamp-2 break-words">
-                      {item.body || '(no body)'}
-                    </div>
+                    {item.mode === 'template' ? (
+                      <div className="font-medium truncate">
+                        <span className="text-muted-foreground">Template:</span>{' '}
+                        {item.templateId || '(no template)'}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="font-medium truncate">{item.title || '(no title)'}</div>
+                        <div className="text-muted-foreground text-xs line-clamp-2 break-words">
+                          {item.body || '(no body)'}
+                        </div>
+                      </>
+                    )}
                   </button>
                 </li>
               ))}

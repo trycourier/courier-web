@@ -16,6 +16,22 @@ export interface MessageAction {
   href: string;
 }
 
+export interface SendMessageOptions {
+  userId: string;
+  /** Inline content title (ignored when `templateId` is set). */
+  title?: string;
+  /** Inline content body (ignored when `templateId` is set). */
+  body?: string;
+  /** Template/notification id to send instead of inline title/body. */
+  templateId?: string;
+  /** Template variables / message data. */
+  data?: Record<string, string>;
+  tags?: string[];
+  actions?: MessageAction[];
+  apiKey?: string;
+  courierRest?: string;
+}
+
 export interface GenerateJWTIssueTokenOptions {
   /** JWT scope string; omitted or empty → server default scope for user_id */
   scope?: string;
@@ -75,15 +91,19 @@ export class CourierRepo {
     return response.json();
   }
 
-  async sendMessage(
-    userId: string,
-    title: string,
-    body: string,
-    tags?: string[],
-    actions?: MessageAction[],
-    apiKey?: string,
-    courierRest?: string
-  ): Promise<SendMessageResponse> {
+  async sendMessage(options: SendMessageOptions): Promise<SendMessageResponse> {
+    const {
+      userId,
+      title,
+      body,
+      templateId,
+      data,
+      tags,
+      actions,
+      apiKey,
+      courierRest,
+    } = options;
+
     const response = await fetch("/inbox-demo/api/messages", {
       method: "POST",
       headers: {
@@ -91,8 +111,8 @@ export class CourierRepo {
       },
       body: JSON.stringify({
         user_id: userId,
-        title,
-        body,
+        ...(templateId ? { template: templateId } : { title, body }),
+        ...(data && Object.keys(data).length > 0 && { data }),
         tags,
         actions,
         ...(apiKey && { api_key: apiKey }),
