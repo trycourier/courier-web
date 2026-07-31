@@ -105,6 +105,10 @@ function HomeContent() {
   const topicId = searchParams.get('topicId') || undefined;
   const clientKey = searchParams.get('clientKey') || undefined;
 
+  // Send-test form: message mode ('content' | 'template') and template id
+  const sendMode = searchParams.get('sendMode') === 'template' ? 'template' : 'content';
+  const templateId = searchParams.get('template') || '';
+
   // Helper to update URL params
   const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -128,6 +132,15 @@ function HomeContent() {
     updateUrlParams('layout', tab, DEFAULT_RIGHT_TAB);
   }, [updateUrlParams]);
   const visibleRightTab = activeRightTab;
+
+  // Persist the send-test mode / template id to the URL (shareable deep links)
+  const handleSendModeChange = useCallback((mode: 'content' | 'template') => {
+    updateUrlParams('sendMode', mode, 'content');
+  }, [updateUrlParams]);
+
+  const handleTemplateIdChange = useCallback((id: string) => {
+    updateUrlParams('template', id, '');
+  }, [updateUrlParams]);
 
   // Apply color mode to the page
   useEffect(() => {
@@ -237,7 +250,15 @@ function HomeContent() {
       </div>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <TabsContent value="send-test" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
-          <SendTestTab userId={userId} apiKey={overrideApiKey} courierRest={courierRest} />
+          <SendTestTab
+            userId={userId}
+            apiKey={overrideApiKey}
+            courierRest={courierRest}
+            sendMode={sendMode}
+            templateId={templateId}
+            onSendModeChange={handleSendModeChange}
+            onTemplateIdChange={handleTemplateIdChange}
+          />
         </TabsContent>
         <TabsContent value="theme" className="mt-0 flex-1 min-h-0 overflow-hidden flex flex-col">
           <ThemeTab

@@ -38,7 +38,10 @@ export const API_ENVIRONMENT_PRESETS: Record<Exclude<ApiEnvironment, 'custom'>, 
     },
     inbox: {
       graphql: 'https://4rq7n8hhjd.execute-api.us-east-1.amazonaws.com/staging/q',
-      webSocket: 'http://inbox-staging-ws-alb-490231599.us-east-1.elb.amazonaws.com',
+      // Cloudflare-fronted realtime vanity (TLS), mirrors prod's realtime.courier.io.
+      // The raw `inbox-staging-ws-alb-*.elb.amazonaws.com` ELB has no browser-valid
+      // TLS cert and 301-redirects on http, so a browser WebSocket can't connect to it.
+      webSocket: 'wss://realtime.courierstaging.com',
     },
   },
   dev: {
