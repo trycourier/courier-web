@@ -201,7 +201,8 @@ export function SendMessageForm({
       });
       setTitle('');
       setBody('');
-      changeTemplateId('');
+      // The template id is a persistent selection (and part of the shareable
+      // URL), so it survives a send — you usually want to send it again.
       setTags('');
       setActions([]);
       setVariables([]);

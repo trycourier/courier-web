@@ -1,19 +1,16 @@
 import { Courier } from "@trycourier/courier";
+import { resolveApiKey } from "@/app/api/lib/internal-environments";
 
-let courierClient: Courier | null = null;
-
+/**
+ * Builds a Courier client for `baseUrl`.
+ *
+ * The credential is chosen per environment, not global: the env switcher points
+ * `baseUrl` at production/dev/staging, and each of those needs its own key. See
+ * {@link resolveApiKey}.
+ */
 export function getCourierClient(baseUrl: string, apiKey?: string) {
-
-  const key = apiKey || process.env.COURIER_AUTH_TOKEN;
-  if (!key) {
-    throw new Error("COURIER_AUTH_TOKEN environment variable is not set");
-  }
-
-  courierClient = new Courier({
-    apiKey: key,
+  return new Courier({
+    apiKey: resolveApiKey(baseUrl, apiKey),
     baseURL: baseUrl,
   });
-
-  return courierClient;
 }
-
