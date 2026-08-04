@@ -85,10 +85,18 @@ export async function POST(request: Request) {
         metadata: {
           tags: tags,
         },
-        routing: {
-          method: 'single',
-          channels: ['inbox'],
-        },
+        // Only force the inbox channel for inline content, which has no routing of
+        // its own. A template carries its own routing strategy, and overriding it
+        // here would mean the designer previews something other than what the
+        // template actually does in production.
+        ...(template
+          ? {}
+          : {
+            routing: {
+              method: 'single',
+              channels: ['inbox'],
+            },
+          }),
       },
     });
 
