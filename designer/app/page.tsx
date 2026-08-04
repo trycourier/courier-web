@@ -24,7 +24,6 @@ import {
   areApiUrlsEqual,
   getApiUrlsFromSearchParams
 } from "@/app/lib/api-urls";
-import { useApiEnvironments } from "@/app/lib/use-api-environments";
 import { themePresets, type ThemePreset } from '@/components/theme-presets';
 import { ExternalLink as ExternalLinkBase, FlaskConical as FlaskConicalBase, Send as SendBase, X as XBase } from 'lucide-react';
 
@@ -85,10 +84,6 @@ function HomeContent() {
   // Check if advanced mode is enabled
   const isAdvancedMode = searchParams.get('advanced') === 'true';
 
-  // Internal environment URLs (staging/dev/…) are served from the config
-  // endpoint, not this repo. Load them so a `?env=` deep link resolves correctly.
-  const environmentsLoaded = useApiEnvironments();
-
   const {
     apiEnvironment,
     presetApiUrls,
@@ -97,14 +92,6 @@ function HomeContent() {
 
   const hasCustomApiUrls = !areApiUrlsEqual(apiUrls, presetApiUrls);
   const shouldPassApiUrls = apiEnvironment !== DEFAULT_API_ENVIRONMENT || hasCustomApiUrls;
-
-  // A `?env=staging|dev` deep link needs the internal config before we sign in —
-  // otherwise we'd briefly connect to production. Public envs never wait.
-  const isInternalEnv =
-    apiEnvironment !== 'production' &&
-    apiEnvironment !== 'production-eu' &&
-    apiEnvironment !== 'custom';
-  const isEnvironmentPending = isInternalEnv && !environmentsLoaded;
 
   // Get courierRest for API calls
   const courierRest = apiUrls.courier.rest;
@@ -451,11 +438,6 @@ function HomeContent() {
       </header>
 
       {/* Main Content: Left and Right Panels */}
-      {isEnvironmentPending ? (
-        <div className="flex flex-1 items-center justify-center text-muted-foreground">
-          Loading environment…
-        </div>
-      ) : (
       <CourierAuth apiUrls={shouldPassApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
         {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
@@ -527,7 +509,6 @@ function HomeContent() {
           </div>
         )}
       </CourierAuth>
-      )}
     </div>
   );
 }

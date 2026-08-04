@@ -6,10 +6,9 @@ import { type CourierApiUrls } from "@trycourier/courier-react";
 import {
   type ApiEnvironment,
   DEFAULT_API_ENVIRONMENT,
-  getAvailableEnvironments,
+  API_ENVIRONMENT_PRESETS,
   getPresetApiUrls,
 } from '@/app/lib/api-urls';
-import { useApiEnvironments } from '@/app/lib/use-api-environments';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,13 +23,17 @@ interface AdvancedTabProps {
   apiEnvironment: ApiEnvironment;
 }
 
+const ENVIRONMENT_LABELS: Record<ApiEnvironment, string> = {
+  production: 'Production',
+  'production-eu': 'Production EU',
+  staging: 'Staging',
+  dev: 'Dev',
+  custom: 'Custom',
+};
+
 export function AdvancedTab({ apiUrls, apiEnvironment }: AdvancedTabProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
-  // Load the internal environments so the switcher lists them (re-renders on arrival).
-  useApiEnvironments();
-  const environments = getAvailableEnvironments();
 
   const [selectedEnv, setSelectedEnv] = useState<ApiEnvironment>(apiEnvironment);
   const [courierRest, setCourierRest] = useState(apiUrls.courier.rest);
@@ -129,7 +132,7 @@ export function AdvancedTab({ apiUrls, apiEnvironment }: AdvancedTabProps) {
       setInboxGraphql(productionUrls.inbox.graphql);
       setInboxWebSocket(productionUrls.inbox.webSocket);
     } else {
-      const preset = getPresetApiUrls(nextEnv);
+      const preset = API_ENVIRONMENT_PRESETS[nextEnv];
       setCourierRest(preset.courier.rest);
       setCourierGraphql(preset.courier.graphql);
       setInboxGraphql(preset.inbox.graphql);
@@ -157,9 +160,9 @@ export function AdvancedTab({ apiUrls, apiEnvironment }: AdvancedTabProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {environments.map((env) => (
-                  <SelectItem key={env.id} value={env.id}>
-                    {env.label}
+                {(Object.keys(ENVIRONMENT_LABELS) as ApiEnvironment[]).map((env) => (
+                  <SelectItem key={env} value={env}>
+                    {ENVIRONMENT_LABELS[env]}
                   </SelectItem>
                 ))}
               </SelectContent>
