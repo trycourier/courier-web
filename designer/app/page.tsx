@@ -125,6 +125,11 @@ function HomeContent() {
   // Helper to update URL params
   const updateUrlParams = useCallback((key: string, value: string, defaultValue: string) => {
     const params = new URLSearchParams(searchParams.toString());
+    // Nothing to write — skip the navigation so we don't re-render the page for
+    // a URL that is already correct.
+    if ((params.get(key) ?? defaultValue) === value) {
+      return;
+    }
     if (value === defaultValue) {
       params.delete(key);
     } else {
@@ -242,8 +247,13 @@ function HomeContent() {
     setIsResizing(true);
   };
 
-  // Left Panel Content Component (reusable for desktop and mobile)
-  const LeftPanelContent = ({ userId, onClearUser, onTabChange, courierRest }: { userId: string; onClearUser: () => void; onTabChange?: () => void; courierRest?: string }) => (
+  // Left panel content (reusable for desktop and mobile).
+  //
+  // This is a render *function*, not a component: a component declared inside
+  // `HomeContent` gets a new identity on every render, which makes React
+  // unmount and remount the whole left panel (losing the send form's state)
+  // any time this page re-renders — on a URL param update, a panel resize, etc.
+  const renderLeftPanel = ({ userId, onClearUser, onTabChange, courierRest }: { userId: string; onClearUser: () => void; onTabChange?: () => void; courierRest?: string }) => (
     <Tabs
       value={activeLeftTab}
       onValueChange={(tabId: string) => {
@@ -395,11 +405,7 @@ function HomeContent() {
                 >
                   {({ userId, onClearUser }) => (
                     <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-16">
-                      <LeftPanelContent
-                        userId={userId}
-                        onClearUser={onClearUser}
-                        courierRest={courierRest}
-                      />
+                      {renderLeftPanel({ userId, onClearUser, courierRest })}
                     </div>
                   )}
                 </CourierAuth>
@@ -464,7 +470,7 @@ function HomeContent() {
               className="hidden lg:block border-r border-border flex-shrink-0 bg-background"
               style={{ width: `${leftPanelWidth}px`, minWidth: `${initialWidth}px` }}
             >
-              <LeftPanelContent userId={userId} onClearUser={onClearUser} onTabChange={undefined} courierRest={courierRest} />
+              {renderLeftPanel({ userId, onClearUser, onTabChange: undefined, courierRest })}
             </div>
 
             {/* Resize Handle - Hidden on mobile */}
