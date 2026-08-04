@@ -5,12 +5,22 @@ type SearchParamsLike = {
 };
 
 export type ApiEnvironment = 'production' | 'production-eu' | 'staging' | 'dev' | 'custom';
+type PublicApiEnvironment = 'production' | 'production-eu';
 
 export const DEFAULT_API_ENVIRONMENT: ApiEnvironment = 'production';
 
 const VALID_ENVIRONMENTS: ApiEnvironment[] = ['production', 'production-eu', 'staging', 'dev', 'custom'];
 
-export const API_ENVIRONMENT_PRESETS: Record<Exclude<ApiEnvironment, 'custom'>, Readonly<CourierApiUrls>> = {
+/**
+ * Public, world-shippable environments — these URLs are already published in the
+ * SDK and docs, so it's fine to keep them in this public repo.
+ *
+ * Internal environments (staging/dev/…) are intentionally NOT stored here. They
+ * are served at runtime by `GET /inbox-demo/api/env-urls` from server env vars
+ * (see {@link loadInternalEnvironments}) so internal hostnames never land in
+ * this public repo.
+ */
+export const API_ENVIRONMENT_PRESETS: Record<PublicApiEnvironment, Readonly<CourierApiUrls>> = {
   production: {
     courier: {
       rest: 'https://api.courier.com',
@@ -31,29 +41,66 @@ export const API_ENVIRONMENT_PRESETS: Record<Exclude<ApiEnvironment, 'custom'>, 
       webSocket: 'wss://realtime.eu.courier.io',
     },
   },
-  staging: {
-    courier: {
-      rest: 'https://api.staging-trycourier.com',
-      graphql: 'https://yubmnstah4.execute-api.us-east-1.amazonaws.com/staging/client/q',
-    },
-    inbox: {
-      graphql: 'https://4rq7n8hhjd.execute-api.us-east-1.amazonaws.com/staging/q',
-      // Cloudflare-fronted realtime vanity (TLS), mirrors prod's realtime.courier.io.
-      // The raw `inbox-staging-ws-alb-*.elb.amazonaws.com` ELB has no browser-valid
-      // TLS cert and 301-redirects on http, so a browser WebSocket can't connect to it.
-      webSocket: 'wss://realtime.courierstaging.com',
-    },
-  },
-  dev: {
-    courier: {
-      rest: 'https://api.courierdev.com',
-      graphql: 'https://api.courierdev.com/client/q',
-    },
-    inbox: {
-      graphql: 'https://inbox.courierdev.com/q',
-      webSocket: 'wss://9mrugsdnk1.execute-api.us-east-1.amazonaws.com/dev',
-    },
-  },
+};
+
+const PUBLIC_ENVIRONMENT_LABELS: Record<PublicApiEnvironment, string> = {
+  production: 'Production',
+  'production-eu': 'Production EU',
+};
+
+export interface ApiEnvironmentOption {
+  id: ApiEnvironment;
+  label: string;
+}
+
+const isPublicEnvironment = (env: string): env is PublicApiEnvironment =>
+  env === 'production' || env === 'production-eu';
+
+// --- Internal environments, fetched at runtime from the config endpoint -------
+
+interface InternalEnvironment {
+  id: string;
+  label: string;
+  apiUrls: CourierApiUrls;
+}
+
+let internalEnvironments: InternalEnvironment[] = [];
+let internalEnvironmentsLoaded = false;
+let internalEnvironmentsPromise: Promise<void> | null = null;
+
+const findInternalEnvironment = (env: string): InternalEnvironment | undefined =>
+  internalEnvironments.find((e) => e.id === env);
+
+/** True once the internal environment list has been fetched (or has failed) at least once. */
+export const areInternalEnvironmentsLoaded = (): boolean => internalEnvironmentsLoaded;
+
+/**
+ * Fetches the internal (non-public) API environments from the server config
+ * endpoint and caches them. Public prod/prod-eu URLs are baked into this file;
+ * everything else is served from server env so it never lands in this public
+ * repo. Runs at most once — safe to call repeatedly.
+ */
+export const loadInternalEnvironments = (): Promise<void> => {
+  if (internalEnvironmentsLoaded) return Promise.resolve();
+  if (internalEnvironmentsPromise) return internalEnvironmentsPromise;
+
+  internalEnvironmentsPromise = (async () => {
+    try {
+      const res = await fetch('/inbox-demo/api/env-urls');
+      if (res.ok) {
+        const data = (await res.json()) as { environments?: InternalEnvironment[] };
+        if (Array.isArray(data.environments)) {
+          internalEnvironments = data.environments;
+        }
+      }
+    } catch {
+      // Leave internalEnvironments empty on failure — only public envs remain available.
+    } finally {
+      internalEnvironmentsLoaded = true;
+    }
+  })();
+
+  return internalEnvironmentsPromise;
 };
 
 export const resolveApiEnvironment = (value: string | null): ApiEnvironment =>
@@ -61,10 +108,44 @@ export const resolveApiEnvironment = (value: string | null): ApiEnvironment =>
     ? (value as ApiEnvironment)
     : DEFAULT_API_ENVIRONMENT;
 
-export const getPresetApiUrls = (env: Exclude<ApiEnvironment, 'custom'>): CourierApiUrls => ({
-  courier: { ...API_ENVIRONMENT_PRESETS[env].courier },
-  inbox: { ...API_ENVIRONMENT_PRESETS[env].inbox },
-});
+/**
+ * The environments offered by the switcher: the public presets, any internal
+ * environments returned by the config endpoint, and Custom.
+ */
+export const getAvailableEnvironments = (): ApiEnvironmentOption[] => [
+  { id: 'production', label: PUBLIC_ENVIRONMENT_LABELS.production },
+  { id: 'production-eu', label: PUBLIC_ENVIRONMENT_LABELS['production-eu'] },
+  ...internalEnvironments.map((e) => ({ id: e.id as ApiEnvironment, label: e.label })),
+  { id: 'custom', label: 'Custom' },
+];
+
+/**
+ * Resolves the API URLs for a non-custom environment. Public environments come
+ * from {@link API_ENVIRONMENT_PRESETS}; internal ones come from the fetched
+ * config, falling back to production until the config loads (or if the env is
+ * not configured on the server).
+ */
+export const getPresetApiUrls = (env: Exclude<ApiEnvironment, 'custom'>): CourierApiUrls => {
+  if (isPublicEnvironment(env)) {
+    return {
+      courier: { ...API_ENVIRONMENT_PRESETS[env].courier },
+      inbox: { ...API_ENVIRONMENT_PRESETS[env].inbox },
+    };
+  }
+
+  const internal = findInternalEnvironment(env);
+  if (internal) {
+    return {
+      courier: { ...internal.apiUrls.courier },
+      inbox: { ...internal.apiUrls.inbox },
+    };
+  }
+
+  return {
+    courier: { ...API_ENVIRONMENT_PRESETS.production.courier },
+    inbox: { ...API_ENVIRONMENT_PRESETS.production.inbox },
+  };
+};
 
 export const areApiUrlsEqual = (left: CourierApiUrls, right: CourierApiUrls): boolean =>
   left.courier.rest === right.courier.rest &&

@@ -16,6 +16,7 @@ import {
   type TestsSharedFieldValues,
 } from '@/components/CourierTestsTab';
 import { getPresetApiUrls } from '@/app/lib/api-urls';
+import { useApiEnvironments } from '@/app/lib/use-api-environments';
 import {
   ArrowLeft as ArrowLeftBase,
   Loader2 as Loader2Base,
@@ -285,6 +286,10 @@ function TestsPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Load internal environment URLs (staging/dev/…) from the config endpoint so
+  // getPresetApiUrls resolves them; they're not stored in this public repo.
+  useApiEnvironments();
 
   const initialParsedRef = useRef<ReturnType<typeof parseTestsPageQuery> | null>(null);
   if (initialParsedRef.current === null) {
