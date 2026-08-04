@@ -1,71 +1,21 @@
 import { NextResponse } from 'next/server';
+import { parseInternalEnvironments } from '@/app/api/lib/internal-environments';
 
 /**
- * Returns the internal (non-public) API environments the inbox demo can target.
- *
- * These are kept OUT of this public repo. They are read from the server
- * `INTERNAL_API_ENVIRONMENTS` env var (a JSON array) — set locally via the
- * designer `.env`, and via the hosting platform's env (e.g. Vercel / GitHub
- * secrets) when deployed. Public production URLs stay hard-coded on the client.
- *
- * Env var shape:
- *   INTERNAL_API_ENVIRONMENTS=[
- *     {"id":"staging","label":"Staging","apiUrls":{
- *        "courier":{"rest":"...","graphql":"..."},
- *        "inbox":{"graphql":"...","webSocket":"..."}}},
- *     ...
- *   ]
+ * Returns the internal (non-public) API environments the inbox demo can target,
+ * so the client can drive the env switcher without those hostnames living in
+ * this public repo. See `app/api/lib/internal-environments.ts` for the shape of
+ * the `INTERNAL_API_ENVIRONMENTS` env var this reads.
  */
-
-interface CourierApiUrls {
-  courier: { rest: string; graphql: string };
-  inbox: { graphql: string; webSocket: string };
-}
-
-interface EnvironmentOption {
-  id: string;
-  label: string;
-  apiUrls: CourierApiUrls;
-}
-
-function isValidApiUrls(value: unknown): value is CourierApiUrls {
-  if (!value || typeof value !== 'object') return false;
-  const v = value as Record<string, unknown>;
-  const courier = v.courier as Record<string, unknown> | undefined;
-  const inbox = v.inbox as Record<string, unknown> | undefined;
-  return (
-    !!courier &&
-    typeof courier.rest === 'string' &&
-    typeof courier.graphql === 'string' &&
-    !!inbox &&
-    typeof inbox.graphql === 'string' &&
-    typeof inbox.webSocket === 'string'
-  );
-}
-
 export async function GET() {
-  const raw = process.env.INTERNAL_API_ENVIRONMENTS;
-  let environments: EnvironmentOption[] = [];
-
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        environments = parsed
-          .filter(
-            (e): e is EnvironmentOption =>
-              e && typeof e.id === 'string' && isValidApiUrls(e.apiUrls)
-          )
-          .map((e) => ({
-            id: e.id,
-            label: typeof e.label === 'string' && e.label ? e.label : e.id,
-            apiUrls: e.apiUrls,
-          }));
-      }
-    } catch {
-      // Invalid JSON — return no internal environments rather than 500ing.
-    }
-  }
+  // `authToken` is deliberately omitted: the client never needs a workspace
+  // credential. The server attaches the right one per environment when it
+  // handles /api/jwt and /api/messages.
+  const environments = parseInternalEnvironments().map(({ id, label, apiUrls }) => ({
+    id,
+    label,
+    apiUrls,
+  }));
 
   return NextResponse.json({ environments });
 }
