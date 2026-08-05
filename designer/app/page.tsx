@@ -17,6 +17,7 @@ import { CourierInboxHooks } from "@/components/CourierInboxHooks";
 import { CourierToastTab } from "@/components/CourierToastTab";
 import { CourierPreferencesTab } from "@/components/CourierPreferencesTab";
 import { InstallCommandCopy } from "@/components/InstallCommandCopy";
+import { PayloadDialogProvider } from "@/components/PayloadDialog";
 import { Button } from "@/components/ui/button";
 import { defaultFeeds, type CourierInboxFeed } from '@trycourier/courier-react';
 import {
@@ -542,7 +543,9 @@ export default function Home() {
   return (
     <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">Loading...</div>}>
       <FrameworkProvider>
-        <HomeContent />
+        <PayloadDialogProvider>
+          <HomeContent />
+        </PayloadDialogProvider>
       </FrameworkProvider>
     </Suspense>
   );

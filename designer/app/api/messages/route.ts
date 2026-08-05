@@ -75,22 +75,37 @@ export async function POST(request: Request) {
     }
 
     // Send inbox message to the user
-    const { requestId } = await courier.send.message({
-      message: {
-        to: {
-          user_id: user_id,
-        },
-        ...(template ? { template } : { content }),
-        ...(data && Object.keys(data).length > 0 && { data }),
-        metadata: {
-          tags: tags,
-        },
-        routing: {
-          method: 'single',
-          channels: ['inbox'],
-        },
+    const message = {
+      to: {
+        user_id: user_id,
       },
-    });
+      ...(template ? { template } : { content }),
+      ...(data && Object.keys(data).length > 0 && { data }),
+      metadata: {
+        tags: tags,
+      },
+      // Only force the inbox channel for inline content, which has no routing of
+      // its own. A template carries its own routing strategy, and overriding it
+      // here would mean the designer previews something other than what the
+      // template actually does in production.
+      ...(template
+        ? {}
+        : {
+          routing: {
+            method: 'single',
+            channels: ['inbox'],
+          },
+        }),
+    };
+
+    // Log the exact payload we hand to the Send API. This is the thing you want
+    // when a message doesn't show up the way you expect — routing, channels and
+    // content as actually sent, not as intended.
+    console.log(`[send] ${courierRest ?? 'default'}\n${JSON.stringify({ message }, null, 2)}`);
+
+    const { requestId } = await courier.send.message({ message });
+
+    console.log(`[send] accepted requestId=${requestId}`);
 
     return NextResponse.json({
       success: true,
