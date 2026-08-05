@@ -3,7 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { CourierInboxPopupMenu, type CourierInboxFeed, type CourierInboxTheme, type CourierInboxPopupMenuElement } from '@trycourier/courier-react';
 import { useInboxComponentKey } from './useInboxComponentKey';
-import { createMessageClickHandler, createMessageActionClickHandler } from './inboxHandlers';
+import { useMessageClickHandlers } from './messageClickHandlers';
 import type { ColorMode } from './ThemeTab';
 
 interface CourierInboxPopupMenuTabProps {
@@ -15,8 +15,7 @@ interface CourierInboxPopupMenuTabProps {
 
 export function CourierInboxPopupMenuTab({ feeds, lightTheme, darkTheme, colorMode }: CourierInboxPopupMenuTabProps) {
   const componentKey = useInboxComponentKey(feeds, lightTheme, darkTheme, colorMode);
-  const handleMessageClick = createMessageClickHandler();
-  const handleMessageActionClick = createMessageActionClickHandler();
+  const { onMessageClick, onMessageActionClick } = useMessageClickHandlers();
   const popupRef = useRef<CourierInboxPopupMenuElement>(null);
 
   // Open the popup by default when the component mounts
@@ -36,8 +35,8 @@ export function CourierInboxPopupMenuTab({ feeds, lightTheme, darkTheme, colorMo
         ref={popupRef}
         key={componentKey}
         feeds={feeds}
-        onMessageClick={handleMessageClick}
-        onMessageActionClick={handleMessageActionClick}
+        onMessageClick={onMessageClick}
+        onMessageActionClick={onMessageActionClick}
         lightTheme={lightTheme}
         darkTheme={darkTheme}
         mode={colorMode}

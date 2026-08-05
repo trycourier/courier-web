@@ -1,6 +1,7 @@
 'use client';
 
-import { CourierToast, type CourierToastItemClickEvent } from '@trycourier/courier-react';
+import { CourierToast } from '@trycourier/courier-react';
+import { useMessageClickHandlers } from './messageClickHandlers';
 import type { ColorMode } from './ThemeTab';
 
 interface CourierToastTabProps {
@@ -8,13 +9,7 @@ interface CourierToastTabProps {
 }
 
 export function CourierToastTab({ colorMode }: CourierToastTabProps) {
-  const handleToastItemClick = ({ message }: CourierToastItemClickEvent) => {
-    alert(JSON.stringify(message, null, 2));
-  };
-
-  const handleToastItemActionClick = ({ action, message }: { action: unknown; message: unknown }) => {
-    alert(`Action clicked!\n\nAction: ${JSON.stringify(action, null, 2)}\n\nMessage: ${JSON.stringify(message, null, 2)}`);
-  };
+  const { onMessageClick, onMessageActionClick } = useMessageClickHandlers();
 
   return (
     <div className="relative h-full p-5">
@@ -24,8 +19,8 @@ export function CourierToastTab({ colorMode }: CourierToastTabProps) {
       <div className="relative mt-5">
         <CourierToast
           mode={colorMode}
-          onToastItemClick={handleToastItemClick}
-          onToastItemActionClick={handleToastItemActionClick}
+          onToastItemClick={onMessageClick}
+          onToastItemActionClick={onMessageActionClick}
           style={{
             position: 'absolute',
             top: '0px',
