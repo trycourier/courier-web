@@ -39,5 +39,8 @@ jobs:
           TENANT_ID: ${{ secrets.TENANT_ID }}
           # The send end-to-end suite skips itself when these are unset.
           COURIER_E2E_API_KEY: ${{ secrets.COURIER_E2E_API_KEY }}
+          COURIER_E2E_USER_ID: ${{ secrets.COURIER_E2E_USER_ID }}
+          COURIER_E2E_TENANT_USER_ID: ${{ secrets.COURIER_E2E_TENANT_USER_ID }}
+          COURIER_E2E_TENANT_ID: ${{ secrets.COURIER_E2E_TENANT_ID }}
           COURIER_E2E_TEMPLATE_V1_ID: ${{ secrets.COURIER_E2E_TEMPLATE_V1_ID }}
           COURIER_E2E_TEMPLATE_V2_ID: ${{ secrets.COURIER_E2E_TEMPLATE_V2_ID }}

@@ -2,13 +2,9 @@ import { CourierClient } from '../client/courier-client';
 import { InboxMessage } from '../types/inbox';
 import { InboxMessageEvent } from '../types/socket/protocol/messages';
 import {
-  addUserToTenant,
   clickTrackingId,
   correlationTag,
-  createTenant,
   deferred,
-  deleteProfile,
-  deleteTenant,
   issueUserToken,
   sendE2ECredentials,
   sendMessage,
@@ -31,14 +27,16 @@ import { env } from './utils';
  *   3. clicking it — with the tracking id off the socket payload, as the inbox UI does
  *      the moment a message arrives — is accepted.
  *
- * The suite provisions its own users and tenant per run, so it neither depends on nor
- * pollutes the fixtures the other suites read.
+ * The users and tenant are fixed fixtures, named by the COURIER_E2E_* secrets: one user
+ * that belongs to no tenant, one that belongs to the test tenant, and the tenant itself.
+ * They are separate from the fixtures the other suites read, so this suite's traffic
+ * never shows up in theirs.
  */
 
 const credentials = sendE2ECredentials();
 
-// This suite provisions tenants and spends a workspace token, so it opts out when its
-// secrets are absent instead of failing the whole courier-js run. See `sendE2ECredentials`.
+// This suite spends a workspace token, so it opts out when its secrets are absent
+// instead of failing the whole courier-js run. See `sendE2ECredentials`.
 const describeSend = credentials ? describe : describe.skip;
 
 /**
@@ -51,11 +49,10 @@ const TEST_TIMEOUT_MS = 420_000;
 const SOCKET_TIMEOUT_MS = 360_000;
 
 describeSend('Send to inbox (end to end)', () => {
-  const suiteId = crypto.randomUUID().slice(0, 8);
   /** Belongs to no tenant, so its messages stay unscoped. See `recipients` below. */
-  const soloUserId = `e2e-send-solo-${suiteId}`;
-  const tenantUserId = `e2e-send-member-${suiteId}`;
-  const tenantId = `e2e-send-tenant-${suiteId}`;
+  const soloUserId = credentials!.userId;
+  const tenantUserId = credentials!.tenantUserId;
+  const tenantId = credentials!.tenantId;
 
   interface Delivery {
     tag: string;
@@ -191,9 +188,6 @@ describeSend('Send to inbox (end to end)', () => {
   }
 
   beforeAll(async () => {
-    await createTenant(credentials!, tenantId);
-    await addUserToTenant(credentials!, tenantUserId, tenantId);
-
     clients.set(
       soloUserId,
       makeClient(soloUserId, await issueUserToken(credentials!, soloUserId))
@@ -276,21 +270,12 @@ describeSend('Send to inbox (end to end)', () => {
   }, TEST_TIMEOUT_MS);
 
   afterAll(async () => {
-    // Let every cell finish first: a bailed-out run can leave cells still waiting, and
-    // tearing down under them turns one real failure into several confusing ones.
+    // Let every cell finish before closing the sockets it may still be waiting on.
     await Promise.allSettled([...deliveries.values()]);
 
     for (const client of clients.values()) {
       client.inbox.socket.close();
     }
-
-    // Don't leave this run's provisioning behind — and don't let a cleanup error mask
-    // the test failure that matters.
-    await Promise.allSettled([
-      deleteTenant(credentials!, tenantId),
-      deleteProfile(credentials!, soloUserId),
-      deleteProfile(credentials!, tenantUserId),
-    ]);
   }, TEST_TIMEOUT_MS);
 
   for (const recipient of recipients) {

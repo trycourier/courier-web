@@ -11,10 +11,22 @@ import { env } from './utils';
  * test file, so it is obvious which assertions exercise the published package.
  */
 
-/** Credentials the send suite needs on top of the ones the other suites use. */
+/** Credentials and fixture ids the send suite needs on top of the other suites'. */
 export interface SendE2ECredentials {
-  /** Workspace auth token, used for provisioning and for `POST /send`. */
+  /** Workspace auth token, used for `POST /send` and for minting the user JWTs. */
   apiKey: string;
+  /**
+   * A user that belongs to **no** tenant.
+   *
+   * A send to a user who belongs to exactly one tenant is auto-scoped to it, so the
+   * "send to a user" case needs a tenant-less recipient for `accountId` to reflect the
+   * recipient shape under test rather than the recipient's membership.
+   */
+  userId: string;
+  /** A user that belongs to {@link tenantId}. */
+  tenantUserId: string;
+  /** The tenant {@link tenantUserId} belongs to. */
+  tenantId: string;
   /** A classic ("v1") notification template that routes to the inbox channel. */
   templateV1Id: string;
   /** A notification ("v2") template that routes to the inbox channel. */
@@ -25,20 +37,31 @@ export interface SendE2ECredentials {
 /**
  * Reads the send-suite credentials, or returns `null` when they are not configured.
  *
- * Unlike the read-only suites, this one provisions tenants and users and spends a
- * workspace token, so it opts out rather than failing when its secrets are absent —
- * a fork or a contributor without the token still gets a green courier-js run.
+ * Unlike the read-only suites, this one spends a workspace token, so it opts out rather
+ * than failing when its secrets are absent — a fork or a contributor without the token
+ * still gets a green courier-js run.
  */
 export function sendE2ECredentials(): SendE2ECredentials | null {
   const apiKey = process.env.COURIER_E2E_API_KEY;
+  const userId = process.env.COURIER_E2E_USER_ID;
+  const tenantUserId = process.env.COURIER_E2E_TENANT_USER_ID;
+  const tenantId = process.env.COURIER_E2E_TENANT_ID;
   const templateV1Id = process.env.COURIER_E2E_TEMPLATE_V1_ID;
   const templateV2Id = process.env.COURIER_E2E_TEMPLATE_V2_ID;
 
-  if (!apiKey || !templateV1Id || !templateV2Id) {
+  if (!apiKey || !userId || !tenantUserId || !tenantId || !templateV1Id || !templateV2Id) {
     return null;
   }
 
-  return { apiKey, templateV1Id, templateV2Id, restUrl: env('COURIER_REST_URL') };
+  return {
+    apiKey,
+    userId,
+    tenantUserId,
+    tenantId,
+    templateV1Id,
+    templateV2Id,
+    restUrl: env('COURIER_REST_URL'),
+  };
 }
 
 async function request(
@@ -63,28 +86,6 @@ async function request(
   }
 
   return text ? JSON.parse(text) : null;
-}
-
-export function createTenant(credentials: SendE2ECredentials, tenantId: string): Promise<unknown> {
-  return request(credentials, 'PUT', `/tenants/${tenantId}`, {
-    name: `courier-js send e2e ${tenantId}`,
-  });
-}
-
-export function deleteTenant(credentials: SendE2ECredentials, tenantId: string): Promise<unknown> {
-  return request(credentials, 'DELETE', `/tenants/${tenantId}`);
-}
-
-export function addUserToTenant(
-  credentials: SendE2ECredentials,
-  userId: string,
-  tenantId: string
-): Promise<unknown> {
-  return request(credentials, 'PUT', `/users/${userId}/tenants/${tenantId}`, { profile: {} });
-}
-
-export function deleteProfile(credentials: SendE2ECredentials, userId: string): Promise<unknown> {
-  return request(credentials, 'DELETE', `/profiles/${userId}`);
 }
 
 /** Mints the user JWT the SDK client authenticates with, the same way a customer's backend would. */
