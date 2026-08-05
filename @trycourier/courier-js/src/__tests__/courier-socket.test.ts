@@ -1,5 +1,6 @@
 import { CourierClientOptions } from "../client/courier-client";
 import { CourierSocket } from "../socket/courier-socket";
+import { INBOX_WIRE_PROTOCOL_VERSION } from "../socket/version";
 import { CourierApiUrls } from "../types/courier-api-urls";
 import { ServerMessage, ServerResponse } from "../types/socket/protocol/messages";
 import { CourierUserAgent } from "../utils/courier-user-agent";
@@ -115,7 +116,12 @@ describe('CourierSocket', () => {
       const url = new URL(capturedUrl);
       expect(url.searchParams.get('auth')).toBe(OPTIONS.accessToken);
       expect(url.searchParams.get('cid')).toBe(OPTIONS.connectionId);
-      expect(url.searchParams.get('iwpv')).toBe('v1');
+      // v2 is the canonical payload: trackingIds at the root, no nested duplicate.
+      // Pinned deliberately — the server downgrades an unknown version to the
+      // legacy protocol without erroring, so a wrong value here is a silent
+      // regression in tracking rather than a visible failure.
+      expect(url.searchParams.get('iwpv')).toBe(INBOX_WIRE_PROTOCOL_VERSION);
+      expect(INBOX_WIRE_PROTOCOL_VERSION).toBe('v2');
       expect(url.searchParams.get('userId')).toBe(OPTIONS.userId);
       expect(url.searchParams.get('sdk')).toBe(USER_AGENT_CLIENT_NAME);
       expect(url.searchParams.get('sdkv')).toBe(USER_AGENT_CLIENT_VERSION);

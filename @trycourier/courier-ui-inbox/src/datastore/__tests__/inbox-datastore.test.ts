@@ -13,8 +13,11 @@ const mockOpen = jest.fn();
 const mockBatchOpen = jest.fn();
 const mockRead = jest.fn();
 const mockUnread = jest.fn();
+const mockClick = jest.fn();
 const mockAddMessageEventListener = jest.fn();
 const mockConnect = jest.fn();
+const mockLoggerInfo = jest.fn();
+const mockLoggerError = jest.fn();
 
 // Create mock CourierInboxSocket with mutable properties
 const mockSocket = {
@@ -39,14 +42,15 @@ jest.mock("@trycourier/courier-js", () => ({
           batchOpen: (ids: string[]) => mockBatchOpen(ids),
           read: () => mockRead(),
           unread: () => mockUnread(),
+          click: (props: { messageId: string; trackingId: string }) => mockClick(props),
           get socket() {
             return mockSocket;
           },
         },
         options: {
           logger: {
-            error: jest.fn(),
-            info: jest.fn(),
+            error: (...args: unknown[]) => mockLoggerError(...args),
+            info: (...args: unknown[]) => mockLoggerInfo(...args),
             warn: jest.fn(),
           },
           userId: "123",
@@ -745,6 +749,94 @@ describe("CourierInboxDatastore", () => {
       // Verify onError was called
       expect(onErrorMock).toHaveBeenCalledTimes(1);
       expect(onErrorMock).toHaveBeenCalledWith(expect.any(Error));
+    });
+  });
+
+  /**
+   * Click tracking reads `trackingIds` from the root of the message. Under iwpv=v1
+   * the socket nested them under `data`, so a socket-delivered message tracked
+   * nothing here while the same message tracked fine after a refetch. iwpv=v2
+   * removes that split; these cover the read sites that depend on it.
+   */
+  describe("click tracking", () => {
+    it("tracks a message click using the root-level clickTrackingId", async () => {
+      const message: InboxMessage = {
+        ...getMessage(),
+        trackingIds: { clickTrackingId: "click-1" },
+      };
+
+      await CourierInboxDatastore.shared.clickMessage({ message });
+
+      expect(mockClick).toHaveBeenCalledTimes(1);
+      expect(mockClick).toHaveBeenCalledWith({
+        messageId: message.messageId,
+        trackingId: "click-1",
+      });
+    });
+
+    // Regression: a missing id used to return in total silence, which made a wire
+    // shape problem indistinguishable from a successful no-op.
+    it("logs instead of silently skipping when clickTrackingId is absent", async () => {
+      const message = getMessage();
+
+      await CourierInboxDatastore.shared.clickMessage({ message });
+
+      expect(mockClick).not.toHaveBeenCalled();
+      expect(mockLoggerInfo).toHaveBeenCalledWith(
+        expect.stringContaining("no clickTrackingId")
+      );
+    });
+
+    it("ignores a nested data.trackingIds copy, which v2 does not send", async () => {
+      const message: InboxMessage = {
+        ...getMessage(),
+        data: { trackingIds: { clickTrackingId: "nested-should-be-ignored" } },
+      };
+
+      await CourierInboxDatastore.shared.clickMessage({ message });
+
+      expect(mockClick).not.toHaveBeenCalled();
+    });
+
+    // Action clicks were never tracked at all, under any protocol version.
+    it("tracks an action click using the per-action trackingId", async () => {
+      const message = getMessage();
+      const action = { content: "Open", href: "https://x", data: { trackingId: "action-1" } };
+
+      await CourierInboxDatastore.shared.clickMessageAction({ message, action });
+
+      expect(mockClick).toHaveBeenCalledTimes(1);
+      expect(mockClick).toHaveBeenCalledWith({
+        messageId: message.messageId,
+        trackingId: "action-1",
+      });
+    });
+
+    it("logs when an action carries no trackingId", async () => {
+      const message = getMessage();
+
+      await CourierInboxDatastore.shared.clickMessageAction({
+        message,
+        action: { content: "Open", href: "https://x" },
+      });
+
+      expect(mockClick).not.toHaveBeenCalled();
+      expect(mockLoggerInfo).toHaveBeenCalledWith(
+        expect.stringContaining("no trackingId on the action")
+      );
+    });
+
+    it("swallows a click failure rather than throwing at the caller", async () => {
+      mockClick.mockRejectedValueOnce(new Error("network"));
+      const message: InboxMessage = {
+        ...getMessage(),
+        trackingIds: { clickTrackingId: "click-1" },
+      };
+
+      await expect(
+        CourierInboxDatastore.shared.clickMessage({ message })
+      ).resolves.toBeUndefined();
+      expect(mockLoggerError).toHaveBeenCalled();
     });
   });
 });

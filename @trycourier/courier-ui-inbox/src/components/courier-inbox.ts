@@ -386,8 +386,10 @@ export class CourierInbox extends CourierBaseElement {
         this._onMessageClick?.({ message, index });
       },
       onMessageActionClick: (message, action, index) => {
-
-        // TODO: Track action click?
+        // Action clicks were never recorded under any protocol version. Tracks on
+        // the per-action id (action.data.trackingId), which identifies which button
+        // was pressed — distinct from the message-level clickTrackingId used above.
+        CourierInboxDatastore.shared.clickMessageAction({ message, action });
 
         this.dispatchEvent(new CustomEvent('message-action-click', {
           detail: { message, action, index },

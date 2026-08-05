@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { Courier, InboxAction, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
@@ -399,24 +399,85 @@ export class CourierInboxDatastore {
    * @param message - The message that was clicked
    */
   public async clickMessage({ message }: { message: InboxMessage }): Promise<void> {
+    // A missing clickTrackingId used to return here in total silence, which made a
+    // wire-shape problem look like a backend failure: socket-delivered messages
+    // nested trackingIds under `data`, this reads only the root, and the guard
+    // below swallowed the difference with no signal. iwpv=v2 fixes the shape; the
+    // log makes any remaining absence visible instead of indistinguishable from
+    // a successful no-op.
+    if (!message.trackingIds?.clickTrackingId) {
+      Courier.shared.client?.options.logger?.info(
+        `[${CourierInboxDatastore.TAG}] Not tracking click for message ${message.messageId}: no clickTrackingId on the message.`
+      );
+      return;
+    }
+
     // Clicking a message does not mutate it locally, but we still want error handling
-    if (message.trackingIds?.clickTrackingId) {
-      try {
-        await Courier.shared.client?.inbox.click({
-          messageId: message.messageId,
-          trackingId: message.trackingIds.clickTrackingId
-        });
-      } catch (error) {
-        // Log error
-        Courier.shared.client?.options.logger?.error(`[${CourierInboxDatastore.TAG}] Error clicking message:`, error);
+    try {
+      await Courier.shared.client?.inbox.click({
+        messageId: message.messageId,
+        trackingId: message.trackingIds.clickTrackingId
+      });
+    } catch (error) {
+      // Log error
+      Courier.shared.client?.options.logger?.error(`[${CourierInboxDatastore.TAG}] Error clicking message:`, error);
 
-        // Notify listeners of error
-        this._listeners.forEach(listener => {
-          listener.events.onError?.(error as Error);
-        });
+      // Notify listeners of error
+      this._listeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
 
-        // Do NOT re-throw - swallow the error
-      }
+      // Do NOT re-throw - swallow the error
+    }
+  }
+
+  /**
+   * Track a click event for an action button on a message.
+   *
+   * Action clicks were never tracked at all — `onMessageActionClick` carried a
+   * standing `// TODO: Track action click?` and dispatched the event without
+   * recording anything, under any protocol version.
+   *
+   * Note this uses a different id from {@link clickMessage}: the per-action
+   * `action.data.trackingId`, not the message-level `trackingIds.clickTrackingId`.
+   * Both are minted server-side, but the action id identifies which button was
+   * pressed, so a message-level click id would lose that.
+   *
+   * @param message - The message whose action was clicked
+   * @param action - The action that was clicked
+   */
+  public async clickMessageAction({
+    message,
+    action
+  }: {
+    message: InboxMessage;
+    action: InboxAction;
+  }): Promise<void> {
+    const trackingId = action.data?.trackingId;
+
+    if (!trackingId) {
+      Courier.shared.client?.options.logger?.info(
+        `[${CourierInboxDatastore.TAG}] Not tracking action click for message ${message.messageId}: no trackingId on the action.`
+      );
+      return;
+    }
+
+    try {
+      await Courier.shared.client?.inbox.click({
+        messageId: message.messageId,
+        trackingId
+      });
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error(
+        `[${CourierInboxDatastore.TAG}] Error clicking message action:`,
+        error
+      );
+
+      this._listeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
+
+      // Do NOT re-throw - swallow the error, consistent with clickMessage
     }
   }
 

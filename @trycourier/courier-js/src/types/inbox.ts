@@ -45,6 +45,37 @@ export interface InboxAction {
   style?: string;
 }
 
+/** Tracking ids for a message. Always at the root of the message — see below. */
+export interface InboxMessageTrackingIds {
+  archiveTrackingId?: string;
+  channelTrackingId?: string;
+  clickTrackingId?: string;
+  deliverTrackingId?: string;
+  openTrackingId?: string;
+  readTrackingId?: string;
+  unreadTrackingId?: string;
+}
+
+/**
+ * Rendered message body.
+ *
+ * Mirrors the GraphQL `FullMessage.content` field. Delivered over the socket on
+ * `iwpv=v2`; the GraphQL list query does not return it.
+ */
+export interface InboxMessageContent {
+  html?: string;
+  elemental?: unknown[];
+}
+
+/**
+ * A single inbox message.
+ *
+ * One shape regardless of how it arrived. A message delivered live over the
+ * socket and the same message fetched from GraphQL used to disagree — most
+ * visibly `trackingIds`, which the socket nested under `data` while GraphQL
+ * returned it at the root. `iwpv=v2` removes that divergence, so `trackingIds` is
+ * read from the root and nowhere else.
+ */
 export interface InboxMessage {
   messageId: string;
   /** The account / sub-tenant this message is scoped to, if any. */
@@ -53,20 +84,32 @@ export interface InboxMessage {
   body?: string;
   preview?: string;
   actions?: InboxAction[];
+  /**
+   * Arbitrary key/value data sent with the message.
+   *
+   * Does **not** contain `trackingIds`, `brandId` or `trackingUrl` — those are
+   * promoted to the root, matching how the message is indexed and returned by
+   * GraphQL.
+   */
   data?: Record<string, any>;
   created?: string;
   archived?: string;
   read?: string;
   opened?: string;
   tags?: string[];
-  trackingIds?: {
-    archiveTrackingId?: string;
-    openTrackingId?: string;
-    clickTrackingId?: string;
-    deliverTrackingId?: string;
-    unreadTrackingId?: string;
-    readTrackingId?: string;
-  };
+  /** URL of the message icon, if the brand or message specifies one. */
+  icon?: string;
+  /** Present only when the message is pinned to a slot. */
+  pinned?: { slotId?: string };
+  /** The user this message belongs to. */
+  userId?: string;
+  trackingIds?: InboxMessageTrackingIds;
+  /** Rendered body. Socket-delivered messages only. */
+  content?: InboxMessageContent;
+  /** Brand that rendered this message. Promoted out of `data`. */
+  brandId?: string;
+  /** Channel tracking URL for this message. Promoted out of `data`. */
+  trackingUrl?: string;
 }
 
 export interface CourierGetInboxMessageResponse {
