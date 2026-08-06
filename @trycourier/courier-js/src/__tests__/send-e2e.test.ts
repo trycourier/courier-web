@@ -74,6 +74,9 @@ describeSend('Send to inbox (end to end)', () => {
   /** The two clients a browser would hold; created once so their sockets stay open. */
   const clients = new Map<string, CourierClient>();
 
+  /** Tokens by user, so the scoping checks can build extra clients at other scopes. */
+  const jwts = new Map<string, string>();
+
   interface RecipientCase {
     name: string;
     userId: () => string;
@@ -188,14 +191,11 @@ describeSend('Send to inbox (end to end)', () => {
   }
 
   beforeAll(async () => {
-    clients.set(
-      soloUserId,
-      makeClient(soloUserId, await issueUserToken(credentials!, soloUserId))
-    );
-    clients.set(
-      tenantUserId,
-      makeClient(tenantUserId, await issueUserToken(credentials!, tenantUserId), tenantId)
-    );
+    jwts.set(soloUserId, await issueUserToken(credentials!, soloUserId));
+    jwts.set(tenantUserId, await issueUserToken(credentials!, tenantUserId));
+
+    clients.set(soloUserId, makeClient(soloUserId, jwts.get(soloUserId)!));
+    clients.set(tenantUserId, makeClient(tenantUserId, jwts.get(tenantUserId)!, tenantId));
 
     // Register a slot per cell before anything is sent, so a fast delivery can't arrive
     // before there is somewhere to put it.
@@ -314,4 +314,67 @@ describeSend('Send to inbox (end to end)', () => {
       }
     });
   }
+
+  describe('tenant scoping', () => {
+    /**
+     * The scope a message must NOT be visible under.
+     *
+     * For the untenanted recipient that is the tenant-scoped client. For the tenanted
+     * ones it is a client scoped to some other tenant — a tenant that does not exist is
+     * enough, since the point is that the `accountId` filter is applied at all. Drop the
+     * filter and these reads return the whole inbox instead of nothing.
+     */
+    function wrongScopeClient(recipient: RecipientCase): CourierClient {
+      const userId = recipient.userId();
+      const wrongTenantId = recipient.readTenantId() ? `${tenantId}-other` : tenantId;
+      return makeClient(userId, jwts.get(userId)!, wrongTenantId);
+    }
+
+    const countTagged = async (client: CourierClient, tag: string) => {
+      const response = await client.inbox.getMessages({
+        filter: { tags: [tag] },
+        paginationLimit: 10,
+      });
+      return (response.data?.messages?.nodes ?? []).length;
+    };
+
+    for (const recipient of recipients) {
+      for (const content of contents) {
+        it(
+          `shows ${content.name} sent to ${recipient.name} under that scope only`,
+          async () => {
+            const { tag } = await deliveries.get(key(recipient, content))!;
+
+            // Exactly one: the read is scoped tightly enough to return this message and
+            // nothing else, rather than returning the inbox and happening to include it.
+            expect(await countTagged(clients.get(recipient.userId())!, tag)).toBe(1);
+
+            expect(await countTagged(wrongScopeClient(recipient), tag)).toBe(0);
+          },
+          TEST_TIMEOUT_MS
+        );
+      }
+    }
+  });
+
+  describe('tenant isolation', () => {
+    it(
+      'keeps a tenant fan-out out of a non-member\'s inbox',
+      async () => {
+        // Reuses the tenant send already in flight rather than sending again. Its
+        // delivery to the member is asserted above, so by the time this runs the fan-out
+        // has happened and an empty result here means "not a recipient", not "too early".
+        const { tag } = await deliveries.get(`a tenant/a content message`)!;
+
+        const outsider = clients.get(soloUserId)!;
+        const response = await outsider.inbox.getMessages({
+          filter: { tags: [tag] },
+          paginationLimit: 10,
+        });
+
+        expect(response.data?.messages?.nodes ?? []).toHaveLength(0);
+      },
+      TEST_TIMEOUT_MS
+    );
+  });
 });
