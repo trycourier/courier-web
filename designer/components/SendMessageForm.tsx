@@ -47,6 +47,7 @@ interface HistoryItem {
   title: string;
   body: string;
   templateId: string;
+  tenantId: string;
   tags: string;
   actions: { content: string; href: string }[];
   variables: { key: string; value: string }[];
@@ -67,6 +68,7 @@ export function SendMessageForm({
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [templateId, setTemplateId] = useState(initialTemplateId ?? '');
+  const [tenantId, setTenantId] = useState('');
   const [tags, setTags] = useState('');
 
   // `sendMode`/`initialTemplateId` seed the initial state from the URL on mount.
@@ -93,6 +95,7 @@ export function SendMessageForm({
     setTitle(item.title);
     setBody(item.body);
     changeTemplateId(item.templateId);
+    setTenantId(item.tenantId);
     setTags(item.tags);
     setActions(
       item.actions.map((a) => ({
@@ -158,6 +161,7 @@ export function SendMessageForm({
           userId,
           templateId: templateId.trim(),
           data: varsRecord,
+          tenantId: tenantId.trim() || undefined,
           tags: tagsArray.length > 0 ? tagsArray : undefined,
           apiKey,
           courierRest,
@@ -178,6 +182,7 @@ export function SendMessageForm({
           userId,
           title: resolvedTitle,
           body: resolvedBody,
+          tenantId: tenantId.trim() || undefined,
           tags: tagsArray.length > 0 ? tagsArray : undefined,
           actions: validActions.length > 0 ? validActions : undefined,
           apiKey,
@@ -191,6 +196,7 @@ export function SendMessageForm({
             title: title.trim(),
             body: body.trim(),
             templateId: templateId.trim(),
+            tenantId: tenantId.trim(),
             tags,
             actions: actions.map((a) => ({ content: a.content, href: a.href })),
             variables: variables.map((v) => ({ key: v.key, value: v.value })),
@@ -275,6 +281,23 @@ export function SendMessageForm({
           </div>
         )}
         <hr className="border-border my-4" />
+        <div className="space-y-2">
+          <Label htmlFor="tenantId">
+            Tenant ID <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </Label>
+          <Input
+            id="tenantId"
+            type="text"
+            value={tenantId}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTenantId(e.target.value)}
+            placeholder="e.g., example-tenant"
+            className="font-mono"
+          />
+          <p className="text-muted-foreground text-xs">
+            Sends in this tenant&apos;s context, so the message only appears for a session
+            signed in with the same tenant. Leave empty to send untenanted.
+          </p>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="tags">
             Tags <span className="text-muted-foreground text-xs font-normal">(optional, comma-separated)</span>

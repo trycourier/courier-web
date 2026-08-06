@@ -26,6 +26,8 @@ export interface SendMessageOptions {
   templateId?: string;
   /** Template variables / message data. */
   data?: Record<string, string>;
+  /** Sends the message in this tenant's context. Omit to send untenanted. */
+  tenantId?: string;
   tags?: string[];
   actions?: MessageAction[];
   apiKey?: string;
@@ -98,6 +100,7 @@ export class CourierRepo {
       body,
       templateId,
       data,
+      tenantId,
       tags,
       actions,
       apiKey,
@@ -113,6 +116,7 @@ export class CourierRepo {
         user_id: userId,
         ...(templateId ? { template: templateId } : { title, body }),
         ...(data && Object.keys(data).length > 0 && { data }),
+        ...(tenantId && { tenant_id: tenantId }),
         tags,
         actions,
         ...(apiKey && { api_key: apiKey }),

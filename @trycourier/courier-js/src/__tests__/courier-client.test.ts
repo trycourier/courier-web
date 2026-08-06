@@ -27,10 +27,13 @@ describe('CourierClient', () => {
   });
 
   it('should validate client initialization with all options', () => {
+    // Authenticates with a JWT only. Passing a public API key alongside it would exercise
+    // nothing but the "the public API key will be ignored" path, and with showLogs on it
+    // prints two warnings on every run. Public-API-key storage is covered by the minimal
+    // initialization test below.
     const testClient = new CourierClient({
       userId: TEST_USER_ID,
       jwt: TEST_JWT,
-      publicApiKey: TEST_PUBLIC_API_KEY,
       tenantId: TEST_TENANT_ID,
       showLogs: true,
       apiUrls: TEST_API_URLS
@@ -38,7 +41,6 @@ describe('CourierClient', () => {
 
     expect(testClient.options.userId).toBe(TEST_USER_ID);
     expect(testClient.options.jwt).toBe(TEST_JWT);
-    expect(testClient.options.publicApiKey).toBe(TEST_PUBLIC_API_KEY);
     expect(testClient.options.connectionId).toBe(CONNECTION_ID);
     expect(testClient.options.tenantId).toBe(TEST_TENANT_ID);
     expect(testClient.options.showLogs).toBe(true);

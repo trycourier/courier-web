@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     // Read user_id and either a template id or inline title/body, plus optional
     // data, tags, actions, api_key, and courierRest from request body
     const body = await request.json();
-    const { user_id, title, body: messageBody, template, data, tags, actions, api_key, courierRest } = body;
+    const { user_id, title, body: messageBody, template, data, tenant_id, tags, actions, api_key, courierRest } = body;
 
     if (!user_id) {
       return NextResponse.json(
@@ -78,6 +78,10 @@ export async function POST(request: Request) {
     const message = {
       to: {
         user_id: user_id,
+        // Scoping a user send to a tenant goes through `context`. The Send API rejects
+        // `to.tenant_id` next to a `user_id` — that shape means "send to the whole
+        // tenant", which is a different recipient, not a modifier on this one.
+        ...(tenant_id ? { context: { tenant_id } } : {}),
       },
       ...(template ? { template } : { content }),
       ...(data && Object.keys(data).length > 0 && { data }),
