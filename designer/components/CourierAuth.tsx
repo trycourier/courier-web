@@ -43,6 +43,11 @@ interface CourierAuthProps {
   children: (props: { userId: string; onClearUser: () => void }) => ReactNode;
   apiUrls?: CourierApiUrls;
   overrideUserId?: string;
+  /**
+   * Signs in scoped to this tenant, so the inbox only shows that tenant's messages.
+   * Omit for an unscoped session.
+   */
+  tenantId?: string;
   apiKey?: string;
   hideLoadingState?: boolean;
   /** localStorage key for the anonymous user id (default: inbox demo). Use `COURIER_TESTS_USER_ID_STORAGE_KEY` on /tests. */
@@ -58,6 +63,7 @@ export function CourierAuth({
   children,
   apiUrls,
   overrideUserId,
+  tenantId,
   apiKey,
   hideLoadingState,
   userIdStorageKey = COURIER_DEMO_USER_ID_STORAGE_KEY,
@@ -73,6 +79,10 @@ export function CourierAuth({
   const userId = overrideUserId || storedUserId;
   const [initializedUserId, setInitializedUserId] = useState<string | null>(null);
   const [initializedApiUrls, setInitializedApiUrls] = useState<CourierApiUrls | undefined>(undefined);
+  const [initializedTenantId, setInitializedTenantId] = useState<string | undefined>(undefined);
+  const [initializedApiKey, setInitializedApiKey] = useState<string | undefined>(undefined);
+  /** Kept so a tenant switch can re-scope the feed without minting a new token. */
+  const [jwt, setJwt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(() => !skipJwtInitialization);
   const [error, setError] = useState<string | null>(null);
   const repo = new CourierRepo();
@@ -88,26 +98,57 @@ export function CourierAuth({
     if (skipJwtInitialization) {
       courier.shared.signIn({
         userId,
+        ...(tenantId && { tenantId }),
         ...(apiKey && { publicApiKey: apiKey }),
         ...(apiUrls && { apiUrls }),
       });
       setInitializedUserId(userId);
       setInitializedApiUrls(apiUrls);
+      setInitializedTenantId(tenantId);
       setIsLoading(false);
       setError(null);
       return;
     }
 
-    // Only initialize if userId changed, apiUrls changed, or hasn't been initialized yet
-    if (initializedUserId === userId && apiUrlsKey === initializedApiUrlsKey) {
+    // What the token is minted for. The tenant is deliberately not part of this: it
+    // scopes the feed, it does not authenticate.
+    const credentialUnchanged =
+      initializedUserId === userId &&
+      apiUrlsKey === initializedApiUrlsKey &&
+      initializedApiKey === apiKey;
+
+    if (credentialUnchanged && initializedTenantId === tenantId) {
       return;
     }
+
+    // Tenant-only change: re-scope with the token we already hold. Minting a new one
+    // would be a pointless round-trip on every switch — and a switch that fails
+    // outright whenever the JWT endpoint is unhealthy, even though the existing
+    // session is perfectly valid.
+    if (credentialUnchanged && jwt) {
+      courier.shared.signIn({
+        userId,
+        jwt,
+        ...(tenantId && { tenantId }),
+        ...(apiUrls && { apiUrls }),
+      });
+      setInitializedTenantId(tenantId);
+      return;
+    }
+
+    // Switching tenants is a fast, interactive action, so two of these can be in
+    // flight at once; without this the slower one wins and leaves the client on the
+    // tenant the user already moved away from.
+    let cancelled = false;
 
     const initializeCourier = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const res = await repo.generateJWT(userId, apiKey, courierRest);
+        if (cancelled) {
+          return;
+        }
         if (!res.token) {
           throw new Error('Failed to generate JWT');
         }
@@ -116,13 +157,20 @@ export function CourierAuth({
         courier.shared.signIn({
           userId: userId,
           jwt: res.token,
+          ...(tenantId && { tenantId }),
           ...(apiUrls && { apiUrls })
         });
 
+        setJwt(res.token);
         setInitializedUserId(userId);
         setInitializedApiUrls(apiUrls);
+        setInitializedTenantId(tenantId);
+        setInitializedApiKey(apiKey);
         setIsLoading(false);
       } catch (err) {
+        if (cancelled) {
+          return;
+        }
         const errorMessage = err instanceof Error ? err.message : 'Failed to initialize Courier';
         setError(errorMessage);
         setIsLoading(false);
@@ -131,8 +179,12 @@ export function CourierAuth({
     };
 
     initializeCourier();
+
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, apiUrlsKey, apiKey, skipJwtInitialization]);
+  }, [userId, tenantId, apiUrlsKey, apiKey, skipJwtInitialization]);
 
   const handleClearUser = async () => {
     // If using URL override, remove the userId param from URL

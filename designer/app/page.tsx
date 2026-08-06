@@ -113,6 +113,9 @@ function HomeContent() {
   // Get userId override from query params
   const overrideUserId = searchParams.get('userId') || undefined;
 
+  // Tenant to scope the session to (advanced mode only). Empty means unscoped.
+  const tenantId = searchParams.get('tenantId') || undefined;
+
   // Get apiKey override from query params
   const overrideApiKey = searchParams.get('apiKey') || undefined;
   const brandId = searchParams.get('brandId') || undefined;
@@ -265,7 +268,7 @@ function HomeContent() {
     >
       <div className="flex items-center justify-center p-4 border-b border-border h-[73px] flex-shrink-0">
         <TabsList>
-          <TabsTrigger value="send-test">Test</TabsTrigger>
+          <TabsTrigger value="send-test">Send</TabsTrigger>
           <TabsTrigger value="theme">Theme</TabsTrigger>
           <TabsTrigger value="feeds">Feeds</TabsTrigger>
           <TabsTrigger value="current-user">User</TabsTrigger>
@@ -305,6 +308,17 @@ function HomeContent() {
               params.set('userId', newUserId);
               const newUrl = `${pathname}?${params.toString()}`;
               router.replace(newUrl, { scroll: false });
+            }}
+            tenantId={tenantId ?? ''}
+            onTenantIdChange={(newTenantId) => {
+              const params = new URLSearchParams(searchParams.toString());
+              if (newTenantId) {
+                params.set('tenantId', newTenantId);
+              } else {
+                params.delete('tenantId');
+              }
+              const query = params.toString();
+              router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
             }}
           />
         </TabsContent>
@@ -401,6 +415,7 @@ function HomeContent() {
                 <CourierAuth
                   apiUrls={shouldPassApiUrls ? apiUrls : undefined}
                   overrideUserId={overrideUserId}
+                  tenantId={tenantId}
                   apiKey={overrideApiKey}
                   hideLoadingState={true}
                 >
@@ -463,7 +478,7 @@ function HomeContent() {
           Loading environment…
         </div>
       ) : (
-      <CourierAuth apiUrls={shouldPassApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} apiKey={overrideApiKey}>
+      <CourierAuth apiUrls={shouldPassApiUrls ? apiUrls : undefined} overrideUserId={overrideUserId} tenantId={tenantId} apiKey={overrideApiKey}>
         {({ userId, onClearUser }) => (
           <div className="flex flex-1 overflow-hidden">
             {/* Left Panel - Hidden on mobile, shown on desktop */}
