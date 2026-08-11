@@ -31,6 +31,16 @@ export interface SendE2ECredentials {
   templateV1Id: string;
   /** A notification ("v2") template that routes to the inbox channel. */
   templateV2Id: string;
+  /**
+   * A notification ("v2") template whose inbox **title** is a `{{data.*}}` variable
+   * rather than fixed copy, so a send can prove the title was interpolated.
+   *
+   * Separate from {@link templateV2Id} because that one carries fixed copy, and a fixed
+   * title cannot distinguish "rendered" from "rendered correctly" — the failure this
+   * guards against emits a perfectly well-formed, non-empty title that happens to be the
+   * literal `{{data.title}}`.
+   */
+  templateV2VariableTitleId: string;
   restUrl: string;
 }
 
@@ -48,8 +58,17 @@ export function sendE2ECredentials(): SendE2ECredentials | null {
   const tenantId = process.env.COURIER_E2E_TENANT_ID;
   const templateV1Id = process.env.COURIER_E2E_TEMPLATE_V1_ID;
   const templateV2Id = process.env.COURIER_E2E_TEMPLATE_V2_ID;
+  const templateV2VariableTitleId = process.env.COURIER_E2E_TEMPLATE_V2_VARIABLE_TITLE_ID;
 
-  if (!apiKey || !userId || !tenantUserId || !tenantId || !templateV1Id || !templateV2Id) {
+  if (
+    !apiKey ||
+    !userId ||
+    !tenantUserId ||
+    !tenantId ||
+    !templateV1Id ||
+    !templateV2Id ||
+    !templateV2VariableTitleId
+  ) {
     return null;
   }
 
@@ -60,6 +79,7 @@ export function sendE2ECredentials(): SendE2ECredentials | null {
     tenantId,
     templateV1Id,
     templateV2Id,
+    templateV2VariableTitleId,
     restUrl: env('COURIER_REST_URL'),
   };
 }
