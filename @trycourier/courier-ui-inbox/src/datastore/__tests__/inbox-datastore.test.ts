@@ -747,4 +747,67 @@ describe("CourierInboxDatastore", () => {
       expect(onErrorMock).toHaveBeenCalledWith(expect.any(Error));
     });
   });
+
+  describe('bulk archive with a stale global copy', () => {
+
+    // A message can end up present in a dataset while the global store holds an
+    // older, already-archived copy of it: loading a dataset syncs server results
+    // into the global store but never overwrites an existing entry. When that
+    // happens the row is rendered but archiveAllMessages skips it, because the
+    // skip is decided from the global copy's archived flag rather than from what
+    // the datasets actually hold. The row then cannot be cleared by archiving.
+    it('archives a message the server still reports as unarchived, even if the global copy is already archived', async () => {
+      const MESSAGE = getMessage();
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 1,
+          unreadCount: 1,
+          messages: { nodes: [MESSAGE] },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(1);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(1);
+
+      // First archive-all works, and leaves the global copy marked archived.
+      await datastore.archiveAllMessages();
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+
+      // The server still reports the message as unarchived, so a reload puts it
+      // back into the inbox dataset. The global copy stays archived.
+      await datastore.load({ canUseCache: false });
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(1);
+
+      // Archiving again has to clear the row it is showing.
+      await datastore.archiveAllMessages();
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+    });
+
+    it('archives read messages that are showing even if the global copy is already archived', async () => {
+      const MESSAGE = getMessage({ read: "2021-01-01" });
+
+      mockGetMessages.mockResolvedValue({
+        data: {
+          count: 1,
+          unreadCount: 0,
+          messages: { nodes: [MESSAGE] },
+        },
+      });
+      mockGetUnreadMessageCount.mockResolvedValue(0);
+
+      const datastore = CourierInboxDatastore.shared;
+      await datastore.load({ canUseCache: false });
+      await datastore.archiveReadMessages();
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+
+      await datastore.load({ canUseCache: false });
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(1);
+
+      await datastore.archiveReadMessages();
+      expect(datastore.getDatasetById('inbox')?.messages.length).toBe(0);
+    });
+  });
 });
