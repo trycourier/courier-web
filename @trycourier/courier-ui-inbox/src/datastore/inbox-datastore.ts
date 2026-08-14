@@ -109,6 +109,45 @@ export class CourierInboxDatastore {
   }
 
   /**
+   * Collect the messages a bulk operation should mutate.
+   *
+   * Bulk operations can't decide this from `_globalMessages` alone. Loading
+   * a dataset syncs its server results into the global store but never overwrites
+   * an entry that is already there, so the global copy of a message can be more
+   * advanced than the copy a dataset is showing — for example already archived by
+   * an earlier archive-all, while the server still returns it as unarchived and a
+   * reload puts it back into the inbox dataset.
+   *
+   * Selecting from the global store in that state skips the message, so the row
+   * stays on screen and repeating the operation can never clear it. Including the
+   * datasets' own copies makes the operation reconcile whatever is rendered.
+   *
+   * @param shouldInclude - predicate identifying messages the operation applies to
+   * @returns one entry per message, preferring a dataset's copy over the global one
+   */
+  private collectMessagesForBulkUpdate(shouldInclude: (message: InboxMessage) => boolean): InboxMessage[] {
+    const messagesById = new Map<string, InboxMessage>();
+
+    for (const [messageId, message] of this._globalMessages.entries()) {
+      if (shouldInclude(message)) {
+        messagesById.set(messageId, message);
+      }
+    }
+
+    // A dataset's copy wins: it is the state the listeners have been told about,
+    // so it is the correct `before` for calculating the unread count change.
+    for (const dataset of this._datasets.values()) {
+      for (const message of dataset.toInboxDataset().messages) {
+        if (shouldInclude(message)) {
+          messagesById.set(message.messageId, message);
+        }
+      }
+    }
+
+    return Array.from(messagesById.values());
+  }
+
+  /**
    * Listen for real-time message updates from the Courier backend.
    *
    * If an existing WebSocket connection is open, it will be re-used. If not,
@@ -427,14 +466,13 @@ export class CourierInboxDatastore {
     await this.executeWithRollback(async () => {
       const archiveDate = CourierInboxDatastore.getISONow();
 
-      // Mutate all messages in global store that aren't already archived
-      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
-        if (!beforeMessage.archived) {
-          const afterMessage = copyMessage(beforeMessage);
-          afterMessage.archived = archiveDate;
-          this._globalMessages.set(messageId, afterMessage);
-          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
-        }
+      // Mutate every known message that isn't already archived, taken from the
+      // datasets as well as the global store — see collectMessagesForBulkUpdate.
+      for (const beforeMessage of this.collectMessagesForBulkUpdate(message => !message.archived)) {
+        const afterMessage = copyMessage(beforeMessage);
+        afterMessage.archived = archiveDate;
+        this._globalMessages.set(beforeMessage.messageId, afterMessage);
+        this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
       }
 
       // Force non-archived dataset unread counts to 0.
@@ -458,14 +496,13 @@ export class CourierInboxDatastore {
     await this.executeWithRollback(async () => {
       const readDate = CourierInboxDatastore.getISONow();
 
-      // Mutate all messages in global store that aren't already read
-      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
-        if (!beforeMessage.read) {
-          const afterMessage = copyMessage(beforeMessage);
-          afterMessage.read = readDate;
-          this._globalMessages.set(messageId, afterMessage);
-          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
-        }
+      // Mutate every known message that isn't already read, taken from the
+      // datasets as well as the global store — see collectMessagesForBulkUpdate.
+      for (const beforeMessage of this.collectMessagesForBulkUpdate(message => !message.read)) {
+        const afterMessage = copyMessage(beforeMessage);
+        afterMessage.read = readDate;
+        this._globalMessages.set(beforeMessage.messageId, afterMessage);
+        this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
       }
 
       // Force all dataset unread counts to 0.
@@ -487,14 +524,13 @@ export class CourierInboxDatastore {
     await this.executeWithRollback(async () => {
       const archiveDate = CourierInboxDatastore.getISONow();
 
-      // Mutate all read messages in global store that aren't already archived
-      for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
-        if (beforeMessage.read && !beforeMessage.archived) {
-          const afterMessage = copyMessage(beforeMessage);
-          afterMessage.archived = archiveDate;
-          this._globalMessages.set(messageId, afterMessage);
-          this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
-        }
+      // Mutate every known read message that isn't already archived, taken from
+      // the datasets as well as the global store — see collectMessagesForBulkUpdate.
+      for (const beforeMessage of this.collectMessagesForBulkUpdate(message => !!message.read && !message.archived)) {
+        const afterMessage = copyMessage(beforeMessage);
+        afterMessage.archived = archiveDate;
+        this._globalMessages.set(beforeMessage.messageId, afterMessage);
+        this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
       }
 
       // Apply the archive to the server
@@ -676,36 +712,33 @@ export class CourierInboxDatastore {
   private updateAllMessages(event: InboxMessageEvent) {
     const timestamp = CourierInboxDatastore.getISONow();
 
-    for (const [messageId, beforeMessage] of this._globalMessages.entries()) {
-      let afterMessage: InboxMessage | null = null;
-
+    // Selected from the datasets as well as the global store, so an event can
+    // reconcile a rendered row whose global copy is already in the target state.
+    // See collectMessagesForBulkUpdate.
+    const applies = (message: InboxMessage): boolean => {
       switch (event) {
         case InboxMessageEvent.MarkAllRead:
-          if (!beforeMessage.read) {
-            afterMessage = copyMessage(beforeMessage);
-            afterMessage.read = timestamp;
-          }
-          break;
+          return !message.read;
         case InboxMessageEvent.ArchiveAll:
-          if (!beforeMessage.archived) {
-            afterMessage = copyMessage(beforeMessage);
-            afterMessage.archived = timestamp;
-          }
-          break;
+          return !message.archived;
         case InboxMessageEvent.ArchiveRead:
-          if (beforeMessage.read && !beforeMessage.archived) {
-            afterMessage = copyMessage(beforeMessage);
-            afterMessage.archived = timestamp;
-          }
-          break;
+          return !!message.read && !message.archived;
         default:
-          break;
+          return false;
+      }
+    };
+
+    for (const beforeMessage of this.collectMessagesForBulkUpdate(applies)) {
+      const afterMessage = copyMessage(beforeMessage);
+
+      if (event === InboxMessageEvent.MarkAllRead) {
+        afterMessage.read = timestamp;
+      } else {
+        afterMessage.archived = timestamp;
       }
 
-      if (afterMessage) {
-        this._globalMessages.set(messageId, afterMessage);
-        this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
-      }
+      this._globalMessages.set(beforeMessage.messageId, afterMessage);
+      this.updateDatasetsWithMessageChange(beforeMessage, afterMessage);
     }
 
     // Force dataset unread counts to 0 for bulk operations where the loop
