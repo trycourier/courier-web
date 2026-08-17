@@ -1,27 +1,44 @@
+import { useMemo } from 'react';
+import { CourierInbox } from '@trycourier/courier-react';
+import { createPreviewMessages } from './previewMessages';
 import PhotoShootStage from './PhotoShootStage';
+import { inboxTheme } from './photoShootThemes';
 
-/**
- * Photo shoot: "A Courier Inbox with a custom theme" — light beside dark.
- *
- * Each mode renders in its own iframe: the SDK injects a component's styles once
- * per document, so two inboxes in one page would share (and fight over) a single
- * theme. The export descends into same-origin iframes, so the shot is unaffected.
- */
+/** Photo shoot: "A Courier Inbox with a custom theme" */
 export default function PhotoShootTheme() {
+
+  // Preview messages render without a sign-in or any network calls.
+  const previewMessages = useMemo(() => createPreviewMessages().slice(0, 3), []);
+
   return (
     <PhotoShootStage fileName="courier-inbox-theme">
-      <div style={{ height: '100%', display: 'flex' }}>
-        <iframe
-          src="/examples/photo-shoot/frame/inbox-light"
-          title="Inbox with a custom theme, light mode"
-          style={{ width: '50%', height: '100%', border: 'none', display: 'block' }}
-        />
-        <iframe
-          src="/examples/photo-shoot/frame/inbox-dark"
-          title="Inbox with a custom theme, dark mode"
-          style={{ width: '50%', height: '100%', border: 'none', display: 'block' }}
-        />
+      <div
+        style={{
+          height: '100%',
+          boxSizing: 'border-box',
+          padding: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            width: '700px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #DDD6FE',
+            borderRadius: '12px',
+            overflow: 'hidden',
+          }}
+        >
+          <CourierInbox
+            mode="light"
+            lightTheme={inboxTheme}
+            previewMessages={previewMessages}
+          />
+        </div>
       </div>
     </PhotoShootStage>
   );
+
 }

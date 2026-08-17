@@ -40,7 +40,7 @@ export default function Examples() {
           A message delivered to the Courier Inbox after a send.
         </ExampleCard>
         <ExampleCard to="/examples/photo-shoot/theme" title="Inbox Custom Theme">
-          A Courier Inbox with a custom theme — light and dark, side by side.
+          A Courier Inbox with a custom theme.
         </ExampleCard>
         <ExampleCard to="/examples/photo-shoot/custom-render" title="Custom Header + Items">
           An inbox with a custom header and custom list items, while the SDK still manages the list.
@@ -49,13 +49,13 @@ export default function Examples() {
           A Courier toast appearing for a new message.
         </ExampleCard>
         <ExampleCard to="/examples/photo-shoot/toast-theme" title="Toast Custom Theme">
-          A Courier toast with a custom theme — light and dark, side by side.
+          A Courier toast with a custom theme.
         </ExampleCard>
         <ExampleCard to="/examples/photo-shoot/preferences" title="Preferences">
           The Courier preferences center with the default look.
         </ExampleCard>
         <ExampleCard to="/examples/photo-shoot/preferences-theme" title="Preferences Custom Theme">
-          The preferences center with a custom theme, in light and dark mode.
+          The preferences center with a custom theme.
         </ExampleCard>
       </ExampleSection>
 
