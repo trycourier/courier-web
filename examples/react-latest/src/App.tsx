@@ -21,6 +21,17 @@ import ToastAutoDismiss from './ToastAutoDismiss';
 import Hooks from './Hooks';
 import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
+import PhotoShootInbox from './PhotoShootInbox';
+import PhotoShootPopup from './PhotoShootPopup';
+import PhotoShootSplit from './PhotoShootSplit';
+import PhotoShootDelivered from './PhotoShootDelivered';
+import PhotoShootTheme from './PhotoShootTheme';
+import PhotoShootCustomRender from './PhotoShootCustomRender';
+import PhotoShootToast from './PhotoShootToast';
+import PhotoShootToastTheme from './PhotoShootToastTheme';
+import PhotoShootPreferences from './PhotoShootPreferences';
+import PhotoShootPreferencesTheme from './PhotoShootPreferencesTheme';
+import { InboxThemeFrame, PreferencesThemeFrame } from './PhotoShootThemeFrames';
 import PopupCustomFeed from './PopupCustomFeed';
 import PreferencesDefault from './PreferencesDefault';
 import PreferencesStyled from './PreferencesStyled';
@@ -33,6 +44,24 @@ function App() {
         {/* Root index (matches next-latest pattern) */}
         <Route path="/" element={<Home />} />
         <Route path="/examples" element={<Examples />} />
+
+        {/* Photo shoot — 1280x720 screenshot stages */}
+        <Route path="/examples/photo-shoot/inbox" element={<PhotoShootInbox />} />
+        <Route path="/examples/photo-shoot/popup" element={<PhotoShootPopup />} />
+        <Route path="/examples/photo-shoot/split" element={<PhotoShootSplit />} />
+        <Route path="/examples/photo-shoot/delivered" element={<PhotoShootDelivered />} />
+        <Route path="/examples/photo-shoot/theme" element={<PhotoShootTheme />} />
+        <Route path="/examples/photo-shoot/custom-render" element={<PhotoShootCustomRender />} />
+        <Route path="/examples/photo-shoot/toast" element={<PhotoShootToast />} />
+        <Route path="/examples/photo-shoot/toast-theme" element={<PhotoShootToastTheme />} />
+        <Route path="/examples/photo-shoot/preferences" element={<PhotoShootPreferences />} />
+        <Route path="/examples/photo-shoot/preferences-theme" element={<PhotoShootPreferencesTheme />} />
+
+        {/* Frames the light/dark shoots load in iframes, one document per mode */}
+        <Route path="/examples/photo-shoot/frame/inbox-light" element={<InboxThemeFrame mode="light" />} />
+        <Route path="/examples/photo-shoot/frame/inbox-dark" element={<InboxThemeFrame mode="dark" />} />
+        <Route path="/examples/photo-shoot/frame/preferences-light" element={<PreferencesThemeFrame mode="light" />} />
+        <Route path="/examples/photo-shoot/frame/preferences-dark" element={<PreferencesThemeFrame mode="dark" />} />
 
         {/* Inbox default */}
         <Route path="/examples/inbox" element={<InboxDefault />} />

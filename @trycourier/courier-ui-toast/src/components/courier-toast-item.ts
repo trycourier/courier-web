@@ -264,12 +264,14 @@ export class CourierToastItem extends CourierBaseElement {
     content.classList.add('content');
     this.append(content);
 
-    const icon = new CourierIcon(
-      this.theme.item?.icon?.color,
-      this.theme.item?.icon?.svg,
-    );
-    icon.classList.add('icon');
-    content.appendChild(icon);
+    // A hidden icon is left out entirely rather than emptied, so the content
+    // row does not keep a gap where it used to be.
+    const iconTheme = this.theme.item?.icon;
+    if (iconTheme?.visible !== false) {
+      const icon = new CourierIcon(iconTheme?.color, iconTheme?.svg);
+      icon.classList.add('icon');
+      content.appendChild(icon);
+    }
 
     const textContent = document.createElement('div');
     textContent.classList.add('text-content');

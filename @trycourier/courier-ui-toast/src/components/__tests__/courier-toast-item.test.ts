@@ -51,6 +51,44 @@ describe('courier-toast-item', () => {
       expect(document.querySelector('courier-toast-item')).not.toBeNull();
       expect(document.querySelector('courier-button')).not.toBeNull();
     });
+
+    it('should render the icon by default', () => {
+      const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager: THEME_MANAGER,
+      });
+
+      document.body.appendChild(item);
+
+      expect(document.querySelector('courier-icon.icon')).not.toBeNull();
+    });
+
+    it('should leave the icon out when the theme hides it', () => {
+      const hiddenIconTheme = {
+        ...defaultLightTheme,
+        item: {
+          ...defaultLightTheme.item,
+          icon: { ...defaultLightTheme.item?.icon, visible: false },
+        },
+      };
+      // The manager resets to the defaults on construction, so the theme has to
+      // be applied afterwards — for both modes, whichever the environment reports.
+      const themeManager = new CourierToastThemeManager(hiddenIconTheme);
+      themeManager.setLightTheme(hiddenIconTheme);
+      themeManager.setDarkTheme(hiddenIconTheme);
+      const item = new CourierToastItem({
+        message: INBOX_MESSAGE,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager,
+      });
+
+      document.body.appendChild(item);
+
+      expect(document.querySelector('courier-icon.icon')).toBeNull();
+    });
   });
 
   describe('setMessage', () => {

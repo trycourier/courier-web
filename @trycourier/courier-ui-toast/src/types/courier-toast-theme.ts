@@ -6,7 +6,14 @@ import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, Cour
 export type CourierToastFontTheme = CourierFontTheme;
 
 /** @public */
-export type CourierToastIconTheme = CourierIconTheme;
+export type CourierToastIconTheme = CourierIconTheme & {
+  /**
+   * Whether the icon is drawn at all. Defaults to `true`; set it to `false` to
+   * drop the icon and the space it holds, for toasts that read better as text
+   * alone.
+   */
+  visible?: boolean;
+};
 
 /** @public */
 export type CourierToastItemTheme = {

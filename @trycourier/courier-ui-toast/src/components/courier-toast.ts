@@ -690,6 +690,8 @@ export class CourierToast extends CourierBaseElement {
 
       ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .title {
         margin: 0;
+        /* Keep room for the dismiss button, which overhangs this corner. */
+        padding-right: 16px;
         font-weight: ${item?.title?.weight};
         font-size: ${item?.title?.size};
         color: ${item?.title?.color};
