@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { CourierInbox } from '@trycourier/courier-react';
 import { createPreviewMessages } from './previewMessages';
 import PhotoShootStage, { photoShootTheme } from './PhotoShootStage';
+import { COMPONENT_BORDER } from './photoShootThemes';
 
 /** Photo shoot: the inbox as a centered card. */
 export default function PhotoShootInbox() {
@@ -23,13 +24,13 @@ export default function PhotoShootInbox() {
         }}
       >
         {/* The inbox has no background/border of its own, so the card supplies
-            both to show where the component starts and stops. The width is set
-            so all four messages fit the frame without the list scrolling. */}
+            both, in the border the component draws internally. The width is set
+            so every message fits the frame without the list scrolling. */}
         <div
           style={{
             width: '700px',
             backgroundColor: '#ffffff',
-            border: '1px solid #d5d8de',
+            border: `1px solid ${COMPONENT_BORDER}`,
             borderRadius: '12px',
             overflow: 'hidden',
           }}

@@ -11,12 +11,23 @@ import {
 export const FONT = 'Poppins';
 export const ACCENT = '#8B5CF6';
 
+/**
+ * The border the components draw themselves (`CourierColors.gray[500]`), so a
+ * card wrapping one matches its header divider instead of guessing a grey.
+ */
+export const COMPONENT_BORDER = '#E5E5E5';
+
+/** The themed shoots restate that border in the accent's own family. */
+export const THEMED_BORDER = '#DDD6FE';
+
 const TEXT = '#1E1B2E';
 const MUTED = '#6B6580';
 
 export const inboxTheme: CourierInboxTheme = {
   inbox: {
     header: {
+      // Matches the card the shoot wraps it in.
+      border: `1px solid ${THEMED_BORDER}`,
       feeds: {
         button: {
           font: { family: FONT, color: TEXT },

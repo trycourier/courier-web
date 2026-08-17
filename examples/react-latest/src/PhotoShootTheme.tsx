@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { CourierInbox } from '@trycourier/courier-react';
 import { createPreviewMessages } from './previewMessages';
 import PhotoShootStage from './PhotoShootStage';
-import { inboxTheme } from './photoShootThemes';
+import { inboxTheme, THEMED_BORDER } from './photoShootThemes';
 
 /** Photo shoot: "A Courier Inbox with a custom theme" */
 export default function PhotoShootTheme() {
@@ -26,7 +26,7 @@ export default function PhotoShootTheme() {
           style={{
             width: '700px',
             backgroundColor: '#ffffff',
-            border: '1px solid #DDD6FE',
+            border: `1px solid ${THEMED_BORDER}`,
             borderRadius: '12px',
             overflow: 'hidden',
           }}

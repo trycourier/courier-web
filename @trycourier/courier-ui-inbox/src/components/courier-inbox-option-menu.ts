@@ -59,8 +59,8 @@ export class CourierInboxOptionMenu extends CourierBaseElement {
   }
 
   private attachElements() {
-    // Attach shadow DOM
-    this._shadowRoot = this.attachShadow({ mode: 'closed' });
+    // Open, matching the other components — see courier-unread-count-badge.
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
 
     // Create container element
     this._container = document.createElement('div');
