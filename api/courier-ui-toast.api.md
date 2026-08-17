@@ -117,7 +117,9 @@ export type CourierToastDismissButtonOption = 'visible' | 'hidden' | 'hover' | '
 export type CourierToastFontTheme = CourierFontTheme;
 
 // @public (undocumented)
-export type CourierToastIconTheme = CourierIconTheme;
+export type CourierToastIconTheme = CourierIconTheme & {
+    visible?: boolean;
+};
 
 // @public
 export class CourierToastItem extends CourierBaseElement {

@@ -683,7 +683,12 @@ export class CourierInbox extends CourierBaseElement {
       tabs: feed.tabs.map(tab => ({
         datasetId: tab.datasetId,
         title: tab.title,
-        unreadCount: CourierInboxDatastore.shared.getDatasetById(tab.datasetId)?.unreadCount ?? 0,
+        // Preview mode is detached from the datastore, so its injected count is
+        // the only unread count there is — without this a custom header in
+        // preview always reads zero.
+        unreadCount: this._isPreview
+          ? (tab.datasetId === this._currentTabId ? this._previewDataSet?.unreadCount ?? 0 : 0)
+          : CourierInboxDatastore.shared.getDatasetById(tab.datasetId)?.unreadCount ?? 0,
         isSelected: tab.datasetId === this._currentTabId,
         filter: tab.filter
       })),

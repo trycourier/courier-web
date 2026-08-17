@@ -21,6 +21,16 @@ import ToastAutoDismiss from './ToastAutoDismiss';
 import Hooks from './Hooks';
 import InboxCustomFeed from './InboxCustomFeed';
 import InboxCustomTabs from './InboxCustomTabs';
+import PhotoShootInbox from './PhotoShootInbox';
+import PhotoShootPopup from './PhotoShootPopup';
+import PhotoShootSplit from './PhotoShootSplit';
+import PhotoShootDelivered from './PhotoShootDelivered';
+import PhotoShootTheme from './PhotoShootTheme';
+import PhotoShootCustomRender from './PhotoShootCustomRender';
+import PhotoShootToast from './PhotoShootToast';
+import PhotoShootToastTheme from './PhotoShootToastTheme';
+import PhotoShootPreferences from './PhotoShootPreferences';
+import PhotoShootPreferencesTheme from './PhotoShootPreferencesTheme';
 import PopupCustomFeed from './PopupCustomFeed';
 import PreferencesDefault from './PreferencesDefault';
 import PreferencesStyled from './PreferencesStyled';
@@ -33,6 +43,18 @@ function App() {
         {/* Root index (matches next-latest pattern) */}
         <Route path="/" element={<Home />} />
         <Route path="/examples" element={<Examples />} />
+
+        {/* Photo shoot — 788x444 screenshot stages */}
+        <Route path="/examples/photo-shoot/inbox" element={<PhotoShootInbox />} />
+        <Route path="/examples/photo-shoot/popup" element={<PhotoShootPopup />} />
+        <Route path="/examples/photo-shoot/split" element={<PhotoShootSplit />} />
+        <Route path="/examples/photo-shoot/delivered" element={<PhotoShootDelivered />} />
+        <Route path="/examples/photo-shoot/theme" element={<PhotoShootTheme />} />
+        <Route path="/examples/photo-shoot/custom-render" element={<PhotoShootCustomRender />} />
+        <Route path="/examples/photo-shoot/toast" element={<PhotoShootToast />} />
+        <Route path="/examples/photo-shoot/toast-theme" element={<PhotoShootToastTheme />} />
+        <Route path="/examples/photo-shoot/preferences" element={<PhotoShootPreferences />} />
+        <Route path="/examples/photo-shoot/preferences-theme" element={<PhotoShootPreferencesTheme />} />
 
         {/* Inbox default */}
         <Route path="/examples/inbox" element={<InboxDefault />} />

@@ -11,6 +11,7 @@
   "dependencies": {
     "@trycourier/courier-react": "file:../../@trycourier/courier-react",
     "markdown-to-jsx": "^7.7.13",
+    "modern-screenshot": "^4.7.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-router-dom": "^7.18.1"
