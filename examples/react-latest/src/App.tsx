@@ -31,7 +31,7 @@ import PhotoShootToast from './PhotoShootToast';
 import PhotoShootToastTheme from './PhotoShootToastTheme';
 import PhotoShootPreferences from './PhotoShootPreferences';
 import PhotoShootPreferencesTheme from './PhotoShootPreferencesTheme';
-import { InboxThemeFrame, PreferencesThemeFrame } from './PhotoShootThemeFrames';
+import { InboxThemeFrame, PreferencesThemeFrame, ToastThemeFrame } from './PhotoShootThemeFrames';
 import PopupCustomFeed from './PopupCustomFeed';
 import PreferencesDefault from './PreferencesDefault';
 import PreferencesStyled from './PreferencesStyled';
@@ -60,6 +60,8 @@ function App() {
         {/* Frames the light/dark shoots load in iframes, one document per mode */}
         <Route path="/examples/photo-shoot/frame/inbox-light" element={<InboxThemeFrame mode="light" />} />
         <Route path="/examples/photo-shoot/frame/inbox-dark" element={<InboxThemeFrame mode="dark" />} />
+        <Route path="/examples/photo-shoot/frame/toast-light" element={<ToastThemeFrame mode="light" />} />
+        <Route path="/examples/photo-shoot/frame/toast-dark" element={<ToastThemeFrame mode="dark" />} />
         <Route path="/examples/photo-shoot/frame/preferences-light" element={<PreferencesThemeFrame mode="light" />} />
         <Route path="/examples/photo-shoot/frame/preferences-dark" element={<PreferencesThemeFrame mode="dark" />} />
 

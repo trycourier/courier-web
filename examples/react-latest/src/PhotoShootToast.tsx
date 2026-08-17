@@ -1,17 +1,7 @@
-import { useCallback, type CSSProperties } from 'react';
+import { useCallback } from 'react';
 import { CourierToast, useCourier } from '@trycourier/courier-react';
 import { createJobInviteMessage } from './previewMessages';
 import PhotoShootStage from './PhotoShootStage';
-
-/**
- * The toast pins itself to the viewport, so the stage needs a containing block
- * for it — a transform makes this wrapper one, keeping the toast in frame.
- */
-export const toastFrameStyle: CSSProperties = {
-  position: 'relative',
-  height: '100%',
-  transform: 'translateZ(0)',
-};
 
 /**
  * Shows the week's opening message as a toast; no sign-in or network involved.
@@ -39,9 +29,24 @@ export default function PhotoShootToast() {
 
   return (
     <PhotoShootStage fileName="courier-toast">
-      {/* Toasts dismiss themselves by default, which would empty the frame. */}
-      <div style={toastFrameStyle}>
-        <CourierToast mode="light" autoDismiss={false} onReady={showDemoToast} />
+      <div style={{ position: 'relative', height: '100%' }}>
+        <CourierToast
+          mode="light"
+          // The shoot holds the toast open, which would otherwise pin the
+          // dismiss button — it only appears on hover in normal use.
+          autoDismiss={false}
+          dismissButton="hidden"
+          onReady={showDemoToast}
+          // Centered in the frame, and absolute rather than the toast's usual
+          // fixed: fixed would anchor it to the page instead of to this frame.
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
       </div>
     </PhotoShootStage>
   );

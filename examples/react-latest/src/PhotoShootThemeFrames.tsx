@@ -2,11 +2,14 @@ import { useMemo } from 'react';
 import {
   CourierInbox,
   CourierPreferences,
+  CourierToast,
   type CourierInboxTheme,
   type CourierPreferencesTheme,
+  type CourierToastTheme,
 } from '@trycourier/courier-react';
 import { createPreviewMessages } from './previewMessages';
 import { createPreviewPreferences } from './previewPreferences';
+import { useDemoToast } from './PhotoShootToast';
 
 const FONT = 'Poppins';
 const ACCENT = '#8B5CF6';
@@ -24,6 +27,8 @@ function frameStyle(background: string) {
     margin: 0,
     height: '100vh',
     boxSizing: 'border-box' as const,
+    // Anchors absolutely positioned children (the toast) to this frame.
+    position: 'relative' as const,
     backgroundColor: background,
     overflow: 'hidden',
   };
@@ -119,6 +124,68 @@ function preferencesTheme(mode: 'light' | 'dark'): CourierPreferencesTheme {
       checkbox: { checkedColor: accent },
     },
   };
+}
+
+function toastTheme(mode: 'light' | 'dark'): CourierToastTheme {
+  const light = mode === 'light';
+
+  return {
+    item: {
+      backgroundColor: light ? '#F5F3FF' : '#241F33',
+      border: `1px solid ${light ? '#DDD6FE' : '#3A3552'}`,
+      borderRadius: '14px',
+      shadow: light
+        ? '0 8px 20px -6px rgba(45, 26, 92, 0.25)'
+        : '0 8px 20px -6px rgba(0, 0, 0, 0.6)',
+      // Neutral text, accent reserved for the buttons — the same split the
+      // themed inbox and preferences frames use.
+      title: { family: FONT, size: '15px', weight: '600', color: light ? '#1E1B2E' : '#F5F3FB' },
+      body: { family: FONT, size: '14px', color: light ? '#6B6580' : '#A39FB8' },
+      actions: {
+        backgroundColor: light ? ACCENT : DARK_ACCENT,
+        hoverBackgroundColor: light ? '#7C4DEF' : '#C7B2FF',
+        activeBackgroundColor: light ? '#6D3EE0' : '#D3C4FF',
+        border: 'none',
+        borderRadius: '8px',
+        font: { family: FONT, size: '13px', weight: '500', color: light ? '#FFFFFF' : '#1E1B2E' },
+      },
+      // A checkmark reads as "done" beside a message asking for a decision.
+      icon: { visible: false },
+    },
+  };
+}
+
+/** One half of the "custom theme" toast shoot. */
+export function ToastThemeFrame({ mode }: { mode: 'light' | 'dark' }) {
+  const showDemoToast = useDemoToast(`photo-shoot-toast-${mode}`);
+  const theme = useMemo(() => toastTheme(mode), [mode]);
+
+  return (
+    <div style={frameStyle(mode === 'light' ? '#F4F1FB' : DARK_SURFACE)}>
+      <CourierToast
+        mode={mode}
+        lightTheme={mode === 'light' ? theme : undefined}
+        darkTheme={mode === 'dark' ? theme : undefined}
+        autoDismiss={false}
+        // The shoot keeps the toast on screen, which would otherwise pin the
+        // dismiss button open — it only shows on hover in normal use.
+        dismissButton="hidden"
+        onReady={showDemoToast}
+        // Centered in its half, and narrow enough to sit inside it. Absolute
+        // rather than the default fixed: the export clones each iframe into one
+        // document, where a fixed toast would anchor to that document instead
+        // of to its own frame, and both halves would land on top of each other.
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          right: 'auto',
+          width: '330px',
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+    </div>
+  );
 }
 
 /** One half of the "custom theme" preferences shoot. */
