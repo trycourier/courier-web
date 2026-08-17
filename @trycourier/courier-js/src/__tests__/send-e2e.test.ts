@@ -166,6 +166,31 @@ describeSend('Send to inbox (end to end)', () => {
         expect(message.title).not.toBe('');
       },
     },
+    {
+      // The cases above prove a template rendered *something*. This one proves the
+      // something is right: the title is a `{{data.title}}` variable, so a send has to
+      // substitute it before the message reaches the inbox.
+      //
+      // Worth stating why "non-empty string" is not enough, because that is exactly the
+      // assertion this case exists to strengthen. A designer-authored v2 template can
+      // carry its title in two places — the `meta` element, which is interpolated, and
+      // the channel node's `raw` block, which is not. When both are present the renderer
+      // prefers `raw`, and the inbox receives the literal, un-substituted
+      // "{{data.title}}". That is a perfectly well-formed non-empty string, so every
+      // shape-only assertion passes while every variable in every inbox title is broken.
+      name: 'a v2 template with a data variable in its title',
+      message: (tag) => ({
+        template: credentials!.templateV2VariableTitleId,
+        data: { title: `E2E variable ${tag}`, body: `body ${tag}` },
+      }),
+      assert: (message, tag) => {
+        // The substituted value, not merely something.
+        expect(message.title).toBe(`E2E variable ${tag}`);
+        // And the regression guard proper: no un-substituted handlebars survived. Kept
+        // separate from the equality check so a failure says which half broke.
+        expect(message.title).not.toMatch(/\{\{.*\}\}/);
+      },
+    },
   ];
 
   const key = (recipient: RecipientCase, content: ContentCase) =>
