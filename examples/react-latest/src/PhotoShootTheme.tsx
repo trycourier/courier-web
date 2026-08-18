@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { CourierInbox } from '@trycourier/courier-react';
 import { createPreviewMessages } from './previewMessages';
-import PhotoShootStage from './PhotoShootStage';
-import { COMPONENT_BORDER, inboxTheme } from './photoShootThemes';
+import PhotoShootStage, { PhotoShootCard } from './PhotoShootStage';
+import { inboxTheme } from './photoShootThemes';
 
 /** Photo shoot: "A Courier Inbox with a custom theme" */
 export default function PhotoShootTheme() {
@@ -12,32 +12,14 @@ export default function PhotoShootTheme() {
 
   return (
     <PhotoShootStage fileName="courier-inbox-theme">
-      <div
-        style={{
-          height: '100%',
-          boxSizing: 'border-box',
-          padding: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: '700px',
-            backgroundColor: '#ffffff',
-            border: `1px solid ${COMPONENT_BORDER}`,
-            borderRadius: '12px',
-            overflow: 'hidden',
-          }}
-        >
-          <CourierInbox
-            mode="light"
-            lightTheme={inboxTheme}
-            previewMessages={previewMessages}
-          />
-        </div>
-      </div>
+      <PhotoShootCard>
+        <CourierInbox
+          mode="light"
+          height="100%"
+          lightTheme={inboxTheme}
+          previewMessages={previewMessages}
+        />
+      </PhotoShootCard>
     </PhotoShootStage>
   );
 
