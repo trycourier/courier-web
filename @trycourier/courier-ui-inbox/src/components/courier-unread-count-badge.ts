@@ -42,8 +42,10 @@ export class CourierUnreadCountBadge extends CourierBaseElement {
   }
 
   private attachElements() {
-    // Attach shadow DOM
-    this._shadowRoot = this.attachShadow({ mode: 'closed' });
+    // Open, like every other component's shadow root: a closed root is
+    // unreadable to the DOM, so screenshot and snapshot tooling silently drops
+    // the badge from anything it captures.
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
 
     // Create container element
     this._container = document.createElement('div');

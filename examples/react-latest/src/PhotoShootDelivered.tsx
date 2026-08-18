@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CourierInbox, type InboxMessage } from '@trycourier/courier-react';
 import PhotoShootStage, { photoShootTheme } from './PhotoShootStage';
+import { COMPONENT_BORDER } from './photoShootThemes';
 
 /** Photo shoot: "A message delivered to the Courier Inbox after a send." */
 export default function PhotoShootDelivered() {
@@ -37,7 +38,7 @@ export default function PhotoShootDelivered() {
           style={{
             width: '620px',
             backgroundColor: '#ffffff',
-            border: '1px solid #d5d8de',
+            border: `1px solid ${COMPONENT_BORDER}`,
             borderRadius: '12px',
             overflow: 'hidden',
           }}

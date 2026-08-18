@@ -6,6 +6,7 @@ import {
 } from '@trycourier/courier-react';
 import { createPeopleMessages, personFor } from './previewPeople';
 import PhotoShootStage, { photoShootTheme } from './PhotoShootStage';
+import { COMPONENT_BORDER } from './photoShootThemes';
 
 const FONT = "'Poppins', system-ui, sans-serif";
 
@@ -22,7 +23,7 @@ function CustomHeader({ feeds }: CourierInboxHeaderFactoryProps) {
         alignItems: 'center',
         gap: '12px',
         padding: '14px 16px',
-        borderBottom: '1px solid #ecedf1',
+        borderBottom: `1px solid ${COMPONENT_BORDER}`,
         fontFamily: FONT,
       }}
     >
@@ -56,7 +57,7 @@ function CustomListItem({ message }: CourierInboxListItemFactoryProps) {
         display: 'flex',
         gap: '12px',
         padding: '12px 16px',
-        borderBottom: '1px solid #f2f3f6',
+        borderBottom: `1px solid ${COMPONENT_BORDER}`,
         backgroundColor: unread ? '#faf8ff' : '#ffffff',
         fontFamily: FONT,
       }}
@@ -119,7 +120,7 @@ export default function PhotoShootCustomRender() {
           style={{
             width: '620px',
             backgroundColor: '#ffffff',
-            border: '1px solid #d5d8de',
+            border: `1px solid ${COMPONENT_BORDER}`,
             borderRadius: '12px',
             overflow: 'hidden',
           }}

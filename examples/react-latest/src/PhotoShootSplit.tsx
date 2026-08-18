@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { CourierInbox, CourierInboxPopupMenu } from '@trycourier/courier-react';
 import { createPreviewMessages } from './previewMessages';
 import PhotoShootStage, { photoShootTheme } from './PhotoShootStage';
+import { COMPONENT_BORDER } from './photoShootThemes';
 
 /** Photo shoot: the inbox filling the left half, the popup centered in the right. */
 export default function PhotoShootSplit() {
@@ -19,7 +20,7 @@ export default function PhotoShootSplit() {
             width: '50%',
             height: '100%',
             backgroundColor: '#ffffff',
-            borderRight: '1px solid #d5d8de',
+            borderRight: `1px solid ${COMPONENT_BORDER}`,
           }}
         >
           <CourierInbox
