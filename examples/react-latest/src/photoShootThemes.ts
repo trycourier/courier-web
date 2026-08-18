@@ -83,10 +83,12 @@ export const preferencesTheme: CourierPreferencesTheme = {
 
 export const toastTheme: CourierToastTheme = {
   item: {
-    backgroundColor: '#F5F3FF',
-    border: '1px solid #DDD6FE',
+    // A white surface with the components' own border, like the custom list
+    // item shoot — the accent belongs on the buttons, not behind the text.
+    backgroundColor: '#FFFFFF',
+    border: `1px solid ${COMPONENT_BORDER}`,
     borderRadius: '14px',
-    shadow: '0 8px 20px -6px rgba(45, 26, 92, 0.25)',
+    shadow: '0 8px 20px -6px rgba(23, 23, 23, 0.18)',
     title: { family: FONT, size: '15px', weight: '600', color: TEXT },
     body: { family: FONT, size: '14px', color: MUTED },
     actions: {
