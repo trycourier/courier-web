@@ -1,5 +1,17 @@
 # @trycourier/courier-ui-preferences
 
+## 1.2.2
+
+### Patch Changes
+
+- [#244](https://github.com/trycourier/courier-web/pull/244) [`021b922`](https://github.com/trycourier/courier-web/commit/021b922af93b1ec1893e4b310fc0ab607dcee76e) Thanks [@mikemilla](https://github.com/mikemilla)! - Version bump only, so every package moves to a version the registry has not seen. No functional change.
+
+  These three sat at versions already on npm while the rest of the packages released, and `changeset publish` attempts every package on each run — the already-published ones come back rejected and take the whole Release run down with them.
+
+- Updated dependencies [[`021b922`](https://github.com/trycourier/courier-web/commit/021b922af93b1ec1893e4b310fc0ab607dcee76e)]:
+  - @trycourier/courier-js@3.5.1
+  - @trycourier/courier-ui-core@2.3.1
+
 ## 1.2.1
 
 ### Patch Changes
