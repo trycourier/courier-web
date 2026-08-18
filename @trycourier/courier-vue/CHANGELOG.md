@@ -1,5 +1,13 @@
 # @trycourier/courier-vue
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`6cfcf8c`](https://github.com/trycourier/courier-web/commit/6cfcf8c1dba780d4fee306dbfa0aa7f3590720cf), [`6cfcf8c`](https://github.com/trycourier/courier-web/commit/6cfcf8c1dba780d4fee306dbfa0aa7f3590720cf)]:
+  - @trycourier/courier-ui-inbox@2.5.2
+  - @trycourier/courier-ui-toast@2.2.0
+
 ## 1.0.7
 
 ### Patch Changes

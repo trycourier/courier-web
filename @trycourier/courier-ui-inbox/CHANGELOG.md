@@ -1,5 +1,13 @@
 # @trycourier/courier-ui-inbox
 
+## 2.5.2
+
+### Patch Changes
+
+- [#242](https://github.com/trycourier/courier-web/pull/242) [`6cfcf8c`](https://github.com/trycourier/courier-web/commit/6cfcf8c1dba780d4fee306dbfa0aa7f3590720cf) Thanks [@mikemilla](https://github.com/mikemilla)! - Report the injected unread count to header factories in preview mode. The count came from the shared datastore, which preview mode deliberately detaches from, so a custom header rendered alongside `previewMessages` always read zero.
+
+  The unread count badge and the option menu now use open shadow roots, like every other component. A closed root cannot be read back from the DOM, so screenshot and snapshot tooling silently dropped the unread badge from anything it captured.
+
 ## 2.5.1
 
 ### Patch Changes

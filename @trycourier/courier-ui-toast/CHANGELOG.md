@@ -1,5 +1,13 @@
 # @trycourier/courier-ui-toast
 
+## 2.2.0
+
+### Minor Changes
+
+- [#242](https://github.com/trycourier/courier-web/pull/242) [`6cfcf8c`](https://github.com/trycourier/courier-web/commit/6cfcf8c1dba780d4fee306dbfa0aa7f3590720cf) Thanks [@mikemilla](https://github.com/mikemilla)! - Add `icon.visible` to the toast theme, for toasts that read better without a leading icon. A hidden icon is left out entirely rather than emptied, so the content row keeps no gap where it used to be.
+
+  Toast titles now reserve room for the dismiss button that overhangs their top-right corner, instead of running underneath it.
+
 ## 2.1.12
 
 ### Patch Changes
