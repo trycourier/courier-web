@@ -14,9 +14,13 @@ export type Person = {
  * Photos are Unsplash URLs. Unsplash is one of the few image hosts that sends
  * `access-control-allow-origin`, which the PNG export needs to inline them; hosts
  * without it (pravatar, randomuser) show on screen but export blank.
+ *
+ * These are the only raster in the photo shoot, so they set its resolution
+ * ceiling. Unsplash resizes server-side, so ask for enough to stay sharp at the
+ * stage's export scale: a 36px avatar needs 36 x EXPORT_SCALE, with room to spare.
  */
 const photo = (id: string) =>
-  `https://images.unsplash.com/${id}?w=160&h=160&fit=crop&crop=faces&q=80`;
+  `https://images.unsplash.com/${id}?w=320&h=320&fit=crop&crop=faces&q=80`;
 
 export const PEOPLE: Record<string, Person> = {
   dana: {

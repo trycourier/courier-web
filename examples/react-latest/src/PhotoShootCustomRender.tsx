@@ -5,7 +5,7 @@ import {
   type CourierInboxListItemFactoryProps,
 } from '@trycourier/courier-react';
 import { createPeopleMessages, personFor } from './previewPeople';
-import PhotoShootStage, { photoShootTheme } from './PhotoShootStage';
+import PhotoShootStage, { PhotoShootCard, photoShootTheme } from './PhotoShootStage';
 import { COMPONENT_BORDER } from './photoShootThemes';
 
 const FONT = "'Poppins', system-ui, sans-serif";
@@ -106,34 +106,16 @@ export default function PhotoShootCustomRender() {
 
   return (
     <PhotoShootStage fileName="courier-inbox-custom-render">
-      <div
-        style={{
-          height: '100%',
-          boxSizing: 'border-box',
-          padding: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: '620px',
-            backgroundColor: '#ffffff',
-            border: `1px solid ${COMPONENT_BORDER}`,
-            borderRadius: '12px',
-            overflow: 'hidden',
-          }}
-        >
-          <CourierInbox
-            mode="light"
-            lightTheme={photoShootTheme}
-            previewMessages={previewMessages}
-            renderHeader={props => (props ? <CustomHeader {...props} /> : <></>)}
-            renderListItem={props => (props ? <CustomListItem {...props} /> : <></>)}
-          />
-        </div>
-      </div>
+      <PhotoShootCard>
+        <CourierInbox
+          mode="light"
+          height="100%"
+          lightTheme={photoShootTheme}
+          previewMessages={previewMessages}
+          renderHeader={props => (props ? <CustomHeader {...props} /> : <></>)}
+          renderListItem={props => (props ? <CustomListItem {...props} /> : <></>)}
+        />
+      </PhotoShootCard>
     </PhotoShootStage>
   );
 
