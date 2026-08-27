@@ -51,6 +51,11 @@ export default defineConfig({
         "react/jsx-runtime",
       ],
       output: {
+        // Emit `exports.foo = dep.foo` for re-exports instead of a live-binding
+        // getter. Terser rewrites the getter form into something
+        // cjs-module-lexer cannot read, and Node then reports every re-exported
+        // name — `useCourier` among them — as missing from the CJS build.
+        externalLiveBindings: false,
         // Global variable names for external dependencies
         globals: {
           react: "React",

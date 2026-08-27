@@ -2,6 +2,16 @@
   "name": "@trycourier/courier-react",
   "version": "9.2.12",
   "description": "The React components for the Courier web UI",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

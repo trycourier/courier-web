@@ -1,7 +1,7 @@
 import { Courier, InboxMessage } from "@trycourier/courier-js";
 import { copyMessage, mutableInboxMessageFieldsEqual } from "../utils/utils";
 import { CourierInboxDatasetFilter, InboxDataSet } from "../types/inbox-data-set";
-import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
+import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js";
 import { CourierInboxDataStoreListener } from "./datastore-listener";
 import { CourierInboxDatastore } from "./inbox-datastore";
 
