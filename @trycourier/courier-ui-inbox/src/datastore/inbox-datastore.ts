@@ -1,5 +1,5 @@
 import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
-import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js/dist/types/inbox";
+import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js";
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
 import { CourierInboxDataStoreListener } from "./datastore-listener";

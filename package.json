@@ -40,13 +40,15 @@
     "release": "yarn build-packages:ci && yarn changeset publish",
     "ipqr": "sh ./scripts/ipqr.sh",
     "generate-api-docs": "yarn exec ./scripts/generate-api-docs",
-    "test:all": "concurrently -n \"js,inbox,react,react17,vue,toast,prefs\" -c \"blue,green,yellow,cyan,red,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-vue run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\""
+    "test:all": "concurrently -n \"js,inbox,react,react17,vue,toast,prefs\" -c \"blue,green,yellow,cyan,red,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-vue run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\"",
+    "verify-esm-exports": "node ./scripts/verify-esm-exports.mjs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.5",
     "@microsoft/api-extractor": "^7.52.15",
     "@types/node": "20.4.2",
+    "cjs-module-lexer": "^1.0.0",
     "concurrently": "8.0.0",
     "rollup-plugin-visualizer": "^5.14.0",
     "ts-node": "10.9.1",
