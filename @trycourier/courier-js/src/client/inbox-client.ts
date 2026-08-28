@@ -61,6 +61,8 @@ export class InboxClient extends Client {
               content
               data
               href
+              background_color
+              style
             }
           }
         }

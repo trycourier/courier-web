@@ -3,6 +3,7 @@ import Home from './Home';
 import InboxDefault from './InboxDefault';
 import InboxPopupMenuDefault from './InboxPopupMenuDefault';
 import InboxActions from './InboxActions';
+import InboxStyles from './InboxStyles';
 import CustomHeight from './CustomHeight';
 import InboxTheme from './InboxTheme';
 import PopupMenuTheme from './PopupMenuTheme';
@@ -74,6 +75,7 @@ function App() {
 
         {/* Alignment & positioning */}
         <Route path="/examples/inbox-actions" element={<InboxActions />} />
+        <Route path="/examples/inbox-styles" element={<InboxStyles />} />
         <Route path="/examples/alignment" element={<Alignment />} />
 
         {/* Custom renderers */}

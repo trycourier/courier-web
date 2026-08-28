@@ -52,6 +52,26 @@ describe('courier-toast-item', () => {
       expect(document.querySelector('courier-button')).not.toBeNull();
     });
 
+    it('should style an action button the way the action asks to be styled', () => {
+      const messageWithAction: InboxMessage = {
+        ...INBOX_MESSAGE,
+        actions: [{ content: "Click me!", background_color: "#9D3789" }],
+      };
+      const item = new CourierToastItem({
+        message: messageWithAction,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager: THEME_MANAGER,
+      });
+
+      document.body.appendChild(item);
+
+      const styles = document.querySelector('courier-button')?.shadowRoot?.querySelector('style')?.textContent ?? '';
+      expect(styles).toContain('background-color: #9D3789;');
+      // Readable on the fill, since Elemental actions carry no text color of their own.
+      expect(styles).toContain('color: #FFFFFF;');
+    });
+
     it('should render the icon by default', () => {
       const item = new CourierToastItem({
         message: INBOX_MESSAGE,

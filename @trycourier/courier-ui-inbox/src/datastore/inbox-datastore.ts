@@ -1,4 +1,4 @@
-import { Courier, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
+import { Courier, InboxAction, InboxMessage, InboxMessageEvent, InboxMessageEventEnvelope } from "@trycourier/courier-js";
 import { CourierGetInboxMessagesQueryFilter } from "@trycourier/courier-js";
 import { CourierInboxDatasetFilter, CourierInboxFeed, InboxDataSet } from "../types/inbox-data-set";
 import { CourierInboxDataset } from "./inbox-dataset";
@@ -456,6 +456,35 @@ export class CourierInboxDatastore {
 
         // Do NOT re-throw - swallow the error
       }
+    }
+  }
+
+  /**
+   * Track a click event for one of a message's actions.
+   *
+   * The tracking id travels on the action rather than the message, so an action click is
+   * attributed to the button the reader actually pressed. A template that opts out of tracking
+   * arrives without one, in which case there is nothing to report.
+   *
+   * @param messageId - The id of the message the action belongs to
+   * @param action - The action that was clicked
+   */
+  public async clickMessageAction({ messageId, action }: { messageId: string, action: InboxAction }): Promise<void> {
+    const trackingId = action.data?.['trackingId'];
+    if (typeof trackingId !== 'string' || !trackingId) {
+      return;
+    }
+
+    try {
+      await Courier.shared.client?.inbox.click({ messageId, trackingId });
+    } catch (error) {
+      Courier.shared.client?.options.logger?.error(`[${CourierInboxDatastore.TAG}] Error clicking message action:`, error);
+
+      this._listeners.forEach(listener => {
+        listener.events.onError?.(error as Error);
+      });
+
+      // Do NOT re-throw - swallow the error
     }
   }
 

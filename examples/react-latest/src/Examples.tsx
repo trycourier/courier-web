@@ -72,6 +72,9 @@ export default function Examples() {
         <ExampleCard to="/examples/inbox-custom-height" title="Custom Height">
           Inbox constrained to a custom height with a tailored layout.
         </ExampleCard>
+        <ExampleCard to="/examples/inbox-styles" title="Styles">
+          Filled, outlined and link actions, plus markdown previews, themed three ways.
+        </ExampleCard>
         <ExampleCard to="/examples/inbox-theme" title="Themed">
           Inbox themed via React with Poppins typography and accent colors.
         </ExampleCard>

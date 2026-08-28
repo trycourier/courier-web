@@ -28,6 +28,71 @@ export interface Colors {
 // @public
 export const COURIER_DEFAULT_PRIMARY_COLOR: string;
 
+// Warning: (ae-missing-release-tag) "courierActionButtonProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function courierActionButtonProps(action: CourierActionStyle, theme?: CourierActionThemeStyle): Partial<CourierButtonProps>;
+
+// Warning: (ae-missing-release-tag) "CourierActionStyle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export interface CourierActionStyle {
+    // (undocumented)
+    background_color?: string;
+    // (undocumented)
+    border?: {
+        enabled?: boolean;
+        color?: string;
+        radius?: string | number;
+        size?: string;
+    };
+    // (undocumented)
+    border_radius?: string;
+    // (undocumented)
+    border_size?: string;
+    // (undocumented)
+    color?: string;
+    // (undocumented)
+    font_size?: string;
+    // (undocumented)
+    padding?: string;
+    // (undocumented)
+    style?: string;
+}
+
+// @public
+export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
+    link?: CourierActionVariantThemeStyle;
+    outlined?: CourierActionVariantThemeStyle;
+}
+
+// @public
+export interface CourierActionVariantThemeStyle {
+    // (undocumented)
+    activeBackgroundColor?: string;
+    // (undocumented)
+    backgroundColor?: string;
+    // (undocumented)
+    border?: string;
+    // (undocumented)
+    borderRadius?: string;
+    // (undocumented)
+    font?: {
+        family?: string;
+        size?: string;
+        weight?: string;
+        color?: string;
+    };
+    // (undocumented)
+    hoverBackgroundColor?: string;
+    // (undocumented)
+    padding?: string;
+    // (undocumented)
+    shadow?: string;
+    // (undocumented)
+    textDecoration?: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "HTMLElementBase" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "CourierBaseElement" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -69,6 +134,8 @@ export type CourierButtonProps = {
     fontSize?: string;
     fontWeight?: string;
     textColor?: string;
+    padding?: string;
+    textDecoration?: string;
     variant?: CourierButtonVariant;
     onClick?: () => void;
 };
@@ -90,7 +157,7 @@ export type CourierButtonTheme = {
 // Warning: (ae-missing-release-tag) "CourierButtonVariant" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary';
+export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 // Warning: (ae-missing-release-tag) "CourierButtonVariants" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -100,18 +167,25 @@ export const CourierButtonVariants: {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
+        border: string;
         shadow: string;
         borderRadius: "4px";
         fontSize: "14px";
+        padding: "6px 10px";
+        textDecoration: "none";
     };
     readonly secondary: (mode: SystemThemeMode) => {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
         border: string;
         shadow: string;
         borderRadius: "4px";
         fontSize: "14px";
+        padding: "6px 10px";
+        textDecoration: "none";
     };
     readonly tertiary: (mode: SystemThemeMode) => {
         backgroundColor: string;
@@ -119,6 +193,21 @@ export const CourierButtonVariants: {
         fontWeight: string;
         border: string;
         shadow: string;
+        borderRadius: "4px";
+        fontSize: "14px";
+        padding: "6px 10px";
+        textDecoration: "none";
+    };
+    readonly link: (mode: SystemThemeMode) => {
+        backgroundColor: string;
+        textColor: string;
+        fontWeight: string;
+        border: string;
+        shadow: string;
+        padding: string;
+        textDecoration: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
         borderRadius: "4px";
         fontSize: "14px";
     };
@@ -409,6 +498,11 @@ export function injectGlobalStyle(styleId: string, styles: string): HTMLStyleEle
 // @public
 export function isDarkColor(color: string): boolean;
 
+// Warning: (ae-missing-release-tag) "readableTextColor" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function readableTextColor(backgroundColor?: string): string | undefined;
+
 // Warning: (ae-missing-release-tag) "registerElement" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -440,6 +534,11 @@ export const theme: {
     light: Theme;
     dark: Theme;
 };
+
+// Warning: (ae-missing-release-tag) "TRANSPARENT_BORDER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export const TRANSPARENT_BORDER = "1px solid transparent";
 
 // (No @packageDocumentation comment for this package)
 

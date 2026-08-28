@@ -1,8 +1,9 @@
 import { CourierComponentThemeMode, SystemThemeMode } from "../utils/system-theme-mode";
 import { theme } from "../utils/theme";
+import { CourierColors } from "../utils/courier-colors";
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
-export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary';
+export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 export type CourierButtonProps = {
   mode: CourierComponentThemeMode
@@ -17,13 +18,23 @@ export type CourierButtonProps = {
   fontSize?: string,
   fontWeight?: string,
   textColor?: string,
+  padding?: string,
+  textDecoration?: string,
   variant?: CourierButtonVariant,
   onClick?: () => void
 }
 
+/**
+ * A button with no visible outline still reserves the same border box as one that has an
+ * outline, so a filled and an outlined button sitting in the same row line up.
+ */
+export const TRANSPARENT_BORDER = '1px solid transparent';
+
 const baseButtonStyles = {
   borderRadius: '4px',
-  fontSize: '14px'
+  fontSize: '14px',
+  padding: '6px 10px',
+  textDecoration: 'none'
 } as const;
 
 export const CourierButtonVariants = {
@@ -33,6 +44,7 @@ export const CourierButtonVariants = {
       backgroundColor: theme[mode].colors.primary,
       textColor: theme[mode].colors.secondary,
       fontWeight: '500',
+      border: TRANSPARENT_BORDER,
       shadow: 'none'
     };
   },
@@ -43,6 +55,10 @@ export const CourierButtonVariants = {
       backgroundColor: theme[mode].colors.secondary,
       textColor: theme[mode].colors.primary,
       fontWeight: '500',
+      // Opaque rather than translucent: an action can sit on a floating surface (a toast) where
+      // page content would otherwise show through the overlay.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[200] : CourierColors.gray[800],
+      activeBackgroundColor: mode === 'light' ? CourierColors.gray[500] : CourierColors.gray[700],
       border: `1px solid ${theme[mode].colors.border}`,
       shadow: mode === 'light'
         ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
@@ -56,8 +72,25 @@ export const CourierButtonVariants = {
       backgroundColor: theme[mode].colors.border,
       textColor: theme[mode].colors.primary,
       fontWeight: '500',
-      border: 'none',
+      border: TRANSPARENT_BORDER,
       shadow: 'none'
+    };
+  },
+
+  /** Reads as an inline hyperlink rather than a button — no fill, no border, no padding. */
+  link: (mode: SystemThemeMode) => {
+    return {
+      ...baseButtonStyles,
+      backgroundColor: 'transparent',
+      textColor: theme[mode].colors.primary,
+      fontWeight: '500',
+      border: 'none',
+      shadow: 'none',
+      padding: '0px',
+      textDecoration: 'underline',
+      // A link has no fill to darken, so its feedback has to come from a wash behind the text.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.black[500_10] : CourierColors.white[500_10],
+      activeBackgroundColor: mode === 'light' ? CourierColors.black[500_20] : CourierColors.white[500_20]
     };
   }
 } as const;
@@ -101,40 +134,14 @@ export class CourierButton extends CourierSystemThemeElement {
 
     const mode = props.mode === 'system' ? this.currentSystemTheme : props.mode;
 
-    const defaultTextColor = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.textColor;
-    }
+    const defaults = CourierButtonVariants[props.variant ?? 'secondary'](mode);
 
-    const defaultBackgroundColor = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.backgroundColor;
-    }
-
-    const defaultBorder = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.border;
-    }
-
-    const defaultShadow = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.shadow;
-    }
-
-    const defaultBorderRadius = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.borderRadius;
-    }
-
-    const defaultFontSize = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.fontSize;
-    }
-
-    const defaultFontWeight = () => {
-      const secondary = CourierButtonVariants.secondary(mode);
-      return secondary.fontWeight;
-    }
+    // The variant's own hover pairs with the variant's own fill. Once a caller supplies a fill of
+    // its own there is no matching entry to reach for, so the feedback is derived from that color
+    // by dimming it — which works whatever color it turns out to be.
+    const usingOwnFill = Boolean(props.backgroundColor) && props.backgroundColor !== defaults.backgroundColor;
+    const hover = props.hoverBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { hoverBackgroundColor?: string }).hoverBackgroundColor);
+    const active = props.activeBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { activeBackgroundColor?: string }).activeBackgroundColor);
 
     return `
       :host {
@@ -143,27 +150,28 @@ export class CourierButton extends CourierSystemThemeElement {
 
       button {
         border: none;
-        border-radius: ${props.borderRadius ?? defaultBorderRadius()};
-        font-weight: ${props.fontWeight ?? defaultFontWeight()};
+        border-radius: ${props.borderRadius ?? defaults.borderRadius};
+        font-weight: ${props.fontWeight ?? defaults.fontWeight};
         font-family: ${props.fontFamily ?? 'inherit'};
-        font-size: ${props.fontSize ?? defaultFontSize()};
-        padding: 6px 10px;
+        font-size: ${props.fontSize ?? defaults.fontSize};
+        padding: ${props.padding ?? defaults.padding};
         cursor: pointer;
         width: 100%;
         height: 100%;
-        background-color: ${props.backgroundColor ?? defaultBackgroundColor()};
-        color: ${props.textColor ?? defaultTextColor()};
-        border: ${props.border ?? defaultBorder()};
-        box-shadow: ${props.shadow ?? defaultShadow()};
+        background-color: ${props.backgroundColor ?? defaults.backgroundColor};
+        color: ${props.textColor ?? defaults.textColor};
+        border: ${props.border ?? defaults.border};
+        box-shadow: ${props.shadow ?? defaults.shadow};
+        text-decoration: ${props.textDecoration ?? defaults.textDecoration};
         touch-action: manipulation;
       }
 
       button:hover {
-        ${props.hoverBackgroundColor ? `background-color: ${props.hoverBackgroundColor};` : 'filter: brightness(0.9);'}
+        ${hover ? `background-color: ${hover};` : 'filter: brightness(0.9);'}
       }
 
       button:active {
-        ${props.activeBackgroundColor ? `background-color: ${props.activeBackgroundColor};` : 'filter: brightness(0.8);'}
+        ${active ? `background-color: ${active};` : 'filter: brightness(0.8);'}
       }
 
       button:disabled {

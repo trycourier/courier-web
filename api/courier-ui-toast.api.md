@@ -82,6 +82,25 @@ export class CourierToast extends CourierBaseElement {
 }
 
 // @public
+export type CourierToastActionsTheme = CourierToastActionVariantTheme & {
+    outlined?: CourierToastActionVariantTheme;
+    link?: CourierToastActionVariantTheme;
+};
+
+// @public
+export type CourierToastActionVariantTheme = {
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    shadow?: string;
+    textDecoration?: string;
+    padding?: string;
+    font?: CourierToastFontTheme;
+};
+
+// @public
 export class CourierToastDatastore {
     addDatastoreListener(listener: CourierToastDatastoreListener): void;
     addMessage(message: InboxMessage): void;
@@ -181,15 +200,7 @@ export type CourierToastItemTheme = {
     shadow?: string;
     border?: string;
     borderRadius?: string;
-    actions?: {
-        backgroundColor?: string;
-        hoverBackgroundColor?: string;
-        activeBackgroundColor?: string;
-        border?: string;
-        borderRadius?: string;
-        shadow?: string;
-        font?: CourierToastFontTheme;
-    };
+    actions?: CourierToastActionsTheme;
 };
 
 // @public (undocumented)
