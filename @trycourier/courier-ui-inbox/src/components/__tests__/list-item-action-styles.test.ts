@@ -59,8 +59,9 @@ describe('inbox list item action styles', () => {
     const styles = renderAction({ content: 'Confirm', background_color: '#9D3789' });
 
     expect(styles).toContain('background-color: #9D3789;');
-    // A fill replaces the default outlined look rather than layering on top of it.
-    expect(styles).toContain('border: none;');
+    // A fill replaces the default outlined look rather than layering on top of it — but still
+    // reserves the border box, so it lines up with an outlined sibling.
+    expect(styles).toContain('border: 1px solid transparent;');
     expect(styles).toContain('box-shadow: none;');
   });
 
@@ -226,6 +227,7 @@ describe('inbox list item action styles', () => {
       borderRadius: '11px',
       shadow: '0 0 9px #0D0E0F',
       textDecoration: 'overline',
+      padding: '13px 17px',
       font: { family: 'Courier', size: '19px', weight: '800', color: '#101112' }
     };
     const themed: CourierInboxTheme = {
@@ -243,16 +245,21 @@ describe('inbox list item action styles', () => {
     };
 
     const styles = renderAction(action, themed);
+    const rule = (selector: string) => new RegExp(`${selector} \\{([^}]*)\\}`).exec(styles)?.[1] ?? '';
 
     expect(styles).toContain('background-color: #010203;');
-    expect(styles).toContain('background-color: #040506;');
-    expect(styles).toContain('background-color: #070809;');
+    expect(styles).toContain('border: 3px solid #0A0B0C;');
     expect(styles).toContain('border-radius: 11px;');
     expect(styles).toContain('box-shadow: 0 0 9px #0D0E0F;');
     expect(styles).toContain('text-decoration: overline;');
+    expect(styles).toContain('padding: 13px 17px;');
+    expect(styles).toContain('color: #101112;');
     expect(styles).toContain('font-family: Courier;');
     expect(styles).toContain('font-size: 19px;');
     expect(styles).toContain('font-weight: 800;');
+    // Landing in the wrong rule is the same defect as not landing at all.
+    expect(rule('button:hover')).toContain('background-color: #040506;');
+    expect(rule('button:active')).toContain('background-color: #070809;');
   });
 
   it('lets a theme value override what the action asks for', () => {
