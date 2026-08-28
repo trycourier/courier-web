@@ -167,6 +167,8 @@ export const CourierButtonVariants: {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
         border: string;
         shadow: string;
         borderRadius: "4px";

@@ -44,6 +44,11 @@ export const CourierButtonVariants = {
       backgroundColor: theme[mode].colors.primary,
       textColor: theme[mode].colors.secondary,
       fontWeight: '500',
+      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
+      // it toward — the brightness fallback would move a near-black fill by two values and dim
+      // the label instead. Each mode steps toward the middle rather than past the end.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
+      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
       border: TRANSPARENT_BORDER,
       shadow: 'none'
     };
