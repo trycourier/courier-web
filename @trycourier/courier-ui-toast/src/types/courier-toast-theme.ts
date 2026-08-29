@@ -1,4 +1,4 @@
-import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme } from "@trycourier/courier-ui-core";
+import { CourierColors, CourierIconSVGs, SystemThemeMode, CourierFontTheme, CourierIconTheme, COURIER_DEFAULT_PRIMARY_COLOR } from "@trycourier/courier-ui-core";
 
 // Re-export common types from core for convenience
 
@@ -28,15 +28,39 @@ export type CourierToastItemTheme = {
   shadow?: string;
   border?: string;
   borderRadius?: string;
-  actions?: {
-    backgroundColor?: string;
-    hoverBackgroundColor?: string;
-    activeBackgroundColor?: string;
-    border?: string;
-    borderRadius?: string;
-    shadow?: string;
-    font?: CourierToastFontTheme;
-  }
+  actions?: CourierToastActionsTheme;
+}
+
+/**
+ * Styles for one toast-action look.
+ *
+ * @public
+ */
+export type CourierToastActionVariantTheme = {
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  activeBackgroundColor?: string;
+  border?: string;
+  borderRadius?: string;
+  shadow?: string;
+  textDecoration?: string;
+  padding?: string;
+  font?: CourierToastFontTheme;
+}
+
+/**
+ * Styles for a toast's action buttons.
+ *
+ * The top level describes the default filled button. `outlined` and `link` layer over it and
+ * apply only when the action asks for that look.
+ *
+ * @public
+ */
+export type CourierToastActionsTheme = CourierToastActionVariantTheme & {
+  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
+  outlined?: CourierToastActionVariantTheme;
+  /** Applies when the action asks for `style: 'link'`. */
+  link?: CourierToastActionVariantTheme;
 }
 
 /** @public */
@@ -72,18 +96,6 @@ export const defaultLightTheme: CourierToastTheme = {
       svg: CourierIconSVGs.remove,
     },
     autoDismissBarColor: CourierColors.blue[400],
-    actions: {
-      backgroundColor: 'transparent',
-      hoverBackgroundColor: CourierColors.gray[200],
-      activeBackgroundColor: CourierColors.gray[500],
-      border: `1px solid ${CourierColors.gray[500]}`,
-      borderRadius: '4px',
-      shadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.06)',
-      font: {
-        color: CourierColors.black[500],
-        size: '14px',
-      }
-    }
   }
 };
 
@@ -115,18 +127,6 @@ export const defaultDarkTheme: CourierToastTheme = {
       svg: CourierIconSVGs.remove,
     },
     autoDismissBarColor: CourierColors.blue[400],
-    actions: {
-      backgroundColor: CourierColors.black[400],
-      hoverBackgroundColor: CourierColors.white[500_10],
-      activeBackgroundColor: CourierColors.white[500_20],
-      border: `1px solid ${CourierColors.gray[400]}`,
-      borderRadius: '4px',
-      shadow: `0px 1px 2px 0px ${CourierColors.white[500_10]}`,
-      font: {
-        color: CourierColors.white[500],
-        size: '14px'
-      }
-    }
   }
 };
 
@@ -156,6 +156,30 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierToastTheme): Cou
       dismissIcon: {
         ...defaultTheme.item?.dismissIcon,
         ...theme.item?.dismissIcon
+      },
+      actions: {
+        ...defaultTheme.item?.actions,
+        ...theme.item?.actions,
+        font: {
+          ...defaultTheme.item?.actions?.font,
+          ...theme.item?.actions?.font
+        },
+        outlined: {
+          ...defaultTheme.item?.actions?.outlined,
+          ...theme.item?.actions?.outlined,
+          font: {
+            ...defaultTheme.item?.actions?.outlined?.font,
+            ...theme.item?.actions?.outlined?.font
+          }
+        },
+        link: {
+          ...defaultTheme.item?.actions?.link,
+          ...theme.item?.actions?.link,
+          font: {
+            ...defaultTheme.item?.actions?.link?.font,
+            ...theme.item?.actions?.link?.font
+          }
+        }
       }
     }
   };

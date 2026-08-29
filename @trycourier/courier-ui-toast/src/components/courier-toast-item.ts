@@ -1,4 +1,4 @@
-import { CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
+import { courierActionButtonProps, CourierBaseElement, CourierButton, CourierIcon, registerElement } from "@trycourier/courier-ui-core";
 import { CourierToastThemeManager, CourierToastThemeSubscription } from "../types/courier-toast-theme-manager";
 import { CourierToastTheme } from "../types/courier-toast-theme";
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
@@ -311,17 +311,7 @@ export class CourierToastItem extends CourierBaseElement {
     return new CourierButton({
       mode: this._themeManager.mode,
       text: action.content,
-      variant: 'secondary',
-      backgroundColor: actionsTheme?.backgroundColor,
-      hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
-      activeBackgroundColor: actionsTheme?.activeBackgroundColor,
-      border: actionsTheme?.border,
-      borderRadius: actionsTheme?.borderRadius,
-      shadow: actionsTheme?.shadow,
-      fontFamily: actionsTheme?.font?.family,
-      fontSize: actionsTheme?.font?.size,
-      fontWeight: actionsTheme?.font?.weight,
-      textColor: actionsTheme?.font?.color,
+      ...courierActionButtonProps(action, actionsTheme),
       onClick: () => {
         if (this._onToastItemActionClickCallback) {
           this._onToastItemActionClickCallback({ message: this._message, action });

@@ -3,6 +3,7 @@ export * from './components/courier-inbox-header';
 export * from './components/courier-inbox-list-item';
 export * from './components/courier-inbox-popup-menu';
 export * from './utils/extensions';
+export * from './utils/markdown';
 export * from './types/factories';
 export * from './types/courier-inbox-theme';
 export * from './types/courier-inbox-theme-manager';

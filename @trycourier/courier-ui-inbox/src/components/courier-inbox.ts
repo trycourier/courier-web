@@ -386,8 +386,7 @@ export class CourierInbox extends CourierBaseElement {
         this._onMessageClick?.({ message, index });
       },
       onMessageActionClick: (message, action, index) => {
-
-        // TODO: Track action click?
+        CourierInboxDatastore.shared.clickMessageAction({ messageId: message.messageId, action });
 
         this.dispatchEvent(new CustomEvent('message-action-click', {
           detail: { message, action, index },

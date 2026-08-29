@@ -153,6 +153,25 @@ export class CourierInbox extends CourierBaseElement {
     get theme(): CourierInboxTheme;
 }
 
+// @public
+export type CourierInboxActionsTheme = CourierInboxActionVariantTheme & {
+    outlined?: CourierInboxActionVariantTheme;
+    link?: CourierInboxActionVariantTheme;
+};
+
+// @public
+export type CourierInboxActionVariantTheme = {
+    backgroundColor?: string;
+    hoverBackgroundColor?: string;
+    activeBackgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    shadow?: string;
+    textDecoration?: string;
+    padding?: string;
+    font?: CourierInboxFontTheme;
+};
+
 // Warning: (ae-missing-release-tag) "CourierInboxAnimationTheme" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -188,6 +207,10 @@ export class CourierInboxDatastore {
     archiveReadMessages(): Promise<void>;
     clickMessage({ message }: {
         message: InboxMessage;
+    }): Promise<void>;
+    clickMessageAction({ messageId, action }: {
+        messageId: string;
+        action: InboxAction;
     }): Promise<void>;
     fetchNextPageOfMessages(props: {
         feedType?: string;
@@ -432,15 +455,7 @@ export type CourierInboxListItemTheme = {
     time?: CourierInboxFontTheme;
     archiveIcon?: CourierInboxIconTheme;
     divider?: string;
-    actions?: {
-        backgroundColor?: string;
-        hoverBackgroundColor?: string;
-        activeBackgroundColor?: string;
-        border?: string;
-        borderRadius?: string;
-        shadow?: string;
-        font?: CourierInboxFontTheme;
-    };
+    actions?: CourierInboxActionsTheme;
     menu?: {
         enabled?: boolean;
         backgroundColor?: string;
@@ -848,6 +863,11 @@ export { InboxMessage }
 
 export { InboxMessageEventEnvelope }
 
+// Warning: (ae-missing-release-tag) "markActionAsClicked" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function markActionAsClicked(action: InboxAction, messageId: string): Promise<void>;
+
 // Warning: (ae-missing-release-tag) "markAsRead" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
@@ -867,6 +887,11 @@ export const mergeTheme: (mode: SystemThemeMode, theme: CourierInboxTheme) => Co
 //
 // @public (undocumented)
 export function openMessage(message: InboxMessage): void;
+
+// Warning: (ae-missing-release-tag) "renderPreviewMarkdown" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function renderPreviewMarkdown(text: string): string;
 
 // Warnings were encountered during analysis:
 //

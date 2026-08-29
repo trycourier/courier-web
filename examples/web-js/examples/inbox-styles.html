@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web-js</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+
+  <courier-inbox id="inbox"></courier-inbox>
+
+  <script type="module">
+    import { Courier, CourierInboxDatastore, CourierInboxDataStoreListener } from '@trycourier/courier-ui-inbox';
+
+    // Every message below is copied from what the inbox API actually returns, so this example
+    // shows the same rendering a real send produces. Three things about that shape are easy to
+    // get wrong when hand-writing a demo:
+    //
+    //   * `background_color` is always present on a delivered message. The send pipeline
+    //     substitutes the brand's primary colour when a template does not set one, so an action
+    //     that arrives over the wire always carries a fill. The first row below omits it anyway,
+    //     to show the button the SDK draws when nothing styles it — the look an integrator gets
+    //     from a message they build themselves.
+    //   * `style` is `null` for a plain button. The sender omits the value when it equals
+    //     "button", so null is the filled case rather than a missing one.
+    //   * Nothing else survives delivery. `border_radius`, `border_size`, `font_size`,
+    //     `padding`, `align` and a nested `border` are all dropped before the message is
+    //     stored, so styling an action with them here would render nothing.
+    //
+    // `preview` is markdown source, because the inbox channel renders that slot through the
+    // backend's markdown serializer.
+    const tracking = {
+      trackingHref: 'https://www.courier.com/',
+      trackingId: 'com/'
+    };
+
+    const action = (content, background_color = null, style = null) => ({
+      type: 'action',
+      content,
+      href: 'https://www.courier.com/',
+      data: tracking,
+      background_color,
+      style
+    });
+
+    const messages = [
+      {
+        messageId: 'inbox-styles-defaults',
+        title: 'SDK defaults',
+        preview: 'Nothing on these actions says how to look, so the SDK supplies its own defaults — including the hover and active states, and the border it reserves so it lines up with a styled sibling.',
+        created: new Date().toISOString(),
+        actions: [action('Default button'), action('Default outlined', null, 'secondary'), action('Default link', null, 'link')]
+      },
+      {
+        messageId: 'inbox-styles-filled',
+        title: 'Filled actions',
+        preview: 'An action that carries **background_color** renders filled, and its label flips to whichever of light or dark stays readable on that colour.',
+        created: new Date().toISOString(),
+        actions: [action('Confirm', '#9D3789'), action('Bright fill', '#FFEB00')]
+      },
+      {
+        messageId: 'inbox-styles-outlined',
+        title: 'Outlined actions',
+        preview: 'An action asking for _style: secondary_ draws the same colour as an outline instead of a fill, matching how email renders it. _tertiary_ behaves the same way.',
+        created: new Date().toISOString(),
+        actions: [action('Maybe later', '#9D3789', 'secondary'), action('Tertiary', '#171717', 'tertiary')]
+      },
+      {
+        messageId: 'inbox-styles-link',
+        title: 'Link action',
+        preview: 'An action asking for _style: link_ reads as an inline link rather than a button.',
+        created: new Date().toISOString(),
+        actions: [action('Learn more', '#E44A57', 'link')]
+      },
+      {
+        messageId: 'inbox-styles-ticket',
+        title: 'Filled next to outlined',
+        preview: 'Both actions carry the same colour. Only **style** separates them, and they sit at the same height.',
+        created: new Date().toISOString(),
+        actions: [action('Click me!', '#171717'), action('Secondary', '#171717', 'secondary')]
+      },
+      {
+        messageId: 'inbox-styles-brand-default',
+        title: 'No colour configured',
+        preview: 'The template set no colour, so the send pipeline substituted the brand primary. This is what an action with nothing on it really looks like on the wire.',
+        created: new Date().toISOString(),
+        actions: [action('Default button', '#E44A57')]
+      },
+      {
+        messageId: 'inbox-styles-markdown',
+        title: 'Markdown preview',
+        preview: 'Order **#4821** has _shipped_ — track it at [courier.com](https://www.courier.com). Old ETA ~~Friday~~.',
+        created: new Date().toISOString(),
+        actions: [action('Track', '#171717'), action('Details', '#171717', 'secondary')]
+      }
+    ];
+
+    // The inbox clears whatever it holds when its first page arrives, so the demo messages are
+    // added once that has happened rather than at page load.
+    let added = false;
+    CourierInboxDatastore.shared.addDataStoreListener(new CourierInboxDataStoreListener({
+      onDataSetChange() {
+        if (added) return;
+        added = true;
+        messages.forEach(message => CourierInboxDatastore.shared.addMessage(message));
+      }
+    }));
+
+    // Authenticate the user with the inbox
+    Courier.shared.signIn({
+      userId: import.meta.env.VITE_USER_ID,
+      jwt: import.meta.env.VITE_JWT
+    });
+
+    // Reference the courier-inbox element
+    const inbox = document.getElementById('inbox');
+
+    // Handle message clicks
+    inbox.onMessageClick(({ message }) => {
+      alert("Message clicked:\n" + JSON.stringify(message, null, 2));
+    });
+
+    // Handle action clicks. The click is already reported to Courier before this runs, using
+    // the trackingId the action carries in `data` — no wiring needed for that.
+    inbox.onMessageActionClick(({ message, action }) => {
+      alert("Action clicked:\n" + JSON.stringify(action, null, 2));
+    });
+  </script>
+
+</body>
+
+</html>

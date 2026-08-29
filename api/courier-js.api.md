@@ -472,19 +472,46 @@ export const getCourierApiUrlsForRegion: (region?: CourierApiRegion) => CourierA
 
 // Warning: (ae-missing-release-tag) "InboxAction" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export interface InboxAction {
+    action_id?: string;
+    align?: InboxActionAlign;
     // (undocumented)
     background_color?: string;
+    // @deprecated (undocumented)
+    border?: {
+        enabled?: boolean;
+        color?: string;
+        radius?: string | number;
+        size?: string;
+    };
+    border_radius?: string;
+    border_size?: string;
+    // @deprecated
+    color?: string;
     // (undocumented)
     content?: string;
     // (undocumented)
     data?: Record<string, any>;
     // (undocumented)
-    href?: string;
+    disable_tracking?: boolean;
+    font_size?: string;
     // (undocumented)
-    style?: string;
+    href?: string;
+    padding?: string;
+    // (undocumented)
+    style?: InboxActionStyle;
 }
+
+// Warning: (ae-missing-release-tag) "InboxActionAlign" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type InboxActionAlign = 'left' | 'center' | 'right' | 'full';
+
+// Warning: (ae-missing-release-tag) "InboxActionStyle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export type InboxActionStyle = 'button' | 'link' | 'secondary' | 'tertiary' | (string & {});
 
 // Warning: (ae-missing-release-tag) "InboxClient" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

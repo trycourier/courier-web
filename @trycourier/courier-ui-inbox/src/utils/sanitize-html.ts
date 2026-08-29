@@ -1,7 +1,7 @@
 /**
  * Escapes HTML special characters for safe text content.
  */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
@@ -15,7 +15,7 @@ function escapeHtml(text: string): string {
 /**
  * Escapes a string for safe use in an HTML attribute (e.g. href).
  */
-function escapeAttr(value: string): string {
+export function escapeAttr(value: string): string {
   return escapeHtml(value).replace(/\n/g, ' ');
 }
 
@@ -28,43 +28,7 @@ export function looksLikeHtml(str: string): boolean {
 }
 
 /** Class and cursor for subtitle/title links; full styling from theme via list item CSS (inbox.list.item.subtitleLink). */
-const LINK_ATTRS = ' class="courier-inbox-subtitle-link" style="cursor: pointer;"';
-
-/**
- * Converts plain text into HTML by making links clickable:
- * - Markdown links [link text](https://url) become <a> tags
- * - Bare http(s) URLs become <a> tags
- * Non-link text is escaped. Use with sanitizeHtmlForInbox for safe display.
- */
-export function linkifyPlainText(text: string): string {
-  if (typeof text !== 'string' || !text) return '';
-
-  // Match either markdown link or bare URL (markdown first so we don't double-wrap)
-  const combinedRegex = /\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>"']+)/gi;
-  const parts: string[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  combinedRegex.lastIndex = 0;
-  while ((match = combinedRegex.exec(text)) !== null) {
-    parts.push(escapeHtml(text.slice(lastIndex, match.index)));
-    const mdText = match[1];
-    const mdUrl = match[2];
-    const bareUrl = match[3];
-    if (mdUrl !== undefined) {
-      // Markdown link [text](url)
-      const safeUrl = escapeAttr(mdUrl);
-      const safeText = escapeHtml(mdText ?? mdUrl);
-      parts.push(`<a href="${safeUrl}" target="_blank" rel="noopener noreferrer"${LINK_ATTRS}>${safeText}</a>`);
-    } else if (bareUrl !== undefined) {
-      // Bare URL
-      const safeUrl = escapeAttr(bareUrl);
-      parts.push(`<a href="${safeUrl}" target="_blank" rel="noopener noreferrer"${LINK_ATTRS}>${escapeHtml(bareUrl)}</a>`);
-    }
-    lastIndex = match.index + match[0].length;
-  }
-  parts.push(escapeHtml(text.slice(lastIndex)));
-  return parts.join('');
-}
+export const LINK_ATTRS = ' class="courier-inbox-subtitle-link" style="cursor: pointer;"';
 
 /**
  * Normalizes malformed preview HTML (markdown in href, broken target/rel) before parsing.
@@ -83,7 +47,14 @@ function normalizePreviewHtml(html: string): string {
 }
 
 /**
- * Sanitizes HTML for safe display in the inbox. Only allows <a> tags with http(s) href.
+ * Inline formatting the inbox renders. These carry no attributes, so they are emitted bare —
+ * only <a> needs its href checked.
+ */
+const INLINE_TAGS = new Set(['STRONG', 'B', 'EM', 'I', 'S', 'DEL', 'BR', 'SPAN']);
+
+/**
+ * Sanitizes HTML for safe display in the inbox. Allows <a> tags with http(s) href plus the
+ * inline formatting tags the preview markdown renderer produces.
  * Normalizes malformed preview HTML first (e.g. markdown in href, target="+blank").
  * All other tags are stripped; their content is preserved as escaped text.
  */
@@ -115,6 +86,19 @@ export function sanitizeHtmlForInbox(html: string): string {
           const inner = Array.from(el.childNodes).map(walk).join('');
           return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer" class="courier-inbox-subtitle-link" style="cursor: pointer;">${inner}</a>`;
         }
+      }
+
+      if (INLINE_TAGS.has(tagName)) {
+        if (tagName === 'BR') return '<br>';
+        const inner = Array.from(el.childNodes).map(walk).join('');
+        // The bullet marker is the one span the renderer emits; any other span is unwrapped.
+        if (tagName === 'SPAN') {
+          return el.getAttribute('class') === 'courier-inbox-md-bullet'
+            ? `<span class="courier-inbox-md-bullet">${inner}</span>`
+            : inner;
+        }
+        const tag = tagName.toLowerCase();
+        return `<${tag}>${inner}</${tag}>`;
       }
 
       return Array.from(el.childNodes).map(walk).join('');

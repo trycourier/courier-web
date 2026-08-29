@@ -20,6 +20,7 @@ export * from './components/courier-system-theme-element';
 export * from './components/courier-base-element';
 export * from './components/courier-radio';
 export * from './components/courier-checkbox';
+export * from './utils/action-styles';
 export * from './utils/system-theme-mode';
 export * from './utils/theme';
 export * from './utils/courier-colors';

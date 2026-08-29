@@ -1,8 +1,9 @@
 import { InboxAction, InboxMessage } from "@trycourier/courier-js";
-import { CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
+import { courierActionButtonProps, CourierBaseElement, CourierButton, CourierIcon, CourierIconSVGs, registerElement } from "@trycourier/courier-ui-core";
 import { CourierInboxTheme } from "../types/courier-inbox-theme";
 import { getMessageTime } from "../utils/utils";
-import { looksLikeHtml, linkifyPlainText, sanitizeHtmlForInbox } from "../utils/sanitize-html";
+import { looksLikeHtml, sanitizeHtmlForInbox } from "../utils/sanitize-html";
+import { renderPreviewMarkdown } from "../utils/markdown";
 import { CourierInboxListItemMenu, CourierInboxListItemActionMenuOption } from "./courier-inbox-list-item-menu";
 import { CourierInboxDatastore } from "../datastore/inbox-datastore";
 import { CourierInboxThemeManager } from "../types/courier-inbox-theme-manager";
@@ -266,6 +267,11 @@ export class CourierInboxListItem extends CourierBaseElement {
         color: ${list?.item?.subtitle?.color ?? 'red'};
       }
 
+      /* Bullet marker from a markdown list line; dimmed so the text stays the focus. */
+      ${CourierInboxListItem.id} .subtitle .courier-inbox-md-bullet {
+        opacity: 0.6;
+      }
+
       ${CourierInboxListItem.id} .subtitle a,
       ${CourierInboxListItem.id} .subtitle .courier-inbox-subtitle-link {
         --courier-inbox-subtitle-link-color: ${list?.item?.subtitleLink?.color ?? '#2563EB'};
@@ -321,7 +327,8 @@ export class CourierInboxListItem extends CourierBaseElement {
         margin-top: 10px;
         flex-wrap: wrap;
         flex-direction: row;
-        align-items: center;
+        /* Stretch rather than center so actions with different border widths still line up. */
+        align-items: stretch;
         gap: 8px;
         display: none;
       }
@@ -520,7 +527,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       if (looksLikeHtml(titleText)) {
         this._titleElement.innerHTML = sanitizeHtmlForInbox(titleText);
       } else {
-        this._titleElement.innerHTML = sanitizeHtmlForInbox(linkifyPlainText(titleText));
+        this._titleElement.innerHTML = sanitizeHtmlForInbox(renderPreviewMarkdown(titleText));
       }
     }
     if (this._subtitleElement) {
@@ -531,7 +538,7 @@ export class CourierInboxListItem extends CourierBaseElement {
       if (looksLikeHtml(subtitleText)) {
         this._subtitleElement.innerHTML = sanitizeHtmlForInbox(subtitleText);
       } else {
-        this._subtitleElement.innerHTML = sanitizeHtmlForInbox(linkifyPlainText(subtitleText));
+        this._subtitleElement.innerHTML = sanitizeHtmlForInbox(renderPreviewMarkdown(subtitleText));
       }
     }
     if (this._timeElement) {
@@ -559,17 +566,7 @@ export class CourierInboxListItem extends CourierBaseElement {
         const actionButton = new CourierButton({
           mode: this._themeManager.mode,
           text: action.content,
-          variant: 'secondary',
-          backgroundColor: actionsTheme?.backgroundColor,
-          hoverBackgroundColor: actionsTheme?.hoverBackgroundColor,
-          activeBackgroundColor: actionsTheme?.activeBackgroundColor,
-          border: actionsTheme?.border,
-          borderRadius: actionsTheme?.borderRadius,
-          shadow: actionsTheme?.shadow,
-          fontFamily: actionsTheme?.font?.family,
-          fontSize: actionsTheme?.font?.size,
-          fontWeight: actionsTheme?.font?.weight,
-          textColor: actionsTheme?.font?.color,
+          ...courierActionButtonProps(action, actionsTheme),
           onClick: () => {
             if (this._message && this.onItemActionClick) {
               this.onItemActionClick(this._message, action);

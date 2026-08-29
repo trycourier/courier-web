@@ -439,9 +439,20 @@ export class CourierToast extends CourierBaseElement {
       item.onToastItemClick(this._onItemClick);
     }
 
-    if (this._onItemActionClick) {
-      item.onToastItemActionClick(this._onItemActionClick);
-    }
+    // Tracking is attached whether or not the integrator handles the click, so an action press
+    // is reported the same way it is from the inbox. The tracking id travels on the action, so
+    // the click is attributed to the button rather than the message; a template that opts out of
+    // tracking arrives without one and nothing is reported.
+    item.onToastItemActionClick((props: CourierToastItemActionClickEvent) => {
+      const trackingId = props.action.data?.['trackingId'];
+      if (typeof trackingId === 'string' && trackingId) {
+        Courier.shared.client?.inbox
+          .click({ messageId: props.message.messageId, trackingId })
+          .catch(error => Courier.shared.client?.options.logger?.error('Error clicking toast action:', error));
+      }
+
+      this._onItemActionClick?.(props);
+    });
 
     // The auto-dismiss countdown (and its hover-to-pause behavior) is owned by
     // the CourierToastItem itself, started when it mounts — see
@@ -709,6 +720,8 @@ export class CourierToast extends CourierBaseElement {
     const actionStyles = `
       ${CourierToastItem.id} > .overflow-hidden-container > .content > .text-content > .actions-container {
         display: flex;
+        /* Stretch rather than center so actions with different border widths still line up. */
+        align-items: stretch;
         gap: 8px;
         margin-top: 12px;
       }

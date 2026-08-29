@@ -51,6 +51,39 @@ export type CourierInboxSubtitleLinkTheme = {
   hoverColor?: string;
 }
 
+/**
+ * Styles for one message-action look.
+ *
+ * @public
+ */
+export type CourierInboxActionVariantTheme = {
+  backgroundColor?: string;
+  hoverBackgroundColor?: string;
+  activeBackgroundColor?: string;
+  border?: string;
+  borderRadius?: string;
+  shadow?: string;
+  textDecoration?: string;
+  padding?: string;
+  font?: CourierInboxFontTheme;
+}
+
+/**
+ * Styles for a message's action buttons.
+ *
+ * The top level describes the default filled button. `outlined` and `link` layer over it and
+ * apply only when the action asks for that look, so a template configuring an outlined or link
+ * action renders as its author intended without giving up the rest of the theme.
+ *
+ * @public
+ */
+export type CourierInboxActionsTheme = CourierInboxActionVariantTheme & {
+  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
+  outlined?: CourierInboxActionVariantTheme;
+  /** Applies when the action asks for `style: 'link'`. */
+  link?: CourierInboxActionVariantTheme;
+}
+
 export type CourierInboxListItemTheme = {
   unreadIndicatorColor?: string;
   backgroundColor?: string;
@@ -64,15 +97,7 @@ export type CourierInboxListItemTheme = {
   time?: CourierInboxFontTheme;
   archiveIcon?: CourierInboxIconTheme;
   divider?: string;
-  actions?: {
-    backgroundColor?: string;
-    hoverBackgroundColor?: string;
-    activeBackgroundColor?: string;
-    border?: string;
-    borderRadius?: string;
-    shadow?: string;
-    font?: CourierInboxFontTheme;
-  }
+  actions?: CourierInboxActionsTheme;
   menu?: {
     enabled?: boolean;
     backgroundColor?: string;
@@ -451,19 +476,6 @@ export const defaultLightTheme: CourierInboxTheme = {
         hoverBackgroundColor: CourierColors.gray[200],
         activeBackgroundColor: CourierColors.gray[500],
         transition: 'all 0.2s ease',
-        actions: {
-          backgroundColor: 'transparent',
-          hoverBackgroundColor: CourierColors.gray[200],
-          activeBackgroundColor: CourierColors.gray[500],
-          border: `1px solid ${CourierColors.gray[500]}`,
-          borderRadius: '4px',
-          shadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.06)',
-          font: {
-            color: CourierColors.black[500],
-            family: undefined,
-            size: '14px'
-          }
-        },
         title: {
           color: CourierColors.black[500],
           family: undefined,
@@ -795,19 +807,6 @@ export const defaultDarkTheme: CourierInboxTheme = {
         hoverBackgroundColor: CourierColors.white[500_10],
         activeBackgroundColor: CourierColors.white[500_20],
         transition: 'all 0.2s ease',
-        actions: {
-          backgroundColor: 'transparent',
-          hoverBackgroundColor: CourierColors.white[500_10],
-          activeBackgroundColor: CourierColors.white[500_20],
-          border: `1px solid ${CourierColors.gray[400]}`,
-          borderRadius: '4px',
-          shadow: `0px 1px 2px 0px ${CourierColors.white[500_10]}`,
-          font: {
-            color: CourierColors.white[500],
-            family: undefined,
-            size: '14px'
-          }
-        },
         title: {
           color: CourierColors.white[500],
           family: undefined,
@@ -1103,6 +1102,22 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
             font: {
               ...defaultTheme.inbox?.list?.item?.actions?.font,
               ...theme.inbox?.list?.item?.actions?.font
+            },
+            outlined: {
+              ...defaultTheme.inbox?.list?.item?.actions?.outlined,
+              ...theme.inbox?.list?.item?.actions?.outlined,
+              font: {
+                ...defaultTheme.inbox?.list?.item?.actions?.outlined?.font,
+                ...theme.inbox?.list?.item?.actions?.outlined?.font
+              }
+            },
+            link: {
+              ...defaultTheme.inbox?.list?.item?.actions?.link,
+              ...theme.inbox?.list?.item?.actions?.link,
+              font: {
+                ...defaultTheme.inbox?.list?.item?.actions?.link?.font,
+                ...theme.inbox?.list?.item?.actions?.link?.font
+              }
             }
           },
           title: {

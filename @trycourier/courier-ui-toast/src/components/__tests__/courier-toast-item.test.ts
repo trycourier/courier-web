@@ -11,6 +11,24 @@ const INBOX_MESSAGE: InboxMessage = {
   preview: "preview",
 };
 
+/** Mount a toast carrying `actions` and return it, so a test can read the button it rendered. */
+function renderWithActions(actions: InboxAction[], themeManager = THEME_MANAGER): CourierToastItem {
+  const item = new CourierToastItem({
+    message: { ...INBOX_MESSAGE, actions },
+    autoDismiss: false,
+    autoDismissTimeoutMs: 1000,
+    themeManager,
+  });
+
+  document.body.appendChild(item);
+  return item;
+}
+
+/** The stylesheet of the first action button on the page. */
+function actionStyles(): string {
+  return document.querySelector('courier-button')?.shadowRoot?.querySelector('style')?.textContent ?? '';
+}
+
 describe('courier-toast-item', () => {
   afterEach(() => {
     while (document.body.firstChild) {
@@ -50,6 +68,73 @@ describe('courier-toast-item', () => {
 
       expect(document.querySelector('courier-toast-item')).not.toBeNull();
       expect(document.querySelector('courier-button')).not.toBeNull();
+    });
+
+    it('should style an action button the way the action asks to be styled', () => {
+      const messageWithAction: InboxMessage = {
+        ...INBOX_MESSAGE,
+        actions: [{ content: "Click me!", background_color: "#9D3789" }],
+      };
+      const item = new CourierToastItem({
+        message: messageWithAction,
+        autoDismiss: false,
+        autoDismissTimeoutMs: 1000,
+        themeManager: THEME_MANAGER,
+      });
+
+      document.body.appendChild(item);
+
+      const styles = actionStyles();
+      expect(styles).toContain('background-color: #9D3789;');
+      // Readable on the fill, since Elemental actions carry no text color of their own.
+      expect(styles).toContain('color: #FFFFFF;');
+    });
+
+    it('should outline an action that asks for the secondary style', () => {
+      renderWithActions([{ content: "Maybe later", background_color: "#9D3789", style: "secondary" }]);
+
+      const styles = actionStyles();
+      // The colour becomes the outline and the label rather than a fill — the whole difference
+      // between the two looks, and the reason a toast has to read `style` at all.
+      expect(styles).toContain('border: 1px solid #9D3789;');
+      expect(styles).toContain('color: #9D3789;');
+      expect(styles).not.toContain('background-color: #9D3789;');
+    });
+
+    it('should render a link-style action as a link rather than a button', () => {
+      renderWithActions([{ content: "Learn more", style: "link" }]);
+
+      const styles = actionStyles();
+      expect(styles).toContain('text-decoration: underline;');
+      expect(styles).toContain('background-color: transparent;');
+      expect(styles).toContain('padding: 0px;');
+    });
+
+    // The toast theme merges the actions block and its variants; a value that never reaches the
+    // button reads as supported and silently does nothing.
+    it('should apply the theme actions block, variants included', () => {
+      const themeManager = new CourierToastThemeManager(defaultLightTheme);
+      themeManager.setLightTheme({
+        item: {
+          actions: {
+            borderRadius: '2px',
+            outlined: { border: '2px solid #00FF00' },
+            link: { font: { color: '#FF00FF' } }
+          }
+        }
+      });
+      themeManager.setMode('light');
+
+      renderWithActions([{ content: "Confirm", background_color: "#9D3789" }], themeManager);
+      expect(actionStyles()).toContain('border-radius: 2px;');
+
+      document.body.firstChild?.remove();
+      renderWithActions([{ content: "Later", background_color: "#9D3789", style: "secondary" }], themeManager);
+      expect(actionStyles()).toContain('border: 2px solid #00FF00;');
+
+      document.body.firstChild?.remove();
+      renderWithActions([{ content: "Learn more", style: "link" }], themeManager);
+      expect(actionStyles()).toContain('color: #FF00FF;');
     });
 
     it('should render the icon by default', () => {
