@@ -55,6 +55,21 @@
         actions: [action('Default button'), action('Default outlined', null, 'secondary'), action('Default link', null, 'link')]
       },
       {
+        // Exactly what the template designer's Filled + Outlined pair delivers. The designer has
+        // no way to say "outlined" — the content API accepts only `button` and `link` — so it
+        // encodes outlined as `link` carrying a white background, and reads that pair back the
+        // same way. The black label it also sets is dropped before delivery, leaving the white
+        // background as the only marker that survives.
+        messageId: 'inbox-styles-designer',
+        title: 'Hey',
+        preview: 'How are you?',
+        created: new Date().toISOString(),
+        actions: [
+          { type: 'action', content: 'Enter text', href: 'https://www.courier.com/', data: tracking, background_color: '#000000', style: 'button' },
+          { type: 'action', content: 'Enter text', href: 'https://www.courier.com/', data: tracking, background_color: '#ffffff', style: 'link' }
+        ]
+      },
+      {
         messageId: 'inbox-styles-filled',
         title: 'Filled actions',
         preview: 'An action that carries **background_color** renders filled, and its label flips to whichever of light or dark stays readable on that colour.',

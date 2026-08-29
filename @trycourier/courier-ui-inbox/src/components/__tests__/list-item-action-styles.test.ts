@@ -127,6 +127,73 @@ describe('inbox list item action styles', () => {
     expect(styles).not.toContain('background-color: #9D3789;');
   });
 
+  // The template designer cannot say "outlined" — the content API accepts only `button` and
+  // `link` — so it sends `link` with a white background and reads that pair back as outlined.
+  describe("the designer's outlined button", () => {
+
+    it('renders as a button rather than as a link', () => {
+      const styles = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' });
+
+      expect(styles).not.toContain('text-decoration: underline;');
+      // The kit's own outlined look, since the white background is a marker rather than a colour
+      // the author picked — and a marker has nothing to offer a dark surface.
+      expect(styles).toContain('border: 1px solid #E5E5E5;');
+      expect(styles).toContain('color: #171717;');
+      expect(styles).toContain('padding: 6px 10px;');
+    });
+
+    it('sits at the same height as the filled button beside it', () => {
+      const filled = renderAction({ content: 'Enter text', style: 'button', background_color: '#000000' });
+      const outlined = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' });
+
+      // Same border width and padding on both, so the pair lines up in the row.
+      expect(filled).toContain('border: 1px solid transparent;');
+      expect(outlined).toContain('border: 1px solid #E5E5E5;');
+      expect(filled).toContain('padding: 6px 10px;');
+      expect(outlined).toContain('padding: 6px 10px;');
+    });
+
+    it('follows the mode rather than the white it was sent', () => {
+      const styles = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' }, undefined, 'dark');
+
+      expect(styles).toContain('border: 1px solid #3A3A3A;');
+      expect(styles).toContain('color: #FFFFFF;');
+      expect(styles).not.toContain('background-color: #ffffff;');
+    });
+
+    it('takes the outlined theme block, not the link one', () => {
+      const themed: CourierInboxTheme = {
+        ...defaultLightTheme,
+        inbox: {
+          ...defaultLightTheme.inbox,
+          list: {
+            ...defaultLightTheme.inbox?.list,
+            item: {
+              ...defaultLightTheme.inbox?.list?.item,
+              actions: {
+                outlined: { border: '2px solid #00FF00' },
+                link: { border: '2px solid #FF0000' }
+              }
+            }
+          }
+        }
+      };
+
+      expect(renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' }, themed))
+        .toContain('border: 2px solid #00FF00;');
+    });
+
+    it('leaves a link an author actually wrote alone', () => {
+      // A hand-written link arrives with a real colour, because the send pipeline substitutes the
+      // brand's primary when a template names none — so the marker cannot be hit by accident.
+      const styles = renderAction({ content: 'Learn more', style: 'link', background_color: '#E44A57' });
+
+      expect(styles).toContain('text-decoration: underline;');
+      expect(styles).toContain('padding: 0px;');
+    });
+
+  });
+
   it('renders a link-style action as an underlined link, not a button', () => {
     const styles = renderAction({ content: 'Learn more', style: 'link' });
 
