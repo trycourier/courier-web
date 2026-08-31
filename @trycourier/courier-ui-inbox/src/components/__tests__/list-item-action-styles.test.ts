@@ -87,11 +87,64 @@ describe('inbox list item action styles', () => {
     expect(styles).toContain('border-radius: 9999px;');
   });
 
-  it('outlines a tertiary action the same way, defaulting the outline to a hairline', () => {
-    const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#000000' });
+  describe('the tertiary style', () => {
 
-    expect(styles).toContain('border: 1px solid #000000;');
-    expect(styles).not.toContain('background-color: #000000;');
+    it('draws a borderless button — the label and nothing else', () => {
+      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+
+      // Neither a fill nor an outline, so the action's color has only the label left to land on.
+      expect(styles).toContain('color: #9D3789;');
+      expect(styles).toContain('background-color: transparent;');
+      expect(styles).not.toContain('background-color: #9D3789;');
+      expect(styles).not.toContain('border: 1px solid #9D3789;');
+    });
+
+    it('keeps the border box so it lines up with an outlined sibling', () => {
+      const borderless = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const outlined = renderAction({ content: 'Maybe later', style: 'secondary', background_color: '#9D3789' });
+
+      expect(borderless).toContain('border: 1px solid transparent;');
+      expect(outlined).toContain('border: 1px solid #9D3789;');
+      expect(borderless).toContain('padding: 6px 10px;');
+      expect(outlined).toContain('padding: 6px 10px;');
+    });
+
+    it('is not an outlined button — the two are distinct looks now', () => {
+      const borderless = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const outlined = renderAction({ content: 'Maybe later', style: 'secondary', background_color: '#9D3789' });
+
+      expect(borderless).not.toEqual(outlined);
+    });
+
+    it('reads as a button rather than a link — no underline, and it keeps its padding', () => {
+      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+
+      expect(styles).not.toContain('text-decoration: underline;');
+      expect(styles).toContain('padding: 6px 10px;');
+    });
+
+    it('takes a borderless theme block over the action styling', () => {
+      const themed: CourierInboxTheme = {
+        inbox: {
+          ...defaultLightTheme.inbox,
+          list: {
+            ...defaultLightTheme.inbox?.list,
+            item: {
+              ...defaultLightTheme.inbox?.list?.item,
+              actions: {
+                borderless: { font: { color: '#123456' } }
+              }
+            }
+          }
+        }
+      };
+      const styles = renderAction(
+        { content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' },
+        themed
+      );
+
+      expect(styles).toContain('color: #123456;');
+    });
   });
 
   it('reads the legacy nested border older templates still send', () => {

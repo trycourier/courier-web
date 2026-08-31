@@ -55,8 +55,10 @@ export interface CourierActionVariantThemeStyle {
  * @public
  */
 export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
-  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
+  /** Applies when the action asks for `style: 'secondary'`. */
   outlined?: CourierActionVariantThemeStyle;
+  /** Applies when the action asks for `style: 'tertiary'`. */
+  borderless?: CourierActionVariantThemeStyle;
   /** Applies when the action asks for `style: 'link'`. */
   link?: CourierActionVariantThemeStyle;
 }
@@ -112,18 +114,30 @@ export function courierActionButtonProps(
   // plain button rather than stranding the action between looks.
   const style = action.style?.trim().toLowerCase();
   const isLink = style === 'link';
-  const outlined = style === 'secondary' || style === 'tertiary';
+  const outlined = style === 'secondary';
+  // The quietest button: the same box as its siblings, drawn with nothing but its label. It is
+  // still a button, so it keeps the padding and the hit area a link gives up.
+  const borderless = style === 'tertiary';
 
-  // The look the action asked for picks which theme block applies. `outlined` layers over the
-  // base because it is still a button; `link` does not, since inheriting the base fill or border
-  // would put button chrome on something that should read as text. Typography carries over to
-  // both, so a font set once applies to the whole row.
-  const font = { ...theme?.font, ...(isLink ? theme?.link?.font : outlined ? theme?.outlined?.font : undefined) };
+  // The look the action asked for picks which theme block applies. `outlined` and `borderless`
+  // layer over the base because both are still buttons; `link` does not, since inheriting the
+  // base fill or border would put button chrome on something that should read as text.
+  // Typography carries over to all of them, so a font set once applies to the whole row.
+  const variantFont = isLink
+    ? theme?.link?.font
+    : outlined
+      ? theme?.outlined?.font
+      : borderless
+        ? theme?.borderless?.font
+        : undefined;
+  const font = { ...theme?.font, ...variantFont };
   const t: CourierActionVariantThemeStyle = isLink
     ? { ...theme?.link, font }
     : outlined
       ? { ...theme, ...theme?.outlined, font }
-      : { ...theme, font };
+      : borderless
+        ? { ...theme, ...theme?.borderless, font }
+        : { ...theme, font };
 
   // A link is not a button wearing different colors — none of the button chrome applies to it.
   if (isLink) {
@@ -146,6 +160,27 @@ export function courierActionButtonProps(
 
   const fill = action.background_color;
   const borderSize = toCssLength(action.border_size ?? action.border?.size);
+
+  // A borderless button draws neither a fill nor an outline, so the action's color has only the
+  // label left to land on. It keeps a transparent border for the same reason a plain button
+  // does — the box has to match an outlined sibling in the same row.
+  if (borderless) {
+    return {
+      variant: 'secondary',
+      backgroundColor: t.backgroundColor ?? 'transparent',
+      hoverBackgroundColor: t.hoverBackgroundColor,
+      activeBackgroundColor: t.activeBackgroundColor,
+      border: t.border ?? TRANSPARENT_BORDER,
+      borderRadius: t.borderRadius ?? toCssLength(action.border_radius ?? action.border?.radius),
+      shadow: t.shadow ?? 'none',
+      textDecoration: t.textDecoration,
+      fontFamily: t.font?.family,
+      fontSize: t.font?.size ?? toCssLength(action.font_size),
+      fontWeight: t.font?.weight,
+      textColor: t.font?.color ?? action.color ?? fill,
+      padding: t.padding ?? action.padding
+    };
+  }
 
   // The legacy nested border is the only way an action can ask for an outline color of its own;
   // it only counts as a border when it says how thick it is, or says it is enabled.
