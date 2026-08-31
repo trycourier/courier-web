@@ -168,13 +168,13 @@ export function courierActionButtonProps(
   // does — the box has to match an outlined sibling in the same row.
   if (borderless) {
     return {
-      variant: 'secondary',
-      backgroundColor: t.backgroundColor ?? 'transparent',
+      variant: 'tertiary',
+      backgroundColor: t.backgroundColor,
       hoverBackgroundColor: t.hoverBackgroundColor,
       activeBackgroundColor: t.activeBackgroundColor,
-      border: t.border ?? TRANSPARENT_BORDER,
+      border: t.border,
       borderRadius: t.borderRadius ?? toCssLength(action.border_radius ?? action.border?.radius),
-      shadow: t.shadow ?? 'none',
+      shadow: t.shadow,
       textDecoration: t.textDecoration,
       fontFamily: t.font?.family,
       fontSize: t.font?.size ?? toCssLength(action.font_size),

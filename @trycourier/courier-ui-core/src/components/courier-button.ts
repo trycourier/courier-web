@@ -71,14 +71,22 @@ export const CourierButtonVariants = {
     };
   },
 
+  /**
+   * The quietest button: the same box as its siblings, drawn with nothing but its label.
+   */
   tertiary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.border,
+      backgroundColor: 'transparent',
       textColor: theme[mode].colors.primary,
       fontWeight: '500',
       border: TRANSPARENT_BORDER,
-      shadow: 'none'
+      shadow: 'none',
+      // Like a link, it has no fill to darken, so its feedback has to come from a wash behind
+      // the label. Without one the brightness fallback would run on a transparent background
+      // and the button would look inert.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.black[500_10] : CourierColors.white[500_10],
+      activeBackgroundColor: mode === 'light' ? CourierColors.black[500_20] : CourierColors.white[500_20]
     };
   },
 

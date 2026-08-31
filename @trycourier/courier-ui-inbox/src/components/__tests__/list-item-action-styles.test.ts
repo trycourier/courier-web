@@ -116,6 +116,28 @@ describe('inbox list item action styles', () => {
       expect(borderless).not.toEqual(outlined);
     });
 
+    it('gives hover and active a wash, since there is no fill to darken', () => {
+      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const hover = styles.slice(styles.indexOf('button:hover'), styles.indexOf('button:disabled'));
+
+      // The brightness fallback other buttons rely on does nothing to a transparent background,
+      // so without an explicit wash the button would look inert on hover.
+      expect(hover).toContain('background-color: #1717171A;');
+      expect(hover).toContain('background-color: #17171733;');
+      expect(hover).not.toContain('filter: brightness');
+    });
+
+    it('washes in the other direction in dark mode', () => {
+      const styles = renderAction(
+        { content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' },
+        undefined,
+        'dark'
+      );
+      const hover = styles.slice(styles.indexOf('button:hover'), styles.indexOf('button:disabled'));
+
+      expect(hover).toContain('background-color: #FFFFFF1A;');
+    });
+
     it('reads as a button rather than a link — no underline, and it keeps its padding', () => {
       const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
 
