@@ -78,9 +78,13 @@ export type CourierInboxActionVariantTheme = {
  * @public
  */
 export type CourierInboxActionsTheme = CourierInboxActionVariantTheme & {
-  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
-  outlined?: CourierInboxActionVariantTheme;
-  /** Applies when the action asks for `style: 'link'`. */
+  /** Applies to `style: 'button'` — the filled button, and the default when absent. */
+  button?: CourierInboxActionVariantTheme;
+  /** Applies to `style: 'secondary'` — the outlined button. */
+  secondary?: CourierInboxActionVariantTheme;
+  /** Applies to `style: 'tertiary'` — the borderless button. */
+  tertiary?: CourierInboxActionVariantTheme;
+  /** Applies to `style: 'link'` — inline text rather than a button. */
   link?: CourierInboxActionVariantTheme;
 }
 
@@ -1103,12 +1107,28 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierInboxTheme): Cou
               ...defaultTheme.inbox?.list?.item?.actions?.font,
               ...theme.inbox?.list?.item?.actions?.font
             },
-            outlined: {
-              ...defaultTheme.inbox?.list?.item?.actions?.outlined,
-              ...theme.inbox?.list?.item?.actions?.outlined,
+            button: {
+              ...defaultTheme.inbox?.list?.item?.actions?.button,
+              ...theme.inbox?.list?.item?.actions?.button,
               font: {
-                ...defaultTheme.inbox?.list?.item?.actions?.outlined?.font,
-                ...theme.inbox?.list?.item?.actions?.outlined?.font
+                ...defaultTheme.inbox?.list?.item?.actions?.button?.font,
+                ...theme.inbox?.list?.item?.actions?.button?.font
+              }
+            },
+            secondary: {
+              ...defaultTheme.inbox?.list?.item?.actions?.secondary,
+              ...theme.inbox?.list?.item?.actions?.secondary,
+              font: {
+                ...defaultTheme.inbox?.list?.item?.actions?.secondary?.font,
+                ...theme.inbox?.list?.item?.actions?.secondary?.font
+              }
+            },
+            tertiary: {
+              ...defaultTheme.inbox?.list?.item?.actions?.tertiary,
+              ...theme.inbox?.list?.item?.actions?.tertiary,
+              font: {
+                ...defaultTheme.inbox?.list?.item?.actions?.tertiary?.font,
+                ...theme.inbox?.list?.item?.actions?.tertiary?.font
               }
             },
             link: {

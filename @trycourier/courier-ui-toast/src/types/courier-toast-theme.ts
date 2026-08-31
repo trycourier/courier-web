@@ -57,9 +57,13 @@ export type CourierToastActionVariantTheme = {
  * @public
  */
 export type CourierToastActionsTheme = CourierToastActionVariantTheme & {
-  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
-  outlined?: CourierToastActionVariantTheme;
-  /** Applies when the action asks for `style: 'link'`. */
+  /** Applies to `style: 'button'` — the filled button, and the default when absent. */
+  button?: CourierToastActionVariantTheme;
+  /** Applies to `style: 'secondary'` — the outlined button. */
+  secondary?: CourierToastActionVariantTheme;
+  /** Applies to `style: 'tertiary'` — the borderless button. */
+  tertiary?: CourierToastActionVariantTheme;
+  /** Applies to `style: 'link'` — inline text rather than a button. */
   link?: CourierToastActionVariantTheme;
 }
 
@@ -164,12 +168,28 @@ export const mergeTheme = (mode: SystemThemeMode, theme: CourierToastTheme): Cou
           ...defaultTheme.item?.actions?.font,
           ...theme.item?.actions?.font
         },
-        outlined: {
-          ...defaultTheme.item?.actions?.outlined,
-          ...theme.item?.actions?.outlined,
+        button: {
+          ...defaultTheme.item?.actions?.button,
+          ...theme.item?.actions?.button,
           font: {
-            ...defaultTheme.item?.actions?.outlined?.font,
-            ...theme.item?.actions?.outlined?.font
+            ...defaultTheme.item?.actions?.button?.font,
+            ...theme.item?.actions?.button?.font
+          }
+        },
+        secondary: {
+          ...defaultTheme.item?.actions?.secondary,
+          ...theme.item?.actions?.secondary,
+          font: {
+            ...defaultTheme.item?.actions?.secondary?.font,
+            ...theme.item?.actions?.secondary?.font
+          }
+        },
+        tertiary: {
+          ...defaultTheme.item?.actions?.tertiary,
+          ...theme.item?.actions?.tertiary,
+          font: {
+            ...defaultTheme.item?.actions?.tertiary?.font,
+            ...theme.item?.actions?.tertiary?.font
           }
         },
         link: {

@@ -48,18 +48,21 @@ export interface CourierActionVariantThemeStyle {
 /**
  * The theme values an integrator can set for a row of message actions.
  *
- * The top level describes the default filled button. `outlined` and `link` layer over it and
- * apply only when the action asks for that look — an action carrying its own Elemental styling
- * still supersedes both.
+ * The top level applies to every action. Below it sits one block per `action.style`, each named
+ * for the value it answers to — a theme reads the same as the template that feeds it, with no
+ * mapping to remember between what a template sends and what a theme calls it. A block layers
+ * over the top level, and an action's own Elemental styling still supersedes both.
  *
  * @public
  */
 export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
-  /** Applies when the action asks for `style: 'secondary'`. */
-  outlined?: CourierActionVariantThemeStyle;
-  /** Applies when the action asks for `style: 'tertiary'`. */
-  borderless?: CourierActionVariantThemeStyle;
-  /** Applies when the action asks for `style: 'link'`. */
+  /** Applies to `style: 'button'` — the filled button, and the default when a style is absent. */
+  button?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'secondary'` — the outlined button. */
+  secondary?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'tertiary'` — the borderless button. */
+  tertiary?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'link'` — inline text rather than a button. */
   link?: CourierActionVariantThemeStyle;
 }
 
@@ -119,25 +122,24 @@ export function courierActionButtonProps(
   // still a button, so it keeps the padding and the hit area a link gives up.
   const borderless = style === 'tertiary';
 
-  // The look the action asked for picks which theme block applies. `outlined` and `borderless`
-  // layer over the base because both are still buttons; `link` does not, since inheriting the
-  // base fill or border would put button chrome on something that should read as text.
-  // Typography carries over to all of them, so a font set once applies to the whole row.
-  const variantFont = isLink
-    ? theme?.link?.font
+  // The block is picked by the style's own name, so a theme and a template speak the same
+  // vocabulary. An unrecognized style falls through to `button`, matching how it renders.
+  const variantTheme = isLink
+    ? theme?.link
     : outlined
-      ? theme?.outlined?.font
+      ? theme?.secondary
       : borderless
-        ? theme?.borderless?.font
-        : undefined;
-  const font = { ...theme?.font, ...variantFont };
+        ? theme?.tertiary
+        : theme?.button;
+
+  // Typography carries across the whole row, so a font set at the top level applies to every
+  // style and the block only refines it. The rest of the base layers in for the buttons but not
+  // for a link, since inheriting a fill or a border would put button chrome on something that
+  // should read as text.
+  const font = { ...theme?.font, ...variantTheme?.font };
   const t: CourierActionVariantThemeStyle = isLink
-    ? { ...theme?.link, font }
-    : outlined
-      ? { ...theme, ...theme?.outlined, font }
-      : borderless
-        ? { ...theme, ...theme?.borderless, font }
-        : { ...theme, font };
+    ? { ...variantTheme, font }
+    : { ...theme, ...variantTheme, font };
 
   // A link is not a button wearing different colors — none of the button chrome applies to it.
   if (isLink) {

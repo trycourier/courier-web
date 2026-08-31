@@ -132,7 +132,7 @@ describe('inbox list item action styles', () => {
             item: {
               ...defaultLightTheme.inbox?.list?.item,
               actions: {
-                borderless: { font: { color: '#123456' } }
+                tertiary: { font: { color: '#123456' } }
               }
             }
           }
@@ -225,7 +225,7 @@ describe('inbox list item action styles', () => {
             actions: {
               backgroundColor: '#123456',
               borderRadius: '2px',
-              outlined: { borderRadius: '16px', shadow: 'none' }
+              secondary: { borderRadius: '16px', shadow: 'none' }
             }
           }
         }
@@ -269,7 +269,9 @@ describe('inbox list item action styles', () => {
   // A themable property that never reaches the button is worse than no property at all: it
   // reads as supported and silently does nothing. Every field on the variant type is asserted.
   it.each([
-    ['outlined', { content: 'A', style: 'secondary', background_color: '#9D3789' } as InboxAction],
+    ['button', { content: 'A', style: 'button', background_color: '#9D3789' } as InboxAction],
+    ['secondary', { content: 'A', style: 'secondary', background_color: '#9D3789' } as InboxAction],
+    ['tertiary', { content: 'A', style: 'tertiary', background_color: '#9D3789' } as InboxAction],
     ['link', { content: 'A', style: 'link' } as InboxAction],
   ])('honors every %s theme property', (block, action) => {
     const variant = {
@@ -327,7 +329,7 @@ describe('inbox list item action styles', () => {
             actions: {
               backgroundColor: '#123456',
               font: { color: '#ABCDEF' },
-              outlined: { border: '2px solid #00FF00' }
+              secondary: { border: '2px solid #00FF00' }
             }
           }
         }
@@ -388,7 +390,7 @@ describe('inbox list item action styles', () => {
               ...defaultDarkTheme.inbox?.list?.item,
               actions: {
                 backgroundColor: '#111111',
-                outlined: { border: '2px solid #00FF00' },
+                secondary: { border: '2px solid #00FF00' },
                 link: { font: { color: '#00FFFF' } }
               }
             }
