@@ -42,14 +42,16 @@ export const CourierButtonVariants = {
   primary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.primary,
-      textColor: theme[mode].colors.secondary,
+      // The accent, not the mode's ink. A filled action is the same blue in light and dark, so
+      // the button a template author picks in the designer is the button that arrives — and
+      // white stays readable on it in both, which it would not be on a fill that inverted.
+      backgroundColor: theme[mode].colors.accent,
+      textColor: CourierColors.white[500],
       fontWeight: '500',
-      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
-      // it toward — the brightness fallback would move a near-black fill by two values and dim
-      // the label instead. Each mode steps toward the middle rather than past the end.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
-      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
+      // A blue fill has somewhere to go in both directions, so hover and press step through the
+      // blues rather than toward the middle of the ink scale.
+      hoverBackgroundColor: CourierColors.blue[600],
+      activeBackgroundColor: CourierColors.blue[700],
       border: TRANSPARENT_BORDER,
       shadow: 'none'
     };
@@ -59,13 +61,16 @@ export const CourierButtonVariants = {
     return {
       ...baseButtonStyles,
       backgroundColor: theme[mode].colors.secondary,
-      textColor: theme[mode].colors.primary,
+      // Outlined is the same action with its chrome turned down, so it wears the same accent —
+      // as the label and the outline instead of as a fill.
+      textColor: theme[mode].colors.accentText,
       fontWeight: '500',
-      // Opaque rather than translucent: an action can sit on a floating surface (a toast) where
-      // page content would otherwise show through the overlay.
+      // The wash stays neutral. It sits behind an accent label rather than replacing it, and
+      // it is opaque rather than translucent: an action can sit on a floating surface (a toast)
+      // where page content would otherwise show through the overlay.
       hoverBackgroundColor: mode === 'light' ? CourierColors.gray[200] : CourierColors.gray[800],
       activeBackgroundColor: mode === 'light' ? CourierColors.gray[500] : CourierColors.gray[700],
-      border: `1px solid ${theme[mode].colors.border}`,
+      border: `1px solid ${theme[mode].colors.accentText}`,
       shadow: mode === 'light'
         ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
         : '0px 1px 2px 0px rgba(255, 255, 255, 0.1)'
@@ -79,7 +84,7 @@ export const CourierButtonVariants = {
     return {
       ...baseButtonStyles,
       backgroundColor: 'transparent',
-      textColor: theme[mode].colors.primary,
+      textColor: theme[mode].colors.accentText,
       fontWeight: '500',
       border: TRANSPARENT_BORDER,
       shadow: 'none',

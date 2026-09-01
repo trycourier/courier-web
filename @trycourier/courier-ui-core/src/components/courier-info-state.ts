@@ -1,6 +1,7 @@
 import { CourierFactoryElement } from "./courier-element";
 import { CourierButton, CourierButtonProps, CourierButtonVariants } from "./courier-button";
 import { SystemThemeMode } from "../utils/system-theme-mode";
+import { theme } from "../utils/theme";
 
 export type CourierInfoStateProps = {
   title?: {
@@ -42,7 +43,11 @@ export class CourierInfoState extends CourierFactoryElement {
     }
 
     // Button
-    this._button = new CourierButton(this._props.button ?? CourierButtonVariants.secondary(this.currentSystemTheme));
+    //
+    // Outlined, but in ink rather than in the accent. `secondary` wears the accent because it
+    // is one of the four looks a message action can ask for; this is the SDK's own chrome — a
+    // retry on an empty or errored list — and nothing in a template chose it.
+    this._button = new CourierButton(this._props.button ?? this.neutralButtonProps(this.currentSystemTheme));
 
     this._style = document.createElement('style');
     this._style.textContent = this.getStyles(this._props);
@@ -58,6 +63,15 @@ export class CourierInfoState extends CourierFactoryElement {
 
   protected onSystemThemeChange(_: SystemThemeMode) {
     this.updateStyles(this._props);
+  }
+
+  /** `secondary` with its accent swapped back to the mode's ink. */
+  private neutralButtonProps(mode: SystemThemeMode) {
+    return {
+      ...CourierButtonVariants.secondary(mode),
+      textColor: theme[mode].colors.primary,
+      border: `1px solid ${theme[mode].colors.border}`,
+    };
   }
 
   private getStyles(props: CourierInfoStateProps): string {
