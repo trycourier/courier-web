@@ -200,7 +200,7 @@ export function courierActionButtonProps(
   const ownLook = Boolean(fill || actionBorder);
 
   // A filled action is the `primary` variant and an outlined one the `secondary`, so each takes
-  // the right defaults when the action names no colour of its own. Both used to return
+  // the right defaults when the action names no color of its own. Both used to return
   // `secondary`, which was invisible while every action arrived carrying a fill — the send
   // pipeline substituted the brand's primary — and became visible the moment it stopped: with
   // no fill, `secondary`'s surface made a filled button and an outlined one identical.

@@ -69,7 +69,7 @@ export const CourierButtonVariants = {
       // with — 1.26:1 against the surface this button is filled with, which is invisible, so an
       // outlined action read as a borderless one. It went unnoticed while every action arrived
       // carrying a fill, which became the outline; the default only became visible once actions
-      // stopped carrying colour. gray[600] clears 3:1 against the face in both modes, so the
+      // stopped carrying color. gray[600] clears 3:1 against the face in both modes, so the
       // same value serves light and dark.
       border: `1px solid ${CourierColors.gray[600]}`,
       shadow: mode === 'light'
@@ -136,7 +136,7 @@ export class CourierButton extends CourierSystemThemeElement {
    * `mode: 'system'` is resolved against `currentSystemTheme` when the styles are built, which
    * is only correct at the moment it is built. Everything else in the inbox re-reads its theme
    * through the theme manager's subscription; a button had no equivalent, so an OS flip left
-   * the actions — and only the actions — wearing the colours of the mode that had just ended.
+   * the actions — and only the actions — wearing the colors of the mode that had just ended.
    */
   private _props: CourierButtonProps;
 

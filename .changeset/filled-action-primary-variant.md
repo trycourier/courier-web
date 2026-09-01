@@ -12,6 +12,6 @@ the moment it stopped: with no fill, `secondary`'s surface made the two
 identical, and the style an author picked had no effect.
 
 A filled action is the `primary` variant now and an outlined one the
-`secondary`, so each takes the right colour, hover and shadow when the action
-names none of its own. An action that does name a colour is unchanged: it
+`secondary`, so each takes the right color, hover and shadow when the action
+names none of its own. An action that does name a color is unchanged: it
 still becomes the fill for `button` and the outline for `secondary`.
