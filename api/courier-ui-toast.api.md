@@ -83,7 +83,9 @@ export class CourierToast extends CourierBaseElement {
 
 // @public
 export type CourierToastActionsTheme = CourierToastActionVariantTheme & {
-    outlined?: CourierToastActionVariantTheme;
+    button?: CourierToastActionVariantTheme;
+    secondary?: CourierToastActionVariantTheme;
+    tertiary?: CourierToastActionVariantTheme;
     link?: CourierToastActionVariantTheme;
 };
 

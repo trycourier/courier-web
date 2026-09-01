@@ -155,7 +155,9 @@ export class CourierInbox extends CourierBaseElement {
 
 // @public
 export type CourierInboxActionsTheme = CourierInboxActionVariantTheme & {
-    outlined?: CourierInboxActionVariantTheme;
+    button?: CourierInboxActionVariantTheme;
+    secondary?: CourierInboxActionVariantTheme;
+    tertiary?: CourierInboxActionVariantTheme;
     link?: CourierInboxActionVariantTheme;
 };
 

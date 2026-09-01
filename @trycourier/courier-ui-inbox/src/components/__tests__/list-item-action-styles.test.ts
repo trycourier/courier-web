@@ -210,6 +210,38 @@ describe('inbox list item action styles', () => {
     expect(styles).toContain('padding: 0px;');
   });
 
+  it('rests at the link color rather than the label color the buttons use', () => {
+    expect(renderAction({ content: 'Learn more', style: 'link' })).toContain('color: #2563EB;');
+    expect(renderAction({ content: 'Learn more', style: 'link' }, undefined, 'dark')).toContain('color: #60A5FA;');
+  });
+
+  it('answers a hover by moving the link color rather than drawing a box behind it', () => {
+    const light = renderAction({ content: 'Learn more', style: 'link' });
+
+    // The wash a button uses for feedback would read as a box on text, so the link names its
+    // hover fill transparent and moves its color instead.
+    expect(light).toContain('color: #1D4ED8;');
+    expect(light).not.toContain('background-color: #1717171A;');
+    expect(light).not.toContain('background-color: #17171733;');
+
+    const dark = renderAction({ content: 'Learn more', style: 'link' }, undefined, 'dark');
+
+    expect(dark).toContain('color: #93C5FD;');
+    expect(dark).not.toContain('background-color: #FFFFFF1A;');
+    expect(dark).not.toContain('background-color: #FFFFFF33;');
+  });
+
+  it('leaves a press to the brightness fallback, which needs no box either', () => {
+    expect(renderAction({ content: 'Learn more', style: 'link' })).toContain('filter: brightness(0.8);');
+  });
+
+  it('leaves the buttons their own hover wash', () => {
+    // Only the link changed; a borderless button still has nothing but a wash to show with.
+    const styles = renderAction({ content: 'Confirm', style: 'tertiary' });
+
+    expect(styles).toContain('background-color: #1717171A;');
+  });
+
   it('falls back to the action when the theme is silent about that value', () => {
     const themeWithFont = (actions: Record<string, unknown>): CourierInboxTheme => ({
       ...defaultLightTheme,
@@ -396,9 +428,18 @@ describe('inbox list item action styles', () => {
       const light = renderAction({ content: 'Confirm' }, undefined, 'light');
       const dark = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      expect(light).toContain('border: 1px solid #E5E5E5;');
-      expect(dark).toContain('border: 1px solid #3A3A3A;');
+      // A styleless action is the filled button, so it takes the `primary` variant: the ink of
+      // the mode it is not, and no outline of its own.
+      expect(light).toContain('background-color: #171717;');
+      expect(dark).toContain('background-color: #FFFFFF;');
       expect(light).not.toBe(dark);
+    });
+
+    it('outlines a secondary action against the mode', () => {
+      expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light'))
+        .toContain('border: 1px solid #E5E5E5;');
+      expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark'))
+        .toContain('border: 1px solid #3A3A3A;');
     });
 
     it('applies an integrator dark theme, variant blocks included', () => {
@@ -427,20 +468,25 @@ describe('inbox list item action styles', () => {
     });
 
     it('keeps hover and active feedback in dark mode', () => {
+      // The filled button steps toward the middle rather than past the end of the scale, so a
+      // white fill in dark mode dims rather than brightening into nothing.
       const styles = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      expect(styles).toContain('background-color: #2E2E2E;');
-      expect(styles).toContain('background-color: #454545;');
+      expect(styles).toContain('background-color: #F5F5F5;');
+      expect(styles).toContain('background-color: #E5E5E5;');
     });
 
   });
 
-  it('leaves an action with no styling on the button default', () => {
-    // The default theme deliberately says nothing about actions, so CourierButton's own
-    // secondary look applies rather than a theme value that would outrank the template.
+  it('leaves an action with no styling on the filled button default', () => {
+    // The default theme deliberately says nothing about actions, so CourierButton's own look
+    // applies rather than a theme value that would outrank the template. An action naming no
+    // style is the filled button, which is the `primary` variant: the mode's ink, a transparent
+    // border so it lines up with an outlined sibling, and no shadow.
     const styles = renderAction({ content: 'Confirm' });
 
-    expect(styles).toContain('border: 1px solid');
-    expect(styles).not.toContain('box-shadow: none;');
+    expect(styles).toContain('background-color: #171717;');
+    expect(styles).toContain('border: 1px solid transparent;');
+    expect(styles).toContain('box-shadow: none;');
   });
 });

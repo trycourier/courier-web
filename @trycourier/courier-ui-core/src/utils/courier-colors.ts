@@ -34,8 +34,12 @@ export const CourierColors = {
     500_20: '#FFFFFF33',
   },
   blue: {
+    // Higher is darker, as elsewhere in the palette. 300 and 600 exist so a link has somewhere
+    // to move on hover without leaving the blue it rests at.
+    300: '#93C5FD',
     400: '#60A5FA',
     500: '#2563EB',
+    600: '#1D4ED8',
   }
 };
 

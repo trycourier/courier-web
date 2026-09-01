@@ -18,6 +18,7 @@ export type CourierButtonProps = {
   fontSize?: string,
   fontWeight?: string,
   textColor?: string,
+  hoverTextColor?: string,
   padding?: string,
   textDecoration?: string,
   variant?: CourierButtonVariant,
@@ -95,15 +96,21 @@ export const CourierButtonVariants = {
     return {
       ...baseButtonStyles,
       backgroundColor: 'transparent',
-      textColor: theme[mode].colors.primary,
+      // A link reads as a link: it rests at the link color rather than at the body text color
+      // the buttons use for their labels.
+      textColor: theme[mode].colors.link,
       fontWeight: '500',
       border: 'none',
       shadow: 'none',
       padding: '0px',
       textDecoration: 'underline',
-      // A link has no fill to darken, so its feedback has to come from a wash behind the text.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.black[500_10] : CourierColors.white[500_10],
-      activeBackgroundColor: mode === 'light' ? CourierColors.black[500_20] : CourierColors.white[500_20]
+      // A link is text, so it answers a pointer the way text does — by moving its own color, not
+      // by growing a box. Naming the hover fill transparent is what keeps the brightness
+      // fallback from dimming the label on top of that move.
+      hoverBackgroundColor: 'transparent',
+      // One step further from the page than the resting color, so the move is visible in either
+      // mode. Press is left to the brightness fallback, which needs no fill to act on.
+      hoverTextColor: mode === 'light' ? CourierColors.blue[600] : CourierColors.blue[300]
     };
   }
 } as const;
@@ -156,6 +163,11 @@ export class CourierButton extends CourierSystemThemeElement {
     const hover = props.hoverBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { hoverBackgroundColor?: string }).hoverBackgroundColor);
     const active = props.activeBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { activeBackgroundColor?: string }).activeBackgroundColor);
 
+    // A recolor on hover is the link's feedback rather than an extra on top of a fill, so a
+    // caller that supplies its own text color takes the variant's hover color with it.
+    const usingOwnText = Boolean(props.textColor) && props.textColor !== defaults.textColor;
+    const hoverText = props.hoverTextColor ?? (usingOwnText ? undefined : (defaults as { hoverTextColor?: string }).hoverTextColor);
+
     return `
       :host {
         display: inline-block;
@@ -181,6 +193,7 @@ export class CourierButton extends CourierSystemThemeElement {
 
       button:hover {
         ${hover ? `background-color: ${hover};` : 'filter: brightness(0.9);'}
+        ${hoverText ? `color: ${hoverText};` : ''}
       }
 
       button:active {

@@ -62,8 +62,10 @@ export interface CourierActionStyle {
 
 // @public
 export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
+    button?: CourierActionVariantThemeStyle;
     link?: CourierActionVariantThemeStyle;
-    outlined?: CourierActionVariantThemeStyle;
+    secondary?: CourierActionVariantThemeStyle;
+    tertiary?: CourierActionVariantThemeStyle;
 }
 
 // @public
@@ -134,6 +136,7 @@ export type CourierButtonProps = {
     fontSize?: string;
     fontWeight?: string;
     textColor?: string;
+    hoverTextColor?: string;
     padding?: string;
     textDecoration?: string;
     variant?: CourierButtonVariant;
@@ -195,6 +198,8 @@ export const CourierButtonVariants: {
         fontWeight: string;
         border: string;
         shadow: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
         borderRadius: "4px";
         fontSize: "14px";
         padding: "6px 10px";
@@ -209,7 +214,7 @@ export const CourierButtonVariants: {
         padding: string;
         textDecoration: string;
         hoverBackgroundColor: string;
-        activeBackgroundColor: string;
+        hoverTextColor: string;
         borderRadius: "4px";
         fontSize: "14px";
     };
@@ -256,8 +261,10 @@ export const CourierColors: {
         50020: string;
     };
     blue: {
+        300: string;
         400: string;
         500: string;
+        600: string;
     };
 };
 
