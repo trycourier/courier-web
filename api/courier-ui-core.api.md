@@ -117,6 +117,8 @@ export class CourierButton extends CourierSystemThemeElement {
     // (undocumented)
     static get id(): string;
     // (undocumented)
+    protected onSystemThemeChange(_: SystemThemeMode): void;
+    // (undocumented)
     updateButton(props: CourierButtonProps): void;
 }
 

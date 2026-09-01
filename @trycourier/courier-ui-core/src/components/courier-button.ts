@@ -65,7 +65,13 @@ export const CourierButtonVariants = {
       // page content would otherwise show through the overlay.
       hoverBackgroundColor: mode === 'light' ? CourierColors.gray[200] : CourierColors.gray[800],
       activeBackgroundColor: mode === 'light' ? CourierColors.gray[500] : CourierColors.gray[700],
-      border: `1px solid ${theme[mode].colors.border}`,
+      // A button's edge, not a divider. `colors.border` is the hairline the inbox separates rows
+      // with — 1.26:1 against the surface this button is filled with, which is invisible, so an
+      // outlined action read as a borderless one. It went unnoticed while every action arrived
+      // carrying a fill, which became the outline; the default only became visible once actions
+      // stopped carrying colour. gray[600] clears 3:1 against the face in both modes, so the
+      // same value serves light and dark.
+      border: `1px solid ${CourierColors.gray[600]}`,
       shadow: mode === 'light'
         ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
         : '0px 1px 2px 0px rgba(255, 255, 255, 0.1)'
@@ -124,9 +130,19 @@ export class CourierButton extends CourierSystemThemeElement {
   // Components
   private _button: HTMLButtonElement;
   private _style: HTMLStyleElement;
+  /**
+   * Kept so the button can restyle itself when the system theme flips.
+   *
+   * `mode: 'system'` is resolved against `currentSystemTheme` when the styles are built, which
+   * is only correct at the moment it is built. Everything else in the inbox re-reads its theme
+   * through the theme manager's subscription; a button had no equivalent, so an OS flip left
+   * the actions — and only the actions — wearing the colours of the mode that had just ended.
+   */
+  private _props: CourierButtonProps;
 
   constructor(props: CourierButtonProps) {
     super();
+    this._props = props;
     const shadow = this.attachShadow({ mode: 'open' });
 
     this._button = document.createElement('button');
@@ -208,9 +224,17 @@ export class CourierButton extends CourierSystemThemeElement {
   }
 
   public updateButton(props: CourierButtonProps) {
+    this._props = props;
     if (props.text) {
       this._button.textContent = props.text;
     }
     this._style.textContent = this.getStyles(props);
+  }
+
+  protected onSystemThemeChange(_: SystemThemeMode): void {
+    // A button pinned to 'light' or 'dark' was never asking the system, so leave it alone.
+    if (this._props.mode === 'system') {
+      this._style.textContent = this.getStyles(this._props);
+    }
   }
 }

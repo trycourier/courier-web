@@ -435,11 +435,25 @@ describe('inbox list item action styles', () => {
       expect(light).not.toBe(dark);
     });
 
-    it('outlines a secondary action against the mode', () => {
+    // The outline is the one value here that does not follow the mode. It used to be
+    // `colors.border`, the hairline rows are separated with, which is ~1.3:1 against the face
+    // this button is filled with in either mode — an outlined action was indistinguishable from
+    // a borderless one. gray[600] clears 3:1 against both faces, so one value serves both.
+    it('outlines a secondary action visibly in either mode', () => {
       expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light'))
-        .toContain('border: 1px solid #E5E5E5;');
+        .toContain('border: 1px solid #737373;');
       expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark'))
-        .toContain('border: 1px solid #3A3A3A;');
+        .toContain('border: 1px solid #737373;');
+    });
+
+    it('still fills and labels a secondary action against the mode', () => {
+      const light = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light');
+      const dark = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark');
+
+      expect(light).toContain('background-color: #FFFFFF;');
+      expect(light).toContain('color: #171717;');
+      expect(dark).toContain('background-color: #171717;');
+      expect(dark).toContain('color: #FFFFFF;');
     });
 
     it('applies an integrator dark theme, variant blocks included', () => {
