@@ -13,8 +13,6 @@ export const addSystemThemeModeListener: (callback: (mode: SystemThemeMode) => v
 //
 // @public (undocumented)
 export interface Colors {
-    accent: string;
-    accentText: string;
     // (undocumented)
     border: string;
     // (undocumented)
@@ -267,7 +265,6 @@ export const CourierColors: {
         400: string;
         500: string;
         600: string;
-        700: string;
     };
 };
 
