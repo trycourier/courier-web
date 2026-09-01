@@ -69,9 +69,12 @@ export const CourierButtonVariants = {
       // with — 1.26:1 against the surface this button is filled with, which is invisible, so an
       // outlined action read as a borderless one. It went unnoticed while every action arrived
       // carrying a fill, which became the outline; the default only became visible once actions
-      // stopped carrying color. gray[600] clears 3:1 against the face in both modes, so the
-      // same value serves light and dark.
-      border: `1px solid ${CourierColors.gray[600]}`,
+      // stopped carrying color.
+      //
+      // The two modes need different grays to land in the same place. On white, 600 reads as a
+      // quiet edge at 4.7:1; on black[500] that same value is 3.8:1 and reads louder than the
+      // button it belongs to, so dark steps down to 650 (2.5:1).
+      border: `1px solid ${mode === 'light' ? CourierColors.gray[600] : CourierColors.gray[650]}`,
       shadow: mode === 'light'
         ? '0px 1px 2px 0px rgba(0, 0, 0, 0.06)'
         : '0px 1px 2px 0px rgba(255, 255, 255, 0.1)'

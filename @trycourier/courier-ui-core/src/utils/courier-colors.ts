@@ -22,6 +22,10 @@ export const CourierColors = {
     400: '#3A3A3A',
     500: '#E5E5E5',
     600: '#737373',
+    // Between 600 and 700, for an outline that has to read against a near-black face without
+    // shouting. 600 is right on white (4.7:1) but 3.8:1 on black[500], which is louder than the
+    // button it outlines; 700 falls to 1.9:1 and disappears.
+    650: '#585858',
     // Opaque equivalents of white[500_20]/white[500_10] over black[500], for
     // hover/active states on floating surfaces where a translucent overlay
     // would let page content bleed through (e.g. toasts).

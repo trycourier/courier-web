@@ -435,15 +435,16 @@ describe('inbox list item action styles', () => {
       expect(light).not.toBe(dark);
     });
 
-    // The outline is the one value here that does not follow the mode. It used to be
-    // `colors.border`, the hairline rows are separated with, which is ~1.3:1 against the face
-    // this button is filled with in either mode — an outlined action was indistinguishable from
-    // a borderless one. gray[600] clears 3:1 against both faces, so one value serves both.
-    it('outlines a secondary action visibly in either mode', () => {
+    // The outline used to be `colors.border`, the hairline rows are separated with, which is
+    // ~1.3:1 against the face this button is filled with in either mode — an outlined action was
+    // indistinguishable from a borderless one. The replacements are per-mode because one value
+    // cannot read the same on both: 600 is a quiet 4.7:1 on white but a loud 3.8:1 on black,
+    // so dark steps down to 650.
+    it('outlines a secondary action visibly, pitched to the mode', () => {
       expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light'))
         .toContain('border: 1px solid #737373;');
       expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark'))
-        .toContain('border: 1px solid #737373;');
+        .toContain('border: 1px solid #585858;');
     });
 
     it('still fills and labels a secondary action against the mode', () => {
