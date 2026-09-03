@@ -16,10 +16,13 @@ the plain button, told apart by an edge you can actually see and by sitting flat
 where the plain button floats. `colors.border` could not do that job — it is the
 divider hairline, 1.26:1 against the face it would outline.
 
-A styleless action takes `primary`, the filled button, which is the weight an
-action wants when it is the thing to do on the message.
+A styleless action is unchanged: the plain button it has always rendered as,
+transparent over the row with the divider hairline for an edge. `tertiary` is
+now the solid fill in the mode's ink, the loudest of the three, for the action
+that is the thing to do on the message.
 
-`secondary` itself is untouched. It is a public variant with users beyond
-actions, so the outline got a variant of its own rather than a new meaning for
-everyone else's button. An action that names a color of its own is unchanged
-too: it still becomes the fill for `button` and the outline for `secondary`.
+`secondary` itself is untouched, and so is `primary`. They are public variants
+with users beyond actions, so the outline got a variant of its own rather than a
+new meaning for everyone else's button. An action that names a color of its own
+is unchanged too: it becomes the fill for `button` and `tertiary`, and the
+outline for `secondary`.

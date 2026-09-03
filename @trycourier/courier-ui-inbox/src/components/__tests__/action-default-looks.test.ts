@@ -52,31 +52,28 @@ describe('an action carrying no color of its own', () => {
     }
   });
 
-  // The filled button: the ink of the mode it is not, which is the weight an action wants when
-  // it is the thing to do on the message.
-  describe('the filled button', () => {
-    it('wears the mode\'s ink on white', () => {
+  // The plain button, and what an action with no style renders as: transparent over the row,
+  // edged with the divider hairline. This is the look that shipped before any of these styles
+  // existed, and it does not move.
+  describe('the plain button', () => {
+    it("keeps the hairline edge on white", () => {
       const styles = render({ content: 'Confirm' });
-      expect(styles).toContain('background-color: #171717;');
-      expect(styles).toContain('color: #FFFFFF;');
+      expect(styles).toContain('border: 1px solid #E5E5E5;');
+      expect(styles).toContain('color: #171717;');
     });
 
-    it('wears the mode\'s ink on black', () => {
+    it("keeps the hairline edge on black", () => {
       const styles = render({ content: 'Confirm' }, 'dark');
-      expect(styles).toContain('background-color: #FFFFFF;');
-      expect(styles).toContain('color: #171717;');
+      expect(styles).toContain('border: 1px solid #3A3A3A;');
+      expect(styles).toContain('color: #FFFFFF;');
     });
 
     it('renders the same whether the style is absent or spelled out', () => {
       expect(render({ content: 'Confirm', style: 'button' })).toEqual(render({ content: 'Confirm' }));
     });
 
-    // No outline of its own, but it still reserves the border box so it lines up with an
-    // outlined sibling in the same row.
-    it('draws no edge and sits flat', () => {
-      const styles = render({ content: 'Confirm' });
-      expect(styles).toContain('border: 1px solid transparent;');
-      expect(styles).toContain('box-shadow: none;');
+    it('floats', () => {
+      expect(render({ content: 'Confirm' })).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
     });
   });
 
@@ -98,7 +95,7 @@ describe('an action carrying no color of its own', () => {
       expect(render({ content: 'Maybe later', style: 'secondary' })).toContain('box-shadow: none;');
     });
 
-    it('is visibly not the filled button', () => {
+    it('is visibly not the plain button', () => {
       expect(render({ content: 'Maybe later', style: 'secondary' })).not.toEqual(render({ content: 'Maybe later' }));
     });
 
@@ -109,13 +106,20 @@ describe('an action carrying no color of its own', () => {
     });
   });
 
-  describe('the quieter two, unchanged', () => {
-    it('draws a borderless button for tertiary', () => {
+  describe('the solid one, and the link', () => {
+    it('draws a solid, high-contrast button for tertiary', () => {
       const styles = render({ content: 'Not now', style: 'tertiary' });
+      expect(styles).toContain('background-color: #171717;');
+      expect(styles).toContain('color: #FFFFFF;');
+      // No edge of its own, but it still reserves the border box so it lines up with an
+      // outlined sibling in the same row.
       expect(styles).toContain('border: 1px solid transparent;');
-      expect(styles).toContain('background-color: transparent;');
-      // It is still a button: it keeps the padding and the hit area a link gives up.
-      expect(styles).toContain('padding: 6px 10px;');
+    });
+
+    it('flips the solid button with the mode', () => {
+      const styles = render({ content: 'Not now', style: 'tertiary' }, 'dark');
+      expect(styles).toContain('background-color: #FFFFFF;');
+      expect(styles).toContain('color: #171717;');
     });
 
     it('draws inline text for link', () => {

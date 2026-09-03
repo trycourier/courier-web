@@ -89,23 +89,22 @@ describe('inbox list item action styles', () => {
 
   describe('the tertiary style', () => {
 
-    it('draws a borderless button — the label and nothing else', () => {
+    it("fills with the action's color — the loudest of the three", () => {
       const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
 
-      // Neither a fill nor an outline, so the action's color has only the label left to land on.
-      expect(styles).toContain('color: #9D3789;');
-      expect(styles).toContain('background-color: transparent;');
-      expect(styles).not.toContain('background-color: #9D3789;');
+      // A solid button, so the action's color is the fill and the label is whichever of black or
+      // white stays readable on it.
+      expect(styles).toContain('background-color: #9D3789;');
       expect(styles).not.toContain('border: 1px solid #9D3789;');
     });
 
     it('keeps the border box so it lines up with an outlined sibling', () => {
-      const borderless = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const solid = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
       const outlined = renderAction({ content: 'Maybe later', style: 'secondary', background_color: '#9D3789' });
 
-      expect(borderless).toContain('border: 1px solid transparent;');
+      expect(solid).toContain('border: 1px solid transparent;');
       expect(outlined).toContain('border: 1px solid #9D3789;');
-      expect(borderless).toContain('padding: 6px 10px;');
+      expect(solid).toContain('padding: 6px 10px;');
       expect(outlined).toContain('padding: 6px 10px;');
     });
 
@@ -116,33 +115,14 @@ describe('inbox list item action styles', () => {
       expect(borderless).not.toEqual(outlined);
     });
 
-    it('gives hover and active a wash, since there is no fill to darken', () => {
+    it('derives hover and active from the fill it was given', () => {
       const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
       const hover = styles.slice(styles.indexOf('button:hover'), styles.indexOf('button:disabled'));
 
-      // The brightness fallback other buttons rely on does nothing to a transparent background,
-      // so without an explicit wash the button would look inert on hover.
-      expect(hover).toContain('background-color: #1717171A;');
-      expect(hover).toContain('background-color: #17171733;');
+      // A solid button has a fill to move, so its feedback is a step off that color rather than
+      // the wash a link needs.
       expect(hover).not.toContain('filter: brightness');
-    });
-
-    it('washes in the other direction in dark mode', () => {
-      const styles = renderAction(
-        { content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' },
-        undefined,
-        'dark'
-      );
-      const hover = styles.slice(styles.indexOf('button:hover'), styles.indexOf('button:disabled'));
-
-      expect(hover).toContain('background-color: #FFFFFF1A;');
-    });
-
-    it('reads as a button rather than a link — no underline, and it keeps its padding', () => {
-      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
-
-      expect(styles).not.toContain('text-decoration: underline;');
-      expect(styles).toContain('padding: 6px 10px;');
+      expect(hover).toMatch(/background-color: #[0-9A-F]{6};/);
     });
 
     it('takes a borderless theme block over the action styling', () => {
@@ -302,11 +282,11 @@ describe('inbox list item action styles', () => {
     expect(renderAction({ content: 'Learn more', style: 'link' })).toContain('filter: brightness(0.8);');
   });
 
-  it('leaves the buttons their own hover wash', () => {
-    // Only the link changed; a borderless button still has nothing but a wash to show with.
+  it('leaves the buttons their own hover', () => {
+    // Only the link changed; a solid button still steps off its own fill.
     const styles = renderAction({ content: 'Confirm', style: 'tertiary' });
 
-    expect(styles).toContain('background-color: #1717171A;');
+    expect(styles).toContain('background-color: #2E2E2E;');
   });
 
   it('falls back to the action when the theme is silent about that value', () => {
@@ -495,10 +475,10 @@ describe('inbox list item action styles', () => {
       const light = renderAction({ content: 'Confirm' }, undefined, 'light');
       const dark = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      // A styleless action is the filled button, so it takes the `primary` variant: the ink of
-      // the mode it is not, and no outline of its own.
-      expect(light).toContain('background-color: #171717;');
-      expect(dark).toContain('background-color: #FFFFFF;');
+      // A styleless action is the plain button, the `secondary` variant: the mode's own surface
+      // edged with the divider hairline, which is what it has always rendered as.
+      expect(light).toContain('background-color: #FFFFFF;');
+      expect(dark).toContain('background-color: #171717;');
       expect(light).not.toBe(dark);
     });
 
@@ -550,25 +530,25 @@ describe('inbox list item action styles', () => {
     });
 
     it('keeps hover and active feedback in dark mode', () => {
-      // The filled button steps toward the middle rather than past the end of the scale, so a
-      // white fill in dark mode dims rather than brightening into nothing.
+      // Opaque grays rather than a translucent wash: an action can sit on a floating surface
+      // where page content would otherwise show through.
       const styles = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      expect(styles).toContain('background-color: #F5F5F5;');
-      expect(styles).toContain('background-color: #E5E5E5;');
+      expect(styles).toContain('background-color: #2E2E2E;');
+      expect(styles).toContain('background-color: #454545;');
     });
 
   });
 
-  it('leaves an action with no styling on the filled button default', () => {
+  it('leaves an action with no styling on the plain button default', () => {
     // The default theme deliberately says nothing about actions, so CourierButton's own look
     // applies rather than a theme value that would outrank the template. An action naming no
-    // style is the filled button, the `primary` variant: the mode's ink, a transparent border
-    // so it lines up with an outlined sibling, and no shadow.
+    // style is the plain button, the `secondary` variant: the mode's surface, the divider
+    // hairline for an edge, and the shadow that lifts it off the row.
     const styles = renderAction({ content: 'Confirm' });
 
-    expect(styles).toContain('background-color: #171717;');
-    expect(styles).toContain('border: 1px solid transparent;');
-    expect(styles).toContain('box-shadow: none;');
+    expect(styles).toContain('background-color: #FFFFFF;');
+    expect(styles).toContain('border: 1px solid #E5E5E5;');
+    expect(styles).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
   });
 });

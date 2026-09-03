@@ -40,23 +40,25 @@ describe('an action that brings its own fill', () => {
   });
 
   it('lightens a dark fill on hover rather than dimming it into the background', () => {
-    // #171717 is also the dark list background, so brightness(0.9) left the button inert.
-    const hover = hoverRule({ content: 'Confirm', background_color: '#171717' }, 'dark');
+    // #171717 is also the dark list background, so brightness(0.9) left the button inert. Light
+    // mode, because in dark the plain button already wears #171717 and there would be a matching
+    // variant hover to use instead of deriving one.
+    const hover = hoverRule({ content: 'Confirm', background_color: '#171717' }, 'light');
 
     expect(hover).toBe('background-color: #333333;');
     expect(hover).not.toContain('brightness');
   });
 
   it('darkens a light fill on hover', () => {
-    const hover = hoverRule({ content: 'Confirm', background_color: '#FFFFFF' }, 'light');
+    const hover = hoverRule({ content: 'Confirm', background_color: '#FFFFFF' }, 'dark');
 
     expect(hover).toBe('background-color: #E0E0E0;');
   });
 
   it('leaves a fill that matches the variant on the variant hover', () => {
-    // In light mode the template's color happens to be the filled button's own, so there is a
-    // matching hover to use and nothing has to be derived.
-    expect(hoverRule({ content: 'Confirm', background_color: '#171717' }, 'light'))
+    // In dark mode the template's color happens to be the plain button's own face, so there is
+    // a matching hover to use and nothing has to be derived.
+    expect(hoverRule({ content: 'Confirm', background_color: '#171717' }, 'dark'))
       .toBe('background-color: #2E2E2E;');
   });
 

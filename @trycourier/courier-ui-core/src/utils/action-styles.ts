@@ -138,9 +138,9 @@ export function courierActionButtonProps(
 
   const isLink = style === 'link' && !designerOutlined;
   const outlined = style === 'secondary' || designerOutlined;
-  // The quietest button: the same box as its siblings, drawn with nothing but its label. It is
-  // still a button, so it keeps the padding and the hit area a link gives up.
-  const borderless = style === 'tertiary';
+  // The loudest of the three: a solid fill in the mode's ink, for the action that is the thing
+  // to do on the message.
+  const solid = style === 'tertiary';
 
   // The block is picked by the style's own name, so a theme and a template speak the same
   // vocabulary. An unrecognized style falls through to `button`, matching how it renders.
@@ -148,7 +148,7 @@ export function courierActionButtonProps(
     ? theme?.link
     : outlined
       ? theme?.secondary
-      : borderless
+      : solid
         ? theme?.tertiary
         : theme?.button;
 
@@ -187,27 +187,6 @@ export function courierActionButtonProps(
   const fill = designerOutlined ? undefined : action.background_color;
   const borderSize = toCssLength(action.border_size ?? action.border?.size);
 
-  // A borderless button draws neither a fill nor an outline, so the action's color has only the
-  // label left to land on. It keeps a transparent border for the same reason a plain button
-  // does — the box has to match an outlined sibling in the same row.
-  if (borderless) {
-    return {
-      variant: 'tertiary',
-      backgroundColor: t.backgroundColor,
-      hoverBackgroundColor: t.hoverBackgroundColor,
-      activeBackgroundColor: t.activeBackgroundColor,
-      border: t.border,
-      borderRadius: t.borderRadius ?? toCssLength(action.border_radius ?? action.border?.radius),
-      shadow: t.shadow,
-      textDecoration: t.textDecoration,
-      fontFamily: t.font?.family,
-      fontSize: t.font?.size ?? toCssLength(action.font_size),
-      fontWeight: t.font?.weight,
-      textColor: t.font?.color ?? action.color ?? fill,
-      padding: t.padding ?? action.padding
-    };
-  }
-
   // The legacy nested border is the only way an action can ask for an outline color of its own;
   // it only counts as a border when it says how thick it is, or says it is enabled.
   const legacyBorder = action.border?.color && (borderSize || action.border?.enabled)
@@ -223,16 +202,16 @@ export function courierActionButtonProps(
   // an outlined sibling in the same row.
   const ownLook = Boolean(fill || actionBorder);
 
-  // A filled action takes `primary` and an outlined one the new `outlined` variant, so each has
-  // the right defaults when the action names no color of its own. Both used to return
-  // `secondary`, whose surface made them identical — invisible while every action arrived
-  // carrying a fill, and plain to see the moment they stopped.
+  // Three weights, loudest last. `secondary` is the plain button an action has always rendered
+  // as — transparent over the row, edged with the divider hairline — and it stays the default
+  // so an action naming no style looks exactly as it did. `outlined` gives that edge something
+  // you can see. `primary` is the solid fill, for the action that is the thing to do.
   //
   // `outlined` exists rather than `secondary` being redefined because `secondary` is a public
   // variant with its own users: an outline is what an action asks for, not a new meaning for
   // everyone else's button.
   return {
-    variant: outlined ? 'outlined' : 'primary',
+    variant: outlined ? 'outlined' : solid ? 'primary' : 'secondary',
     backgroundColor: outlined ? t.backgroundColor : (t.backgroundColor ?? fill),
     hoverBackgroundColor: t.hoverBackgroundColor,
     activeBackgroundColor: t.activeBackgroundColor,

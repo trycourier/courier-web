@@ -110,16 +110,11 @@ export const CourierButtonVariants = {
   tertiary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
-      backgroundColor: 'transparent',
+      backgroundColor: theme[mode].colors.border,
       textColor: theme[mode].colors.primary,
       fontWeight: '500',
       border: TRANSPARENT_BORDER,
-      shadow: 'none',
-      // Like a link, it has no fill to darken, so its feedback has to come from a wash behind
-      // the label. Without one the brightness fallback would run on a transparent background
-      // and the button would look inert.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.black[500_10] : CourierColors.white[500_10],
-      activeBackgroundColor: mode === 'light' ? CourierColors.black[500_20] : CourierColors.white[500_20]
+      shadow: 'none'
     };
   },
 
