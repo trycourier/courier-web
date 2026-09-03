@@ -428,11 +428,10 @@ describe('inbox list item action styles', () => {
       const light = renderAction({ content: 'Confirm' }, undefined, 'light');
       const dark = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      // A styleless action is the plain button, the `secondary` variant: the mode's own surface
-      // rather than its ink. This is the look already in the wild, and adding a style for
-      // someone else is not a reason to restyle it.
-      expect(light).toContain('background-color: #FFFFFF;');
-      expect(dark).toContain('background-color: #171717;');
+      // A styleless action is the filled button, so it takes the `primary` variant: the ink of
+      // the mode it is not, and no outline of its own.
+      expect(light).toContain('background-color: #171717;');
+      expect(dark).toContain('background-color: #FFFFFF;');
       expect(light).not.toBe(dark);
     });
 
@@ -484,25 +483,25 @@ describe('inbox list item action styles', () => {
     });
 
     it('keeps hover and active feedback in dark mode', () => {
-      // Opaque grays rather than a translucent wash: an action can sit on a floating surface
-      // where page content would otherwise show through.
+      // The filled button steps toward the middle rather than past the end of the scale, so a
+      // white fill in dark mode dims rather than brightening into nothing.
       const styles = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      expect(styles).toContain('background-color: #2E2E2E;');
-      expect(styles).toContain('background-color: #454545;');
+      expect(styles).toContain('background-color: #F5F5F5;');
+      expect(styles).toContain('background-color: #E5E5E5;');
     });
 
   });
 
-  it('leaves an action with no styling on the plain button default', () => {
+  it('leaves an action with no styling on the filled button default', () => {
     // The default theme deliberately says nothing about actions, so CourierButton's own look
     // applies rather than a theme value that would outrank the template. An action naming no
-    // style is the plain button, the `secondary` variant: the mode's surface, the divider
-    // hairline for an edge, and the shadow that lifts it off the row.
+    // style is the filled button, the `primary` variant: the mode's ink, a transparent border
+    // so it lines up with an outlined sibling, and no shadow.
     const styles = renderAction({ content: 'Confirm' });
 
-    expect(styles).toContain('background-color: #FFFFFF;');
-    expect(styles).toContain('border: 1px solid #E5E5E5;');
-    expect(styles).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
+    expect(styles).toContain('background-color: #171717;');
+    expect(styles).toContain('border: 1px solid transparent;');
+    expect(styles).toContain('box-shadow: none;');
   });
 });

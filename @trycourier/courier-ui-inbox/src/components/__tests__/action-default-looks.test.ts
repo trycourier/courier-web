@@ -52,28 +52,31 @@ describe('an action carrying no color of its own', () => {
     }
   });
 
-  // `colors.border` — the divider hairline. Quiet on purpose: the shape and the fill carry the
-  // button, and this is the edge every action in the wild already has.
-  describe('the plain button, which must not move', () => {
-    it('keeps the hairline edge on white', () => {
+  // The filled button: the ink of the mode it is not, which is the weight an action wants when
+  // it is the thing to do on the message.
+  describe('the filled button', () => {
+    it('wears the mode\'s ink on white', () => {
       const styles = render({ content: 'Confirm' });
-      expect(styles).toContain('border: 1px solid #E5E5E5;');
-      expect(styles).toContain('background-color: #FFFFFF;');
-      expect(styles).toContain('color: #171717;');
+      expect(styles).toContain('background-color: #171717;');
+      expect(styles).toContain('color: #FFFFFF;');
     });
 
-    it('keeps the hairline edge on black', () => {
+    it('wears the mode\'s ink on black', () => {
       const styles = render({ content: 'Confirm' }, 'dark');
-      expect(styles).toContain('border: 1px solid #3A3A3A;');
-      expect(styles).toContain('background-color: #171717;');
+      expect(styles).toContain('background-color: #FFFFFF;');
+      expect(styles).toContain('color: #171717;');
     });
 
     it('renders the same whether the style is absent or spelled out', () => {
       expect(render({ content: 'Confirm', style: 'button' })).toEqual(render({ content: 'Confirm' }));
     });
 
-    it('still floats', () => {
-      expect(render({ content: 'Confirm' })).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
+    // No outline of its own, but it still reserves the border box so it lines up with an
+    // outlined sibling in the same row.
+    it('draws no edge and sits flat', () => {
+      const styles = render({ content: 'Confirm' });
+      expect(styles).toContain('border: 1px solid transparent;');
+      expect(styles).toContain('box-shadow: none;');
     });
   });
 
@@ -95,8 +98,14 @@ describe('an action carrying no color of its own', () => {
       expect(render({ content: 'Maybe later', style: 'secondary' })).toContain('box-shadow: none;');
     });
 
-    it('is visibly not the plain button', () => {
+    it('is visibly not the filled button', () => {
       expect(render({ content: 'Maybe later', style: 'secondary' })).not.toEqual(render({ content: 'Maybe later' }));
+    });
+
+    // The outline sits on the surface, not the ink: it is the quieter of the two.
+    it('keeps the mode\'s surface behind it', () => {
+      expect(render({ content: 'Maybe later', style: 'secondary' })).toContain('background-color: #FFFFFF;');
+      expect(render({ content: 'Maybe later', style: 'secondary' }, 'dark')).toContain('background-color: #171717;');
     });
   });
 

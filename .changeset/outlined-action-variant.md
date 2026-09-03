@@ -16,9 +16,10 @@ the plain button, told apart by an edge you can actually see and by sitting flat
 where the plain button floats. `colors.border` could not do that job — it is the
 divider hairline, 1.26:1 against the face it would outline.
 
-The plain button is deliberately unchanged. It stays the `secondary` variant it
-has always been, hairline edge and shadow included, because that is the look
-every action already in the wild is wearing and adding a style for someone else
-is not a reason to restyle all of them. An action that names a color of its own
-is unchanged too: it still becomes the fill for `button` and the outline for
-`secondary`.
+A styleless action takes `primary`, the filled button, which is the weight an
+action wants when it is the thing to do on the message.
+
+`secondary` itself is untouched. It is a public variant with users beyond
+actions, so the outline got a variant of its own rather than a new meaning for
+everyone else's button. An action that names a color of its own is unchanged
+too: it still becomes the fill for `button` and the outline for `secondary`.
