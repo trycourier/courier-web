@@ -23,7 +23,14 @@ export default function App() {
   }, []);
 
   return (
-    <CourierInbox />
+    <CourierInbox
+      onMessageClick={({ message, index }) => {
+        console.log('Message clicked', { index, message });
+      }}
+      onMessageActionClick={({ message, action, index }) => {
+        console.log('Action clicked', { index, action, message });
+      }}
+    />
   );
 
 }

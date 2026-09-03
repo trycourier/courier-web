@@ -162,7 +162,7 @@ export type CourierButtonTheme = {
 // Warning: (ae-missing-release-tag) "CourierButtonVariant" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
+export type CourierButtonVariant = 'primary' | 'secondary' | 'outlined' | 'tertiary' | 'link';
 
 // Warning: (ae-missing-release-tag) "CourierButtonVariants" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -182,6 +182,19 @@ export const CourierButtonVariants: {
         textDecoration: "none";
     };
     readonly secondary: (mode: SystemThemeMode) => {
+        backgroundColor: string;
+        textColor: string;
+        fontWeight: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
+        border: string;
+        shadow: string;
+        borderRadius: "4px";
+        fontSize: "14px";
+        padding: "6px 10px";
+        textDecoration: "none";
+    };
+    readonly outlined: (mode: SystemThemeMode) => {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
@@ -254,6 +267,7 @@ export const CourierColors: {
         400: string;
         500: string;
         600: string;
+        650: string;
         700: string;
         800: string;
     };
@@ -520,6 +534,11 @@ export function readableTextColor(backgroundColor?: string): string | undefined;
 export function registerElement(element: CustomElementConstructor & {
     id: string;
 }): void;
+
+// Warning: (ae-missing-release-tag) "shadeTowardMiddle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function shadeTowardMiddle(color: string, amount: number): string | undefined;
 
 // Warning: (ae-missing-release-tag) "SystemThemeMode" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

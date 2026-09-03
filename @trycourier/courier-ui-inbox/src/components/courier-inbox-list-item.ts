@@ -39,6 +39,7 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   // Intersection Observer
   private _observer?: IntersectionObserver;
+  private _themeSubscription?: { unsubscribe: () => void };
 
   // Callbacks
   private onItemClick: ((message: InboxMessage) => void) | null = null;
@@ -52,6 +53,13 @@ export class CourierInboxListItem extends CourierBaseElement {
     // this._canLongPress = canLongPress;
     this._themeManager = themeManager;
     this._theme = themeManager.getTheme();
+    // The list swaps the injected stylesheets when the theme changes, but the action buttons and
+    // the menu are built in JS from the theme this item is holding. Without this the item keeps
+    // the theme it was born in, and a system switch to dark leaves them wearing light values.
+    this._themeSubscription = themeManager.subscribe(theme => {
+      this._theme = theme;
+      this._updateContent();
+    });
     this._isMobile = 'ontouchstart' in window;
     if (listItemActions) {
       this._listItemActions = listItemActions;
@@ -157,6 +165,7 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   onComponentUnmounted() {
     this._observer?.disconnect();
+    this._themeSubscription?.unsubscribe();
   }
 
   static getStyles(theme: CourierInboxTheme): string {

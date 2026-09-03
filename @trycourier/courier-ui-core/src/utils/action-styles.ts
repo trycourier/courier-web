@@ -199,13 +199,12 @@ export function courierActionButtonProps(
   // an outlined sibling in the same row.
   const ownLook = Boolean(fill || actionBorder);
 
-  // A filled action is the `primary` variant and an outlined one the `secondary`, so each takes
-  // the right defaults when the action names no color of its own. Both used to return
-  // `secondary`, which was invisible while every action arrived carrying a fill — the send
-  // pipeline substituted the brand's primary — and became visible the moment it stopped: with
-  // no fill, `secondary`'s surface made a filled button and an outlined one identical.
+  // `secondary` is the plain button every action has always rendered as, and it stays that way:
+  // it is the look already in the wild, so a style nobody asked for must not change it. The new
+  // `outlined` variant is what `style: 'secondary'` buys — the same face with an edge you can
+  // see, where the plain button's is the divider hairline.
   return {
-    variant: outlined ? 'secondary' : 'primary',
+    variant: outlined ? 'outlined' : 'secondary',
     backgroundColor: outlined ? t.backgroundColor : (t.backgroundColor ?? fill),
     hoverBackgroundColor: t.hoverBackgroundColor,
     activeBackgroundColor: t.activeBackgroundColor,
