@@ -3,7 +3,15 @@ import { theme } from "../utils/theme";
 import { CourierColors, shadeTowardMiddle } from "../utils/courier-colors";
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
-export type CourierButtonVariant = 'primary' | 'secondary' | 'outlined' | 'tertiary' | 'link';
+/**
+ * A button's look, named for the Elemental `action.style` that asks for it.
+ *
+ * The two vocabularies used to cross over — `style: 'button'` resolved to `variant: 'secondary'`,
+ * `style: 'tertiary'` to `variant: 'primary'` — and every reader had to carry the mapping in
+ * their head. They are the same four words now, and the template designer's style picker offers
+ * exactly these. `primary` remains as an alias of `tertiary`.
+ */
+export type CourierButtonVariant = 'button' | 'secondary' | 'tertiary' | 'link' | 'primary';
 
 export type CourierButtonProps = {
   mode: CourierComponentThemeMode
@@ -39,29 +47,11 @@ const baseButtonStyles = {
 } as const;
 
 export const CourierButtonVariants = {
-  primary: (mode: SystemThemeMode) => {
-    return {
-      ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.primary,
-      textColor: theme[mode].colors.secondary,
-      fontWeight: '500',
-      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
-      // it toward — the brightness fallback would move a near-black fill by two values and dim
-      // the label instead. Each mode steps toward the middle rather than past the end.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
-      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
-      border: TRANSPARENT_BORDER,
-      shadow: 'none'
-    };
-  },
-
   /**
-   * The plain button, and what an action with no style of its own renders as. Its edge is the
-   * divider hairline: barely there, because the shape and the fill are doing the work. Left
-   * exactly as it was — this is the look every existing action already wears, and changing it
-   * would restyle every inbox in the wild.
+   * The plain button, and what an action with no style renders as: the row showing through,
+   * edged with the divider hairline. What an Inbox action has always looked like.
    */
-  secondary: (mode: SystemThemeMode) => {
+  button: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
       backgroundColor: theme[mode].colors.secondary,
@@ -79,18 +69,10 @@ export const CourierButtonVariants = {
   },
 
   /**
-   * The outlined button, for `style: 'secondary'`.
-   *
-   * The same face as the plain button, distinguished by an edge you can actually see, and flat
-   * where the plain button floats. `colors.border` would not do: it is the hairline the inbox
-   * separates rows with, 1.26:1 against the surface it would outline, so an outlined action
-   * would be indistinguishable from a plain one.
-   *
-   * The two modes need different grays to land in the same place. On white, 600 reads as a
-   * quiet edge at 4.7:1; on black[500] that same value is 3.8:1 and reads louder than the button
-   * it belongs to, so dark steps down to 650 (2.5:1).
+   * The outlined button. The same face as the plain one, told apart by an edge you can see and
+   * by sitting flat where the plain button floats.
    */
-  outlined: (mode: SystemThemeMode) => {
+  secondary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
       backgroundColor: theme[mode].colors.secondary,
@@ -105,18 +87,28 @@ export const CourierButtonVariants = {
   },
 
   /**
-   * The quietest button: the same box as its siblings, drawn with nothing but its label.
+   * The solid button, the loudest of the three: a fill in the mode's ink, for the action that
+   * is the thing to do on the message.
    */
   tertiary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.border,
-      textColor: theme[mode].colors.primary,
+      backgroundColor: theme[mode].colors.primary,
+      textColor: theme[mode].colors.secondary,
       fontWeight: '500',
+      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
+      // it toward — the brightness fallback would move a near-black fill by two values and dim
+      // the label instead. Each mode steps toward the middle rather than past the end.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
+      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
       border: TRANSPARENT_BORDER,
       shadow: 'none'
     };
   },
+
+  /** An alias of `tertiary`, the solid fill it has always drawn. */
+  primary: (mode: SystemThemeMode) => CourierButtonVariants.tertiary(mode),
+
 
   /** Reads as an inline hyperlink rather than a button — no fill, no border, no padding. */
   link: (mode: SystemThemeMode) => {
@@ -191,7 +183,9 @@ export class CourierButton extends CourierSystemThemeElement {
 
     const mode = props.mode === 'system' ? this.currentSystemTheme : props.mode;
 
-    const defaults = CourierButtonVariants[props.variant ?? 'secondary'](mode);
+    // `button` is the plain one, and the default for the same reason an action with no style
+    // renders as it.
+    const defaults = CourierButtonVariants[props.variant ?? 'button'](mode);
 
     // The variant's own hover pairs with the variant's own fill. Once a caller supplies a fill of
     // its own there is no matching entry to reach for, so the feedback is derived from that color
