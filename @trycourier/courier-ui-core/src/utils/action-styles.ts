@@ -68,6 +68,27 @@ export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle 
 
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
+/**
+ * A color the browser can actually paint with.
+ *
+ * The send pipeline fills an action's `background_color` with `{brand.colors.primary}` whenever
+ * the template names none, and that token only becomes a color if a brand is configured and
+ * resolves. When it does not, the literal string arrives here — and being neither empty nor a
+ * color, it read as an accent the author had chosen. `secondary` built
+ * `1px solid {brand.colors.primary}` out of it, the browser dropped the declaration as invalid,
+ * and the button lost both its outline and its label color: an unstyled ghost where an outlined
+ * button belonged.
+ *
+ * An unresolved token is the absence of a color, so it is treated as one and the look falls back
+ * to the kit's own defaults — which is what the template designer previews.
+ */
+function usableColor(value?: string): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  // Any leftover interpolation — `{brand.colors.primary}`, `{{var}}` — that never resolved.
+  return trimmed === '' || trimmed.includes('{') || trimmed.includes('}') ? undefined : trimmed;
+}
+
 /** The white background the template designer sends to mean "this button is outlined". */
 const DESIGNER_OUTLINED_FILLS = new Set(['#ffffff', '#fff', 'white']);
 
@@ -175,7 +196,7 @@ export function courierActionButtonProps(
       fontFamily: t.font?.family,
       fontSize: t.font?.size ?? toCssLength(action.font_size),
       fontWeight: t.font?.weight,
-      textColor: t.font?.color ?? action.color,
+      textColor: t.font?.color ?? usableColor(action.color),
       padding: t.padding ?? action.padding
     };
   }
@@ -184,13 +205,14 @@ export function courierActionButtonProps(
   // become the outline or the label. Dropping it here leaves the button on the kit's own
   // outlined defaults, which are mode-aware — the marker carries no color that would survive a
   // dark surface anyway.
-  const fill = designerOutlined ? undefined : action.background_color;
+  const fill = designerOutlined ? undefined : usableColor(action.background_color);
   const borderSize = toCssLength(action.border_size ?? action.border?.size);
 
   // The legacy nested border is the only way an action can ask for an outline color of its own;
   // it only counts as a border when it says how thick it is, or says it is enabled.
-  const legacyBorder = action.border?.color && (borderSize || action.border?.enabled)
-    ? `${borderSize ?? '1px'} solid ${action.border.color}`
+  const legacyBorderColor = usableColor(action.border?.color);
+  const legacyBorder = legacyBorderColor && (borderSize || action.border?.enabled)
+    ? `${borderSize ?? '1px'} solid ${legacyBorderColor}`
     : undefined;
 
   // For the outlined look the action's color becomes the outline and the label rather than a
@@ -231,7 +253,7 @@ export function courierActionButtonProps(
     fontFamily: t.font?.family,
     fontSize: t.font?.size ?? toCssLength(action.font_size),
     fontWeight: t.font?.weight,
-    textColor: t.font?.color ?? action.color ?? (outlined ? fill : readableTextColor(fill)),
+    textColor: t.font?.color ?? usableColor(action.color) ?? (outlined ? fill : readableTextColor(fill)),
     padding: t.padding ?? action.padding
   };
 }
