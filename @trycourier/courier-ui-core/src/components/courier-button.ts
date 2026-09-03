@@ -4,14 +4,15 @@ import { CourierColors, shadeTowardMiddle } from "../utils/courier-colors";
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
 /**
- * A button's look, named for the Elemental `action.style` that asks for it.
+ * A button's look, in the order an action asks for attention: `primary` is the default an action
+ * with no style renders as, `secondary` and `tertiary` are the two louder ones, and `link` stops
+ * being a button at all.
  *
  * The two vocabularies used to cross over — `style: 'button'` resolved to `variant: 'secondary'`,
- * `style: 'tertiary'` to `variant: 'primary'` — and every reader had to carry the mapping in
- * their head. They are the same four words now, and the template designer's style picker offers
- * exactly these. `primary` remains as an alias of `tertiary`.
+ * `style: 'tertiary'` to `variant: 'primary'` — so every reader had to carry the mapping. Now
+ * `button` is `primary` and the other three share a name with the style that asks for them.
  */
-export type CourierButtonVariant = 'button' | 'secondary' | 'tertiary' | 'link' | 'primary';
+export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 export type CourierButtonProps = {
   mode: CourierComponentThemeMode
@@ -51,7 +52,7 @@ export const CourierButtonVariants = {
    * The plain button, and what an action with no style renders as: the row showing through,
    * edged with the divider hairline. What an Inbox action has always looked like.
    */
-  button: (mode: SystemThemeMode) => {
+  primary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
       backgroundColor: theme[mode].colors.secondary,
@@ -105,9 +106,6 @@ export const CourierButtonVariants = {
       shadow: 'none'
     };
   },
-
-  /** An alias of `tertiary`, the solid fill it has always drawn. */
-  primary: (mode: SystemThemeMode) => CourierButtonVariants.tertiary(mode),
 
 
   /** Reads as an inline hyperlink rather than a button — no fill, no border, no padding. */
@@ -183,9 +181,9 @@ export class CourierButton extends CourierSystemThemeElement {
 
     const mode = props.mode === 'system' ? this.currentSystemTheme : props.mode;
 
-    // `button` is the plain one, and the default for the same reason an action with no style
-    // renders as it.
-    const defaults = CourierButtonVariants[props.variant ?? 'button'](mode);
+    // `primary` is what an action with no style of its own renders as, so it is the default here
+    // for the same reason.
+    const defaults = CourierButtonVariants[props.variant ?? 'primary'](mode);
 
     // The variant's own hover pairs with the variant's own fill. Once a caller supplies a fill of
     // its own there is no matching entry to reach for, so the feedback is derived from that color

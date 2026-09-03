@@ -162,13 +162,13 @@ export type CourierButtonTheme = {
 // Warning: (ae-missing-release-tag) "CourierButtonVariant" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export type CourierButtonVariant = 'button' | 'secondary' | 'tertiary' | 'link' | 'primary';
+export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 // Warning: (ae-missing-release-tag) "CourierButtonVariants" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export const CourierButtonVariants: {
-    readonly button: (mode: SystemThemeMode) => {
+    readonly primary: (mode: SystemThemeMode) => {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
@@ -195,19 +195,6 @@ export const CourierButtonVariants: {
         textDecoration: "none";
     };
     readonly tertiary: (mode: SystemThemeMode) => {
-        backgroundColor: string;
-        textColor: string;
-        fontWeight: string;
-        hoverBackgroundColor: string;
-        activeBackgroundColor: string;
-        border: string;
-        shadow: string;
-        borderRadius: "4px";
-        fontSize: "14px";
-        padding: "6px 10px";
-        textDecoration: "none";
-    };
-    readonly primary: (mode: SystemThemeMode) => {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;

@@ -45,7 +45,8 @@ describe('an action follows a system theme flip', () => {
     button.shadowRoot?.querySelector('style')?.textContent ?? '';
 
   it('restyles a filled action when the OS turns dark, and back again', () => {
-    const button = new CourierButton({ mode: 'system', text: 'Confirm', variant: 'primary' });
+    // `tertiary` is the solid fill — the one with a face to repaint when the mode flips.
+    const button = new CourierButton({ mode: 'system', text: 'Confirm', variant: 'tertiary' });
     document.body.appendChild(button);
 
     expect(stylesOf(button)).toContain('background-color: #171717;');
@@ -59,7 +60,7 @@ describe('an action follows a system theme flip', () => {
 
   it('leaves a button alone that was pinned to a mode', () => {
     // Pinning is the integrator saying the OS does not get a vote.
-    const button = new CourierButton({ mode: 'light', text: 'Confirm', variant: 'primary' });
+    const button = new CourierButton({ mode: 'light', text: 'Confirm', variant: 'tertiary' });
     document.body.appendChild(button);
 
     flip(true);

@@ -233,7 +233,7 @@ export function courierActionButtonProps(
   // variant with its own users: an outline is what an action asks for, not a new meaning for
   // everyone else's button.
   return {
-    variant: outlined ? 'secondary' : solid ? 'tertiary' : 'button',
+    variant: outlined ? 'secondary' : solid ? 'tertiary' : 'primary',
     // The two quiet looks rest on transparent, not on the mode's surface. The list item is
     // transparent itself, so an action painted with an opaque face becomes a white chip on an
     // integrator's own background instead of sitting on it — which is what the default theme
