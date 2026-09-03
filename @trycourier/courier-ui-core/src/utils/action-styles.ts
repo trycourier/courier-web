@@ -68,6 +68,13 @@ export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle 
 
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
+/** The white background the template designer sends to mean "this button is outlined". */
+const DESIGNER_OUTLINED_FILLS = new Set(['#ffffff', '#fff', 'white']);
+
+function isDesignerOutlinedFill(backgroundColor?: string): boolean {
+  return DESIGNER_OUTLINED_FILLS.has((backgroundColor ?? '').trim().toLowerCase());
+}
+
 function toCssLength(value: string | number | undefined): string | undefined {
   if (value === undefined || value === null || value === '') {
     return undefined;
@@ -116,8 +123,21 @@ export function courierActionButtonProps(
   // rather than assume the sender normalized it. An unrecognized value falls through to the
   // plain button rather than stranding the action between looks.
   const style = action.style?.trim().toLowerCase();
-  const isLink = style === 'link';
-  const outlined = style === 'secondary';
+  // The template designer used to have no way to say "outlined": the content API accepted only
+  // `button` and `link`, so it encoded an outlined inbox button as `style: "link"` carrying a
+  // white background and a black label, and read that pair back as outlined on the way in. The
+  // label color is dropped before delivery, which leaves the white background as the only
+  // surviving marker of what the author actually chose.
+  //
+  // Rendering that as a link would show an underlined phrase where the author configured a
+  // button, so it is treated as the outlined look with no color of its own. Narrow on purpose —
+  // a link an author wrote by hand arrives with a real color, since the send pipeline
+  // substitutes the brand's primary when a template names none. The bridge is for templates
+  // already saved that way; the designer says `secondary` now.
+  const designerOutlined = style === 'link' && isDesignerOutlinedFill(action.background_color);
+
+  const isLink = style === 'link' && !designerOutlined;
+  const outlined = style === 'secondary' || designerOutlined;
   // The quietest button: the same box as its siblings, drawn with nothing but its label. It is
   // still a button, so it keeps the padding and the hit area a link gives up.
   const borderless = style === 'tertiary';
@@ -160,7 +180,11 @@ export function courierActionButtonProps(
     };
   }
 
-  const fill = action.background_color;
+  // The designer's white background is a marker, not a color the author picked, so it must not
+  // become the outline or the label. Dropping it here leaves the button on the kit's own
+  // outlined defaults, which are mode-aware — the marker carries no color that would survive a
+  // dark surface anyway.
+  const fill = designerOutlined ? undefined : action.background_color;
   const borderSize = toCssLength(action.border_size ?? action.border?.size);
 
   // A borderless button draws neither a fill nor an outline, so the action's color has only the
