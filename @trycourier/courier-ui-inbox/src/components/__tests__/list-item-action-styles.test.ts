@@ -87,11 +87,66 @@ describe('inbox list item action styles', () => {
     expect(styles).toContain('border-radius: 9999px;');
   });
 
-  it('outlines a tertiary action the same way, defaulting the outline to a hairline', () => {
-    const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#000000' });
+  describe('the tertiary style', () => {
 
-    expect(styles).toContain('border: 1px solid #000000;');
-    expect(styles).not.toContain('background-color: #000000;');
+    it("fills with the action's color — the loudest of the three", () => {
+      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+
+      // A solid button, so the action's color is the fill and the label is whichever of black or
+      // white stays readable on it.
+      expect(styles).toContain('background-color: #9D3789;');
+      expect(styles).not.toContain('border: 1px solid #9D3789;');
+    });
+
+    it('keeps the border box so it lines up with an outlined sibling', () => {
+      const solid = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const outlined = renderAction({ content: 'Maybe later', style: 'secondary', background_color: '#9D3789' });
+
+      expect(solid).toContain('border: 1px solid transparent;');
+      expect(outlined).toContain('border: 1px solid #9D3789;');
+      expect(solid).toContain('padding: 6px 10px;');
+      expect(outlined).toContain('padding: 6px 10px;');
+    });
+
+    it('is not an outlined button — the two are distinct looks now', () => {
+      const borderless = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const outlined = renderAction({ content: 'Maybe later', style: 'secondary', background_color: '#9D3789' });
+
+      expect(borderless).not.toEqual(outlined);
+    });
+
+    it('derives hover and active from the fill it was given', () => {
+      const styles = renderAction({ content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' });
+      const hover = styles.slice(styles.indexOf('button:hover'), styles.indexOf('button:disabled'));
+
+      // A solid button has a fill to move, so its feedback is a step off that color rather than
+      // the wash a link needs.
+      expect(hover).not.toContain('filter: brightness');
+      expect(hover).toMatch(/background-color: #[0-9A-F]{6};/);
+    });
+
+    it('takes a borderless theme block over the action styling', () => {
+      const themed: CourierInboxTheme = {
+        inbox: {
+          ...defaultLightTheme.inbox,
+          list: {
+            ...defaultLightTheme.inbox?.list,
+            item: {
+              ...defaultLightTheme.inbox?.list?.item,
+              actions: {
+                tertiary: { font: { color: '#123456' } }
+              }
+            }
+          }
+        }
+      };
+      const styles = renderAction(
+        { content: 'Maybe later', style: 'tertiary', background_color: '#9D3789' },
+        themed
+      );
+
+      expect(styles).toContain('color: #123456;');
+    });
   });
 
   it('reads the legacy nested border older templates still send', () => {
@@ -127,12 +182,111 @@ describe('inbox list item action styles', () => {
     expect(styles).not.toContain('background-color: #9D3789;');
   });
 
+  // The template designer cannot say "outlined" — the content API accepts only `button` and
+  // `link` — so it sends `link` with a white background and reads that pair back as outlined.
+  describe("the designer's outlined button", () => {
+
+    it('renders as a button rather than as a link', () => {
+      const styles = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' });
+
+      expect(styles).not.toContain('text-decoration: underline;');
+      // The kit's own outlined look, since the white background is a marker rather than a color
+      // the author picked — and a marker has nothing to offer a dark surface.
+      expect(styles).toContain('border: 1px solid #737373;');
+      expect(styles).toContain('color: #171717;');
+      expect(styles).toContain('padding: 6px 10px;');
+    });
+
+    it('sits at the same height as the filled button beside it', () => {
+      const filled = renderAction({ content: 'Enter text', style: 'button', background_color: '#000000' });
+      const outlined = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' });
+
+      // Same border width and padding on both, so the pair lines up in the row.
+      expect(filled).toContain('border: 1px solid transparent;');
+      expect(outlined).toContain('border: 1px solid #737373;');
+      expect(filled).toContain('padding: 6px 10px;');
+      expect(outlined).toContain('padding: 6px 10px;');
+    });
+
+    it('follows the mode rather than the white it was sent', () => {
+      const styles = renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' }, undefined, 'dark');
+
+      expect(styles).toContain('border: 1px solid #585858;');
+      expect(styles).toContain('color: #FFFFFF;');
+      expect(styles).not.toContain('background-color: #ffffff;');
+    });
+
+    it('takes the secondary theme block, not the link one', () => {
+      const themed: CourierInboxTheme = {
+        ...defaultLightTheme,
+        inbox: {
+          ...defaultLightTheme.inbox,
+          list: {
+            ...defaultLightTheme.inbox?.list,
+            item: {
+              ...defaultLightTheme.inbox?.list?.item,
+              actions: {
+                secondary: { border: '2px solid #00FF00' },
+                link: { border: '2px solid #FF0000' }
+              }
+            }
+          }
+        }
+      };
+
+      expect(renderAction({ content: 'Enter text', style: 'link', background_color: '#ffffff' }, themed))
+        .toContain('border: 2px solid #00FF00;');
+    });
+
+    it('leaves a link an author actually wrote alone', () => {
+      // A hand-written link arrives with a real colour, because the send pipeline substitutes the
+      // brand's primary when a template names none — so the marker cannot be hit by accident.
+      const styles = renderAction({ content: 'Learn more', style: 'link', background_color: '#E44A57' });
+
+      expect(styles).toContain('text-decoration: underline;');
+      expect(styles).toContain('padding: 0px;');
+    });
+
+  });
+
   it('renders a link-style action as an underlined link, not a button', () => {
     const styles = renderAction({ content: 'Learn more', style: 'link' });
 
     expect(styles).toContain('text-decoration: underline;');
     expect(styles).toContain('background-color: transparent;');
     expect(styles).toContain('padding: 0px;');
+  });
+
+  it('rests at the link color rather than the label color the buttons use', () => {
+    expect(renderAction({ content: 'Learn more', style: 'link' })).toContain('color: #2563EB;');
+    expect(renderAction({ content: 'Learn more', style: 'link' }, undefined, 'dark')).toContain('color: #60A5FA;');
+  });
+
+  it('answers a hover by moving the link color rather than drawing a box behind it', () => {
+    const light = renderAction({ content: 'Learn more', style: 'link' });
+
+    // The wash a button uses for feedback would read as a box on text, so the link names its
+    // hover fill transparent and moves its color instead.
+    expect(light).toContain('color: #1D4ED8;');
+    expect(light).not.toContain('background-color: #1717171A;');
+    expect(light).not.toContain('background-color: #17171733;');
+
+    const dark = renderAction({ content: 'Learn more', style: 'link' }, undefined, 'dark');
+
+    expect(dark).toContain('color: #93C5FD;');
+    expect(dark).not.toContain('background-color: #FFFFFF1A;');
+    expect(dark).not.toContain('background-color: #FFFFFF33;');
+  });
+
+  it('leaves a press to the brightness fallback, which needs no box either', () => {
+    expect(renderAction({ content: 'Learn more', style: 'link' })).toContain('filter: brightness(0.8);');
+  });
+
+  it('leaves the buttons their own hover', () => {
+    // Only the link changed; a solid button still steps off its own fill.
+    const styles = renderAction({ content: 'Confirm', style: 'tertiary' });
+
+    expect(styles).toContain('background-color: #2E2E2E;');
   });
 
   it('falls back to the action when the theme is silent about that value', () => {
@@ -172,7 +326,7 @@ describe('inbox list item action styles', () => {
             actions: {
               backgroundColor: '#123456',
               borderRadius: '2px',
-              outlined: { borderRadius: '16px', shadow: 'none' }
+              secondary: { borderRadius: '16px', shadow: 'none' }
             }
           }
         }
@@ -216,7 +370,9 @@ describe('inbox list item action styles', () => {
   // A themable property that never reaches the button is worse than no property at all: it
   // reads as supported and silently does nothing. Every field on the variant type is asserted.
   it.each([
-    ['outlined', { content: 'A', style: 'secondary', background_color: '#9D3789' } as InboxAction],
+    ['button', { content: 'A', style: 'button', background_color: '#9D3789' } as InboxAction],
+    ['secondary', { content: 'A', style: 'secondary', background_color: '#9D3789' } as InboxAction],
+    ['tertiary', { content: 'A', style: 'tertiary', background_color: '#9D3789' } as InboxAction],
     ['link', { content: 'A', style: 'link' } as InboxAction],
   ])('honors every %s theme property', (block, action) => {
     const variant = {
@@ -274,7 +430,7 @@ describe('inbox list item action styles', () => {
             actions: {
               backgroundColor: '#123456',
               font: { color: '#ABCDEF' },
-              outlined: { border: '2px solid #00FF00' }
+              secondary: { border: '2px solid #00FF00' }
             }
           }
         }
@@ -319,9 +475,33 @@ describe('inbox list item action styles', () => {
       const light = renderAction({ content: 'Confirm' }, undefined, 'light');
       const dark = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
-      expect(light).toContain('border: 1px solid #E5E5E5;');
-      expect(dark).toContain('border: 1px solid #3A3A3A;');
+      // A styleless action is the plain button, the `secondary` variant: the mode's own surface
+      // edged with the divider hairline, which is what it has always rendered as.
+      expect(light).toContain('background-color: transparent;');
+      expect(dark).toContain('background-color: transparent;');
       expect(light).not.toBe(dark);
+    });
+
+    // The outline used to be `colors.border`, the hairline rows are separated with, which is
+    // ~1.3:1 against the face this button is filled with in either mode — an outlined action was
+    // indistinguishable from a borderless one. The replacements are per-mode because one value
+    // cannot read the same on both: 600 is a quiet 4.7:1 on white but a loud 3.8:1 on black,
+    // so dark steps down to 650.
+    it('outlines a secondary action visibly, pitched to the mode', () => {
+      expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light'))
+        .toContain('border: 1px solid #737373;');
+      expect(renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark'))
+        .toContain('border: 1px solid #585858;');
+    });
+
+    it('still fills and labels a secondary action against the mode', () => {
+      const light = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light');
+      const dark = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark');
+
+      expect(light).toContain('background-color: transparent;');
+      expect(light).toContain('color: #171717;');
+      expect(dark).toContain('background-color: transparent;');
+      expect(dark).toContain('color: #FFFFFF;');
     });
 
     it('applies an integrator dark theme, variant blocks included', () => {
@@ -335,7 +515,7 @@ describe('inbox list item action styles', () => {
               ...defaultDarkTheme.inbox?.list?.item,
               actions: {
                 backgroundColor: '#111111',
-                outlined: { border: '2px solid #00FF00' },
+                secondary: { border: '2px solid #00FF00' },
                 link: { font: { color: '#00FFFF' } }
               }
             }
@@ -350,6 +530,8 @@ describe('inbox list item action styles', () => {
     });
 
     it('keeps hover and active feedback in dark mode', () => {
+      // Opaque grays rather than a translucent wash: an action can sit on a floating surface
+      // where page content would otherwise show through.
       const styles = renderAction({ content: 'Confirm' }, undefined, 'dark');
 
       expect(styles).toContain('background-color: #2E2E2E;');
@@ -358,12 +540,15 @@ describe('inbox list item action styles', () => {
 
   });
 
-  it('leaves an action with no styling on the button default', () => {
-    // The default theme deliberately says nothing about actions, so CourierButton's own
-    // secondary look applies rather than a theme value that would outrank the template.
+  it('leaves an action with no styling on the plain button default', () => {
+    // The default theme deliberately says nothing about actions, so CourierButton's own look
+    // applies rather than a theme value that would outrank the template. An action naming no
+    // style is the plain button, the `secondary` variant: the mode's surface, the divider
+    // hairline for an edge, and the shadow that lifts it off the row.
     const styles = renderAction({ content: 'Confirm' });
 
-    expect(styles).toContain('border: 1px solid');
-    expect(styles).not.toContain('box-shadow: none;');
+    expect(styles).toContain('background-color: transparent;');
+    expect(styles).toContain('border: 1px solid #E5E5E5;');
+    expect(styles).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
   });
 });

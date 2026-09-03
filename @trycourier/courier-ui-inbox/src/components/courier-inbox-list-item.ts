@@ -39,6 +39,7 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   // Intersection Observer
   private _observer?: IntersectionObserver;
+  private _themeSubscription?: { unsubscribe: () => void };
 
   // Callbacks
   private onItemClick: ((message: InboxMessage) => void) | null = null;
@@ -52,6 +53,13 @@ export class CourierInboxListItem extends CourierBaseElement {
     // this._canLongPress = canLongPress;
     this._themeManager = themeManager;
     this._theme = themeManager.getTheme();
+    // The list swaps the injected stylesheets when the theme changes, but the action buttons and
+    // the menu are built in JS from the theme this item is holding. Without this the item keeps
+    // the theme it was born in, and a system switch to dark leaves them wearing light values.
+    this._themeSubscription = themeManager.subscribe(theme => {
+      this._theme = theme;
+      this._updateContent();
+    });
     this._isMobile = 'ontouchstart' in window;
     if (listItemActions) {
       this._listItemActions = listItemActions;
@@ -65,7 +73,11 @@ export class CourierInboxListItem extends CourierBaseElement {
     const contentContainer = document.createElement('div');
     contentContainer.className = 'content-container';
 
-    // Title
+    // Title. The dot rides in a row of its own so it can center against the title's box
+    // rather than a fixed offset that only lines up at one font size.
+    const titleRow = document.createElement('div');
+    titleRow.className = 'title-row';
+
     this._titleElement = document.createElement('p');
     this._titleElement.className = 'title';
 
@@ -77,7 +89,8 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._actionsContainer = document.createElement('div');
     this._actionsContainer.className = 'actions-container';
 
-    contentContainer.appendChild(this._titleElement);
+    titleRow.appendChild(this._titleElement);
+    contentContainer.appendChild(titleRow);
     contentContainer.appendChild(this._subtitleElement);
     contentContainer.appendChild(this._actionsContainer);
 
@@ -85,16 +98,18 @@ export class CourierInboxListItem extends CourierBaseElement {
     this._timeElement = document.createElement('p');
     this._timeElement.className = 'time';
 
-    // Unread indicator
+    // Unread indicator. It sits inside the title row — the title's markdown is written with
+    // innerHTML, so the dot cannot live in the title element itself.
     this._unreadIndicator = document.createElement('div');
     this._unreadIndicator.className = 'unread-indicator';
+    titleRow.insertBefore(this._unreadIndicator, this._titleElement);
 
     // Action menu
     this._menu = new CourierInboxListItemMenu(this._theme);
     this._menu.setOptions(this._getMenuOptions());
 
     // Append elements into shadow‑DOM
-    this.append(this._unreadIndicator, contentContainer, this._timeElement, this._menu);
+    this.append(contentContainer, this._timeElement, this._menu);
 
     const cancelPropagation = (e: Event): void => {
       e.stopPropagation();
@@ -150,6 +165,7 @@ export class CourierInboxListItem extends CourierBaseElement {
 
   onComponentUnmounted() {
     this._observer?.disconnect();
+    this._themeSubscription?.unsubscribe();
   }
 
   static getStyles(theme: CourierInboxTheme): string {
@@ -207,10 +223,18 @@ export class CourierInboxListItem extends CourierBaseElement {
         border-bottom: none;
       }
 
+      ${CourierInboxListItem.id} .title-row {
+        position: relative;
+        margin-bottom: 4px;
+      }
+
+      /* Pulled back out of the content column into the item's left padding, so an unread row
+         and a read row start their text at the same place. */
       ${CourierInboxListItem.id} .unread-indicator {
         position: absolute;
-        top: 28px;
-        left: 6px;
+        top: 50%;
+        left: -14px;
+        transform: translateY(-50%);
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -246,7 +270,6 @@ export class CourierInboxListItem extends CourierBaseElement {
         font-family: ${list?.item?.title?.family ?? 'inherit'};
         font-size: ${list?.item?.title?.size ?? '14px'};
         color: ${list?.item?.title?.color ?? 'red'};
-        margin-bottom: 4px;
       }
       ${CourierInboxListItem.id} .title a,
       ${CourierInboxListItem.id} .title .courier-inbox-subtitle-link {

@@ -48,20 +48,53 @@ export interface CourierActionVariantThemeStyle {
 /**
  * The theme values an integrator can set for a row of message actions.
  *
- * The top level describes the default filled button. `outlined` and `link` layer over it and
- * apply only when the action asks for that look — an action carrying its own Elemental styling
- * still supersedes both.
+ * The top level applies to every action. Below it sits one block per `action.style`, each named
+ * for the value it answers to — a theme reads the same as the template that feeds it, with no
+ * mapping to remember between what a template sends and what a theme calls it. A block layers
+ * over the top level, and an action's own Elemental styling still supersedes both.
  *
  * @public
  */
 export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
-  /** Applies when the action asks for `style: 'secondary'` or `'tertiary'`. */
-  outlined?: CourierActionVariantThemeStyle;
-  /** Applies when the action asks for `style: 'link'`. */
+  /** Applies to `style: 'button'` — the filled button, and the default when a style is absent. */
+  button?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'secondary'` — the outlined button. */
+  secondary?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'tertiary'` — the borderless button. */
+  tertiary?: CourierActionVariantThemeStyle;
+  /** Applies to `style: 'link'` — inline text rather than a button. */
   link?: CourierActionVariantThemeStyle;
 }
 
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/**
+ * A color the browser can actually paint with.
+ *
+ * The send pipeline fills an action's `background_color` with `{brand.colors.primary}` whenever
+ * the template names none, and that token only becomes a color if a brand is configured and
+ * resolves. When it does not, the literal string arrives here — and being neither empty nor a
+ * color, it read as an accent the author had chosen. `secondary` built
+ * `1px solid {brand.colors.primary}` out of it, the browser dropped the declaration as invalid,
+ * and the button lost both its outline and its label color: an unstyled ghost where an outlined
+ * button belonged.
+ *
+ * An unresolved token is the absence of a color, so it is treated as one and the look falls back
+ * to the kit's own defaults — which is what the template designer previews.
+ */
+function usableColor(value?: string): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  // Any leftover interpolation — `{brand.colors.primary}`, `{{var}}` — that never resolved.
+  return trimmed === '' || trimmed.includes('{') || trimmed.includes('}') ? undefined : trimmed;
+}
+
+/** The white background the template designer sends to mean "this button is outlined". */
+const DESIGNER_OUTLINED_FILLS = new Set(['#ffffff', '#fff', 'white']);
+
+function isDesignerOutlinedFill(backgroundColor?: string): boolean {
+  return DESIGNER_OUTLINED_FILLS.has((backgroundColor ?? '').trim().toLowerCase());
+}
 
 function toCssLength(value: string | number | undefined): string | undefined {
   if (value === undefined || value === null || value === '') {
@@ -111,19 +144,43 @@ export function courierActionButtonProps(
   // rather than assume the sender normalized it. An unrecognized value falls through to the
   // plain button rather than stranding the action between looks.
   const style = action.style?.trim().toLowerCase();
-  const isLink = style === 'link';
-  const outlined = style === 'secondary' || style === 'tertiary';
+  // The template designer used to have no way to say "outlined": the content API accepted only
+  // `button` and `link`, so it encoded an outlined inbox button as `style: "link"` carrying a
+  // white background and a black label, and read that pair back as outlined on the way in. The
+  // label color is dropped before delivery, which leaves the white background as the only
+  // surviving marker of what the author actually chose.
+  //
+  // Rendering that as a link would show an underlined phrase where the author configured a
+  // button, so it is treated as the outlined look with no color of its own. Narrow on purpose —
+  // a link an author wrote by hand arrives with a real color, since the send pipeline
+  // substitutes the brand's primary when a template names none. The bridge is for templates
+  // already saved that way; the designer says `secondary` now.
+  const designerOutlined = style === 'link' && isDesignerOutlinedFill(action.background_color);
 
-  // The look the action asked for picks which theme block applies. `outlined` layers over the
-  // base because it is still a button; `link` does not, since inheriting the base fill or border
-  // would put button chrome on something that should read as text. Typography carries over to
-  // both, so a font set once applies to the whole row.
-  const font = { ...theme?.font, ...(isLink ? theme?.link?.font : outlined ? theme?.outlined?.font : undefined) };
-  const t: CourierActionVariantThemeStyle = isLink
-    ? { ...theme?.link, font }
+  const isLink = style === 'link' && !designerOutlined;
+  const outlined = style === 'secondary' || designerOutlined;
+  // The loudest of the three: a solid fill in the mode's ink, for the action that is the thing
+  // to do on the message.
+  const solid = style === 'tertiary';
+
+  // The block is picked by the style's own name, so a theme and a template speak the same
+  // vocabulary. An unrecognized style falls through to `button`, matching how it renders.
+  const variantTheme = isLink
+    ? theme?.link
     : outlined
-      ? { ...theme, ...theme?.outlined, font }
-      : { ...theme, font };
+      ? theme?.secondary
+      : solid
+        ? theme?.tertiary
+        : theme?.button;
+
+  // Typography carries across the whole row, so a font set at the top level applies to every
+  // style and the block only refines it. The rest of the base layers in for the buttons but not
+  // for a link, since inheriting a fill or a border would put button chrome on something that
+  // should read as text.
+  const font = { ...theme?.font, ...variantTheme?.font };
+  const t: CourierActionVariantThemeStyle = isLink
+    ? { ...variantTheme, font }
+    : { ...theme, ...variantTheme, font };
 
   // A link is not a button wearing different colors — none of the button chrome applies to it.
   if (isLink) {
@@ -139,18 +196,23 @@ export function courierActionButtonProps(
       fontFamily: t.font?.family,
       fontSize: t.font?.size ?? toCssLength(action.font_size),
       fontWeight: t.font?.weight,
-      textColor: t.font?.color ?? action.color,
+      textColor: t.font?.color ?? usableColor(action.color),
       padding: t.padding ?? action.padding
     };
   }
 
-  const fill = action.background_color;
+  // The designer's white background is a marker, not a color the author picked, so it must not
+  // become the outline or the label. Dropping it here leaves the button on the kit's own
+  // outlined defaults, which are mode-aware — the marker carries no color that would survive a
+  // dark surface anyway.
+  const fill = designerOutlined ? undefined : usableColor(action.background_color);
   const borderSize = toCssLength(action.border_size ?? action.border?.size);
 
   // The legacy nested border is the only way an action can ask for an outline color of its own;
   // it only counts as a border when it says how thick it is, or says it is enabled.
-  const legacyBorder = action.border?.color && (borderSize || action.border?.enabled)
-    ? `${borderSize ?? '1px'} solid ${action.border.color}`
+  const legacyBorderColor = usableColor(action.border?.color);
+  const legacyBorder = legacyBorderColor && (borderSize || action.border?.enabled)
+    ? `${borderSize ?? '1px'} solid ${legacyBorderColor}`
     : undefined;
 
   // For the outlined look the action's color becomes the outline and the label rather than a
@@ -162,9 +224,26 @@ export function courierActionButtonProps(
   // an outlined sibling in the same row.
   const ownLook = Boolean(fill || actionBorder);
 
+  // Three weights, loudest last. `secondary` is the plain button an action has always rendered
+  // as — transparent over the row, edged with the divider hairline — and it stays the default
+  // so an action naming no style looks exactly as it did. `outlined` gives that edge something
+  // you can see. `primary` is the solid fill, for the action that is the thing to do.
+  //
+  // `outlined` exists rather than `secondary` being redefined because `secondary` is a public
+  // variant with its own users: an outline is what an action asks for, not a new meaning for
+  // everyone else's button.
   return {
-    variant: 'secondary',
-    backgroundColor: outlined ? t.backgroundColor : (t.backgroundColor ?? fill),
+    variant: outlined ? 'secondary' : solid ? 'tertiary' : 'primary',
+    // The two quiet looks rest on transparent, not on the mode's surface. The list item is
+    // transparent itself, so an action painted with an opaque face becomes a white chip on an
+    // integrator's own background instead of sitting on it — which is what the default theme
+    // did before these styles existed, and what it has to keep doing. The solid one is the
+    // exception: an ink fill is the whole point of it.
+    backgroundColor: solid
+      ? (t.backgroundColor ?? fill)
+      : outlined
+        ? (t.backgroundColor ?? 'transparent')
+        : (t.backgroundColor ?? fill ?? 'transparent'),
     hoverBackgroundColor: t.hoverBackgroundColor,
     activeBackgroundColor: t.activeBackgroundColor,
     border: t.border ?? actionBorder ?? (fill ? TRANSPARENT_BORDER : undefined),
@@ -174,7 +253,7 @@ export function courierActionButtonProps(
     fontFamily: t.font?.family,
     fontSize: t.font?.size ?? toCssLength(action.font_size),
     fontWeight: t.font?.weight,
-    textColor: t.font?.color ?? action.color ?? (outlined ? fill : readableTextColor(fill)),
+    textColor: t.font?.color ?? usableColor(action.color) ?? (outlined ? fill : readableTextColor(fill)),
     padding: t.padding ?? action.padding
   };
 }

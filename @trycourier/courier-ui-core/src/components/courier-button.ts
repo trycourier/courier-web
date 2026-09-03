@@ -1,8 +1,17 @@
 import { CourierComponentThemeMode, SystemThemeMode } from "../utils/system-theme-mode";
 import { theme } from "../utils/theme";
-import { CourierColors } from "../utils/courier-colors";
+import { CourierColors, shadeTowardMiddle } from "../utils/courier-colors";
 import { CourierSystemThemeElement } from "./courier-system-theme-element";
 
+/**
+ * A button's look, in the order an action asks for attention: `primary` is the default an action
+ * with no style renders as, `secondary` and `tertiary` are the two louder ones, and `link` stops
+ * being a button at all.
+ *
+ * The two vocabularies used to cross over — `style: 'button'` resolved to `variant: 'secondary'`,
+ * `style: 'tertiary'` to `variant: 'primary'` — so every reader had to carry the mapping. Now
+ * `button` is `primary` and the other three share a name with the style that asks for them.
+ */
 export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 export type CourierButtonProps = {
@@ -18,6 +27,7 @@ export type CourierButtonProps = {
   fontSize?: string,
   fontWeight?: string,
   textColor?: string,
+  hoverTextColor?: string,
   padding?: string,
   textDecoration?: string,
   variant?: CourierButtonVariant,
@@ -38,23 +48,11 @@ const baseButtonStyles = {
 } as const;
 
 export const CourierButtonVariants = {
+  /**
+   * The plain button, and what an action with no style renders as: the row showing through,
+   * edged with the divider hairline. What an Inbox action has always looked like.
+   */
   primary: (mode: SystemThemeMode) => {
-    return {
-      ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.primary,
-      textColor: theme[mode].colors.secondary,
-      fontWeight: '500',
-      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
-      // it toward — the brightness fallback would move a near-black fill by two values and dim
-      // the label instead. Each mode steps toward the middle rather than past the end.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
-      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
-      border: TRANSPARENT_BORDER,
-      shadow: 'none'
-    };
-  },
-
-  secondary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
       backgroundColor: theme[mode].colors.secondary,
@@ -71,31 +69,65 @@ export const CourierButtonVariants = {
     };
   },
 
+  /**
+   * The outlined button. The same face as the plain one, told apart by an edge you can see and
+   * by sitting flat where the plain button floats.
+   */
+  secondary: (mode: SystemThemeMode) => {
+    return {
+      ...baseButtonStyles,
+      backgroundColor: theme[mode].colors.secondary,
+      textColor: theme[mode].colors.primary,
+      fontWeight: '500',
+      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[200] : CourierColors.gray[800],
+      activeBackgroundColor: mode === 'light' ? CourierColors.gray[500] : CourierColors.gray[700],
+      border: `1px solid ${mode === 'light' ? CourierColors.gray[600] : CourierColors.gray[650]}`,
+      // An outline is the whole statement; a shadow underneath it would be a second one.
+      shadow: 'none'
+    };
+  },
+
+  /**
+   * The solid button, the loudest of the three: a fill in the mode's ink, for the action that
+   * is the thing to do on the message.
+   */
   tertiary: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
-      backgroundColor: theme[mode].colors.border,
-      textColor: theme[mode].colors.primary,
+      backgroundColor: theme[mode].colors.primary,
+      textColor: theme[mode].colors.secondary,
       fontWeight: '500',
+      // The fill sits at whichever end of the scale the mode is not, so there is nothing to dim
+      // it toward — the brightness fallback would move a near-black fill by two values and dim
+      // the label instead. Each mode steps toward the middle rather than past the end.
+      hoverBackgroundColor: mode === 'light' ? CourierColors.gray[800] : CourierColors.gray[200],
+      activeBackgroundColor: mode === 'light' ? CourierColors.gray[700] : CourierColors.gray[500],
       border: TRANSPARENT_BORDER,
       shadow: 'none'
     };
   },
+
 
   /** Reads as an inline hyperlink rather than a button — no fill, no border, no padding. */
   link: (mode: SystemThemeMode) => {
     return {
       ...baseButtonStyles,
       backgroundColor: 'transparent',
-      textColor: theme[mode].colors.primary,
+      // A link reads as a link: it rests at the link color rather than at the body text color
+      // the buttons use for their labels.
+      textColor: theme[mode].colors.link,
       fontWeight: '500',
       border: 'none',
       shadow: 'none',
       padding: '0px',
       textDecoration: 'underline',
-      // A link has no fill to darken, so its feedback has to come from a wash behind the text.
-      hoverBackgroundColor: mode === 'light' ? CourierColors.black[500_10] : CourierColors.white[500_10],
-      activeBackgroundColor: mode === 'light' ? CourierColors.black[500_20] : CourierColors.white[500_20]
+      // A link is text, so it answers a pointer the way text does — by moving its own color, not
+      // by growing a box. Naming the hover fill transparent is what keeps the brightness
+      // fallback from dimming the label on top of that move.
+      hoverBackgroundColor: 'transparent',
+      // One step further from the page than the resting color, so the move is visible in either
+      // mode. Press is left to the brightness fallback, which needs no fill to act on.
+      hoverTextColor: mode === 'light' ? CourierColors.blue[600] : CourierColors.blue[300]
     };
   }
 } as const;
@@ -109,9 +141,19 @@ export class CourierButton extends CourierSystemThemeElement {
   // Components
   private _button: HTMLButtonElement;
   private _style: HTMLStyleElement;
+  /**
+   * Kept so the button can restyle itself when the system theme flips.
+   *
+   * `mode: 'system'` is resolved against `currentSystemTheme` when the styles are built, which
+   * is only correct at the moment it is built. Everything else in the inbox re-reads its theme
+   * through the theme manager's subscription; a button had no equivalent, so an OS flip left
+   * the actions — and only the actions — wearing the colors of the mode that had just ended.
+   */
+  private _props: CourierButtonProps;
 
   constructor(props: CourierButtonProps) {
     super();
+    this._props = props;
     const shadow = this.attachShadow({ mode: 'open' });
 
     this._button = document.createElement('button');
@@ -139,14 +181,28 @@ export class CourierButton extends CourierSystemThemeElement {
 
     const mode = props.mode === 'system' ? this.currentSystemTheme : props.mode;
 
-    const defaults = CourierButtonVariants[props.variant ?? 'secondary'](mode);
+    // `primary` is what an action with no style of its own renders as, so it is the default here
+    // for the same reason.
+    const defaults = CourierButtonVariants[props.variant ?? 'primary'](mode);
 
     // The variant's own hover pairs with the variant's own fill. Once a caller supplies a fill of
     // its own there is no matching entry to reach for, so the feedback is derived from that color
     // by dimming it — which works whatever color it turns out to be.
-    const usingOwnFill = Boolean(props.backgroundColor) && props.backgroundColor !== defaults.backgroundColor;
-    const hover = props.hoverBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { hoverBackgroundColor?: string }).hoverBackgroundColor);
-    const active = props.activeBackgroundColor ?? (usingOwnFill ? undefined : (defaults as { activeBackgroundColor?: string }).activeBackgroundColor);
+    // `transparent` is the absence of a fill, not a fill of its own. There is nothing in it to
+    // derive a hover from — `shadeTowardMiddle` cannot read it and the brightness fallback has
+    // nothing to dim — so the variant's own feedback has to stand, or the button looks inert
+    // under the pointer.
+    const ownFill = props.backgroundColor === 'transparent' ? undefined : props.backgroundColor;
+    const usingOwnFill = Boolean(ownFill) && ownFill !== defaults.backgroundColor;
+    const ownHover = usingOwnFill ? shadeTowardMiddle(ownFill!, 0.12) : undefined;
+    const ownActive = usingOwnFill ? shadeTowardMiddle(ownFill!, 0.22) : undefined;
+    const hover = props.hoverBackgroundColor ?? (usingOwnFill ? ownHover : (defaults as { hoverBackgroundColor?: string }).hoverBackgroundColor);
+    const active = props.activeBackgroundColor ?? (usingOwnFill ? ownActive : (defaults as { activeBackgroundColor?: string }).activeBackgroundColor);
+
+    // A recolor on hover is the link's feedback rather than an extra on top of a fill, so a
+    // caller that supplies its own text color takes the variant's hover color with it.
+    const usingOwnText = Boolean(props.textColor) && props.textColor !== defaults.textColor;
+    const hoverText = props.hoverTextColor ?? (usingOwnText ? undefined : (defaults as { hoverTextColor?: string }).hoverTextColor);
 
     return `
       :host {
@@ -173,6 +229,7 @@ export class CourierButton extends CourierSystemThemeElement {
 
       button:hover {
         ${hover ? `background-color: ${hover};` : 'filter: brightness(0.9);'}
+        ${hoverText ? `color: ${hoverText};` : ''}
       }
 
       button:active {
@@ -187,9 +244,17 @@ export class CourierButton extends CourierSystemThemeElement {
   }
 
   public updateButton(props: CourierButtonProps) {
+    this._props = props;
     if (props.text) {
       this._button.textContent = props.text;
     }
     this._style.textContent = this.getStyles(props);
+  }
+
+  protected onSystemThemeChange(_: SystemThemeMode): void {
+    // A button pinned to 'light' or 'dark' was never asking the system, so leave it alone.
+    if (this._props.mode === 'system') {
+      this._style.textContent = this.getStyles(this._props);
+    }
   }
 }

@@ -19,7 +19,12 @@ const themed: CourierInboxTheme = {
         actions: {
           borderRadius: '2px',
           font: { family: 'Poppins', weight: '600' },
-          outlined: {
+          secondary: {
+            borderRadius: '999px',
+            hoverBackgroundColor: '#F3E8FF',
+            activeBackgroundColor: '#E9D5FF',
+          },
+          tertiary: {
             borderRadius: '999px',
             hoverBackgroundColor: '#F3E8FF',
             activeBackgroundColor: '#E9D5FF',
@@ -48,9 +53,13 @@ const overriding: CourierInboxTheme = {
           hoverBackgroundColor: '#115E59',
           borderRadius: '6px',
           font: { family: 'Poppins', weight: '600', color: '#FFFFFF' },
-          outlined: {
+          secondary: {
             backgroundColor: 'transparent',
             border: '1px solid #0F766E',
+            font: { color: '#0F766E' },
+          },
+          tertiary: {
+            backgroundColor: 'transparent',
             font: { color: '#0F766E' },
           },
           link: {
@@ -106,6 +115,16 @@ export default function App() {
     courier.shared.signIn({
       userId: import.meta.env.VITE_USER_ID,
       jwt: import.meta.env.VITE_JWT,
+      apiUrls: {
+        courier: {
+          rest: import.meta.env.VITE_COURIER_REST_URL,
+          graphql: import.meta.env.VITE_COURIER_GRAPHQL_URL,
+        },
+        inbox: {
+          graphql: import.meta.env.VITE_INBOX_GRAPHQL_URL,
+          webSocket: import.meta.env.VITE_INBOX_WEBSOCKET_URL,
+        },
+      },
     });
   }, []);
 

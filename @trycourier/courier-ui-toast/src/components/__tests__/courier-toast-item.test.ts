@@ -118,7 +118,7 @@ describe('courier-toast-item', () => {
         item: {
           actions: {
             borderRadius: '2px',
-            outlined: { border: '2px solid #00FF00' },
+            secondary: { border: '2px solid #00FF00' },
             link: { font: { color: '#FF00FF' } }
           }
         }

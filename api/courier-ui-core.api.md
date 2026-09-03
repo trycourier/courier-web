@@ -62,8 +62,10 @@ export interface CourierActionStyle {
 
 // @public
 export interface CourierActionThemeStyle extends CourierActionVariantThemeStyle {
+    button?: CourierActionVariantThemeStyle;
     link?: CourierActionVariantThemeStyle;
-    outlined?: CourierActionVariantThemeStyle;
+    secondary?: CourierActionVariantThemeStyle;
+    tertiary?: CourierActionVariantThemeStyle;
 }
 
 // @public
@@ -115,6 +117,8 @@ export class CourierButton extends CourierSystemThemeElement {
     // (undocumented)
     static get id(): string;
     // (undocumented)
+    protected onSystemThemeChange(_: SystemThemeMode): void;
+    // (undocumented)
     updateButton(props: CourierButtonProps): void;
 }
 
@@ -134,6 +138,7 @@ export type CourierButtonProps = {
     fontSize?: string;
     fontWeight?: string;
     textColor?: string;
+    hoverTextColor?: string;
     padding?: string;
     textDecoration?: string;
     variant?: CourierButtonVariant;
@@ -156,7 +161,7 @@ export type CourierButtonTheme = {
 
 // Warning: (ae-missing-release-tag) "CourierButtonVariant" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public
 export type CourierButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link';
 
 // Warning: (ae-missing-release-tag) "CourierButtonVariants" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -193,6 +198,8 @@ export const CourierButtonVariants: {
         backgroundColor: string;
         textColor: string;
         fontWeight: string;
+        hoverBackgroundColor: string;
+        activeBackgroundColor: string;
         border: string;
         shadow: string;
         borderRadius: "4px";
@@ -209,7 +216,7 @@ export const CourierButtonVariants: {
         padding: string;
         textDecoration: string;
         hoverBackgroundColor: string;
-        activeBackgroundColor: string;
+        hoverTextColor: string;
         borderRadius: "4px";
         fontSize: "14px";
     };
@@ -247,6 +254,7 @@ export const CourierColors: {
         400: string;
         500: string;
         600: string;
+        650: string;
         700: string;
         800: string;
     };
@@ -256,8 +264,10 @@ export const CourierColors: {
         50020: string;
     };
     blue: {
+        300: string;
         400: string;
         500: string;
+        600: string;
     };
 };
 
@@ -511,6 +521,11 @@ export function readableTextColor(backgroundColor?: string): string | undefined;
 export function registerElement(element: CustomElementConstructor & {
     id: string;
 }): void;
+
+// Warning: (ae-missing-release-tag) "shadeTowardMiddle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function shadeTowardMiddle(color: string, amount: number): string | undefined;
 
 // Warning: (ae-missing-release-tag) "SystemThemeMode" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
