@@ -1,5 +1,86 @@
 # @trycourier/courier-ui-inbox
 
+## 2.7.0
+
+### Minor Changes
+
+- [#254](https://github.com/trycourier/courier-web/pull/254) [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2) Thanks [@mikemilla](https://github.com/mikemilla)! - Name the action theme blocks after the styles they apply to
+
+  The blocks were named for the look — `outlined` — while a template asks for the value —
+  `secondary`. Anyone theming a row of actions had to hold a mapping in their head between what
+  they sent and what they styled, and `tertiary` had no name of its own at all.
+
+  The blocks are now `button`, `secondary`, `tertiary` and `link`, one per `action.style`, so a
+  theme reads the same as the template that feeds it. `link` is unchanged; `outlined` becomes
+  `secondary`; `button` and `tertiary` are new, having previously been unthemable and folded into
+  the top level and the outlined block respectively.
+
+  ```diff
+    actions: {
+      font: { family: 'Inter' },
+  -   outlined: { border: '1px solid #E5E5E5' }
+  +   secondary: { border: '1px solid #E5E5E5' }
+    }
+  ```
+
+  The top level still applies to every action, and an action's own Elemental styling still wins
+  over both. None of these keys has shipped to npm yet, so nothing in a released version breaks.
+
+- [#250](https://github.com/trycourier/courier-web/pull/250) [`53396e7`](https://github.com/trycourier/courier-web/commit/53396e7c0484217b6a996b8768813f9703d4f053) Thanks [@mikemilla](https://github.com/mikemilla)! - Render the button style a message action asks for, track action clicks, and render markdown previews
+
+  Inbox and toast actions now respect the styling their template configured. `style: "secondary"`
+  or `"tertiary"` draws the action's colour as an outline instead of a fill, matching how the same
+  action renders in email, and `style: "link"` renders as an inline link rather than a button. A
+  filled and an outlined action in the same row sit at the same height. This needed the inbox query
+  to ask for `style`, which it never did — that is why every action previously rendered filled.
+
+  Action styling is themable through a new `actions` block on the inbox and toast list item themes,
+  with `outlined` and `link` sub-blocks for the two other looks. A value set on the theme outranks
+  the one the action carries, so an untouched theme renders what the template configured and a set
+  one overrides it. The shipped default themes therefore no longer define `actions` at all — the
+  defaults come from the button, per mode, so integrators reading
+  `defaultLightTheme.inbox.list.item.actions` now get `undefined`.
+
+  Clicking an action reports the click to Courier automatically, using the tracking id the action
+  carries. `markActionAsClicked(action, messageId)` is exported for custom list item renderers.
+
+  A message's title and preview are rendered as markdown — bold, italic, strikethrough, links,
+  quotes and list markers — because the inbox channel serializes its preview through markdown.
+  Plain text is unaffected.
+
+### Patch Changes
+
+- [#254](https://github.com/trycourier/courier-web/pull/254) [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2) Thanks [@mikemilla](https://github.com/mikemilla)! - Fix three ways a message action rendered wrong once it stopped carrying color
+
+  All three were masked while every action arrived with a fill substituted by the send pipeline.
+  With the action reduced to its style, the defaults underneath it are the whole appearance, and
+  they were not right.
+
+  **An action ignored a system theme flip.** Everything else in the inbox re-reads its theme
+  through the theme manager's subscription. `CourierButton` styles itself once, in its
+  constructor, resolving `mode: 'system'` against the theme in force at that moment — and
+  `themeManager.mode` is the _user's_ setting, which is `'system'` unless an integrator pinned
+  it. It never overrode `onSystemThemeChange`, so an OS flip left the actions, and only the
+  actions, wearing the mode that had just ended: a near-black filled button on a dark list, or a
+  white outlined one. It now restyles on the flip, and a button pinned to `light` or `dark` still
+  ignores the OS.
+
+  **An outlined action had no visible outline.** Its border was `colors.border` — the hairline
+  rows are separated with — which is about 1.3:1 against the surface the same button is filled
+  with, in either mode. An outlined action was indistinguishable from a borderless one unless the
+  template gave it a color, which templates no longer do. It now uses `gray[600]`, which clears
+  3:1 against both faces, so one value serves light and dark. `colors.border` itself is unchanged,
+  so dividers are unaffected.
+
+  **A link sat too high beside a taller action.** Not a defect in the rendered inbox — a native
+  button centers its own content — but the row stretches its actions so their borders line up, so
+  anything drawn as a `div` rather than a `button` has to say it centers. Noted here because the
+  theme contract now depends on it.
+
+- Updated dependencies [[`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`53396e7`](https://github.com/trycourier/courier-web/commit/53396e7c0484217b6a996b8768813f9703d4f053), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2)]:
+  - @trycourier/courier-ui-core@2.5.0
+  - @trycourier/courier-js@3.7.0
+
 ## 2.6.0
 
 ### Minor Changes
