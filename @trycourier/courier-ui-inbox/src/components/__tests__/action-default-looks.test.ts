@@ -60,6 +60,9 @@ describe('an action carrying no color of its own', () => {
       const styles = render({ content: 'Confirm' });
       expect(styles).toContain('border: 1px solid #E5E5E5;');
       expect(styles).toContain('color: #171717;');
+      // Transparent, not the mode's surface: the list item is transparent too, so the action
+      // sits on whatever the inbox is embedded in rather than becoming a white chip on it.
+      expect(styles).toContain('background-color: transparent;');
     });
 
     it("keeps the hairline edge on black", () => {
@@ -83,7 +86,7 @@ describe('an action carrying no color of its own', () => {
     it('draws an edge you can see on white', () => {
       const styles = render({ content: 'Maybe later', style: 'secondary' });
       expect(styles).toContain('border: 1px solid #737373;');
-      expect(styles).toContain('background-color: #FFFFFF;');
+      expect(styles).toContain('background-color: transparent;');
     });
 
     it('draws an edge you can see on black', () => {
@@ -99,10 +102,10 @@ describe('an action carrying no color of its own', () => {
       expect(render({ content: 'Maybe later', style: 'secondary' })).not.toEqual(render({ content: 'Maybe later' }));
     });
 
-    // The outline sits on the surface, not the ink: it is the quieter of the two.
-    it('keeps the mode\'s surface behind it', () => {
-      expect(render({ content: 'Maybe later', style: 'secondary' })).toContain('background-color: #FFFFFF;');
-      expect(render({ content: 'Maybe later', style: 'secondary' }, 'dark')).toContain('background-color: #171717;');
+    // The outline rests on the row, not on a face of its own.
+    it("stays transparent in both modes", () => {
+      expect(render({ content: 'Maybe later', style: 'secondary' })).toContain('background-color: transparent;');
+      expect(render({ content: 'Maybe later', style: 'secondary' }, 'dark')).toContain('background-color: transparent;');
     });
   });
 

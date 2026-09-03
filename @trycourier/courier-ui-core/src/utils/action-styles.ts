@@ -212,7 +212,16 @@ export function courierActionButtonProps(
   // everyone else's button.
   return {
     variant: outlined ? 'outlined' : solid ? 'primary' : 'secondary',
-    backgroundColor: outlined ? t.backgroundColor : (t.backgroundColor ?? fill),
+    // The two quiet looks rest on transparent, not on the mode's surface. The list item is
+    // transparent itself, so an action painted with an opaque face becomes a white chip on an
+    // integrator's own background instead of sitting on it — which is what the default theme
+    // did before these styles existed, and what it has to keep doing. The solid one is the
+    // exception: an ink fill is the whole point of it.
+    backgroundColor: solid
+      ? (t.backgroundColor ?? fill)
+      : outlined
+        ? (t.backgroundColor ?? 'transparent')
+        : (t.backgroundColor ?? fill ?? 'transparent'),
     hoverBackgroundColor: t.hoverBackgroundColor,
     activeBackgroundColor: t.activeBackgroundColor,
     border: t.border ?? actionBorder ?? (fill ? TRANSPARENT_BORDER : undefined),

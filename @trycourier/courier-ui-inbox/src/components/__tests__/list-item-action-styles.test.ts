@@ -477,8 +477,8 @@ describe('inbox list item action styles', () => {
 
       // A styleless action is the plain button, the `secondary` variant: the mode's own surface
       // edged with the divider hairline, which is what it has always rendered as.
-      expect(light).toContain('background-color: #FFFFFF;');
-      expect(dark).toContain('background-color: #171717;');
+      expect(light).toContain('background-color: transparent;');
+      expect(dark).toContain('background-color: transparent;');
       expect(light).not.toBe(dark);
     });
 
@@ -498,9 +498,9 @@ describe('inbox list item action styles', () => {
       const light = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'light');
       const dark = renderAction({ content: 'Later', style: 'secondary' }, undefined, 'dark');
 
-      expect(light).toContain('background-color: #FFFFFF;');
+      expect(light).toContain('background-color: transparent;');
       expect(light).toContain('color: #171717;');
-      expect(dark).toContain('background-color: #171717;');
+      expect(dark).toContain('background-color: transparent;');
       expect(dark).toContain('color: #FFFFFF;');
     });
 
@@ -547,7 +547,7 @@ describe('inbox list item action styles', () => {
     // hairline for an edge, and the shadow that lifts it off the row.
     const styles = renderAction({ content: 'Confirm' });
 
-    expect(styles).toContain('background-color: #FFFFFF;');
+    expect(styles).toContain('background-color: transparent;');
     expect(styles).toContain('border: 1px solid #E5E5E5;');
     expect(styles).toContain('box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06);');
   });

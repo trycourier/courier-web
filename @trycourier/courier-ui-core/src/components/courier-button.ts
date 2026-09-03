@@ -196,9 +196,14 @@ export class CourierButton extends CourierSystemThemeElement {
     // The variant's own hover pairs with the variant's own fill. Once a caller supplies a fill of
     // its own there is no matching entry to reach for, so the feedback is derived from that color
     // by dimming it — which works whatever color it turns out to be.
-    const usingOwnFill = Boolean(props.backgroundColor) && props.backgroundColor !== defaults.backgroundColor;
-    const ownHover = usingOwnFill ? shadeTowardMiddle(props.backgroundColor!, 0.12) : undefined;
-    const ownActive = usingOwnFill ? shadeTowardMiddle(props.backgroundColor!, 0.22) : undefined;
+    // `transparent` is the absence of a fill, not a fill of its own. There is nothing in it to
+    // derive a hover from — `shadeTowardMiddle` cannot read it and the brightness fallback has
+    // nothing to dim — so the variant's own feedback has to stand, or the button looks inert
+    // under the pointer.
+    const ownFill = props.backgroundColor === 'transparent' ? undefined : props.backgroundColor;
+    const usingOwnFill = Boolean(ownFill) && ownFill !== defaults.backgroundColor;
+    const ownHover = usingOwnFill ? shadeTowardMiddle(ownFill!, 0.12) : undefined;
+    const ownActive = usingOwnFill ? shadeTowardMiddle(ownFill!, 0.22) : undefined;
     const hover = props.hoverBackgroundColor ?? (usingOwnFill ? ownHover : (defaults as { hoverBackgroundColor?: string }).hoverBackgroundColor);
     const active = props.activeBackgroundColor ?? (usingOwnFill ? ownActive : (defaults as { activeBackgroundColor?: string }).activeBackgroundColor);
 
