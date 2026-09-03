@@ -1,5 +1,16 @@
 # @trycourier/courier-vue
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`53396e7`](https://github.com/trycourier/courier-web/commit/53396e7c0484217b6a996b8768813f9703d4f053), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2), [`e77b2f6`](https://github.com/trycourier/courier-web/commit/e77b2f6465ca1f1a02cb2862daa16db5ec9dc3a2)]:
+  - @trycourier/courier-ui-core@2.5.0
+  - @trycourier/courier-ui-inbox@2.7.0
+  - @trycourier/courier-ui-toast@2.4.0
+  - @trycourier/courier-js@3.7.0
+  - @trycourier/courier-ui-preferences@1.3.1
+
 ## 1.1.0
 
 ### Minor Changes
