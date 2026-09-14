@@ -62,6 +62,7 @@
     "shell-quote": "^1.9.0",
     "@isaacs/brace-expansion": "^5.0.1",
     "postcss": "^8.5.18",
+    "baseline-browser-mapping": "^2.11.0",
     "@remix-run/router": "^1.23.2",
     "**/@microsoft/tsdoc-config/ajv": "^8.18.0",
     "**/@rushstack/node-core-library/ajv": "^8.18.0",
