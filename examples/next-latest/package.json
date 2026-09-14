@@ -10,7 +10,7 @@
   "dependencies": {
     "@trycourier/courier-react": "file:../../@trycourier/courier-react",
     "markdown-to-jsx": "^7.7.13",
-    "next": "^15.5.21",
+    "next": "^15.5.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
