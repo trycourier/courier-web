@@ -30,6 +30,7 @@ yarn workspace @trycourier/<pkg> run test
 yarn workspace <example> run dev
 yarn generate-api-docs       # refresh api/*.api.md after an intentional API change
 yarn build-packages:ci       # what CI runs: build + API report check
+yarn verify-published        # check npm serves the versions this checkout claims
 ```
 
 ## Skills

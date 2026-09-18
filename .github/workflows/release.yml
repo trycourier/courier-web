@@ -37,6 +37,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Update Release PR or Release to NPM
+        id: changesets
         uses: changesets/action@v1
         with:
           publish: yarn release
@@ -45,3 +46,40 @@ jobs:
           # Workaround for changesets setting NPM_TOKEN in the registry URL
           # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
           NPM_TOKEN: ''
+
+      # `changeset publish` reports what it attempted. This reports what npm
+      # actually serves, which is not the same thing: in #257 a tarball uploaded
+      # while the packument write did not, leaving a version that resolves for
+      # nobody. Runs even when the step above failed — a half-finished publish is
+      # precisely the case worth knowing about.
+      - name: Verify the registry serves this commit
+        id: verify
+        if: always()
+        env:
+          VERIFY_REPORT_PATH: ${{ runner.temp }}/release-verification.md
+        run: node scripts/verify-published.mjs
+
+      # A failed Release run notifies nobody, and this one exits non-zero often
+      # enough that its red is easy to wave off. An issue is harder to miss.
+      - name: Open an issue for a broken release
+        if: always() && steps.verify.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ runner.temp }}/release-verification.md
+        run: |
+          body="$(cat "$REPORT")
+
+          Commit: ${GITHUB_SHA}
+          Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          existing="$(gh issue list --state open --limit 1 \
+            --search 'Release verification failed in:title' \
+            --json number --jq '.[0].number')"
+
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create \
+              --title "Release verification failed on ${GITHUB_SHA:0:7}" \
+              --body "$body"
+          fi
