@@ -1,0 +1,57 @@
+# TEMPORARY diagnostic — reverted once it has answered the question.
+# `changeset publish` decides what to publish from `npm info <pkg> --json`, and in
+# CI that decision comes out wrong for every package, including ones published
+# weeks ago. It cannot be reproduced locally. This prints what npm actually
+# returns inside the release job's environment.
+name: Diagnose npm info
+
+on: pull_request
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+      - name: Update npm
+        run: npm install -g npm@latest
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      - name: What npm returns
+        env:
+          NPM_TOKEN: ''
+        run: |
+          echo "npm: $(npm --version)  node: $(node --version)"
+          echo "npm_config_registry=${npm_config_registry:-<unset>}"
+          echo "--- .npmrc files ---"
+          for f in .npmrc ~/.npmrc; do [ -f "$f" ] && { echo "== $f"; sed 's/_authToken=.*/_authToken=<redacted>/' "$f"; }; done
+          echo "--- npm config get registry ---"
+          npm config get registry
+
+          echo "=== A: direct, exactly as changesets calls it ==="
+          npm info @trycourier/courier-js --registry=https://registry.npmjs.org --json > a.json 2>/dev/null || echo "exit=$?"
+          echo "bytes: $(wc -c < a.json)"
+          head -c 300 a.json; echo
+          node -e "
+            const fs=require('fs'); const raw=fs.readFileSync('a.json','utf8');
+            if(!raw.trim()) return console.log('EMPTY STDOUT -> changesets treats this as E404 -> publishes everything');
+            const j=JSON.parse(raw);
+            console.log('top type:', Array.isArray(j)?'ARRAY['+j.length+']':typeof j);
+            console.log('versions:', Array.isArray(j.versions)?'array['+j.versions.length+']':typeof j.versions);
+            console.log('includes 3.7.0:', Array.isArray(j.versions) && j.versions.includes('3.7.0'));
+            console.log('keys:', Object.keys(j).slice(0,12).join(','));
+          "
+
+          echo "=== B: under yarn, as \`yarn release\` runs it ==="
+          yarn --silent exec -- npm info @trycourier/courier-js --registry=https://registry.npmjs.org --json > b.json 2>/dev/null || echo "exit=$?"
+          echo "bytes: $(wc -c < b.json)"
+          head -c 300 b.json; echo
+          node -e "
+            const fs=require('fs'); const raw=fs.readFileSync('b.json','utf8');
+            if(!raw.trim()) return console.log('EMPTY STDOUT -> changesets treats this as E404 -> publishes everything');
+            const j=JSON.parse(raw);
+            console.log('versions:', Array.isArray(j.versions)?'array['+j.versions.length+']':typeof j.versions);
+            console.log('includes 3.7.0:', Array.isArray(j.versions) && j.versions.includes('3.7.0'));
+          "
