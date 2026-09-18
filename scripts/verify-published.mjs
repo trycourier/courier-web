@@ -33,39 +33,65 @@
  * npm-release-pipeline skill.
  *
  * Usage:
- *   node scripts/verify-published.mjs          # or: yarn verify-published
+ *   ./scripts/verify-published.mjs             # or: yarn verify-published
  *
  * Env:
+ *   VERIFY_REF          read versions from this git ref instead of the working
+ *                       tree (CI uses HEAD — see REF below)
  *   VERIFY_TIMEOUT_MS   how long to keep re-checking a package the registry has
- *                       not caught up on yet (default 120000)
+ *                       not caught up on yet (default 600000)
  *   VERIFY_REPORT_PATH  write a markdown failure report here, for CI to file
  *   GITHUB_STEP_SUMMARY written to automatically when present
  *
  * Exits non-zero if any published package is missing or mis-tagged.
  */
 
+import { execFile } from "node:child_process";
 import { readdir, readFile, writeFile, access } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setTimeout as sleep } from "node:timers/promises";
+import { promisify } from "node:util";
 
+const run = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const REGISTRY = "https://registry.npmjs.org";
-const TIMEOUT_MS = Number(process.env.VERIFY_TIMEOUT_MS ?? 120_000);
+/**
+ * Which versions to check. On the Version Packages path `changesets/action` runs
+ * `changeset version` in the workspace, so the package.json files on disk hold the
+ * *next* versions — ones this commit never published and never will. CI therefore
+ * asks for `HEAD`, the versions the commit actually claims. Unset locally, where
+ * the working tree is what you want to know about.
+ */
+const REF = process.env.VERIFY_REF;
+/**
+ * How long a package gets to appear before we call it broken. The registry took
+ * over two minutes to expose the 2.5.1 train (run 35375277042 waited 120s and
+ * still saw nine packages missing that were all present shortly after), so this
+ * is generous on purpose: the loop exits as soon as everything resolves, and the
+ * only run that pays the full wait is one that was going to fail anyway.
+ */
+const TIMEOUT_MS = Number(process.env.VERIFY_TIMEOUT_MS ?? 600_000);
 const RETRY_DELAY_MS = 10_000;
+
+/** A package manifest, from the working tree or from a git ref. */
+async function readManifest(name) {
+  if (!REF) return readFile(join(root, "@trycourier", name, "package.json"), "utf8");
+  const { stdout } = await run("git", ["show", `${REF}:@trycourier/${name}/package.json`], { cwd: root });
+  return stdout;
+}
 
 /** The publishable packages, read off the workspace rather than a hardcoded list. */
 async function publishablePackages() {
-  const dir = join(root, "@trycourier");
-  const names = await readdir(dir);
+  const names = await readdir(join(root, "@trycourier"));
   const packages = [];
 
   for (const name of names.sort()) {
     let manifest;
     try {
-      manifest = JSON.parse(await readFile(join(dir, name, "package.json"), "utf8"));
+      manifest = JSON.parse(await readManifest(name));
     } catch {
-      continue; // not a package directory
+      continue; // not a package directory, or not in this ref
     }
     if (manifest.private) continue;
     packages.push({ name: manifest.name, version: manifest.version });

@@ -34,15 +34,16 @@
     "url": "https://github.com/trycourier/courier-web"
   },
   "scripts": {
-    "build-packages": "yarn exec ./scripts/build-packages",
-    "build-packages:ci": "yarn exec ./scripts/build-packages-ci",
-    "sync": "yarn exec ./scripts/sync",
+    "build-packages": "./scripts/build-packages.sh",
+    "build-packages:ci": "./scripts/build-packages-ci.sh",
+    "sync": "./scripts/sync.sh",
     "release": "yarn build-packages:ci && yarn changeset publish",
-    "ipqr": "sh ./scripts/ipqr.sh",
-    "generate-api-docs": "yarn exec ./scripts/generate-api-docs",
+    "ipqr": "./scripts/ipqr.sh",
+    "analyze": "./scripts/analyze.sh",
+    "generate-api-docs": "./scripts/generate-api-docs.sh",
     "test:all": "concurrently -n \"js,inbox,react,react17,vue,toast,prefs\" -c \"blue,green,yellow,cyan,red,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-vue run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\"",
-    "verify-esm-exports": "node ./scripts/verify-esm-exports.mjs",
-    "verify-published": "node ./scripts/verify-published.mjs"
+    "verify-esm-exports": "./scripts/verify-esm-exports.mjs",
+    "verify-published": "./scripts/verify-published.mjs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",

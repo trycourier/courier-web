@@ -2,7 +2,8 @@
 
 # Check if gum is installed, if not install it
 if ! command -v gum &> /dev/null; then
-    gum style --foreground 196 "gum is not installed. Please install gum: https://github.com/charmbracelet/gum"
+    # Not `gum style` — gum is the thing that's missing.
+    echo "gum is not installed. Run ./scripts/install-dependencies.sh" >&2
     exit 1
 fi
 

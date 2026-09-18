@@ -57,4 +57,4 @@ If the app fails to resolve `@trycourier/*` modules, the packages likely need bu
 These two launch configs are interactive (they prompt via `gum` and open GUIs), so run them in a real terminal rather than automating them:
 
 - **📱 Show Local IP QR** — `yarn ipqr`: prints a QR code to your LAN URL (default port `5173`) for testing the dev server on a phone.
-- **📸 Setup Page for Screenshot** — `sh ./scripts/screenshot_launch.sh`: prompts for a URL and opens it in Chrome app mode for clean screenshots.
+- **📸 Setup Page for Screenshot** — `./scripts/screenshot-launch.sh`: prompts for a URL and opens it in Chrome app mode for clean screenshots.
