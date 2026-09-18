@@ -28,17 +28,10 @@ jobs:
         with:
           node-version: '24.x'
 
-      # OIDC requires npm 11.5.1 or later, so this can't go below 11.5.1 — and it
-      # can't go to 12 either. npm 12 changed `npm info <pkg> --json` to always
-      # return an array, while @changesets/cli 2.x reads `.versions` off the
-      # top-level object. On npm 12 that read is `undefined`, so changesets
-      # concludes every package is unpublished, re-attempts all ten on every run,
-      # and collects ten `cannot publish over the previously published versions`
-      # errors — which is how a Release run became permanently red and stopped
-      # meaning anything. Unpin when @changesets/cli is on 3.x, which unwraps the
-      # array (see parseInfoResult in dist/getPublishPlan.mjs).
+      # OIDC requires npm 11.5.1 or later
+      # Changesets calls npm to publish packages
       - name: Update npm
-        run: npm install -g npm@11
+        run: npm install -g npm@latest
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
