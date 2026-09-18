@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-toast",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Toast components for the Courier web UI",
   "exports": {
     ".": {
@@ -42,7 +42,7 @@
   ],
   "dependencies": {
     "@trycourier/courier-js": "3.7.0",
-    "@trycourier/courier-ui-core": "2.5.0"
+    "@trycourier/courier-ui-core": "2.5.1"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
