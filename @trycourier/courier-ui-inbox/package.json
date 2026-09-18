@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-inbox",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Inbox components for the Courier web UI",
   "exports": {
     ".": {
@@ -41,8 +41,8 @@
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-js": "3.7.0",
-    "@trycourier/courier-ui-core": "2.5.1"
+    "@trycourier/courier-js": "3.7.1",
+    "@trycourier/courier-ui-core": "2.5.2"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
