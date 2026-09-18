@@ -31,6 +31,7 @@ yarn workspace <example> run dev
 yarn generate-api-docs       # refresh api/*.api.md after an intentional API change
 yarn build-packages:ci       # what CI runs: build + API report check
 yarn verify-published        # check npm serves the versions this checkout claims
+yarn analyze <package>       # build one package and print its bundle + gzip size
 ```
 
 ## Skills
@@ -60,3 +61,7 @@ places a change of that kind has to touch.
   and timer bugs are invisible to it. If no example exercises the feature (several
   options default to off), add one as part of the change.
 - Public API changes must ship with the regenerated `api/*.api.md` in the same PR.
+- Scripts in `scripts/` are bash (`.sh`) when they sequence commands and Node ESM (`.mjs`)
+  when they parse or compare structured data — a packument, a bundle's exports, JSON. Each
+  one carries its extension, a kebab-case name, a shebang, and the executable bit, and is
+  invoked directly (`./scripts/foo.sh`) rather than through `sh`, `node`, or `yarn exec`.

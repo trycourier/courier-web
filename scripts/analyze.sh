@@ -16,7 +16,7 @@ function success() {
 }
 
 # Check if gum is installed
-command -v gum >/dev/null 2>&1 || { echo "Gum is not installed. Do you need to run 'brew install gum'?"; exit 1; }
+command -v gum >/dev/null 2>&1 || { echo "gum is not installed. Run ./scripts/install-dependencies.sh" >&2; exit 1; }
 
 # Check if package name is provided
 if [ $# -eq 0 ]; then

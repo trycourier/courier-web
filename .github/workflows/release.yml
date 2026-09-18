@@ -56,8 +56,12 @@ jobs:
         id: verify
         if: always()
         env:
+          # `changesets/action` leaves `changeset version`'s bumps in the working
+          # tree on the Version Packages path, so read the versions this commit
+          # actually claims rather than the ones it is proposing.
+          VERIFY_REF: HEAD
           VERIFY_REPORT_PATH: ${{ runner.temp }}/release-verification.md
-        run: node scripts/verify-published.mjs
+        run: ./scripts/verify-published.mjs
 
       # A failed Release run notifies nobody, and this one exits non-zero often
       # enough that its red is easy to wave off. An issue is harder to miss.

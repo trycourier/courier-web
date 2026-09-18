@@ -59,7 +59,7 @@
       "name": "📸 Setup Page for Screenshot",
       "runtimeExecutable": "sh",
       "runtimeArgs": [
-        "./scripts/screenshot_launch.sh"
+        "./scripts/screenshot-launch.sh"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

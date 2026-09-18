@@ -21,7 +21,7 @@ From the repo root:
 yarn sync
 ```
 
-This (`scripts/sync`) does, in order:
+This (`scripts/sync.sh`) does, in order:
 
 1. `nvm use` the version in `.nvmrc` (currently `v22.16.0`).
 2. Removes every nested `node_modules` directory.
