@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^2.31.1",
     "@microsoft/api-extractor": "^7.52.15",
     "@types/node": "20.4.2",
     "cjs-module-lexer": "^1.0.0",
