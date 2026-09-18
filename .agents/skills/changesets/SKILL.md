@@ -95,7 +95,7 @@ yarn changeset version
 - Show `git status` / `git diff --stat`.
 - If the public API surface changed, refresh the API reports (see the `api-reports` skill / `yarn generate-api-docs`).
 - The release itself runs in CI when the bump lands on `main` (`yarn release` builds and `changeset publish`es to npm). If that run fails or packages don't appear on npm, see the [npm-release-pipeline](../npm-release-pipeline/SKILL.md) skill.
-- **A release is not done when the run goes green — it's done when the registry serves it.** Once the Version Packages merge has published, confirm with `yarn verify-published`, which checks every package's version against its npm packument and `dist-tags.latest`. CI runs the same check, but the Release workflow's exit code is noisy enough that it's worth knowing the command. A version that publishes badly cannot be re-published: it needs a fresh patch changeset.
+- **A release is not done when the run goes green — it's done when the registry serves it.** Once the Version Packages merge has published, confirm with `yarn verify-published`, which checks every package's version against its npm packument and `dist-tags.latest`. Nothing in CI does this for you — it is a manual step, and skipping it is how a half-finished publish stays invisible. A version that publishes badly cannot be re-published: it needs a fresh patch changeset.
 - Do **not** commit, push, or publish unless the user asks.
 
 ---

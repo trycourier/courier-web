@@ -15,8 +15,6 @@ How a merged PR becomes an npm release. This is the courier-web (changesets) pip
    - **No changesets pending** (i.e. the push *is* the Version Packages merge) → it publishes: `yarn release` = `build-packages:ci` (topological build + API report check) then `changeset publish`.
 3. Publishing authenticates via **npm OIDC trusted publishing** (`id-token: write`, no NPM_TOKEN). Every package must be registered on npmjs.com: package → Settings → Trusted Publisher → GitHub Actions, repository `trycourier/courier-web`, workflow `release.yml`. Registration is per-package and can only be done by an npm owner.
 
-4. After publishing, the workflow runs `yarn verify-published` (`if: always()`) and opens an issue if what npm serves doesn't match what this commit claims to have released.
-
 So the full release is **two merges**: the feature PR, then the Version Packages PR it spawns.
 
 ## Verify a release actually landed
@@ -27,7 +25,7 @@ So the full release is **two merges**: the feature PR, then the Version Packages
 yarn verify-published
 ```
 
-For every publishable package this checks that the checkout's version is present in that package's packument and that `dist-tags.latest` points at it — the same question a consumer's package manager asks. The Release workflow runs it after the publish step (`if: always()`, so a half-finished publish is still caught) and opens an issue when it fails.
+For every publishable package this checks that the checkout's version is present in that package's packument and that `dist-tags.latest` points at it — the same question a consumer's package manager asks. **Run it by hand after a release lands**; CI does not, so nothing tells you a publish half-succeeded unless someone looks.
 
 **A failure here is not fixed by re-running the release.** npm will not let a version be re-published; the second attempt returns `E403 You cannot publish over the previously published versions`. The fix is a fresh `patch` changeset for the broken package — `updateInternalDependencies: patch` then cascades new versions to every dependent and rewrites their exact pins (see the [changesets](../changesets/SKILL.md) skill).
 
