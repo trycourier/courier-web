@@ -39,7 +39,7 @@
  *   VERIFY_REF          read versions from this git ref instead of the working
  *                       tree (CI uses HEAD — see REF below)
  *   VERIFY_TIMEOUT_MS   how long to keep re-checking a package the registry has
- *                       not caught up on yet (default 120000)
+ *                       not caught up on yet (default 600000)
  *   VERIFY_REPORT_PATH  write a markdown failure report here, for CI to file
  *   GITHUB_STEP_SUMMARY written to automatically when present
  *
@@ -64,7 +64,14 @@ const REGISTRY = "https://registry.npmjs.org";
  * the working tree is what you want to know about.
  */
 const REF = process.env.VERIFY_REF;
-const TIMEOUT_MS = Number(process.env.VERIFY_TIMEOUT_MS ?? 120_000);
+/**
+ * How long a package gets to appear before we call it broken. The registry took
+ * over two minutes to expose the 2.5.1 train (run 35375277042 waited 120s and
+ * still saw nine packages missing that were all present shortly after), so this
+ * is generous on purpose: the loop exits as soon as everything resolves, and the
+ * only run that pays the full wait is one that was going to fail anyway.
+ */
+const TIMEOUT_MS = Number(process.env.VERIFY_TIMEOUT_MS ?? 600_000);
 const RETRY_DELAY_MS = 10_000;
 
 /** A package manifest, from the working tree or from a git ref. */
