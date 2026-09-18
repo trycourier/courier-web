@@ -41,7 +41,8 @@
     "ipqr": "sh ./scripts/ipqr.sh",
     "generate-api-docs": "yarn exec ./scripts/generate-api-docs",
     "test:all": "concurrently -n \"js,inbox,react,react17,vue,toast,prefs\" -c \"blue,green,yellow,cyan,red,magenta,white\" \"yarn workspace @trycourier/courier-js run test\" \"yarn workspace @trycourier/courier-ui-inbox run test\" \"yarn workspace @trycourier/courier-react run test\" \"yarn workspace @trycourier/courier-react-17 run test\" \"yarn workspace @trycourier/courier-vue run test\" \"yarn workspace @trycourier/courier-ui-toast run test\" \"yarn workspace @trycourier/courier-ui-preferences run test\"",
-    "verify-esm-exports": "node ./scripts/verify-esm-exports.mjs"
+    "verify-esm-exports": "node ./scripts/verify-esm-exports.mjs",
+    "verify-published": "node ./scripts/verify-published.mjs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
