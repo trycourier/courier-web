@@ -1,4 +1,5 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+
 # Courier React 17 SDK
 
 The Courier React 17 SDK provides ready-made components and programmatic hooks for building notification experiences in React 17 applications. It includes a full-featured inbox, popup menu, toast notifications, and a hook for custom UIs.
@@ -55,7 +56,7 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $YOUR_API_KEY' \
+     --header 'Authorization: Bearer $COURIER_API_KEY' \
      --header 'Content-Type: application/json' \
      --data '{
        "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",

@@ -1,4 +1,5 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+
 # Courier Preferences Web Components
 
 Embed a customizable notification preferences center in your web app using Web Components. Courier Preferences provides the `<courier-preferences>` element that works with any JavaScript framework or vanilla JS. It lets your users manage which topics they're subscribed to and how each is delivered.
@@ -47,7 +48,7 @@ If you've already set up authentication for [Courier Inbox](https://github.com/t
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $YOUR_API_KEY' \
+     --header 'Authorization: Bearer $COURIER_API_KEY' \
      --header 'Content-Type: application/json' \
      --data '{
        "scope": "user_id:$YOUR_USER_ID read:preferences write:preferences",

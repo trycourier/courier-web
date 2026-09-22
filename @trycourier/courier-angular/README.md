@@ -86,7 +86,7 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 
 ```bash
 curl -X POST https://api.courier.com/auth/issue-token \
-  -H 'Authorization: Bearer $YOUR_API_KEY' \
+  -H 'Authorization: Bearer $COURIER_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",

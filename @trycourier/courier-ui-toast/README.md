@@ -1,4 +1,5 @@
 <!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+
 # Courier Toast Web Components
 
 Embed customizable toast notifications in your web app using Web Components. Courier Toast provides the `<courier-toast>` element that works with any JavaScript framework or vanilla JS. Toasts are synced with the feed of Courier Inbox messages.
@@ -47,7 +48,7 @@ If you've already set up authentication for [Courier Inbox](https://github.com/t
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $YOUR_API_KEY' \
+     --header 'Authorization: Bearer $COURIER_API_KEY' \
      --header 'Content-Type: application/json' \
      --data '{
        "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
