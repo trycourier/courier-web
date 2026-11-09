@@ -273,15 +273,12 @@ export class CourierInbox extends CourierBaseElement {
       onError: (error: Error) => {
         this._list?.setError(error);
       },
+      // A next-page fetch also emits onPageAdded, but this already carries the
+      // full list with the new page included. Appending that page again would
+      // render every message past the first page twice.
       onDataSetChange: (dataset: InboxDataSet) => {
         if (this._currentTabId === dataset.id) {
           this._list?.setDataSet(dataset);
-          this.updateHeader();
-        }
-      },
-      onPageAdded: (dataset: InboxDataSet) => {
-        if (this._currentTabId === dataset.id) {
-          this._list?.addPage(dataset);
           this.updateHeader();
         }
       },

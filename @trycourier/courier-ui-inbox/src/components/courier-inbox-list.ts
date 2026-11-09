@@ -185,14 +185,6 @@ export class CourierInboxList extends CourierBaseElement {
     this.render();
   }
 
-  public addPage(dataSet: InboxDataSet): void {
-    this._messages = [...this._messages, ...dataSet.messages];
-    this._canPaginate = Boolean(dataSet.canPaginate);
-    this._error = null;
-    this._isLoading = false;
-    this.render();
-  }
-
   public addMessage(message: InboxMessage, index = 0): void {
     this._messages.splice(index, 0, message);
     this.render();
