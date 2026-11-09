@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-inbox
 
+## 2.7.3
+
+### Patch Changes
+
+- [#272](https://github.com/trycourier/courier-web/pull/272) [`e92ea89`](https://github.com/trycourier/courier-web/commit/e92ea89680c4a888cc4aff3891566cecbf33930a) Thanks [@mikemilla](https://github.com/mikemilla)! - Fix the inbox rendering every message past the first page twice after loading the next page
+
 ## 2.7.2
 
 ### Patch Changes
