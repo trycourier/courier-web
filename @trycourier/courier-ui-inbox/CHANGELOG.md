@@ -1,5 +1,11 @@
 # @trycourier/courier-ui-inbox
 
+## 2.7.4
+
+### Patch Changes
+
+- [#275](https://github.com/trycourier/courier-web/pull/275) [`7cd3632`](https://github.com/trycourier/courier-web/commit/7cd36328e82d82ef20f1eb9fd7aad2fb051487e3) Thanks [@mikemilla](https://github.com/mikemilla)! - Fix the inbox showing a message twice when the next page was requested again before the first request returned, or when the inbox reloaded while a page was loading
+
 ## 2.7.3
 
 ### Patch Changes
