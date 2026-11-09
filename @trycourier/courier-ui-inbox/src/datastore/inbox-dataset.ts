@@ -31,6 +31,19 @@ export class CourierInboxDataset {
    */
   private _lastPaginationCursor?: string;
 
+  /**
+   * The next-page fetch in flight, if any. The pagination trigger can fire again before
+   * a fetch returns, and a second fetch would request the same cursor and append the
+   * same page twice, so overlapping calls share this one.
+   */
+  private _nextPageFetch?: Promise<InboxDataSet | null>;
+
+  /**
+   * Incremented each time the first page is fetched. A next-page fetch that started
+   * before a reload continues the old list, so its page is dropped rather than appended.
+   */
+  private _loadGeneration: number = 0;
+
   private readonly _filter: CourierInboxDatasetFilter;
   private readonly _datastoreListeners: CourierInboxDataStoreListener[] = [];
 
@@ -292,6 +305,9 @@ export class CourierInboxDataset {
       return;
     }
 
+    this._loadGeneration++;
+    this._nextPageFetch = undefined;
+
     const fetchedDataset = await this.fetchMessages();
 
     // Unpack response and call listeners
@@ -309,11 +325,32 @@ export class CourierInboxDataset {
   }
 
   async fetchNextPageOfMessages(): Promise<InboxDataSet | null> {
+    if (this._nextPageFetch) {
+      return this._nextPageFetch;
+    }
+
     if (!this._hasNextPage) {
       return null;
     }
 
+    const pageFetch = this.fetchAndAppendNextPage(this._loadGeneration);
+    this._nextPageFetch = pageFetch;
+    try {
+      return await pageFetch;
+    } finally {
+      // A reload clears it, and a fetch started after that reload then holds it instead.
+      if (this._nextPageFetch === pageFetch) {
+        this._nextPageFetch = undefined;
+      }
+    }
+  }
+
+  private async fetchAndAppendNextPage(generation: number): Promise<InboxDataSet | null> {
     const fetchedDataset = await this.fetchMessages(this._lastPaginationCursor);
+
+    if (generation !== this._loadGeneration) {
+      return null;
+    }
 
     // Unpack response and call listeners
     this._messages = [...this._messages, ...fetchedDataset.messages];
