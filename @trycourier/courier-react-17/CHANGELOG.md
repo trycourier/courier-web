@@ -1,5 +1,13 @@
 # @trycourier/courier-react-17
 
+## 9.3.4
+
+### Patch Changes
+
+- Updated dependencies [[`e92ea89`](https://github.com/trycourier/courier-web/commit/e92ea89680c4a888cc4aff3891566cecbf33930a)]:
+  - @trycourier/courier-ui-inbox@2.7.3
+  - @trycourier/courier-react-components@2.3.4
+
 ## 9.3.3
 
 ### Patch Changes
