@@ -69,10 +69,14 @@ describe("Inbox pagination", () => {
   }
 
   // Serves `allMessages(total)` in pages of PAGE_SIZE, using the offset as the cursor.
-  function signInWithServer(total = TOTAL) {
+  // Next-page requests wait for `nextPageGate` when one is given, so a test can act while they're in flight.
+  function signInWithServer(total = TOTAL, nextPageGate?: Promise<void>) {
     const messages = allMessages(total);
     Courier.shared.paginationLimit = PAGE_SIZE;
     const getMessages = jest.fn(async (props: { paginationLimit?: number, startCursor?: string }) => {
+      if (props.startCursor && nextPageGate) {
+        await nextPageGate;
+      }
       const start = props.startCursor ? Number(props.startCursor) : 0;
       const end = start + (props.paginationLimit ?? PAGE_SIZE);
       return {
@@ -94,6 +98,13 @@ describe("Inbox pagination", () => {
       options: { userId: "user", logger: { info: () => {}, warn: () => {}, error: () => {} } },
       inbox: { getMessages, socket: undefined },
     } as any);
+    return getMessages;
+  }
+
+  function gate(): { opened: Promise<void>, open: () => void } {
+    let open = () => {};
+    const opened = new Promise<void>(resolve => { open = resolve; });
+    return { opened, open };
   }
 
   function renderedTitles(inbox: CourierInbox): string[] {
@@ -128,6 +139,35 @@ describe("Inbox pagination", () => {
 
     await CourierInboxDatastore.shared.fetchNextPageOfMessages({ datasetId: "all_messages" });
     expect(renderedTitles(inbox)).toEqual(allMessages(total).map(message => message.title));
+  });
+
+  it("fetches the next page once when it's requested again before the first request returns", async () => {
+    const nextPage = gate();
+    const getMessages = signInWithServer(TOTAL, nextPage.opened);
+    const inbox = await mountLoadedInbox();
+
+    const first = CourierInboxDatastore.shared.fetchNextPageOfMessages({ datasetId: "all_messages" });
+    const second = CourierInboxDatastore.shared.fetchNextPageOfMessages({ datasetId: "all_messages" });
+    nextPage.open();
+    await Promise.all([first, second]);
+
+    expect(getMessages.mock.calls.filter(([props]) => props.startCursor)).toHaveLength(1);
+    expect(renderedTitles(inbox)).toEqual(allMessages().map(message => message.title));
+  });
+
+  it("drops a next page that was still loading when the inbox reloaded", async () => {
+    const nextPage = gate();
+    signInWithServer(TOTAL, nextPage.opened);
+    const inbox = await mountLoadedInbox();
+
+    const stalePage = CourierInboxDatastore.shared.fetchNextPageOfMessages({ datasetId: "all_messages" });
+    await CourierInboxDatastore.shared.load({ canUseCache: false });
+    nextPage.open();
+    await stalePage;
+    expect(renderedTitles(inbox)).toEqual(allMessages().slice(0, PAGE_SIZE).map(message => message.title));
+
+    await CourierInboxDatastore.shared.fetchNextPageOfMessages({ datasetId: "all_messages" });
+    expect(renderedTitles(inbox)).toEqual(allMessages().map(message => message.title));
   });
 
   it("leaves the selected tab's list alone when another tab loads a page", async () => {
