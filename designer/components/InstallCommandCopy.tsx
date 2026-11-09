@@ -36,13 +36,14 @@ export function InstallCommandCopy() {
       type="button"
       onClick={() => void handleCopy()}
       title={displayCommand}
-      className="flex min-h-9 w-full min-w-0 cursor-pointer items-start gap-2 rounded-md bg-gray-100 px-4 py-2 text-right text-sm transition-colors hover:bg-gray-200/90 dark:bg-muted dark:hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="inline-flex h-9 min-w-0 max-w-full cursor-pointer items-center gap-2 rounded-md bg-gray-100 px-3 text-[11px] transition-colors hover:bg-gray-200/90 min-[375px]:text-xs sm:text-sm dark:bg-muted dark:hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       aria-label={copied ? 'Copied to clipboard' : 'Copy install command'}
     >
-      <code className="min-w-0 flex-1 [overflow-wrap:anywhere] whitespace-pre-wrap break-words text-right font-mono leading-snug">
+      {/* Clip rather than wrap: wrapping split the package name mid-word. The title and the copied text keep the full command. */}
+      <code className="min-w-0 truncate font-mono">
         {displayCommand}
       </code>
-      <span className="flex shrink-0 items-center pt-0.5 text-muted-foreground" aria-hidden>
+      <span className="flex shrink-0 items-center text-muted-foreground" aria-hidden>
         {copied ? (
           <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
         ) : (

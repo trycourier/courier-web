@@ -428,7 +428,7 @@ function HomeContent() {
               </div>
             </>
           )}
-          <div className="hidden min-w-0 shrink sm:block sm:max-w-[13rem] md:max-w-xs lg:max-w-sm">
+          <div className="hidden min-w-0 shrink lg:block">
             <InstallCommandCopy />
           </div>
           <div className="hidden md:inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
@@ -471,6 +471,11 @@ function HomeContent() {
           </Button>
         </div>
       </header>
+
+      {/* Below lg the header has no room for the install command, so it gets its own row */}
+      <div className="flex shrink-0 border-b border-border px-4 py-2 lg:hidden">
+        <InstallCommandCopy />
+      </div>
 
       {/* Main Content: Left and Right Panels */}
       {isEnvironmentPending ? (
