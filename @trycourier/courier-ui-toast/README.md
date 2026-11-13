@@ -28,7 +28,7 @@ Works with any JavaScript build system; no additional build configuration requir
 
     // Authenticate the user
     Courier.shared.signIn({
-      userId: "your-user-id",
+      userId: "user_123",
       jwt: jwt,
     });
   </script>
@@ -48,10 +48,10 @@ If you've already set up authentication for [Courier Inbox](https://github.com/t
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $COURIER_API_KEY' \
+     --header "Authorization: Bearer $COURIER_API_KEY" \
      --header 'Content-Type: application/json' \
      --data '{
-       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+       "scope": "user_id:user_123 inbox:read:messages inbox:write:events",
        "expires_in": "1 day"
      }'
 ```
@@ -66,10 +66,10 @@ curl --request POST \
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-ui-toast-web](https://www.courier.com/docs/sdk-libraries/courier-ui-toast-web/)**
+Full documentation: **[courier.com/docs/in-app/add-toasts](https://www.courier.com/docs/in-app/add-toasts?lang=Web%20Components)**
 
-- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web/)
-- [Inbox Web Components](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web/)
+- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web)
+- [Inbox Web Components](https://www.courier.com/docs/sdk-libraries/courier-web-components)
 - [Sample app (Vanilla JS)](https://github.com/trycourier/courier-samples/tree/main/web/vanilla/toast)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 

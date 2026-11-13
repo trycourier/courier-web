@@ -2,12 +2,13 @@
 
 # Courier Vue SDK
 
-The Courier Vue SDK provides ready-made components and a programmatic composable for building notification experiences in Vue 3 applications. It includes a full-featured inbox, popup menu, toast notifications, and a composable for custom UIs.
+The Courier Vue SDK provides ready-made components and a programmatic composable for building notification experiences in Vue 3 applications. It includes a full-featured inbox, popup menu, toast notifications, a preference center, and a composable for custom UIs.
 
-- [`<CourierInbox />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#inbox-component) — full-featured inbox for displaying and managing messages
-- [`<CourierInboxPopupMenu />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#inbox-component) — popup menu version of the inbox
-- [`<CourierToast />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#toast-component) — toast notifications for time-sensitive alerts
-- [`useCourier()`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#usecourier-composable) — composable for programmatic access and custom UIs
+- [`<CourierInbox />`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue) — full-featured inbox for displaying and managing messages
+- [`<CourierInboxPopupMenu />`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue#render-as-a-popup-menu) — popup menu version of the inbox
+- [`<CourierToast />`](https://www.courier.com/docs/in-app/add-toasts?lang=Vue) — toast notifications for time-sensitive alerts
+- [`<CourierPreferences />`](https://www.courier.com/docs/in-app/add-a-preference-center?lang=Vue) — preference center where users choose which notifications they get, and where
+- [`useCourier()`](https://www.courier.com/docs/sdk-libraries/courier-vue-web#usecourier-composable) — composable for programmatic access and custom UIs
 
 > **Not using Vue?** Check out the [`@trycourier/courier-ui-inbox`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) and [`@trycourier/courier-ui-toast`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast) packages, which provide Web Components for any JavaScript project.
 
@@ -34,7 +35,7 @@ onMounted(() => {
 
   // Authenticate the user
   courier.shared.signIn({
-    userId: "your-user-id",
+    userId: "user_123",
     jwt: jwt,
   });
 });
@@ -58,7 +59,7 @@ const courier = useCourier();
 
 onMounted(() => {
   courier.shared.signIn({
-    userId: "your-user-id",
+    userId: "user_123",
     jwt: "your-jwt-token",
     apiUrls: getCourierApiUrlsForRegion("eu"),
   });
@@ -80,21 +81,21 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 
 ```bash
 curl -X POST https://api.courier.com/auth/issue-token \
-  -H 'Authorization: Bearer $COURIER_API_KEY' \
+  -H "Authorization: Bearer $COURIER_API_KEY" \
   -H 'Content-Type: application/json' \
   -d '{
-    "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+    "scope": "user_id:user_123 inbox:read:messages inbox:write:events",
     "expires_in": "1 day"
   }'
 ```
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-vue-web](https://www.courier.com/docs/sdk-libraries/courier-vue-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-vue-web](https://www.courier.com/docs/sdk-libraries/courier-vue-web)**
 
-- [Inbox implementation tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-implement-inbox/)
-- [JWT authentication tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-send-jwt/)
-- [Theme reference](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web-theme/)
+- [Add an inbox](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue)
+- [Authenticate users with a JWT](https://www.courier.com/docs/in-app/authenticate-users?lang=Vue)
+- [Theme reference](https://www.courier.com/docs/in-app/customize-the-inbox?lang=Vue#theme)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
