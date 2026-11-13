@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-ui-toast",
   "version": "2.4.2",
-  "description": "Toast notification Web Components that work in any framework or none. Real-time in-app notifications from Courier.",
+  "description": "Drop-in toast notifications as Web Components, for any framework or none. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
