@@ -46,7 +46,7 @@
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com/docs/guides/add-an-inbox-to-react",
+  "homepage": "https://www.courier.com/docs/sdk-libraries/courier-react-web",
   "dependencies": {
     "@trycourier/courier-js": "3.7.1",
     "@trycourier/courier-react-components": "2.3.5",
