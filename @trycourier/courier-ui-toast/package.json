@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-ui-toast",
   "version": "2.4.2",
-  "description": "Toast components for the Courier web UI",
+  "description": "Drop-in toast notifications as Web Components, for any framework or none. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -29,14 +29,18 @@
     "ui",
     "toast",
     "typescript",
-    "browser"
+    "browser",
+    "web-components",
+    "toast-notifications",
+    "in-app-notifications",
+    "notifications"
   ],
   "author": "Courier",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com",
+  "homepage": "https://www.courier.com/docs/in-app/add-toasts",
   "files": [
     "dist"
   ],

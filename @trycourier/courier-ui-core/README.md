@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is generated from the Courier docs and overwritten on every sync. -->
 # Courier UI Core
 
 `@trycourier/courier-ui-core` is the shared core UI kit for Courier's browser SDKs. It provides the low-level Web Components, theming utilities, and color helpers that power [Courier Inbox](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox), [Courier Toast](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast), and [Courier Preferences](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-preferences).

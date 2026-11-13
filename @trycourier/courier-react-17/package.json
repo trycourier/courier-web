@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-react-17",
   "version": "9.3.5",
-  "description": "React 17 components for the Courier web UI",
+  "description": "Drop-in notification inbox, toasts, and preference center for React 17. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,14 +33,20 @@
     "ui",
     "react",
     "typescript",
-    "browser"
+    "browser",
+    "react-notifications",
+    "notification-inbox",
+    "notification-center",
+    "in-app-notifications",
+    "inbox",
+    "toast"
   ],
   "author": "Courier",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com",
+  "homepage": "https://www.courier.com/docs/sdk-libraries/courier-react-web",
   "dependencies": {
     "@trycourier/courier-js": "3.7.1",
     "@trycourier/courier-react-components": "2.3.5",

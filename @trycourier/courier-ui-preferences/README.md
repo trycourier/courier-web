@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is generated from the Courier docs and overwritten on every sync. -->
 
 # Courier Preferences Web Components
 
