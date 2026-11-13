@@ -18,7 +18,7 @@ npm install @trycourier/courier-js
 import { CourierClient } from "@trycourier/courier-js";
 
 const courierClient = new CourierClient({
-  userId: "my-user-id",
+  userId: "user_123",
   jwt: "eyJ.mock.jwt",
 });
 
@@ -38,7 +38,7 @@ Use the built-in preset helper when your app should talk to Courier's EU endpoin
 import { CourierClient, getCourierApiUrlsForRegion } from "@trycourier/courier-js";
 
 const courierClient = new CourierClient({
-  userId: "my-user-id",
+  userId: "user_123",
   jwt: "eyJ.mock.jwt",
   apiUrls: getCourierApiUrlsForRegion("eu"),
 });
@@ -64,10 +64,10 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $COURIER_API_KEY' \
+     --header "Authorization: Bearer $COURIER_API_KEY" \
      --header 'Content-Type: application/json' \
      --data '{
-       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events read:preferences write:preferences read:brands",
+       "scope": "user_id:user_123 inbox:read:messages inbox:write:events read:preferences write:preferences read:brands",
        "expires_in": "1 day"
      }'
 ```
@@ -112,7 +112,7 @@ await courierClient.lists.deleteSubscription({ listId: "your_list_id" });
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-js-web](https://www.courier.com/docs/sdk-libraries/courier-js-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-js-web](https://www.courier.com/docs/sdk-libraries/courier-js-web)**
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
