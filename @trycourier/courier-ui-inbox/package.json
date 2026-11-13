@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-ui-inbox",
   "version": "2.7.4",
-  "description": "Inbox components for the Courier web UI",
+  "description": "Notification inbox Web Components that work in any framework or none. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -29,14 +29,19 @@
     "ui",
     "inbox",
     "typescript",
-    "browser"
+    "browser",
+    "web-components",
+    "notification-inbox",
+    "notification-center",
+    "in-app-notifications",
+    "notifications"
   ],
   "author": "Courier",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com",
+  "homepage": "https://www.courier.com/docs/sdk-libraries/courier-web-components",
   "files": [
     "dist"
   ],

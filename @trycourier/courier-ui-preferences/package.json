@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-ui-preferences",
   "version": "1.3.3",
-  "description": "Preferences components for the Courier web UI",
+  "description": "Notification preference center Web Components that work in any framework or none, from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -29,14 +29,18 @@
     "ui",
     "preferences",
     "typescript",
-    "browser"
+    "browser",
+    "web-components",
+    "notification-preferences",
+    "preference-center",
+    "notifications"
   ],
   "author": "Courier",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com",
+  "homepage": "https://www.courier.com/docs/in-app/add-a-preference-center",
   "files": [
     "dist"
   ],
