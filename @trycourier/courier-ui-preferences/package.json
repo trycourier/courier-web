@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-ui-preferences",
   "version": "1.3.3",
-  "description": "Drop-in notification preference center as Web Components, for any framework or none. Let users choose what they hear about from Courier.",
+  "description": "Drop-in notification preference center as Web Components, for any framework or none. Let users pick which notifications they get, and where.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
