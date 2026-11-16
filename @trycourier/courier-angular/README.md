@@ -2,12 +2,13 @@
 
 # Courier Angular SDK
 
-The Courier Angular SDK provides ready-made standalone components and an injectable service for building notification experiences in Angular applications. It includes a full-featured inbox, popup menu, toast notifications, and a service for custom UIs.
+The Courier Angular SDK provides ready-made standalone components and an injectable service for building notification experiences in Angular applications. It includes a full-featured inbox, popup menu, toast notifications, a preference center, and a service for custom UIs.
 
-- [`<courier-inbox>`](https://www.courier.com/docs/sdk-libraries/courier-angular-web/#inbox-component) — full-featured inbox for displaying and managing messages
-- [`<courier-inbox-popup-menu>`](https://www.courier.com/docs/sdk-libraries/courier-angular-web/#inbox-component) — popup menu version of the inbox
-- [`<courier-toast>`](https://www.courier.com/docs/sdk-libraries/courier-angular-web/#toast-component) — toast notifications for time-sensitive alerts
-- [`CourierService`](https://www.courier.com/docs/sdk-libraries/courier-angular-web/#courierservice) — injectable service for programmatic access and custom UIs
+- [`<courier-inbox>`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Angular) — full-featured inbox for displaying and managing messages
+- [`<courier-inbox-popup-menu>`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Angular#render-as-a-popup-menu) — popup menu version of the inbox
+- [`<courier-toast>`](https://www.courier.com/docs/in-app/add-toasts?lang=Angular) — toast notifications for time-sensitive alerts
+- [`<courier-preferences>`](https://www.courier.com/docs/in-app/add-a-preference-center?lang=Angular) — preference center where users choose which notifications they get, and where
+- [`CourierService`](https://www.courier.com/docs/sdk-libraries/courier-angular-web#courierservice) — injectable service for programmatic access and custom UIs
 
 > **Not using Angular?** Check out the [`@trycourier/courier-ui-inbox`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) and [`@trycourier/courier-ui-toast`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast) packages, which provide Web Components for any JavaScript project.
 
@@ -42,7 +43,7 @@ export class AppComponent implements AfterViewInit {
 
     // Authenticate the user
     this.courier.signIn({
-      userId: "your-user-id",
+      userId: "user_123",
       jwt: jwt,
     });
   }
@@ -68,7 +69,7 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.courier.signIn({
-      userId: "your-user-id",
+      userId: "user_123",
       jwt: "your-jwt-token",
       apiUrls: getCourierApiUrlsForRegion("eu"),
     });
@@ -86,21 +87,21 @@ The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JW
 
 ```bash
 curl -X POST https://api.courier.com/auth/issue-token \
-  -H 'Authorization: Bearer $COURIER_API_KEY' \
+  -H "Authorization: Bearer $COURIER_API_KEY" \
   -H 'Content-Type: application/json' \
   -d '{
-    "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+    "scope": "user_id:user_123 inbox:read:messages inbox:write:events",
     "expires_in": "1 day"
   }'
 ```
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-angular-web](https://www.courier.com/docs/sdk-libraries/courier-angular-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-angular-web](https://www.courier.com/docs/sdk-libraries/courier-angular-web)**
 
-- [Inbox implementation tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-implement-inbox/)
-- [JWT authentication tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-send-jwt/)
-- [Theme reference](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web-theme/)
+- [Add an inbox](https://www.courier.com/docs/in-app/add-an-inbox?lang=Angular)
+- [Authenticate users with a JWT](https://www.courier.com/docs/in-app/authenticate-users?lang=Angular)
+- [Theme reference](https://www.courier.com/docs/in-app/customize-the-inbox?lang=Angular#theme)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier

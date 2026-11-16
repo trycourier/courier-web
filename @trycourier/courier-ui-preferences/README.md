@@ -28,7 +28,7 @@ Works with any JavaScript build system; no additional build configuration requir
 
     // Authenticate the user
     Courier.shared.signIn({
-      userId: "your-user-id",
+      userId: "user_123",
       jwt: jwt,
     });
   </script>
@@ -48,10 +48,10 @@ If you've already set up authentication for [Courier Inbox](https://github.com/t
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $COURIER_API_KEY' \
+     --header "Authorization: Bearer $COURIER_API_KEY" \
      --header 'Content-Type: application/json' \
      --data '{
-       "scope": "user_id:$YOUR_USER_ID read:preferences write:preferences",
+       "scope": "user_id:user_123 read:preferences write:preferences",
        "expires_in": "1 day"
      }'
 ```
@@ -66,10 +66,10 @@ curl --request POST \
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-ui-preferences-web](https://www.courier.com/docs/sdk-libraries/courier-ui-preferences-web/)**
+Full documentation: **[courier.com/docs/in-app/add-a-preference-center](https://www.courier.com/docs/in-app/add-a-preference-center?lang=Web%20Components)**
 
-- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web/)
-- [Inbox Web Components](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web/)
+- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web)
+- [Inbox Web Components](https://www.courier.com/docs/sdk-libraries/courier-web-components)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
