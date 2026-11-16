@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is synced from mintlify-docs. -->
+<!-- AUTO-GENERATED-OVERVIEW:START — Do not edit this section. It is generated from the Courier docs and overwritten on every sync. -->
 # Courier React Components
 
 `@trycourier/courier-react-components` contains the React-version-agnostic components shared by Courier's React SDKs. It provides the inbox, popup menu, toast, preferences, and `useCourier()` building blocks, while [`@trycourier/courier-react`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react) and [`@trycourier/courier-react-17`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react-17) provide the React-version-specific render method on top.
