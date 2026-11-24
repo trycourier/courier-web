@@ -1,7 +1,7 @@
 {
   "name": "@trycourier/courier-vue",
   "version": "1.1.5",
-  "description": "The Vue components for the Courier web UI",
+  "description": "Drop-in notification inbox, toasts, and preference center for Vue 3. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,14 +33,20 @@
     "ui",
     "vue",
     "typescript",
-    "browser"
+    "browser",
+    "vue-notifications",
+    "notification-inbox",
+    "notification-center",
+    "in-app-notifications",
+    "inbox",
+    "toast"
   ],
   "author": "Courier",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/trycourier/courier-web"
   },
-  "homepage": "https://www.courier.com",
+  "homepage": "https://www.courier.com/docs/sdk-libraries/courier-vue-web",
   "dependencies": {
     "@trycourier/courier-js": "3.7.1",
     "@trycourier/courier-ui-core": "2.5.2",
