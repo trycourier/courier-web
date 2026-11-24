@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-react-17",
-  "version": "9.3.5",
+  "version": "9.3.6",
   "description": "Drop-in notification inbox, toasts, and preference center for React 17. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
@@ -48,12 +48,12 @@
   },
   "homepage": "https://www.courier.com/docs/sdk-libraries/courier-react-web",
   "dependencies": {
-    "@trycourier/courier-js": "3.7.1",
-    "@trycourier/courier-react-components": "2.3.5",
-    "@trycourier/courier-ui-core": "2.5.2",
-    "@trycourier/courier-ui-inbox": "2.7.4",
-    "@trycourier/courier-ui-toast": "2.4.2",
-    "@trycourier/courier-ui-preferences": "1.3.3"
+    "@trycourier/courier-js": "3.7.2",
+    "@trycourier/courier-react-components": "2.3.6",
+    "@trycourier/courier-ui-core": "2.5.3",
+    "@trycourier/courier-ui-inbox": "2.7.5",
+    "@trycourier/courier-ui-toast": "2.4.3",
+    "@trycourier/courier-ui-preferences": "1.3.4"
   },
   "peerDependencies": {
     "react": ">=17.0.0, <18.0.0",
