@@ -2,9 +2,11 @@
 
 # Courier Inbox Web Components
 
-Embed a customizable in-app notification center in your web app using Web Components. Courier Inbox provides `<courier-inbox>` and `<courier-inbox-popup-menu>` elements that work with any JavaScript framework or vanilla JS.
+Embed a customizable in-app notification center in your web app using Web Components. Courier Inbox provides `<courier-inbox>` and `<courier-inbox-popup-menu>` elements that work with any JavaScript framework or vanilla JS. Courier hosts the feed and syncs read and archive state across each user's devices, and the same API sends to email, SMS, push, and Slack.
 
-> **Using React?** Check out the [Courier React SDK](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react) for React-native components and hooks.
+> **Using React, Vue, or Angular?** [`@trycourier/courier-react`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react), [`@trycourier/courier-vue`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-vue), and [`@trycourier/courier-angular`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-angular) wrap these elements in native components.
+
+> **Building with an AI coding agent?** Connect [Courier's MCP server and skills](https://www.courier.com/docs/get-started/build-with-ai) so your agent writes current Courier code.
 
 ## Installation
 
@@ -23,14 +25,11 @@ Works with any JavaScript build system; no additional build configuration requir
   <script type="module">
     import { Courier } from "@trycourier/courier-ui-inbox";
 
-    // Generate a JWT for your user on your backend server
-    const jwt = "your-jwt-token";
-
-    // Authenticate the user
-    Courier.shared.signIn({
-      userId: "your-user-id",
-      jwt: jwt,
-    });
+    // Your backend mints a JWT for the signed-in user (see Authentication)
+    const response = await fetch("/api/courier/token");
+    if (!response.ok) throw new Error(`Courier token request failed: ${response.status}`);
+    const { userId, token } = await response.json();
+    Courier.shared.signIn({ userId, jwt: token });
   </script>
 </body>
 ```
@@ -45,17 +44,17 @@ For a popup menu instead:
 
 The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JWTs on your backend server, never in client-side code.**
 
-1. Your client calls your backend to request a token.
-2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) using your API key.
-3. Your backend returns the JWT to your client and passes it to the SDK.
+1. Your client calls a route on your backend, such as `/api/courier/token`.
+2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) with your API key.
+3. Your backend returns `{ userId, token }`, and your client passes them to `signIn`.
 
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $COURIER_API_KEY' \
+     --header "Authorization: Bearer $COURIER_API_KEY" \
      --header 'Content-Type: application/json' \
      --data '{
-       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+       "scope": "user_id:user_123 inbox:read:messages inbox:write:events",
        "expires_in": "1 day"
      }'
 ```
@@ -70,11 +69,11 @@ curl --request POST \
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-ui-inbox-web](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-web-components](https://www.courier.com/docs/sdk-libraries/courier-web-components)**
 
-- [Theme reference](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web-theme/)
-- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web/)
-- [Inbox implementation tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-implement-inbox/)
+- [Theme reference](https://www.courier.com/docs/in-app/customize-the-inbox?lang=Web%20Components#theme)
+- [React SDK (wrapper)](https://www.courier.com/docs/sdk-libraries/courier-react-web)
+- [Add an inbox](https://www.courier.com/docs/in-app/add-an-inbox?lang=Web%20Components)
 - [Sample app (Vanilla JS)](https://github.com/trycourier/courier-samples/tree/main/web/vanilla/inbox)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 

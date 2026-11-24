@@ -4,6 +4,8 @@
 
 `@trycourier/courier-js` is the API client for Courier's browser SDKs. It provides programmatic access to inbox messages, user preferences, brands, and list subscriptions for web browser-based applications.
 
+> **Building with an AI coding agent?** Connect [Courier's MCP server and skills](https://www.courier.com/docs/get-started/build-with-ai) so your agent writes current Courier code.
+
 > **Looking for UI components?** Check out [Courier React](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react) for React components, or [Courier UI Inbox](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) and [Courier UI Toast](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast) for framework-agnostic Web Components.
 
 ## Installation
@@ -18,16 +20,18 @@ npm install @trycourier/courier-js
 import { CourierClient } from "@trycourier/courier-js";
 
 const courierClient = new CourierClient({
-  userId: "my-user-id",
-  jwt: "eyJ.mock.jwt",
+  userId: "user_123",
+  jwt: "your-jwt-token",
 });
 
 // Fetch inbox messages
 const inboxMessages = await courierClient.inbox.getMessages();
 
-// Mark a message as read
-const { messageId } = inboxMessages.data.messages.nodes[0];
-await courierClient.inbox.read({ messageId });
+// Mark the newest message as read
+const newest = inboxMessages.data?.messages?.nodes?.[0];
+if (newest) {
+  await courierClient.inbox.read({ messageId: newest.messageId });
+}
 ```
 
 ## EU Endpoints
@@ -38,11 +42,13 @@ Use the built-in preset helper when your app should talk to Courier's EU endpoin
 import { CourierClient, getCourierApiUrlsForRegion } from "@trycourier/courier-js";
 
 const courierClient = new CourierClient({
-  userId: "my-user-id",
-  jwt: "eyJ.mock.jwt",
+  userId: "user_123",
+  jwt: "your-jwt-token",
   apiUrls: getCourierApiUrlsForRegion("eu"),
 });
 ```
+
+Mint the token against the same region: your backend calls `https://api.eu.courier.com/auth/issue-token`. A US token won't authenticate against EU hosts.
 
 ### `CourierClient` Options
 
@@ -57,17 +63,17 @@ const courierClient = new CourierClient({
 
 The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JWTs on your backend server, never in client-side code.**
 
-1. Your client calls your backend to request a token.
-2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) using your API key.
-3. Your backend returns the JWT to your client and passes it to the SDK.
+1. Your client calls a route on your backend, such as `/api/courier/token`.
+2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) with your API key.
+3. Your backend returns `{ userId, token }`, and your client passes them to `new CourierClient`.
 
 ```bash
 curl --request POST \
      --url https://api.courier.com/auth/issue-token \
-     --header 'Authorization: Bearer $COURIER_API_KEY' \
+     --header "Authorization: Bearer $COURIER_API_KEY" \
      --header 'Content-Type: application/json' \
      --data '{
-       "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events read:preferences write:preferences read:brands",
+       "scope": "user_id:user_123 inbox:read:messages inbox:write:events read:preferences write:preferences read:brands",
        "expires_in": "1 day"
      }'
 ```
@@ -112,7 +118,7 @@ await courierClient.lists.deleteSubscription({ listId: "your_list_id" });
 
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-js-web](https://www.courier.com/docs/sdk-libraries/courier-js-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-js-web](https://www.courier.com/docs/sdk-libraries/courier-js-web)**
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier

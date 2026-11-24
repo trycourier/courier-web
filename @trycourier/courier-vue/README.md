@@ -2,14 +2,17 @@
 
 # Courier Vue SDK
 
-The Courier Vue SDK provides ready-made components and a programmatic composable for building notification experiences in Vue 3 applications. It includes a full-featured inbox, popup menu, toast notifications, and a composable for custom UIs.
+Add a real-time notification inbox, toasts, and a preference center to your Vue 3 app with drop-in components and one composable. Courier hosts the feed and syncs read and archive state across each user's devices, and the same API sends to email, SMS, push, and Slack.
 
-- [`<CourierInbox />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#inbox-component) — full-featured inbox for displaying and managing messages
-- [`<CourierInboxPopupMenu />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#inbox-component) — popup menu version of the inbox
-- [`<CourierToast />`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#toast-component) — toast notifications for time-sensitive alerts
-- [`useCourier()`](https://www.courier.com/docs/sdk-libraries/courier-vue-web/#usecourier-composable) — composable for programmatic access and custom UIs
+- [`<CourierInbox />`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue) — full-featured inbox for displaying and managing messages
+- [`<CourierInboxPopupMenu />`](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue#render-as-a-popup-menu) — popup menu version of the inbox
+- [`<CourierToast />`](https://www.courier.com/docs/in-app/add-toasts?lang=Vue) — toast notifications for time-sensitive alerts
+- [`<CourierPreferences />`](https://www.courier.com/docs/in-app/add-a-preference-center?lang=Vue) — preference center where users choose which notifications they get, and where
+- [`useCourier()`](https://www.courier.com/docs/sdk-libraries/courier-vue-web#usecourier-composable) — composable for programmatic access and custom UIs
 
-> **Not using Vue?** Check out the [`@trycourier/courier-ui-inbox`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) and [`@trycourier/courier-ui-toast`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-toast) packages, which provide Web Components for any JavaScript project.
+> **Not using Vue?** Use [`@trycourier/courier-react`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-react) for React, [`@trycourier/courier-angular`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-angular) for Angular, or the [`@trycourier/courier-ui-inbox`](https://github.com/trycourier/courier-web/tree/main/%40trycourier/courier-ui-inbox) Web Components for any other JavaScript project.
+
+> **Building with an AI coding agent?** Connect [Courier's MCP server and skills](https://www.courier.com/docs/get-started/build-with-ai) so your agent writes current Courier code.
 
 ## Installation
 
@@ -28,15 +31,12 @@ import { CourierInbox, useCourier } from "@trycourier/courier-vue";
 
 const courier = useCourier();
 
-onMounted(() => {
-  // Generate a JWT for your user on your backend server
-  const jwt = "your-jwt-token";
-
-  // Authenticate the user
-  courier.shared.signIn({
-    userId: "your-user-id",
-    jwt: jwt,
-  });
+onMounted(async () => {
+  // Your backend mints a JWT for the signed-in user (see Authentication)
+  const response = await fetch("/api/courier/token");
+  if (!response.ok) throw new Error(`Courier token request failed: ${response.status}`);
+  const { userId, token } = await response.json();
+  courier.shared.signIn({ userId, jwt: token });
 });
 </script>
 
@@ -56,12 +56,11 @@ import { CourierInbox, getCourierApiUrlsForRegion, useCourier } from "@trycourie
 
 const courier = useCourier();
 
-onMounted(() => {
-  courier.shared.signIn({
-    userId: "your-user-id",
-    jwt: "your-jwt-token",
-    apiUrls: getCourierApiUrlsForRegion("eu"),
-  });
+onMounted(async () => {
+  const response = await fetch("/api/courier/token");
+  if (!response.ok) throw new Error(`Courier token request failed: ${response.status}`);
+  const { userId, token } = await response.json();
+  courier.shared.signIn({ userId, jwt: token, apiUrls: getCourierApiUrlsForRegion("eu") });
 });
 </script>
 
@@ -70,31 +69,35 @@ onMounted(() => {
 </template>
 ```
 
+Mint the token against the same region: your backend calls `https://api.eu.courier.com/auth/issue-token`. A US token won't authenticate against EU hosts.
+
 ## Authentication
 
 The SDK requires a JWT (JSON Web Token) for authentication. **Always generate JWTs on your backend server, never in client-side code.**
 
-1. Your client calls your backend to request a token.
-2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) using your API key.
-3. Your backend returns the JWT to your client and passes it to the SDK.
+1. Your client calls a route on your backend, such as `/api/courier/token`.
+2. Your backend calls the [Courier Issue Token endpoint](https://www.courier.com/docs/api-reference/authentication/create-a-jwt) with your API key.
+3. Your backend returns `{ userId, token }`, and your client passes them to `signIn`.
 
 ```bash
 curl -X POST https://api.courier.com/auth/issue-token \
-  -H 'Authorization: Bearer $COURIER_API_KEY' \
+  -H "Authorization: Bearer $COURIER_API_KEY" \
   -H 'Content-Type: application/json' \
   -d '{
-    "scope": "user_id:$YOUR_USER_ID inbox:read:messages inbox:write:events",
+    "scope": "user_id:user_123 inbox:read:messages inbox:write:events",
     "expires_in": "1 day"
   }'
 ```
 
+Adding the preference center? Add `read:preferences write:preferences` to `scope`. [Scopes](https://www.courier.com/docs/in-app/authenticate-users#scopes) lists the rest.
+
 ## Documentation
 
-Full documentation: **[courier.com/docs/sdk-libraries/courier-vue-web](https://www.courier.com/docs/sdk-libraries/courier-vue-web/)**
+Full documentation: **[courier.com/docs/sdk-libraries/courier-vue-web](https://www.courier.com/docs/sdk-libraries/courier-vue-web)**
 
-- [Inbox implementation tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-implement-inbox/)
-- [JWT authentication tutorial](https://www.courier.com/docs/tutorials/inbox/how-to-send-jwt/)
-- [Theme reference](https://www.courier.com/docs/sdk-libraries/courier-ui-inbox-web-theme/)
+- [Add an inbox](https://www.courier.com/docs/in-app/add-an-inbox?lang=Vue)
+- [Authenticate users with a JWT](https://www.courier.com/docs/in-app/authenticate-users?lang=Vue)
+- [Theme reference](https://www.courier.com/docs/in-app/customize-the-inbox?lang=Vue#theme)
 <!-- AUTO-GENERATED-OVERVIEW:END -->
 
 ## Share feedback with Courier
