@@ -1,5 +1,18 @@
 # @trycourier/courier-vue
 
+## 1.1.6
+
+### Patch Changes
+
+- [#281](https://github.com/trycourier/courier-web/pull/281) [`762042f`](https://github.com/trycourier/courier-web/commit/762042f6e3c7a415083985ac456f0fdccd621fc0) Thanks [@mikemilla](https://github.com/mikemilla)! - Update the npm descriptions, keywords and homepage links, and the READMEs synced from the Courier docs. No code changes.
+
+- Updated dependencies [[`762042f`](https://github.com/trycourier/courier-web/commit/762042f6e3c7a415083985ac456f0fdccd621fc0)]:
+  - @trycourier/courier-js@3.7.2
+  - @trycourier/courier-ui-core@2.5.3
+  - @trycourier/courier-ui-inbox@2.7.5
+  - @trycourier/courier-ui-preferences@1.3.4
+  - @trycourier/courier-ui-toast@2.4.3
+
 ## 1.1.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@trycourier/courier-ui-inbox",
-  "version": "2.7.4",
+  "version": "2.7.5",
   "description": "Drop-in notification inbox as Web Components, for any framework or none. Real-time in-app notifications from Courier.",
   "exports": {
     ".": {
@@ -46,8 +46,8 @@
     "dist"
   ],
   "dependencies": {
-    "@trycourier/courier-js": "3.7.1",
-    "@trycourier/courier-ui-core": "2.5.2"
+    "@trycourier/courier-js": "3.7.2",
+    "@trycourier/courier-ui-core": "2.5.3"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
